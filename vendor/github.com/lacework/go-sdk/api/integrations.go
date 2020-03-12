@@ -1,9 +1,82 @@
+//
+// Author:: Salim Afiune Maya (<afiune@lacework.net>)
+// Copyright:: Copyright 2020, Lacework Inc.
+// License:: Apache License, Version 2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
 package api
 
 import (
 	"fmt"
 	"strings"
 )
+
+type integrationType int
+
+const (
+	// awsCFG - AWS Config integration type
+	awsCFG integrationType = iota
+
+	// awsCT - AWS CloudTrail integration type
+	awsCT
+
+	// gcpCFG - GCP Config integration type
+	gcpCFG
+
+	// gcpAT - GCP Audit Log integration type
+	gcpAT
+
+	// azureCFG - Azure Config integration type
+	azureCFG
+
+	// azureAL - Azure Activity Log integration type
+	azureAL
+)
+
+var integrationTypes = map[integrationType]string{
+	awsCFG:   "AWS_CFG",
+	awsCT:    "AWS_CT_SQS",
+	gcpCFG:   "GCP_CFG",
+	gcpAT:    "GCP_AT_SES",
+	azureCFG: "AZURE_CFG",
+	azureAL:  "AZURE_AL_SEQ",
+}
+
+func (i integrationType) String() string {
+	return integrationTypes[i]
+}
+
+// gcpResourceLevel determines Project or Organization level integration
+type gcpResourceLevel int
+
+const (
+	// GcpProject level integration with GCP
+	GcpProject gcpResourceLevel = iota
+
+	// GcpOrganization level integration with GCP
+	GcpOrganization
+)
+
+var gcpResourceLevels = map[gcpResourceLevel]string{
+	GcpProject:      "PROJECT",
+	GcpOrganization: "ORGANIZATION",
+}
+
+func (g gcpResourceLevel) String() string {
+	return gcpResourceLevels[g]
+}
 
 // GetIntegrations lists the external integrations available on the server
 func (c *Client) GetIntegrations() (response integrationsResponse, err error) {
@@ -21,16 +94,85 @@ func (c *Client) GetAWSIntegrations() (response awsIntegrationsResponse, err err
 	return
 }
 
+// NewGCPIntegrationData returns an instance of gcpIntegrationData
+func NewGCPIntegrationData(name string, idType gcpResourceLevel) gcpIntegrationData {
+	return gcpIntegrationData{
+		commonIntegrationData: commonIntegrationData{
+			Name:    name,
+			Type:    gcpCFG.String(),
+			Enabled: 1,
+		},
+		Data: gcpCfg{
+			IdType: idType.String(),
+		},
+	}
+}
+
+// CreateGCPConfigIntegration creates a single integration on the server
+func (c *Client) CreateGCPConfigIntegration(data gcpIntegrationData) (response gcpIntegrationsResponse, err error) {
+	err = c.createIntegration(data, &response)
+	return
+}
+
+func (c *Client) createIntegration(data interface{}, response interface{}) error {
+	body, err := jsonReader(data)
+	if err != nil {
+		return err
+	}
+
+	err = c.RequestDecoder("POST", apiIntegrations, body, response)
+	return err
+}
+
+// GetGCPConfigIntegration gets a single integration matching the integration guid available on the server
+func (c *Client) GetGCPConfigIntegration(intgGuid string) (response gcpIntegrationsResponse, err error) {
+	err = c.getIntegration(intgGuid, &response)
+	return
+}
+
+func (c *Client) getIntegration(intgGuid string, response interface{}) error {
+	apiPath := fmt.Sprintf(apiIntegrationByGUID, intgGuid)
+	return c.RequestDecoder("GET", apiPath, nil, response)
+}
+
+// UpdateGCPConfigIntegration updates a single integration on the server
+func (c *Client) UpdateGCPConfigIntegration(data gcpIntegrationData) (response gcpIntegrationsResponse, err error) {
+	err = c.updateIntegration(data.IntgGuid, data, &response)
+	return
+}
+
+func (c *Client) updateIntegration(intgGuid string, data interface{}, response interface{}) error {
+	body, err := jsonReader(data)
+	if err != nil {
+		return err
+	}
+
+	apiPath := fmt.Sprintf(apiIntegrationByGUID, intgGuid)
+	err = c.RequestDecoder("PATCH", apiPath, body, response)
+	return err
+}
+
+// DeleteGCPConfigIntegration gets a single integration matching the integration guid available on the server
+func (c *Client) DeleteGCPConfigIntegration(intgGuid string) (response gcpIntegrationsResponse, err error) {
+	err = c.deleteIntegration(intgGuid, &response)
+	return
+}
+
+func (c *Client) deleteIntegration(intgGuid string, response interface{}) error {
+	apiPath := fmt.Sprintf(apiIntegrationByGUID, intgGuid)
+	return c.RequestDecoder("DELETE", apiPath, nil, response)
+}
+
 type commonIntegrationData struct {
-	IntgGuid             string `json:"INTG_GUID"`
+	IntgGuid             string `json:"INTG_GUID,omitempty"`
 	Name                 string `json:"NAME"`
-	CreatedOrUpdatedTime string `json:"CREATED_OR_UPDATED_TIME"`
-	CreatedOrUpdatedBy   string `json:"CREATED_OR_UPDATED_BY"`
+	CreatedOrUpdatedTime string `json:"CREATED_OR_UPDATED_TIME,omitempty"`
+	CreatedOrUpdatedBy   string `json:"CREATED_OR_UPDATED_BY,omitempty"`
 	Type                 string `json:"TYPE"`
 	Enabled              int    `json:"ENABLED"`
-	State                state  `json:"STATE"`
-	IsOrg                int    `json:"IS_ORG"`
-	TypeName             string `json:"TYPE_NAME"`
+	State                state  `json:"STATE,omitempty"`
+	IsOrg                int    `json:"IS_ORG,omitempty"`
+	TypeName             string `json:"TYPE_NAME,omitempty"`
 }
 
 type integrationsResponse struct {
@@ -76,10 +218,11 @@ type gcpIntegrationData struct {
 }
 
 type gcpCfg struct {
-	ID            string         `json:"ID"`
-	IdType        string         `json:"ID_TYPE"`
-	IssueGrouping string         `json:"ISSUE_GROUPING"`
-	Credentials   gcpCredentials `json:"CREDENTIALS"`
+	ID               string         `json:"ID"`
+	IdType           string         `json:"ID_TYPE"`
+	IssueGrouping    string         `json:"ISSUE_GROUPING,omitempty"`
+	Credentials      gcpCredentials `json:"CREDENTIALS"`
+	SubscriptionName string         `json:"SUBSCRIPTION_NAME,omitempty"`
 }
 
 type gcpCredentials struct {

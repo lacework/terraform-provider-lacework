@@ -108,6 +108,7 @@ github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
 # github.com/hashicorp/terraform-plugin-sdk v1.7.0
+## explicit
 github.com/hashicorp/terraform-plugin-sdk/helper/hashcode
 github.com/hashicorp/terraform-plugin-sdk/helper/schema
 github.com/hashicorp/terraform-plugin-sdk/httpclient
@@ -148,7 +149,8 @@ github.com/hashicorp/terraform-svchost/disco
 github.com/hashicorp/yamux
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
-# github.com/lacework/go-sdk v0.0.0-20200310215044-02d2da8b5712
+# github.com/lacework/go-sdk v0.0.0-20200318002413-5f027eab9aa4
+## explicit
 github.com/lacework/go-sdk/api
 # github.com/mattn/go-colorable v0.1.1
 github.com/mattn/go-colorable
