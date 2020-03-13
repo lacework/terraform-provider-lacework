@@ -17,7 +17,7 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("LACEWORK_ACCOUNT", nil),
-				Description: "Lacework account subdomain of URL",
+				Description: "Lacework account subdomain of URL (i.e. <ACCOUNT>.lacework.net)",
 			},
 			"api_key": {
 				Type:        schema.TypeString,
