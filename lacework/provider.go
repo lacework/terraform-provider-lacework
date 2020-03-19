@@ -33,7 +33,9 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 
-		ResourcesMap: map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"lacework_integration_gcp_cfg": resourceLaceworkIntegrationGCPCFG(),
+		},
 
 		DataSourcesMap: map[string]*schema.Resource{
 			"lacework_api_token": dataSourceLaceworkApiToken(),
