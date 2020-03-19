@@ -58,16 +58,19 @@ func resourceLaceworkIntegrationGCPCFG() *schema.Resource {
 			"resource_level": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "PROJECT",
+				Default:  api.GcpProject.String(),
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
 				},
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch strings.ToUpper(value.(string)) {
-					case "PROJECT", "ORGANIZATION":
+					case api.GcpProject.String(), api.GcpOrganization.String():
 						return nil, nil
 					default:
-						return nil, []error{fmt.Errorf("%s: can only be either 'PROJECT' or 'ORGANIZATION'", key)}
+						return nil, []error{
+							fmt.Errorf("%s: can only be either '%s' or '%s'",
+								key, api.GcpProject.String(), api.GcpOrganization.String()),
+						}
 					}
 				},
 			},
@@ -101,7 +104,7 @@ func resourceLaceworkIntegrationGCPCFGCreate(d *schema.ResourceData, meta interf
 		resourceLevel = api.GcpProject
 	)
 
-	if d.Get("resource_level").(string) == "ORGANIZATION" {
+	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganization.String() {
 		resourceLevel = api.GcpOrganization
 	}
 
@@ -181,7 +184,7 @@ func resourceLaceworkIntegrationGCPCFGUpdate(d *schema.ResourceData, meta interf
 		resourceLevel = api.GcpProject
 	)
 
-	if d.Get("resource_level").(string) == "ORGANIZATION" {
+	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganization.String() {
 		resourceLevel = api.GcpOrganization
 	}
 
