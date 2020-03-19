@@ -2,7 +2,6 @@ package lacework
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"testing"
 
