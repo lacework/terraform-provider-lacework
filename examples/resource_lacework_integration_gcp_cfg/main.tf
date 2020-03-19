@@ -9,6 +9,6 @@ resource "lacework_integration_gcp_cfg" "example" {
         client_email = "email@some-project-name.iam.gserviceaccount.com"
         private_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
-    resource_type = "Project"
+    resource_level = "PROJECT"
     resource_id = "example-project_id"
 }
