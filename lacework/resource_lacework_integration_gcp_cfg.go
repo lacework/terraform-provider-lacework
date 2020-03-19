@@ -58,9 +58,17 @@ func resourceLaceworkIntegrationGCPCFG() *schema.Resource {
 			"resource_type": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "Project",
+				Default:  "PROJECT",
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
+				},
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch strings.ToUpper(value.(string)) {
+					case "PROJECT", "ORGANIZATION":
+						return nil, nil
+					default:
+						return nil, []error{fmt.Errorf("%s: can only be either 'PROJECT' or 'ORGANIZATION'", key)}
+					}
 				},
 			},
 			"resource_id": {
@@ -88,17 +96,13 @@ func resourceLaceworkIntegrationGCPCFG() *schema.Resource {
 }
 
 func resourceLaceworkIntegrationGCPCFGCreate(d *schema.ResourceData, meta interface{}) error {
-	lacework := meta.(*api.Client)
+	var (
+		lacework      = meta.(*api.Client)
+		resourceLevel = api.GcpProject
+	)
 
-	resourceType := d.Get("resource_type").(string)
-	resourceType = strings.ToUpper(resourceType)
-
-	resourceLevel := api.GcpProject
-	if resourceType == "ORGANIZATION" {
+	if d.Get("resource_level").(string) == "ORGANIZATION" {
 		resourceLevel = api.GcpOrganization
-	}
-	if resourceType != "PROJECT" {
-		return fmt.Errorf("resource_id must be either PROJECT or ORGANIZATION, %s given", resourceType)
 	}
 
 	data := api.NewGCPIntegrationData(d.Get("name").(string), resourceLevel)
@@ -172,26 +176,22 @@ func resourceLaceworkIntegrationGCPCFGRead(d *schema.ResourceData, meta interfac
 }
 
 func resourceLaceworkIntegrationGCPCFGUpdate(d *schema.ResourceData, meta interface{}) error {
-	lacework := meta.(*api.Client)
+	var (
+		lacework      = meta.(*api.Client)
+		resourceLevel = api.GcpProject
+	)
 
-	resourceType := d.Get("resource_type").(string)
-	resourceType = strings.ToUpper(resourceType)
-
-	resourceLevel := api.GcpProject
-	if resourceType == "ORGANIZATION" {
+	if d.Get("resource_level").(string) == "ORGANIZATION" {
 		resourceLevel = api.GcpOrganization
-	}
-	if resourceType != "PROJECT" {
-		return fmt.Errorf("resource_id must be either PROJECT or ORGANIZATION, %s given", resourceType)
 	}
 
 	data := api.NewGCPIntegrationData(d.Get("name").(string), resourceLevel)
-	data.IntgGuid = d.Id()
 
 	if !d.Get("enabled").(bool) {
 		data.Enabled = 0
 	}
 
+	data.IntgGuid = d.Id()
 	data.Data.ID = d.Get("resource_id").(string)
 	data.Data.Credentials.ClientId = d.Get("credentials.0.client_id").(string)
 	data.Data.Credentials.ClientEmail = d.Get("credentials.0.client_email").(string)
@@ -200,7 +200,6 @@ func resourceLaceworkIntegrationGCPCFGUpdate(d *schema.ResourceData, meta interf
 
 	log.Printf("[INFO] Updating GCP CFG integration with data:\n%+v\n", data)
 	response, err := lacework.UpdateGCPConfigIntegration(data)
-
 	if err != nil {
 		return err
 	}
