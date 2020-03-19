@@ -55,7 +55,7 @@ func resourceLaceworkIntegrationGCPCFG() *schema.Resource {
 					},
 				},
 			},
-			"resource_type": {
+			"resource_level": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "PROJECT",
@@ -128,7 +128,7 @@ func resourceLaceworkIntegrationGCPCFGCreate(d *schema.ResourceData, meta interf
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
 		d.Set("enabled", integration.Enabled == 1)
-		d.Set("resource_type", integration.Data.IdType)
+		d.Set("resource_level", integration.Data.IdType)
 		d.Set("resource_id", integration.Data.ID)
 
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
@@ -158,7 +158,7 @@ func resourceLaceworkIntegrationGCPCFGRead(d *schema.ResourceData, meta interfac
 			d.Set("name", integration.Name)
 			d.Set("intg_guid", integration.IntgGuid)
 			d.Set("enabled", integration.Enabled == 1)
-			d.Set("resource_type", integration.Data.IdType)
+			d.Set("resource_level", integration.Data.IdType)
 			d.Set("resource_id", integration.Data.ID)
 
 			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
@@ -209,7 +209,7 @@ func resourceLaceworkIntegrationGCPCFGUpdate(d *schema.ResourceData, meta interf
 			d.Set("name", integration.Name)
 			d.Set("intg_guid", integration.IntgGuid)
 			d.Set("enabled", integration.Enabled == 1)
-			d.Set("resource_type", integration.Data.IdType)
+			d.Set("resource_level", integration.Data.IdType)
 			d.Set("resource_id", integration.Data.ID)
 
 			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
