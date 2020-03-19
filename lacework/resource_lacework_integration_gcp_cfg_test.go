@@ -15,12 +15,12 @@ const (
 	testAccIntegrationGCPCFGResourceName = "example"
 
 	// Environment variables for testing GCP CFG
-	testAccIntegrationGCPCFGEnvClientID      = "CLIENT_ID"
-	testAccIntegrationGCPCFGEnvPrivateKeyID  = "PRIVATE_KEY_ID"
-	testAccIntegrationGCPCFGEnvPrivateKey    = "PRIVATE_KEY"
-	testAccIntegrationGCPCFGEnvClientEmail   = "CLIENT_EMAIL"
-	testAccIntegrationGCPCFGEnvResourceLevel = "RESOURCE_LEVEL"
-	testAccIntegrationGCPCFGEnvResourceID    = "RESOURCE_ID"
+	testAccIntegrationGCPCFGEnvClientID      = "GCP_CLIENT_ID"
+	testAccIntegrationGCPCFGEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
+	testAccIntegrationGCPCFGEnvPrivateKey    = "GCP_PRIVATE_KEY"
+	testAccIntegrationGCPCFGEnvClientEmail   = "GCP_CLIENT_EMAIL"
+	testAccIntegrationGCPCFGEnvResourceLevel = "GCP_RESOURCE_LEVEL"
+	testAccIntegrationGCPCFGEnvResourceID    = "GCP_RESOURCE_ID"
 )
 
 func TestAccIntegrationGCPCFG(t *testing.T) {
@@ -30,7 +30,10 @@ func TestAccIntegrationGCPCFG(t *testing.T) {
 	)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t)
+			testAccIntegrationGCPCFGEnvVarsPreCheck(t)
+		},
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckIntegrationGCPCFGDestroy,
 		Steps: []resource.TestStep{
@@ -125,9 +128,6 @@ func testAccIntegrationGCPCFGEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccIntegrationGCPCFGEnvClientEmail); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvClientEmail)
 	}
-	if v := os.Getenv(testAccIntegrationGCPCFGEnvResourceLevel); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvResourceLevel)
-	}
 	if v := os.Getenv(testAccIntegrationGCPCFGEnvResourceID); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvResourceID)
 	}
@@ -136,16 +136,16 @@ func testAccIntegrationGCPCFGEnvVarsPreCheck(t *testing.T) {
 func testAccIntegrationGCPCFGConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
-	name = "Example-GCP-Integration"
-	enabled = %t
-	credentials {
-		client_id = "%s"
-		private_key_id = "%s"
-		client_email = "%s"
-		private_key = "%s"
-	}
-	resource_level = "%s"
-	resource_id = "%s"
+    name = "Example-GCP-Integration"
+    enabled = %t
+    credentials {
+        client_id = "%s"
+        private_key_id = "%s"
+        client_email = "%s"
+        private_key = "%s"
+    }
+    resource_id = "%s"
+  %s
 }
 `,
 		testAccIntegrationGCPCFGResourceType,
@@ -155,7 +155,15 @@ resource "%s" "%s" {
 		os.Getenv(testAccIntegrationGCPCFGEnvPrivateKeyID),
 		os.Getenv(testAccIntegrationGCPCFGEnvClientEmail),
 		os.Getenv(testAccIntegrationGCPCFGEnvPrivateKey),
-		os.Getenv(testAccIntegrationGCPCFGEnvResourceLevel),
 		os.Getenv(testAccIntegrationGCPCFGEnvResourceID),
+		resourceLevelAttrOrEmpty(
+			os.Getenv(testAccIntegrationGCPCFGEnvResourceLevel),
+		),
 	)
+}
+func resourceLevelAttrOrEmpty(s string) string {
+	if s == "" {
+		return ""
+	}
+	return fmt.Sprintf("resource_level = \"%s\"", s)
 }
