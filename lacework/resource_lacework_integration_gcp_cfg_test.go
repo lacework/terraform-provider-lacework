@@ -135,7 +135,7 @@ func testAccIntegrationGCPCFGEnvVarsPreCheck(t *testing.T) {
 }
 
 func testAccIntegrationGCPCFGConfig(enabled bool) string {
-	rrr := fmt.Sprintf(`
+	return fmt.Sprintf(`
 resource "%s" "%s" {
 	name = "Example-GCP-Integration"
 	enabled = %t
@@ -159,7 +159,4 @@ resource "%s" "%s" {
 		os.Getenv(testAccIntegrationGCPCFGEnvResourceLevel),
 		os.Getenv(testAccIntegrationGCPCFGEnvResourceID),
 	)
-	fmt.Println(rrr)
-	log.Println(rrr)
-	return rrr
 }
