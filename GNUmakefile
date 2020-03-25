@@ -4,8 +4,20 @@ WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=lacework
 DIR=~/.terraform.d/plugins
 GO_CLIENT_VERSION=master
+export GOFLAGS=-mod=vendor
+export GOPRIVATE=github.com/lacework/go-sdk
 
 default: build
+
+deps:
+ifdef UPDATE_DEP
+	@go get -u "$(UPDATE_DEP)"
+endif
+	@go mod vendor
+
+alldeps:
+	@go get -u
+	@go mod vendor
 
 build: fmtcheck
 	go install
@@ -42,7 +54,6 @@ fmtcheck:
 
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
-
 
 test-compile:
 	@if [ "$(TEST)" = "./..." ]; then \
