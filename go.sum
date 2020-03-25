@@ -126,6 +126,8 @@ github.com/lacework/go-sdk v0.0.0-20200318002413-5f027eab9aa4 h1:AlKxXh+5H3b58VV
 github.com/lacework/go-sdk v0.0.0-20200318002413-5f027eab9aa4/go.mod h1:E8NPFz+v7qpyhN/0xAAjywNRB4lMfQNHSE5pzYTVguY=
 github.com/lacework/go-sdk v0.0.0-20200325152128-6358ff2754bd h1:rltyOpmfwPxsuxJImCxffvODgV9XgTdziWajXQM3nnU=
 github.com/lacework/go-sdk v0.0.0-20200325152128-6358ff2754bd/go.mod h1:E8NPFz+v7qpyhN/0xAAjywNRB4lMfQNHSE5pzYTVguY=
+github.com/lacework/go-sdk v0.0.0-20200325192400-7763190862c3 h1:hnQ7j+AkdIblEnsAZr5+FktsTST0CJUiTN1I2Oc5J0A=
+github.com/lacework/go-sdk v0.0.0-20200325192400-7763190862c3/go.mod h1:E8NPFz+v7qpyhN/0xAAjywNRB4lMfQNHSE5pzYTVguY=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.1 h1:G1f5SKeVxmagw/IyvzvtZE4Gybcc4Tr1tf7I8z0XgOg=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
