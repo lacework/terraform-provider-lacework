@@ -29,13 +29,13 @@ func TestProvider_impl(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("LACEWORK_API_KEY"); v == "" {
-		t.Fatal("LACEWORK_API_KEY must be set for acceptance tests")
+	if v := os.Getenv("LW_API_KEY"); v == "" {
+		t.Fatal("LW_API_KEY must be set for acceptance tests")
 	}
-	if v := os.Getenv("LACEWORK_API_SECRET"); v == "" {
-		t.Fatal("LACEWORK_API_SECRET must be set for acceptance tests")
+	if v := os.Getenv("LW_API_SECRET"); v == "" {
+		t.Fatal("LW_API_SECRET must be set for acceptance tests")
 	}
-	if v := os.Getenv("LACEWORK_ACCOUNT"); v == "" {
-		t.Fatal("LACEWORK_ACCOUNT must be set for acceptance tests")
+	if v := os.Getenv("LW_ACCOUNT"); v == "" {
+		t.Fatal("LW_ACCOUNT must be set for acceptance tests")
 	}
 }
