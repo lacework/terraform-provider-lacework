@@ -16,19 +16,19 @@ func Provider() terraform.ResourceProvider {
 			"account": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("LACEWORK_ACCOUNT", nil),
+				DefaultFunc: schema.EnvDefaultFunc("LW_ACCOUNT", nil),
 				Description: "Lacework account subdomain of URL (i.e. <ACCOUNT>.lacework.net)",
 			},
 			"api_key": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("LACEWORK_API_KEY", nil),
+				DefaultFunc: schema.EnvDefaultFunc("LW_API_KEY", nil),
 				Description: "Lacework API access key",
 			},
 			"api_secret": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("LACEWORK_API_SECRET", nil),
+				DefaultFunc: schema.EnvDefaultFunc("LW_API_SECRET", nil),
 				Description: "Lacework API access secret",
 			},
 		},
