@@ -11,47 +11,47 @@ import (
 )
 
 const (
-	testAccIntegrationGCPCFGResourceType = "lacework_integration_gcp_cfg"
-	testAccIntegrationGCPCFGResourceName = "example"
+	testAccIntegrationGcpCfgResourceType = "lacework_integration_gcp_cfg"
+	testAccIntegrationGcpCfgResourceName = "example"
 
 	// Environment variables for testing GCP CFG
-	testAccIntegrationGCPCFGEnvClientID      = "GCP_CLIENT_ID"
-	testAccIntegrationGCPCFGEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
-	testAccIntegrationGCPCFGEnvPrivateKey    = "GCP_PRIVATE_KEY"
-	testAccIntegrationGCPCFGEnvClientEmail   = "GCP_CLIENT_EMAIL"
-	testAccIntegrationGCPCFGEnvResourceLevel = "GCP_RESOURCE_LEVEL"
-	testAccIntegrationGCPCFGEnvResourceID    = "GCP_RESOURCE_ID"
+	testAccIntegrationGcpCfgEnvClientID      = "GCP_CLIENT_ID"
+	testAccIntegrationGcpCfgEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
+	testAccIntegrationGcpCfgEnvPrivateKey    = "GCP_PRIVATE_KEY"
+	testAccIntegrationGcpCfgEnvClientEmail   = "GCP_CLIENT_EMAIL"
+	testAccIntegrationGcpCfgEnvResourceLevel = "GCP_RESOURCE_LEVEL"
+	testAccIntegrationGcpCfgEnvResourceID    = "GCP_RESOURCE_ID"
 )
 
-func TestAccIntegrationGCPCFG(t *testing.T) {
+func TestAccIntegrationGcpCfg(t *testing.T) {
 	resourceTypeAndName := fmt.Sprintf("%s.%s",
-		testAccIntegrationGCPCFGResourceType,
-		testAccIntegrationGCPCFGResourceName,
+		testAccIntegrationGcpCfgResourceType,
+		testAccIntegrationGcpCfgResourceName,
 	)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccIntegrationGCPCFGEnvVarsPreCheck(t)
+			testAccIntegrationGcpCfgEnvVarsPreCheck(t)
 		},
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckIntegrationGCPCFGDestroy,
+		CheckDestroy: testAccCheckIntegrationGcpCfgDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccIntegrationGCPCFGConfig(
+				Config: testAccIntegrationGcpCfgConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationGCPCFGExists(resourceTypeAndName),
+					testAccCheckIntegrationGcpCfgExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
 				),
 			},
 			{
-				Config: testAccIntegrationGCPCFGConfig(
+				Config: testAccIntegrationGcpCfgConfig(
 					false,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationGCPCFGExists(resourceTypeAndName),
+					testAccCheckIntegrationGcpCfgExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "false"),
 				),
 			},
@@ -59,11 +59,11 @@ func TestAccIntegrationGCPCFG(t *testing.T) {
 	})
 }
 
-func testAccCheckIntegrationGCPCFGDestroy(s *terraform.State) error {
+func testAccCheckIntegrationGcpCfgDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccIntegrationGCPCFGResourceType {
+		if rs.Type != testAccIntegrationGcpCfgResourceType {
 			continue
 		}
 
@@ -82,7 +82,7 @@ func testAccCheckIntegrationGCPCFGDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckIntegrationGCPCFGExists(resourceTypeAndName string) resource.TestCheckFunc {
+func testAccCheckIntegrationGcpCfgExists(resourceTypeAndName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		lacework := testAccProvider.Meta().(*api.Client)
 
@@ -114,25 +114,25 @@ func testAccCheckIntegrationGCPCFGExists(resourceTypeAndName string) resource.Te
 	}
 }
 
-func testAccIntegrationGCPCFGEnvVarsPreCheck(t *testing.T) {
-	if v := os.Getenv(testAccIntegrationGCPCFGEnvClientID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvClientID)
+func testAccIntegrationGcpCfgEnvVarsPreCheck(t *testing.T) {
+	if v := os.Getenv(testAccIntegrationGcpCfgEnvClientID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvClientID)
 	}
-	if v := os.Getenv(testAccIntegrationGCPCFGEnvPrivateKeyID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvPrivateKeyID)
+	if v := os.Getenv(testAccIntegrationGcpCfgEnvPrivateKeyID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvPrivateKeyID)
 	}
-	if v := os.Getenv(testAccIntegrationGCPCFGEnvPrivateKey); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvPrivateKey)
+	if v := os.Getenv(testAccIntegrationGcpCfgEnvPrivateKey); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvPrivateKey)
 	}
-	if v := os.Getenv(testAccIntegrationGCPCFGEnvClientEmail); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvClientEmail)
+	if v := os.Getenv(testAccIntegrationGcpCfgEnvClientEmail); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvClientEmail)
 	}
-	if v := os.Getenv(testAccIntegrationGCPCFGEnvResourceID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGCPCFGEnvResourceID)
+	if v := os.Getenv(testAccIntegrationGcpCfgEnvResourceID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvResourceID)
 	}
 }
 
-func testAccIntegrationGCPCFGConfig(enabled bool) string {
+func testAccIntegrationGcpCfgConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
     name = "Example-GCP-Integration"
@@ -147,16 +147,16 @@ resource "%s" "%s" {
   %s
 }
 `,
-		testAccIntegrationGCPCFGResourceType,
-		testAccIntegrationGCPCFGResourceName,
+		testAccIntegrationGcpCfgResourceType,
+		testAccIntegrationGcpCfgResourceName,
 		enabled,
-		os.Getenv(testAccIntegrationGCPCFGEnvClientID),
-		os.Getenv(testAccIntegrationGCPCFGEnvPrivateKeyID),
-		os.Getenv(testAccIntegrationGCPCFGEnvClientEmail),
-		os.Getenv(testAccIntegrationGCPCFGEnvPrivateKey),
-		os.Getenv(testAccIntegrationGCPCFGEnvResourceID),
+		os.Getenv(testAccIntegrationGcpCfgEnvClientID),
+		os.Getenv(testAccIntegrationGcpCfgEnvPrivateKeyID),
+		os.Getenv(testAccIntegrationGcpCfgEnvClientEmail),
+		os.Getenv(testAccIntegrationGcpCfgEnvPrivateKey),
+		os.Getenv(testAccIntegrationGcpCfgEnvResourceID),
 		resourceLevelAttrOrEmpty(
-			os.Getenv(testAccIntegrationGCPCFGEnvResourceLevel),
+			os.Getenv(testAccIntegrationGcpCfgEnvResourceLevel),
 		),
 	)
 }

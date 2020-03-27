@@ -9,12 +9,12 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
+func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceLaceworkIntegrationGcpCfgCreate,
-		Read:   resourceLaceworkIntegrationGcpCfgRead,
-		Update: resourceLaceworkIntegrationGcpCfgUpdate,
-		Delete: resourceLaceworkIntegrationGcpCfgDelete,
+		Create: resourceLaceworkIntegrationGcpAtCreate,
+		Read:   resourceLaceworkIntegrationGcpAtRead,
+		Update: resourceLaceworkIntegrationGcpAtUpdate,
+		Delete: resourceLaceworkIntegrationGcpAtDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -64,20 +64,21 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 				},
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch strings.ToUpper(value.(string)) {
-					case api.GcpProjectIntegration.String(),
-						api.GcpOrganizationIntegration.String():
+					case api.GcpProjectIntegration.String(), api.GcpOrganizationIntegration.String():
 						return nil, nil
 					default:
 						return nil, []error{
 							fmt.Errorf("%s: can only be either '%s' or '%s'",
-								key,
-								api.GcpProjectIntegration.String(),
-								api.GcpOrganizationIntegration.String()),
+								key, api.GcpProjectIntegration.String(), api.GcpOrganizationIntegration.String()),
 						}
 					}
 				},
 			},
 			"resource_id": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"subscription": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -101,7 +102,7 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 	}
 }
 
-func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework      = meta.(*api.Client)
 		resourceLevel = api.GcpProjectIntegration
@@ -111,7 +112,7 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewGcpCfgIntegration(d.Get("name").(string),
+	data := api.NewGcpAuditLogIntegration(d.Get("name").(string),
 		api.GcpIntegrationData{
 			ID:     d.Get("resource_id").(string),
 			IdType: resourceLevel.String(),
@@ -121,6 +122,7 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
 				PrivateKey:   d.Get("credentials.0.private_key").(string),
 			},
+			SubscriptionName: d.Get("subscription").(string),
 		},
 	)
 
@@ -128,7 +130,7 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		data.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating GCP_CFG integration with data:\n%+v\n", data)
+	log.Printf("[INFO] Creating GCP_AT integration with data:\n%+v\n", data)
 	response, err := lacework.Integrations.CreateGcp(data)
 	if err != nil {
 		return err
@@ -141,23 +143,26 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		d.Set("enabled", integration.Enabled == 1)
 		d.Set("resource_level", integration.Data.IdType)
 		d.Set("resource_id", integration.Data.ID)
+		d.Set("subscription", integration.Data.SubscriptionName)
+
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 		d.Set("type_name", integration.TypeName)
 		d.Set("org_level", integration.IsOrg == 1)
 
-		log.Printf("[INFO] Created GCP_CFG integration with guid: %v\n", integration.IntgGuid)
+		log.Printf("[INFO] Created GCP_AT integration with guid: %v\n", integration.IntgGuid)
 		return nil
 	}
 
 	return nil
 }
 
-func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationGcpAtRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading GCP_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Reading GCP_AT integration with guid: %v\n", d.Id())
 	response, err := lacework.Integrations.GetGcp(d.Id())
+
 	if err != nil {
 		return err
 	}
@@ -169,13 +174,14 @@ func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interfac
 			d.Set("enabled", integration.Enabled == 1)
 			d.Set("resource_level", integration.Data.IdType)
 			d.Set("resource_id", integration.Data.ID)
+			d.Set("subscription", integration.Data.SubscriptionName)
 
 			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
 
-			log.Printf("[INFO] Read GCP_CFG integration with guid: %v\n", integration.IntgGuid)
+			log.Printf("[INFO] Read GCP_AT integration with guid: %v\n", integration.IntgGuid)
 			return nil
 		}
 	}
@@ -184,7 +190,7 @@ func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interfac
 	return nil
 }
 
-func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework      = meta.(*api.Client)
 		resourceLevel = api.GcpProjectIntegration
@@ -194,7 +200,7 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewGcpCfgIntegration(d.Get("name").(string),
+	data := api.NewGcpAuditLogIntegration(d.Get("name").(string),
 		api.GcpIntegrationData{
 			ID:     d.Get("resource_id").(string),
 			IdType: resourceLevel.String(),
@@ -204,6 +210,7 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
 				PrivateKey:   d.Get("credentials.0.private_key").(string),
 			},
+			SubscriptionName: d.Get("subscription").(string),
 		},
 	)
 
@@ -213,7 +220,7 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 
 	data.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating GCP_CFG integration with data:\n%+v\n", data)
+	log.Printf("[INFO] Updating GCP_AT integration with data:\n%+v\n", data)
 	response, err := lacework.Integrations.UpdateGcp(data)
 	if err != nil {
 		return err
@@ -226,13 +233,14 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 			d.Set("enabled", integration.Enabled == 1)
 			d.Set("resource_level", integration.Data.IdType)
 			d.Set("resource_id", integration.Data.ID)
+			d.Set("subscription", integration.Data.SubscriptionName)
 
 			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
 
-			log.Printf("[INFO] Updated GCP_CFG integration with guid: %v\n", d.Id())
+			log.Printf("[INFO] Updated GCP_AT integration with guid: %v\n", d.Id())
 			return nil
 		}
 	}
@@ -240,15 +248,17 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 	return nil
 }
 
-func resourceLaceworkIntegrationGcpCfgDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationGcpAtDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting GCP_CFG integration with guid: %v\n", d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting GCP_AT integration with guid: %v\n", d.Id())
+
+	_, err := lacework.Integrations.DeleteGcp(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted GCP_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleted GCP_AT integration with guid: %v\n", d.Id())
+
 	return nil
 }
