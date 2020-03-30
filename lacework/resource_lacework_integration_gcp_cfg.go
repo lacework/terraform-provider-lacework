@@ -58,18 +58,21 @@ func resourceLaceworkIntegrationGCPCFG() *schema.Resource {
 			"resource_level": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  api.GcpProject.String(),
+				Default:  api.GcpProjectIntegration.String(),
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
 				},
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch strings.ToUpper(value.(string)) {
-					case api.GcpProject.String(), api.GcpOrganization.String():
+					case api.GcpProjectIntegration.String(),
+						api.GcpOrganizationIntegration.String():
 						return nil, nil
 					default:
 						return nil, []error{
 							fmt.Errorf("%s: can only be either '%s' or '%s'",
-								key, api.GcpProject.String(), api.GcpOrganization.String()),
+								key,
+								api.GcpProjectIntegration.String(),
+								api.GcpOrganizationIntegration.String()),
 						}
 					}
 				},
@@ -101,27 +104,32 @@ func resourceLaceworkIntegrationGCPCFG() *schema.Resource {
 func resourceLaceworkIntegrationGCPCFGCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework      = meta.(*api.Client)
-		resourceLevel = api.GcpProject
+		resourceLevel = api.GcpProjectIntegration
 	)
 
-	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganization.String() {
-		resourceLevel = api.GcpOrganization
+	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganizationIntegration.String() {
+		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewGCPIntegrationData(d.Get("name").(string), resourceLevel)
+	data := api.NewGcpCfgIntegration(d.Get("name").(string),
+		api.GcpIntegrationData{
+			ID:     d.Get("resource_id").(string),
+			IdType: resourceLevel.String(),
+			Credentials: api.GcpCredentials{
+				ClientId:     d.Get("credentials.0.client_id").(string),
+				ClientEmail:  d.Get("credentials.0.client_email").(string),
+				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
+				PrivateKey:   d.Get("credentials.0.private_key").(string),
+			},
+		},
+	)
 
 	if !d.Get("enabled").(bool) {
 		data.Enabled = 0
 	}
 
-	data.Data.ID = d.Get("resource_id").(string)
-	data.Data.Credentials.ClientId = d.Get("credentials.0.client_id").(string)
-	data.Data.Credentials.ClientEmail = d.Get("credentials.0.client_email").(string)
-	data.Data.Credentials.PrivateKeyId = d.Get("credentials.0.private_key_id").(string)
-	data.Data.Credentials.PrivateKey = d.Get("credentials.0.private_key").(string)
-
 	log.Printf("[INFO] Creating GCP CFG integration with data:\n%+v\n", data)
-	response, err := lacework.CreateGCPConfigIntegration(data)
+	response, err := lacework.Integrations.CreateGcp(data)
 	if err != nil {
 		return err
 	}
@@ -133,7 +141,6 @@ func resourceLaceworkIntegrationGCPCFGCreate(d *schema.ResourceData, meta interf
 		d.Set("enabled", integration.Enabled == 1)
 		d.Set("resource_level", integration.Data.IdType)
 		d.Set("resource_id", integration.Data.ID)
-
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 		d.Set("type_name", integration.TypeName)
@@ -150,7 +157,7 @@ func resourceLaceworkIntegrationGCPCFGRead(d *schema.ResourceData, meta interfac
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading GCP CFG integration with guid: %v\n", d.Id())
-	response, err := lacework.GetGCPConfigIntegration(d.Id())
+	response, err := lacework.Integrations.GetGcp(d.Id())
 
 	if err != nil {
 		return err
@@ -181,28 +188,30 @@ func resourceLaceworkIntegrationGCPCFGRead(d *schema.ResourceData, meta interfac
 func resourceLaceworkIntegrationGCPCFGUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework      = meta.(*api.Client)
-		resourceLevel = api.GcpProject
+		resourceLevel = api.GcpProjectIntegration
 	)
 
-	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganization.String() {
-		resourceLevel = api.GcpOrganization
+	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganizationIntegration.String() {
+		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewGCPIntegrationData(d.Get("name").(string), resourceLevel)
-
-	if !d.Get("enabled").(bool) {
-		data.Enabled = 0
-	}
+	data := api.NewGcpCfgIntegration(d.Get("name").(string),
+		api.GcpIntegrationData{
+			ID:     d.Get("resource_id").(string),
+			IdType: resourceLevel.String(),
+			Credentials: api.GcpCredentials{
+				ClientId:     d.Get("credentials.0.client_id").(string),
+				ClientEmail:  d.Get("credentials.0.client_email").(string),
+				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
+				PrivateKey:   d.Get("credentials.0.private_key").(string),
+			},
+		},
+	)
 
 	data.IntgGuid = d.Id()
-	data.Data.ID = d.Get("resource_id").(string)
-	data.Data.Credentials.ClientId = d.Get("credentials.0.client_id").(string)
-	data.Data.Credentials.ClientEmail = d.Get("credentials.0.client_email").(string)
-	data.Data.Credentials.PrivateKeyId = d.Get("credentials.0.private_key_id").(string)
-	data.Data.Credentials.PrivateKey = d.Get("credentials.0.private_key").(string)
 
 	log.Printf("[INFO] Updating GCP CFG integration with data:\n%+v\n", data)
-	response, err := lacework.UpdateGCPConfigIntegration(data)
+	response, err := lacework.Integrations.UpdateGcp(data)
 	if err != nil {
 		return err
 	}
@@ -232,13 +241,11 @@ func resourceLaceworkIntegrationGCPCFGDelete(d *schema.ResourceData, meta interf
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting GCP CFG integration with guid: %v\n", d.Id())
-
-	_, err := lacework.DeleteGCPConfigIntegration(d.Id())
+	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
 	log.Printf("[INFO] Deleted GCP CFG integration with guid: %v\n", d.Id())
-
 	return nil
 }

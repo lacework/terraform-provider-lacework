@@ -63,12 +63,11 @@ func testAccCheckIntegrationGCPCFGDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-
 		if rs.Type != testAccIntegrationGCPCFGResourceType {
 			continue
 		}
 
-		response, err := lacework.GetGCPConfigIntegration(rs.Primary.ID)
+		response, err := lacework.Integrations.GetGcp(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
@@ -96,7 +95,7 @@ func testAccCheckIntegrationGCPCFGExists(resourceTypeAndName string) resource.Te
 			return fmt.Errorf("resource (%s) ID not set", resourceTypeAndName)
 		}
 
-		response, err := lacework.GetGCPConfigIntegration(rs.Primary.ID)
+		response, err := lacework.Integrations.GetGcp(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
