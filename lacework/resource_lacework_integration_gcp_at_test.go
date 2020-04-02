@@ -11,47 +11,42 @@ import (
 )
 
 const (
-	testAccIntegrationGcpCfgResourceType = "lacework_integration_gcp_cfg"
-	testAccIntegrationGcpCfgResourceName = "example"
+	testAccIntegrationGcpAtResourceType = "lacework_integration_gcp_at"
+	testAccIntegrationGcpAtResourceName = "example"
 
-	// Environment variables for testing GCP CFG
-	testAccIntegrationGcpEnvClientID      = "GCP_CLIENT_ID"
-	testAccIntegrationGcpEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
-	testAccIntegrationGcpEnvPrivateKey    = "GCP_PRIVATE_KEY"
-	testAccIntegrationGcpEnvClientEmail   = "GCP_CLIENT_EMAIL"
-	testAccIntegrationGcpEnvResourceLevel = "GCP_RESOURCE_LEVEL"
-	testAccIntegrationGcpEnvResourceID    = "GCP_RESOURCE_ID"
+	// Environment variables for testing GCP AT
+	testAccIntegrationGcpEnvSubscription = "GCP_SUBSCRIPTION"
 )
 
-func TestAccIntegrationGcpCfg(t *testing.T) {
+func TestAccIntegrationGcpAt(t *testing.T) {
 	resourceTypeAndName := fmt.Sprintf("%s.%s",
-		testAccIntegrationGcpCfgResourceType,
-		testAccIntegrationGcpCfgResourceName,
+		testAccIntegrationGcpAtResourceType,
+		testAccIntegrationGcpAtResourceName,
 	)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccIntegrationGcpCfgEnvVarsPreCheck(t)
+			testAccIntegrationGcpAtEnvVarsPreCheck(t)
 		},
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckIntegrationGcpCfgDestroy,
+		CheckDestroy: testAccCheckIntegrationGcpAtDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccIntegrationGcpCfgConfig(
+				Config: testAccIntegrationGcpAtConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationGcpCfgExists(resourceTypeAndName),
+					testAccCheckIntegrationGcpAtExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
 				),
 			},
 			{
-				Config: testAccIntegrationGcpCfgConfig(
+				Config: testAccIntegrationGcpAtConfig(
 					false,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationGcpCfgExists(resourceTypeAndName),
+					testAccCheckIntegrationGcpAtExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "false"),
 				),
 			},
@@ -59,11 +54,12 @@ func TestAccIntegrationGcpCfg(t *testing.T) {
 	})
 }
 
-func testAccCheckIntegrationGcpCfgDestroy(s *terraform.State) error {
+func testAccCheckIntegrationGcpAtDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccIntegrationGcpCfgResourceType {
+
+		if rs.Type != testAccIntegrationGcpAtResourceType {
 			continue
 		}
 
@@ -82,7 +78,7 @@ func testAccCheckIntegrationGcpCfgDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckIntegrationGcpCfgExists(resourceTypeAndName string) resource.TestCheckFunc {
+func testAccCheckIntegrationGcpAtExists(resourceTypeAndName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		lacework := testAccProvider.Meta().(*api.Client)
 
@@ -114,7 +110,7 @@ func testAccCheckIntegrationGcpCfgExists(resourceTypeAndName string) resource.Te
 	}
 }
 
-func testAccIntegrationGcpCfgEnvVarsPreCheck(t *testing.T) {
+func testAccIntegrationGcpAtEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccIntegrationGcpEnvClientID); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvClientID)
 	}
@@ -130,9 +126,12 @@ func testAccIntegrationGcpCfgEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccIntegrationGcpEnvResourceID); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvResourceID)
 	}
+	if v := os.Getenv(testAccIntegrationGcpEnvSubscription); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvSubscription)
+	}
 }
 
-func testAccIntegrationGcpCfgConfig(enabled bool) string {
+func testAccIntegrationGcpAtConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
     name = "Example-GCP-Integration"
@@ -144,11 +143,12 @@ resource "%s" "%s" {
         private_key = "%s"
     }
     resource_id = "%s"
-  %s
+    %s
+    subscription = "%s"
 }
 `,
-		testAccIntegrationGcpCfgResourceType,
-		testAccIntegrationGcpCfgResourceName,
+		testAccIntegrationGcpAtResourceType,
+		testAccIntegrationGcpAtResourceName,
 		enabled,
 		os.Getenv(testAccIntegrationGcpEnvClientID),
 		os.Getenv(testAccIntegrationGcpEnvPrivateKeyID),
@@ -158,11 +158,6 @@ resource "%s" "%s" {
 		resourceLevelAttrOrEmpty(
 			os.Getenv(testAccIntegrationGcpEnvResourceLevel),
 		),
+		os.Getenv(testAccIntegrationGcpEnvSubscription),
 	)
-}
-func resourceLevelAttrOrEmpty(s string) string {
-	if s == "" {
-		return ""
-	}
-	return fmt.Sprintf("resource_level = \"%s\"", s)
 }
