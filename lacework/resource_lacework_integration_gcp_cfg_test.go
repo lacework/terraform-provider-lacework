@@ -15,12 +15,12 @@ const (
 	testAccIntegrationGcpCfgResourceName = "example"
 
 	// Environment variables for testing GCP CFG
-	testAccIntegrationGcpCfgEnvClientID      = "GCP_CLIENT_ID"
-	testAccIntegrationGcpCfgEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
-	testAccIntegrationGcpCfgEnvPrivateKey    = "GCP_PRIVATE_KEY"
-	testAccIntegrationGcpCfgEnvClientEmail   = "GCP_CLIENT_EMAIL"
-	testAccIntegrationGcpCfgEnvResourceLevel = "GCP_RESOURCE_LEVEL"
-	testAccIntegrationGcpCfgEnvResourceID    = "GCP_RESOURCE_ID"
+	testAccIntegrationGcpEnvClientID      = "GCP_CLIENT_ID"
+	testAccIntegrationGcpEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
+	testAccIntegrationGcpEnvPrivateKey    = "GCP_PRIVATE_KEY"
+	testAccIntegrationGcpEnvClientEmail   = "GCP_CLIENT_EMAIL"
+	testAccIntegrationGcpEnvResourceLevel = "GCP_RESOURCE_LEVEL"
+	testAccIntegrationGcpEnvResourceID    = "GCP_RESOURCE_ID"
 )
 
 func TestAccIntegrationGcpCfg(t *testing.T) {
@@ -115,20 +115,20 @@ func testAccCheckIntegrationGcpCfgExists(resourceTypeAndName string) resource.Te
 }
 
 func testAccIntegrationGcpCfgEnvVarsPreCheck(t *testing.T) {
-	if v := os.Getenv(testAccIntegrationGcpCfgEnvClientID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvClientID)
+	if v := os.Getenv(testAccIntegrationGcpEnvClientID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvClientID)
 	}
-	if v := os.Getenv(testAccIntegrationGcpCfgEnvPrivateKeyID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvPrivateKeyID)
+	if v := os.Getenv(testAccIntegrationGcpEnvPrivateKeyID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvPrivateKeyID)
 	}
-	if v := os.Getenv(testAccIntegrationGcpCfgEnvPrivateKey); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvPrivateKey)
+	if v := os.Getenv(testAccIntegrationGcpEnvPrivateKey); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvPrivateKey)
 	}
-	if v := os.Getenv(testAccIntegrationGcpCfgEnvClientEmail); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvClientEmail)
+	if v := os.Getenv(testAccIntegrationGcpEnvClientEmail); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvClientEmail)
 	}
-	if v := os.Getenv(testAccIntegrationGcpCfgEnvResourceID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpCfgEnvResourceID)
+	if v := os.Getenv(testAccIntegrationGcpEnvResourceID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvResourceID)
 	}
 }
 
@@ -150,13 +150,13 @@ resource "%s" "%s" {
 		testAccIntegrationGcpCfgResourceType,
 		testAccIntegrationGcpCfgResourceName,
 		enabled,
-		os.Getenv(testAccIntegrationGcpCfgEnvClientID),
-		os.Getenv(testAccIntegrationGcpCfgEnvPrivateKeyID),
-		os.Getenv(testAccIntegrationGcpCfgEnvClientEmail),
-		os.Getenv(testAccIntegrationGcpCfgEnvPrivateKey),
-		os.Getenv(testAccIntegrationGcpCfgEnvResourceID),
+		os.Getenv(testAccIntegrationGcpEnvClientID),
+		os.Getenv(testAccIntegrationGcpEnvPrivateKeyID),
+		os.Getenv(testAccIntegrationGcpEnvClientEmail),
+		os.Getenv(testAccIntegrationGcpEnvPrivateKey),
+		os.Getenv(testAccIntegrationGcpEnvResourceID),
 		resourceLevelAttrOrEmpty(
-			os.Getenv(testAccIntegrationGcpCfgEnvResourceLevel),
+			os.Getenv(testAccIntegrationGcpEnvResourceLevel),
 		),
 	)
 }

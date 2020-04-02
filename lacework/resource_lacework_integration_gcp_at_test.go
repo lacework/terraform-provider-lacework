@@ -14,14 +14,8 @@ const (
 	testAccIntegrationGcpAtResourceType = "lacework_integration_gcp_at"
 	testAccIntegrationGcpAtResourceName = "example"
 
-	// Environment variables for testing GCP CFG
-	testAccIntegrationGcpAtEnvClientID      = "GCP_CLIENT_ID"
-	testAccIntegrationGcpAtEnvPrivateKeyID  = "GCP_PRIVATE_KEY_ID"
-	testAccIntegrationGcpAtEnvPrivateKey    = "GCP_PRIVATE_KEY"
-	testAccIntegrationGcpAtEnvClientEmail   = "GCP_CLIENT_EMAIL"
-	testAccIntegrationGcpAtEnvResourceLevel = "GCP_RESOURCE_LEVEL"
-	testAccIntegrationGcpAtEnvResourceID    = "GCP_RESOURCE_ID"
-	testAccIntegrationGcpAtEnvSubscription  = "GCP_SUBSCRIPTION"
+	// Environment variables for testing GCP AT
+	testAccIntegrationGcpEnvSubscription = "GCP_SUBSCRIPTION"
 )
 
 func TestAccIntegrationGcpAt(t *testing.T) {
@@ -117,23 +111,23 @@ func testAccCheckIntegrationGcpAtExists(resourceTypeAndName string) resource.Tes
 }
 
 func testAccIntegrationGcpAtEnvVarsPreCheck(t *testing.T) {
-	if v := os.Getenv(testAccIntegrationGcpAtEnvClientID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpAtEnvClientID)
+	if v := os.Getenv(testAccIntegrationGcpEnvClientID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvClientID)
 	}
-	if v := os.Getenv(testAccIntegrationGcpAtEnvPrivateKeyID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpAtEnvPrivateKeyID)
+	if v := os.Getenv(testAccIntegrationGcpEnvPrivateKeyID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvPrivateKeyID)
 	}
-	if v := os.Getenv(testAccIntegrationGcpAtEnvPrivateKey); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpAtEnvPrivateKey)
+	if v := os.Getenv(testAccIntegrationGcpEnvPrivateKey); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvPrivateKey)
 	}
-	if v := os.Getenv(testAccIntegrationGcpAtEnvClientEmail); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpAtEnvClientEmail)
+	if v := os.Getenv(testAccIntegrationGcpEnvClientEmail); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvClientEmail)
 	}
-	if v := os.Getenv(testAccIntegrationGcpAtEnvResourceID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpAtEnvResourceID)
+	if v := os.Getenv(testAccIntegrationGcpEnvResourceID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvResourceID)
 	}
-	if v := os.Getenv(testAccIntegrationGcpAtEnvSubscription); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpAtEnvSubscription)
+	if v := os.Getenv(testAccIntegrationGcpEnvSubscription); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcpEnvSubscription)
 	}
 }
 
@@ -156,14 +150,14 @@ resource "%s" "%s" {
 		testAccIntegrationGcpAtResourceType,
 		testAccIntegrationGcpAtResourceName,
 		enabled,
-		os.Getenv(testAccIntegrationGcpAtEnvClientID),
-		os.Getenv(testAccIntegrationGcpAtEnvPrivateKeyID),
-		os.Getenv(testAccIntegrationGcpAtEnvClientEmail),
-		os.Getenv(testAccIntegrationGcpAtEnvPrivateKey),
-		os.Getenv(testAccIntegrationGcpAtEnvResourceID),
+		os.Getenv(testAccIntegrationGcpEnvClientID),
+		os.Getenv(testAccIntegrationGcpEnvPrivateKeyID),
+		os.Getenv(testAccIntegrationGcpEnvClientEmail),
+		os.Getenv(testAccIntegrationGcpEnvPrivateKey),
+		os.Getenv(testAccIntegrationGcpEnvResourceID),
 		resourceLevelAttrOrEmpty(
-			os.Getenv(testAccIntegrationGcpAtEnvResourceLevel),
+			os.Getenv(testAccIntegrationGcpEnvResourceLevel),
 		),
-		os.Getenv(testAccIntegrationGcpAtEnvSubscription),
+		os.Getenv(testAccIntegrationGcpEnvSubscription),
 	)
 }
