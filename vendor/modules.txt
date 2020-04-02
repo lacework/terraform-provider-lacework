@@ -58,7 +58,7 @@ github.com/bgentry/go-netrc/netrc
 github.com/bgentry/speakeasy
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/fatih/color v1.7.0
+# github.com/fatih/color v1.9.0
 github.com/fatih/color
 # github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
@@ -99,7 +99,7 @@ github.com/hashicorp/go-uuid
 github.com/hashicorp/go-version
 # github.com/hashicorp/golang-lru v0.5.1
 github.com/hashicorp/golang-lru/simplelru
-# github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f
+# github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast
 github.com/hashicorp/hcl/hcl/parser
@@ -180,12 +180,12 @@ github.com/hashicorp/terraform-svchost/disco
 github.com/hashicorp/yamux
 # github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 github.com/jmespath/go-jmespath
-# github.com/lacework/go-sdk v0.0.0-20200325192400-7763190862c3
+# github.com/lacework/go-sdk v0.1.1
 ## explicit
 github.com/lacework/go-sdk/api
-# github.com/mattn/go-colorable v0.1.1
+# github.com/mattn/go-colorable v0.1.6
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.5
+# github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
 # github.com/mitchellh/cli v1.0.0
 github.com/mitchellh/cli
@@ -199,12 +199,14 @@ github.com/mitchellh/go-homedir
 github.com/mitchellh/go-testing-interface
 # github.com/mitchellh/go-wordwrap v1.0.0
 github.com/mitchellh/go-wordwrap
-# github.com/mitchellh/mapstructure v1.1.2
+# github.com/mitchellh/mapstructure v1.2.2
 github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.1
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
+# github.com/pkg/errors v0.9.1
+github.com/pkg/errors
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
 github.com/posener/complete/cmd
@@ -249,7 +251,18 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
+# go.uber.org/atomic v1.6.0
+go.uber.org/atomic
+# go.uber.org/multierr v1.5.0
+go.uber.org/multierr
+# go.uber.org/zap v1.14.1
+go.uber.org/zap
+go.uber.org/zap/buffer
+go.uber.org/zap/internal/bufferpool
+go.uber.org/zap/internal/color
+go.uber.org/zap/internal/exit
+go.uber.org/zap/zapcore
+# golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/cast5
@@ -259,7 +272,7 @@ golang.org/x/crypto/openpgp/elgamal
 golang.org/x/crypto/openpgp/errors
 golang.org/x/crypto/openpgp/packet
 golang.org/x/crypto/openpgp/s2k
-# golang.org/x/net v0.0.0-20191009170851-d66e71096ffb
+# golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/http/httpguts
@@ -274,7 +287,7 @@ golang.org/x/oauth2/google
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-# golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa
+# golang.org/x/sys v0.0.0-20200321134203-328b4cd54aae
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/secure/bidirule
