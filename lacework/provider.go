@@ -34,9 +34,10 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"lacework_integration_gcp_cfg": resourceLaceworkIntegrationGcpCfg(),
-			"lacework_integration_gcp_at":  resourceLaceworkIntegrationGcpAt(),
-			"lacework_integration_aws_cfg": resourceLaceworkIntegrationAwsCfg(),
+			"lacework_integration_gcp_cfg":   resourceLaceworkIntegrationGcpCfg(),
+			"lacework_integration_gcp_at":    resourceLaceworkIntegrationGcpAt(),
+			"lacework_integration_aws_cfg":   resourceLaceworkIntegrationAwsCfg(),
+			"lacework_integration_azure_cfg": resourceLaceworkIntegrationAzureCfg(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
