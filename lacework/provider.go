@@ -2,11 +2,13 @@ package lacework
 
 import (
 	"log"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 
 	"github.com/lacework/go-sdk/api"
+	"github.com/lacework/go-sdk/lwlogger"
 )
 
 // Provider returns a Lacework terraform.ResourceProvider
@@ -50,20 +52,33 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var (
-		account = d.Get("account").(string)
-		key     = d.Get("api_key").(string)
-		secret  = d.Get("api_secret").(string)
+		err      error
+		lacework *api.Client
+		account  = d.Get("account").(string)
+		key      = d.Get("api_key").(string)
+		secret   = d.Get("api_secret").(string)
 	)
 
-	// create a new Lacework api client
-	lacework, err := api.NewClient(
-		account,
-		api.WithApiKeys(key, secret),
-	)
-	if err != nil {
-		return nil, err
+	// create a new Lacework api client, verify if the terraform command
+	// was run with any logging mode, if so, pass it to the lacework client
+	logLevel := os.Getenv("TF_LOG")
+	if logLevel == "" {
+		lacework, err = api.NewClient(account, api.WithApiKeys(key, secret))
+	} else {
+		// validate that the log level is supported by the api client, if not,
+		// use the highest supported level just to help the user troubleshoot
+		if !lwlogger.ValidLevel(logLevel) {
+			log.Println("[INFO] Unsupported log level for the Lacework provider")
+			log.Println("[INFO] Using the 'DEBUG' as the default level")
+			logLevel = "DEBUG"
+		}
+
+		lacework, err = api.NewClient(
+			account,
+			api.WithApiKeys(key, secret),
+			api.WithLogLevelAndWriter(logLevel, log.Writer()),
+		)
 	}
 
-	log.Printf("[INFO] Lacework API client created successfully.")
-	return lacework, nil
+	return lacework, err
 }
