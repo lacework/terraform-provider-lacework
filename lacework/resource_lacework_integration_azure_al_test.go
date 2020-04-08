@@ -11,44 +11,42 @@ import (
 )
 
 const (
-	testAccIntegrationAzureCfgResourceType = "lacework_integration_azure_cfg"
-	testAccIntegrationAzureCfgResourceName = "example"
+	testAccIntegrationAzureActivityLogResourceType = "lacework_integration_azure_al"
+	testAccIntegrationAzureActivityLogResourceName = "example"
 
-	// Environment variables for testing AZURE integrations
-	testAccIntegrationAzureEnvTenantID     = "AZURE_TENANT_ID"
-	testAccIntegrationAzureEnvClientID     = "AZURE_CLIENT_ID"
-	testAccIntegrationAzureEnvClientSecret = "AZURE_CLIENT_SECRET"
+	// Environment variables for testing AZURE_AL_SEQ specifically
+	testAccIntegrationAzureEnvQueueUrl = "AZURE_QUEUE_URL"
 )
 
-func TestAccIntegrationAzureCfg(t *testing.T) {
+func TestAccIntegrationAzureActivityLog(t *testing.T) {
 	resourceTypeAndName := fmt.Sprintf("%s.%s",
-		testAccIntegrationAzureCfgResourceType,
-		testAccIntegrationAzureCfgResourceName,
+		testAccIntegrationAzureActivityLogResourceType,
+		testAccIntegrationAzureActivityLogResourceName,
 	)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccIntegrationAzureCfgEnvVarsPreCheck(t)
+			testAccIntegrationAzureActivityLogEnvVarsPreCheck(t)
 		},
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckIntegrationAzureCfgDestroy,
+		CheckDestroy: testAccCheckIntegrationAzureActivityLogDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccIntegrationAzureCfgConfig(
+				Config: testAccIntegrationAzureActivityLogConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationAzureCfgExists(resourceTypeAndName),
+					testAccCheckIntegrationAzureActivityLogExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
 				),
 			},
 			{
-				Config: testAccIntegrationAzureCfgConfig(
+				Config: testAccIntegrationAzureActivityLogConfig(
 					false,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationAzureCfgExists(resourceTypeAndName),
+					testAccCheckIntegrationAzureActivityLogExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "false"),
 				),
 			},
@@ -56,11 +54,11 @@ func TestAccIntegrationAzureCfg(t *testing.T) {
 	})
 }
 
-func testAccCheckIntegrationAzureCfgDestroy(s *terraform.State) error {
+func testAccCheckIntegrationAzureActivityLogDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccIntegrationAzureCfgResourceType {
+		if rs.Type != testAccIntegrationAzureActivityLogResourceType {
 			continue
 		}
 
@@ -79,7 +77,7 @@ func testAccCheckIntegrationAzureCfgDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckIntegrationAzureCfgExists(resourceTypeAndName string) resource.TestCheckFunc {
+func testAccCheckIntegrationAzureActivityLogExists(resourceTypeAndName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		lacework := testAccProvider.Meta().(*api.Client)
 
@@ -111,7 +109,10 @@ func testAccCheckIntegrationAzureCfgExists(resourceTypeAndName string) resource.
 	}
 }
 
-func testAccIntegrationAzureCfgEnvVarsPreCheck(t *testing.T) {
+func testAccIntegrationAzureActivityLogEnvVarsPreCheck(t *testing.T) {
+	if v := os.Getenv(testAccIntegrationAzureEnvQueueUrl); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAzureEnvQueueUrl)
+	}
 	if v := os.Getenv(testAccIntegrationAzureEnvTenantID); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAzureEnvTenantID)
 	}
@@ -123,22 +124,24 @@ func testAccIntegrationAzureCfgEnvVarsPreCheck(t *testing.T) {
 	}
 }
 
-func testAccIntegrationAzureCfgConfig(enabled bool) string {
+func testAccIntegrationAzureActivityLogConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
     name = "integration test"
     enabled = %t
     tenant_id = "%s"
+    queue_url = "%s"
     credentials {
         client_id = "%s"
         client_secret = "%s"
     }
 }
 `,
-		testAccIntegrationAzureCfgResourceType,
-		testAccIntegrationAzureCfgResourceName,
+		testAccIntegrationAzureActivityLogResourceType,
+		testAccIntegrationAzureActivityLogResourceName,
 		enabled,
 		os.Getenv(testAccIntegrationAzureEnvTenantID),
+		os.Getenv(testAccIntegrationAzureEnvQueueUrl),
 		os.Getenv(testAccIntegrationAzureEnvClientID),
 		os.Getenv(testAccIntegrationAzureEnvClientSecret),
 	)

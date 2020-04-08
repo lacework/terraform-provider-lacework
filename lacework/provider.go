@@ -40,6 +40,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_integration_gcp_at":    resourceLaceworkIntegrationGcpAt(),
 			"lacework_integration_aws_cfg":   resourceLaceworkIntegrationAwsCfg(),
 			"lacework_integration_azure_cfg": resourceLaceworkIntegrationAzureCfg(),
+			"lacework_integration_azure_al":  resourceLaceworkIntegrationAzureActivityLog(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
