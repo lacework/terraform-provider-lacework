@@ -11,43 +11,42 @@ import (
 )
 
 const (
-	testAccIntegrationAwsCfgResourceType = "lacework_integration_aws_cfg"
-	testAccIntegrationAwsCfgResourceName = "example"
+	testAccIntegrationAwsCloudTrailResourceType = "lacework_integration_aws_ct"
+	testAccIntegrationAwsCloudTrailResourceName = "example"
 
-	// Environment variables for testing AWS Integrations
-	testAccIntegrationAwsEnvRoleArn    = "AWS_ROLE_ARN"
-	testAccIntegrationAwsEnvExternalId = "AWS_EXTERNAL_ID"
+	// Environment variables for testing AWS_CT_SQS only
+	testAccIntegrationAwsEnvQueueUrl = "AWS_QUEUE_URL"
 )
 
-func TestAccIntegrationAwsCfg(t *testing.T) {
+func TestAccIntegrationAwsCloudTrail(t *testing.T) {
 	resourceTypeAndName := fmt.Sprintf("%s.%s",
-		testAccIntegrationAwsCfgResourceType,
-		testAccIntegrationAwsCfgResourceName,
+		testAccIntegrationAwsCloudTrailResourceType,
+		testAccIntegrationAwsCloudTrailResourceName,
 	)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccIntegrationAwsCfgEnvVarsPreCheck(t)
+			testAccIntegrationAwsCloudTrailEnvVarsPreCheck(t)
 		},
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckIntegrationAwsCfgDestroy,
+		CheckDestroy: testAccCheckIntegrationAwsCloudTrailDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccIntegrationAwsCfgConfig(
+				Config: testAccIntegrationAwsCloudTrailConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationAwsCfgExists(resourceTypeAndName),
+					testAccCheckIntegrationAwsCloudTrailExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
 				),
 			},
 			{
-				Config: testAccIntegrationAwsCfgConfig(
+				Config: testAccIntegrationAwsCloudTrailConfig(
 					false,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationAwsCfgExists(resourceTypeAndName),
+					testAccCheckIntegrationAwsCloudTrailExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "false"),
 				),
 			},
@@ -55,11 +54,11 @@ func TestAccIntegrationAwsCfg(t *testing.T) {
 	})
 }
 
-func testAccCheckIntegrationAwsCfgDestroy(s *terraform.State) error {
+func testAccCheckIntegrationAwsCloudTrailDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccIntegrationAwsCfgResourceType {
+		if rs.Type != testAccIntegrationAwsCloudTrailResourceType {
 			continue
 		}
 
@@ -78,7 +77,7 @@ func testAccCheckIntegrationAwsCfgDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckIntegrationAwsCfgExists(resourceTypeAndName string) resource.TestCheckFunc {
+func testAccCheckIntegrationAwsCloudTrailExists(resourceTypeAndName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		lacework := testAccProvider.Meta().(*api.Client)
 
@@ -110,7 +109,10 @@ func testAccCheckIntegrationAwsCfgExists(resourceTypeAndName string) resource.Te
 	}
 }
 
-func testAccIntegrationAwsCfgEnvVarsPreCheck(t *testing.T) {
+func testAccIntegrationAwsCloudTrailEnvVarsPreCheck(t *testing.T) {
+	if v := os.Getenv(testAccIntegrationAwsEnvQueueUrl); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAwsEnvQueueUrl)
+	}
 	if v := os.Getenv(testAccIntegrationAwsEnvRoleArn); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAwsEnvRoleArn)
 	}
@@ -119,20 +121,22 @@ func testAccIntegrationAwsCfgEnvVarsPreCheck(t *testing.T) {
 	}
 }
 
-func testAccIntegrationAwsCfgConfig(enabled bool) string {
+func testAccIntegrationAwsCloudTrailConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
     name = "integration test"
     enabled = %t
+    queue_url = %t
     credentials {
         role_arn = "%s"
         external_id = "%s"
     }
 }
 `,
-		testAccIntegrationAwsCfgResourceType,
-		testAccIntegrationAwsCfgResourceName,
+		testAccIntegrationAwsCloudTrailResourceType,
+		testAccIntegrationAwsCloudTrailResourceName,
 		enabled,
+		os.Getenv(testAccIntegrationAwsEnvQueueUrl),
 		os.Getenv(testAccIntegrationAwsEnvRoleArn),
 		os.Getenv(testAccIntegrationAwsEnvExternalId),
 	)
