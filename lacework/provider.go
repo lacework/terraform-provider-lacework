@@ -6,7 +6,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-
 	"github.com/lacework/go-sdk/api"
 	"github.com/lacework/go-sdk/lwlogger"
 )
@@ -39,6 +38,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_integration_gcp_cfg":   resourceLaceworkIntegrationGcpCfg(),
 			"lacework_integration_gcp_at":    resourceLaceworkIntegrationGcpAt(),
 			"lacework_integration_aws_cfg":   resourceLaceworkIntegrationAwsCfg(),
+			"lacework_integration_aws_ct":    resourceLaceworkIntegrationAwsCloudTrail(),
 			"lacework_integration_azure_cfg": resourceLaceworkIntegrationAzureCfg(),
 		},
 
