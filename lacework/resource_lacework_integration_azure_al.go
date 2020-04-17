@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+
 	"github.com/lacework/go-sdk/api"
 )
 
@@ -13,6 +14,11 @@ func resourceLaceworkIntegrationAzureActivityLog() *schema.Resource {
 		Read:   resourceLaceworkIntegrationAzureActivityLogRead,
 		Update: resourceLaceworkIntegrationAzureActivityLogUpdate,
 		Delete: resourceLaceworkIntegrationAzureActivityLogDelete,
+
+		Importer: &schema.ResourceImporter{
+			State: importLaceworkIntegration,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
