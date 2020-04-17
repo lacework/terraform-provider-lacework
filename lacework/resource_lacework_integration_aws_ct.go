@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+
 	"github.com/lacework/go-sdk/api"
 )
 
@@ -13,6 +14,11 @@ func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
 		Read:   resourceLaceworkIntegrationAwsCloudTrailRead,
 		Update: resourceLaceworkIntegrationAwsCloudTrailUpdate,
 		Delete: resourceLaceworkIntegrationAwsCloudTrailDelete,
+
+		Importer: &schema.ResourceImporter{
+			State: importLaceworkIntegration,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,

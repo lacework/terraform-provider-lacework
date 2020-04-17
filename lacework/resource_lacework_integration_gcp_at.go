@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+
 	"github.com/lacework/go-sdk/api"
 )
 
@@ -15,6 +16,11 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 		Read:   resourceLaceworkIntegrationGcpAtRead,
 		Update: resourceLaceworkIntegrationGcpAtUpdate,
 		Delete: resourceLaceworkIntegrationGcpAtDelete,
+
+		Importer: &schema.ResourceImporter{
+			State: importLaceworkIntegration,
+		},
+
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
