@@ -130,23 +130,27 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAzureIntegrationResponse(&response)
-	if err != nil {
-		return err
+	for _, integration := range response.Data {
+		if integration.IntgGuid == d.Id() {
+			d.Set("name", integration.Name)
+			d.Set("intg_guid", integration.IntgGuid)
+			d.Set("enabled", integration.Enabled == 1)
+			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+			d.Set("type_name", integration.TypeName)
+			d.Set("org_level", integration.IsOrg == 1)
+
+			creds := make(map[string]string)
+			creds["client_id"] = integration.Data.Credentials.ClientID
+			d.Set("credentials", []map[string]string{creds})
+			d.Set("tenant_id", integration.Data.TenantID)
+
+			log.Printf("[INFO] Read AZURE_CFG integration with guid: %v\n", integration.IntgGuid)
+			return nil
+		}
 	}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
-
-	log.Printf("[INFO] Read AZURE_CFG integration with guid: %v\n", integration.IntgGuid)
+	d.SetId("")
 	return nil
 }
 
