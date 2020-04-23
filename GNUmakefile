@@ -5,7 +5,6 @@ PKG_NAME=lacework
 DIR=~/.terraform.d/plugins
 GO_CLIENT_VERSION=master
 export GOFLAGS=-mod=vendor
-export GOPRIVATE=github.com/lacework/go-sdk
 
 default: build
 
