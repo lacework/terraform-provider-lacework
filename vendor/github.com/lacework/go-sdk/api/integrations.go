@@ -161,36 +161,35 @@ func (svc *IntegrationsService) listByType(iType integrationType, response inter
 }
 
 type commonIntegrationData struct {
-	IntgGuid             string `json:"INTG_GUID,omitempty"`
-	Name                 string `json:"NAME"`
-	CreatedOrUpdatedTime string `json:"CREATED_OR_UPDATED_TIME,omitempty"`
-	CreatedOrUpdatedBy   string `json:"CREATED_OR_UPDATED_BY,omitempty"`
-	Type                 string `json:"TYPE"`
-	Enabled              int    `json:"ENABLED"`
-	State                state  `json:"STATE,omitempty"`
-	IsOrg                int    `json:"IS_ORG,omitempty"`
-	TypeName             string `json:"TYPE_NAME,omitempty"`
+	IntgGuid             string            `json:"INTG_GUID,omitempty"`
+	Name                 string            `json:"NAME"`
+	CreatedOrUpdatedTime string            `json:"CREATED_OR_UPDATED_TIME,omitempty"`
+	CreatedOrUpdatedBy   string            `json:"CREATED_OR_UPDATED_BY,omitempty"`
+	Type                 string            `json:"TYPE"`
+	Enabled              int               `json:"ENABLED"`
+	State                *IntegrationState `json:"STATE,omitempty"`
+	IsOrg                int               `json:"IS_ORG,omitempty"`
+	TypeName             string            `json:"TYPE_NAME,omitempty"`
 }
 
-func (iData commonIntegrationData) Status() string {
-	if iData.Enabled == 1 {
+func (c commonIntegrationData) Status() string {
+	if c.Enabled == 1 {
 		return "Enabled"
 	}
 	return "Disabled"
 }
 
-type state struct {
-	Ok                 bool   `json:"ok"`
-	LastUpdatedTime    string `json:"lastUpdatedTime"`
-	LastSuccessfulTime string `json:"lastSuccessfulTime"`
-}
-
-func (s state) String() string {
-	if s.Ok {
+func (c commonIntegrationData) StateString() string {
+	if c.State != nil && c.State.Ok {
 		return "Ok"
 	}
 	return "Check"
+}
 
+type IntegrationState struct {
+	Ok                 bool   `json:"ok"`
+	LastUpdatedTime    string `json:"lastUpdatedTime"`
+	LastSuccessfulTime string `json:"lastSuccessfulTime"`
 }
 
 type IntegrationsResponse struct {
@@ -207,7 +206,7 @@ func (integrations *IntegrationsResponse) Table() [][]string {
 			idata.Name,
 			idata.Type,
 			idata.Status(),
-			idata.State.String(),
+			idata.StateString(),
 		})
 	}
 	return out
