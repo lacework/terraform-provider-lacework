@@ -16,7 +16,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk v1.9.1
 	github.com/hashicorp/terraform-svchost v0.0.0-20191119180714-d2e4933b9136 // indirect
 	github.com/hashicorp/yamux v0.0.0-20190923154419-df201c70410d // indirect
-	github.com/lacework/go-sdk v0.1.3
+	github.com/lacework/go-sdk v0.1.7
 	github.com/mitchellh/cli v1.1.1 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.0 // indirect
 	github.com/oklog/run v1.1.0 // indirect
