@@ -178,14 +178,19 @@ func resourceLaceworkIntegrationGcpAtRead(d *schema.ResourceData, meta interface
 			d.Set("name", integration.Name)
 			d.Set("intg_guid", integration.IntgGuid)
 			d.Set("enabled", integration.Enabled == 1)
-			d.Set("resource_level", integration.Data.IdType)
-			d.Set("resource_id", integration.Data.ID)
-			d.Set("subscription", integration.Data.SubscriptionName)
-
 			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
+
+			creds := make(map[string]string)
+			creds["client_id"] = integration.Data.Credentials.ClientId
+			creds["client_email"] = integration.Data.Credentials.ClientEmail
+			creds["private_key_id"] = integration.Data.Credentials.PrivateKeyId
+			d.Set("credentials", []map[string]string{creds})
+			d.Set("resource_level", integration.Data.IdType)
+			d.Set("resource_id", integration.Data.ID)
+			d.Set("subscription", integration.Data.SubscriptionName)
 
 			log.Printf("[INFO] Read GCP_AT integration with guid: %v\n", integration.IntgGuid)
 			return nil

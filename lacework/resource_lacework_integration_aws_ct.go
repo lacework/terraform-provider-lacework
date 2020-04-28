@@ -130,23 +130,28 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsIntegrationResponse(&response)
-	if err != nil {
-		return err
+	for _, integration := range response.Data {
+		if integration.IntgGuid == d.Id() {
+			d.Set("name", integration.Name)
+			d.Set("intg_guid", integration.IntgGuid)
+			d.Set("enabled", integration.Enabled == 1)
+			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+			d.Set("type_name", integration.TypeName)
+			d.Set("org_level", integration.IsOrg == 1)
+
+			creds := make(map[string]string)
+			creds["role_arn"] = integration.Data.Credentials.RoleArn
+			creds["external_id"] = integration.Data.Credentials.ExternalId
+			d.Set("credentials", []map[string]string{creds})
+			d.Set("queue_url", integration.Data.QueueUrl)
+
+			log.Printf("[INFO] Read AWS_CFG integration with guid: %v\n", integration.IntgGuid)
+			return nil
+		}
 	}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
-
-	log.Printf("[INFO] Read AWS_CFG integration with guid: %v\n", integration.IntgGuid)
+	d.SetId("")
 	return nil
 }
 
