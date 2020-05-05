@@ -8,7 +8,7 @@ description: |-
 # lacework\_integration\_azure\_at
 
 Use this resource to configure an Azure Activity Log integration to analyze Activity Log
-activity for monitoring cloud account security.
+for monitoring cloud account security.
 
 ## Example Usage
 
