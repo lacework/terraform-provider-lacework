@@ -32,8 +32,8 @@ The following arguments are supported in the `provider` block:
 * `account` - (Required) This is the Lacework account subdomain of URL (i.e. `<ACCOUNT>`
   .lacework.net). It can also be sourced from the `LW_ACCOUNT` environment variable.
 
-* `api_key` - (Required) This is the Lacework API access key. It can also be sourced
+* `api_key` - (Required) This is a Lacework API access key. It can also be sourced
   from the `LW_API_KEY` environment variable.
 
-* `api_key` - (Required) This is the Lacework API access secret. It can also be sourced
+* `api_key` - (Required) This is a Lacework API access secret. It can also be sourced
   from the `LW_API_SECRET` environment variable.
