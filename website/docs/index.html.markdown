@@ -14,9 +14,9 @@ The Lacework provider is used to interact with the Lacework cloud security platf
 ```hcl
 # Configure the Lacework Provider
 provider "lacework" {
-  account     = "${var.lacework_account}"
-  api_key     = "${var.lacework_api_key}"
-  api_secret  = "${var.lacework_api_secret}"
+  account     = var.lacework_account
+  api_key     = var.lacework_api_key
+  api_secret  = var.lacework_api_secret
 }
 
 # Connect an AWS account to Lacework for configuration and compliance assessment
@@ -35,5 +35,7 @@ The following arguments are supported in the `provider` block:
 * `api_key` - (Required) This is a Lacework API access key. It can also be sourced
   from the `LW_API_KEY` environment variable.
 
-* `api_key` - (Required) This is a Lacework API access secret. It can also be sourced
+* `api_secret` - (Required) This is a Lacework API access secret. It can also be sourced
   from the `LW_API_SECRET` environment variable.
+
+-> **Note:** To generate a set of API access keys follow [this documentation](https://support.lacework.com/hc/en-us/articles/360011403853-Generate-API-Access-Keys-and-Tokens).
