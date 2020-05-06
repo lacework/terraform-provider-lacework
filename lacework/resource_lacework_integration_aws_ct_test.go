@@ -127,7 +127,7 @@ func testAccIntegrationAwsCloudTrailConfig(enabled bool) string {
 resource "%s" "%s" {
     name = "integration test"
     enabled = %t
-    queue_url = %t
+    queue_url = %s
     credentials {
         role_arn = "%s"
         external_id = "%s"
