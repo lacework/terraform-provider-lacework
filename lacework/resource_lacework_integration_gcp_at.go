@@ -121,11 +121,11 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 	data := api.NewGcpAuditLogIntegration(d.Get("name").(string),
 		api.GcpIntegrationData{
 			ID:     d.Get("resource_id").(string),
-			IdType: resourceLevel.String(),
+			IDType: resourceLevel.String(),
 			Credentials: api.GcpCredentials{
-				ClientId:     d.Get("credentials.0.client_id").(string),
+				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
+				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
 				PrivateKey:   d.Get("credentials.0.private_key").(string),
 			},
 			SubscriptionName: d.Get("subscription").(string),
@@ -147,7 +147,7 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
 		d.Set("enabled", integration.Enabled == 1)
-		d.Set("resource_level", integration.Data.IdType)
+		d.Set("resource_level", integration.Data.IDType)
 		d.Set("resource_id", integration.Data.ID)
 		d.Set("subscription", integration.Data.SubscriptionName)
 
@@ -184,11 +184,11 @@ func resourceLaceworkIntegrationGcpAtRead(d *schema.ResourceData, meta interface
 			d.Set("org_level", integration.IsOrg == 1)
 
 			creds := make(map[string]string)
-			creds["client_id"] = integration.Data.Credentials.ClientId
+			creds["client_id"] = integration.Data.Credentials.ClientID
 			creds["client_email"] = integration.Data.Credentials.ClientEmail
-			creds["private_key_id"] = integration.Data.Credentials.PrivateKeyId
+			creds["private_key_id"] = integration.Data.Credentials.PrivateKeyID
 			d.Set("credentials", []map[string]string{creds})
-			d.Set("resource_level", integration.Data.IdType)
+			d.Set("resource_level", integration.Data.IDType)
 			d.Set("resource_id", integration.Data.ID)
 			d.Set("subscription", integration.Data.SubscriptionName)
 
@@ -214,11 +214,11 @@ func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interfa
 	data := api.NewGcpAuditLogIntegration(d.Get("name").(string),
 		api.GcpIntegrationData{
 			ID:     d.Get("resource_id").(string),
-			IdType: resourceLevel.String(),
+			IDType: resourceLevel.String(),
 			Credentials: api.GcpCredentials{
-				ClientId:     d.Get("credentials.0.client_id").(string),
+				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
+				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
 				PrivateKey:   d.Get("credentials.0.private_key").(string),
 			},
 			SubscriptionName: d.Get("subscription").(string),
@@ -242,7 +242,7 @@ func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interfa
 			d.Set("name", integration.Name)
 			d.Set("intg_guid", integration.IntgGuid)
 			d.Set("enabled", integration.Enabled == 1)
-			d.Set("resource_level", integration.Data.IdType)
+			d.Set("resource_level", integration.Data.IDType)
 			d.Set("resource_id", integration.Data.ID)
 			d.Set("subscription", integration.Data.SubscriptionName)
 

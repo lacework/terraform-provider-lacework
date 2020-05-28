@@ -51,22 +51,19 @@ func (g gcpResourceLevel) String() string {
 //     return err
 //   }
 //
-//   gcp, err := api.NewGcpIntegration("abc",
+//   gcp := api.NewGcpIntegration("abc",
 //     api.GcpCfgIntegration,
 //     api.GcpIntegrationData{
 //       ID: "1234",
-//       IdType: "id_type",
+//       IDType: api.GcpProjectIntegration.String(),
 //       Credentials: api.GcpCredentials{
-//         ClientId: "id",
+//         ClientID: "id",
 //         ClientEmail: "email",
-//         PrivateKeyId: "key_id",
+//         PrivateKeyID: "key_id",
 //         PrivateKey: "key",
 //       },
 //     },
 //   )
-//   if err != nil {
-//     return err
-//   }
 //
 //   client.Integrations.CreateGcp(gcp)
 //
@@ -154,18 +151,18 @@ type GcpIntegration struct {
 
 type GcpIntegrationData struct {
 	ID          string         `json:"ID"`
-	IdType      string         `json:"ID_TYPE"`
-	Credentials GcpCredentials `json:"CREDENTIALS"`
+	IDType      string         `json:"ID_TYPE" mapstructure:"ID_TYPE"`
+	Credentials GcpCredentials `json:"CREDENTIALS" mapstructure:"CREDENTIALS"`
 
 	// SubscriptionName is a field that exists and is required for the GCP_AT_SES
 	// integration, though, it doesn't exist for GCP_CFG integrations, that's why
 	// we omit it if empty
-	SubscriptionName string `json:"SUBSCRIPTION_NAME,omitempty"`
+	SubscriptionName string `json:"SUBSCRIPTION_NAME,omitempty" mapstructure:"SUBSCRIPTION_NAME"`
 }
 
 type GcpCredentials struct {
-	ClientId     string `json:"CLIENT_ID"`
-	ClientEmail  string `json:"CLIENT_EMAIL"`
-	PrivateKeyId string `json:"PRIVATE_KEY_ID"`
-	PrivateKey   string `json:"PRIVATE_KEY"`
+	ClientID     string `json:"CLIENT_ID" mapstructure:"CLIENT_ID"`
+	ClientEmail  string `json:"CLIENT_EMAIL" mapstructure:"CLIENT_EMAIL"`
+	PrivateKeyID string `json:"PRIVATE_KEY_ID" mapstructure:"PRIVATE_KEY_ID"`
+	PrivateKey   string `json:"PRIVATE_KEY" mapstructure:"PRIVATE_KEY"`
 }
