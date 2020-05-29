@@ -79,7 +79,7 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 			api.AwsIntegrationData{
 				Credentials: api.AwsIntegrationCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
-					ExternalId: d.Get("credentials.0.external_id").(string),
+					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
 			},
 		)
@@ -138,7 +138,7 @@ func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interfac
 
 			creds := make(map[string]string)
 			creds["role_arn"] = integration.Data.Credentials.RoleArn
-			creds["external_id"] = integration.Data.Credentials.ExternalId
+			creds["external_id"] = integration.Data.Credentials.ExternalID
 			d.Set("credentials", []map[string]string{creds})
 
 			log.Printf("[INFO] Read AWS_CFG integration with guid: %v\n", integration.IntgGuid)
@@ -158,7 +158,7 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 			api.AwsIntegrationData{
 				Credentials: api.AwsIntegrationCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
-					ExternalId: d.Get("credentials.0.external_id").(string),
+					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
 			},
 		)
