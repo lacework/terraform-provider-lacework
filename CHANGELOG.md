@@ -1,4 +1,4 @@
-# 0.1.0 (Unreleased)
+# 0.1.0 (June 02, 2020)
 
 ## New Resources
 
