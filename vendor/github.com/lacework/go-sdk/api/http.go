@@ -71,6 +71,12 @@ func (c *Client) NewRequest(method string, apiURL string, body io.Reader) (*http
 		request.Header.Set(k, v)
 	}
 
+	// add all global headers that the client has configured,
+	// by default we set only the User-Agent header
+	for k, v := range c.headers {
+		request.Header.Set(k, v)
+	}
+
 	// parse and encode query string values
 	values := request.URL.Query()
 	request.URL.RawQuery = values.Encode()
@@ -79,7 +85,7 @@ func (c *Client) NewRequest(method string, apiURL string, body io.Reader) (*http
 		zap.String("method", request.Method),
 		zap.String("url", c.baseURL.String()),
 		zap.String("endpoint", apiPath.String()),
-		zap.Reflect("headers", headers),
+		zap.Reflect("headers", c.httpHeadersSniffer(request.Header)),
 		zap.String("body", c.httpRequestBodySniffer(request)),
 	)
 
@@ -148,23 +154,33 @@ func (c *Client) RequestEncoderDecoder(method, path string, data, v interface{})
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	response, err := c.c.Do(req)
 	if err == nil {
-		c.log.Debug("response",
+		c.log.Info("response",
 			zap.String("from_req_url", req.URL.String()),
 			zap.Int("code", response.StatusCode),
 			zap.String("proto", response.Proto),
-			zap.Reflect("headers", response.Header),
+			zap.Reflect("headers", c.httpHeadersSniffer(response.Header)),
 			zap.String("body", c.httpResponseBodySniffer(response)),
 		)
 	}
 	return response, err
 }
 
+// httpHeadersSniffer is only useful to avoid logging out the headers of a request
+// or response when the log level is set to INFO
+func (c *Client) httpHeadersSniffer(headers interface{}) interface{} {
+	if !c.debugMode() {
+		// prevents headers to be displayed if we are not in DEBUG mode
+		return "suppressed"
+	}
+	return headers
+}
+
 // httpRequestBodySniffer a request sniffer, it reads the body from the
 // provided request without closing it (use only for debugging purposes)
 func (c *Client) httpRequestBodySniffer(r *http.Request) string {
 	if !c.debugMode() {
-		// prevents sniffing the request if we are not in debug mode
-		return ""
+		// prevents sniffing the request if we are not in DEBUG mode
+		return "suppressed"
 	}
 
 	if r.Body == nil || r.Body == http.NoBody {
@@ -182,8 +198,8 @@ func (c *Client) httpRequestBodySniffer(r *http.Request) string {
 // provided response without closing it (use only for debugging purposes)
 func (c *Client) httpResponseBodySniffer(r *http.Response) string {
 	if !c.debugMode() {
-		// prevents sniffing the response if we are not in debug mode
-		return ""
+		// prevents sniffing the response if we are not in DEBUG mode
+		return "suppressed"
 	}
 
 	if r.Body == nil || r.ContentLength == 0 {

@@ -18,7 +18,11 @@
 
 package api
 
-import "fmt"
+import (
+	"fmt"
+
+	"go.uber.org/zap"
+)
 
 const (
 	apiIntegrations       = "external/integrations"
@@ -32,6 +36,16 @@ const (
 	apiVulnerabilitiesReportFromID     = "external/vulnerabilities/container/imageId/%s"
 	apiVulnerabilitiesReportFromDigest = "external/vulnerabilities/container/imageDigest/%s"
 
+	apiComplianceAwsLatestReport        = "external/compliance/aws/GetLatestComplianceReport?AWS_ACCOUNT_ID=%s"
+	apiComplianceGcpLatestReport        = "external/compliance/gcp/GetLatestComplianceReport?GCP_ORG_ID=%s&GCP_PROJ_ID=%s"
+	apiComplianceGcpListProjects        = "external/compliance/gcp/ListProjectsForOrganization?GCP_ORG_ID=%s"
+	apiComplianceAzureLatestReport      = "external/compliance/azure/GetLatestComplianceReport?AZURE_TENANT_ID=%s&AZURE_SUBS_ID=%s"
+	apiComplianceAzureListSubscriptions = "external/compliance/azure/ListSubscriptionsForTenant?AZURE_TENANT_ID=%s"
+
+	apiRunReportGcp   = "external/runReport/gcp/%s"
+	apiRunReportAws   = "external/runReport/aws/%s"
+	apiRunReportAzure = "external/runReport/azure/%s"
+
 	apiEventsDetails   = "external/events/GetEventDetails"
 	apiEventsDateRange = "external/events/GetEventsForDateRange"
 )
@@ -39,6 +53,7 @@ const (
 // WithApiV2 configures the client to use the API version 2 (/api/v2)
 func WithApiV2() Option {
 	return clientFunc(func(c *Client) error {
+		c.log.Debug("setting up client", zap.String("api_version", "v2"))
 		c.apiVersion = "v2"
 		return nil
 	})

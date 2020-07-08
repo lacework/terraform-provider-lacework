@@ -21,6 +21,8 @@ package api
 import (
 	"fmt"
 	"strings"
+
+	"github.com/lacework/go-sdk/internal/array"
 )
 
 // VulnerabilitiesService is a service that interacts with the vulnerabilities
@@ -28,6 +30,9 @@ import (
 type VulnerabilitiesService struct {
 	client *Client
 }
+
+// ValidVulSeverities is a list of all valid severities in a vulnerability report
+var ValidVulSeverities = []string{"critical", "high", "medium", "low", "info"}
 
 // Scan triggers a vulnerability scan to the provider registry, repository, and
 // tag provided. This function calls the underlaying API endpoint that assumes
@@ -139,15 +144,15 @@ func (res *VulContainerReportResponse) CheckStatus() string {
 }
 
 type VulContainerReport struct {
-	TotalVulnerabilities    int32             `json:"total_vulnerabilities"`
-	CriticalVulnerabilities int32             `json:"critical_vulnerabilities"`
-	HighVulnerabilities     int32             `json:"high_vulnerabilities"`
-	MediumVulnerabilities   int32             `json:"medium_vulnerabilities"`
-	LowVulnerabilities      int32             `json:"low_vulnerabilities"`
-	InfoVulnerabilities     int32             `json:"info_vulnerabilities"`
-	FixableVulnerabilities  int32             `json:"fixable_vulnerabilities"`
-	LastEvaluationTime      string            `json:"last_evaluation_time"`
-	Image                   vulContainerImage `json:"image"`
+	TotalVulnerabilities    int32              `json:"total_vulnerabilities"`
+	CriticalVulnerabilities int32              `json:"critical_vulnerabilities"`
+	HighVulnerabilities     int32              `json:"high_vulnerabilities"`
+	MediumVulnerabilities   int32              `json:"medium_vulnerabilities"`
+	LowVulnerabilities      int32              `json:"low_vulnerabilities"`
+	InfoVulnerabilities     int32              `json:"info_vulnerabilities"`
+	FixableVulnerabilities  int32              `json:"fixable_vulnerabilities"`
+	LastEvaluationTime      string             `json:"last_evaluation_time,omitempty"`
+	Image                   *VulContainerImage `json:"image,omitempty"`
 
 	// @afiune these two parameters, Status and Message will appear when
 	// the vulnerability scan is still running. ugh. why?
@@ -162,24 +167,11 @@ type VulContainerReport struct {
 	//LastEvaluationTime      time.Time         `json:"last_evaluation_time"`
 }
 
-func (report *VulContainerReport) VulCountsTable() [][]string {
-	return [][]string{
-		[]string{"Critical", fmt.Sprint(report.CriticalVulnerabilities),
-			fmt.Sprint(report.VulFixableCount("critical"))},
-		[]string{"High", fmt.Sprint(report.HighVulnerabilities),
-			fmt.Sprint(report.VulFixableCount("high"))},
-		[]string{"Medium", fmt.Sprint(report.MediumVulnerabilities),
-			fmt.Sprint(report.VulFixableCount("medium"))},
-		[]string{"Low", fmt.Sprint(report.LowVulnerabilities),
-			fmt.Sprint(report.VulFixableCount("low"))},
-		[]string{"Info", fmt.Sprint(report.InfoVulnerabilities),
-			fmt.Sprint(report.VulFixableCount("info"))},
-	}
-}
-
 func (report *VulContainerReport) VulFixableCount(severity string) int32 {
-	// @afiune check valid severity
 	severity = strings.ToLower(severity)
+	if !array.ContainsStr(ValidVulSeverities, severity) {
+		return 0
+	}
 
 	if len(report.Image.ImageLayers) == 0 {
 		return 0
@@ -198,35 +190,9 @@ func (report *VulContainerReport) VulFixableCount(severity string) int32 {
 	return fixable
 }
 
-type vulContainerImage struct {
-	ImageInfo   vulContainerImageInfo    `json:"image_info"`
-	ImageLayers []vulContainerImageLayer `json:"image_layers"`
-}
-
-func (image *vulContainerImage) Table() [][]string {
-	info := image.ImageInfo
-	return [][]string{
-		[]string{"ID", info.ImageID},
-		[]string{"Digest", info.ImageDigest},
-		[]string{"Registry", info.Registry},
-		[]string{"Repository", info.Repository},
-		[]string{"Size", ByteCountBinary(info.Size)},
-		[]string{"Created At", info.CreatedTime},
-		[]string{"Tags", strings.Join(info.Tags, ",")},
-	}
-}
-
-func ByteCountBinary(b int64) string {
-	const unit = 1024
-	if b < unit {
-		return fmt.Sprintf("%d B", b)
-	}
-	div, exp := int64(unit), 0
-	for n := b / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
+type VulContainerImage struct {
+	ImageInfo   *vulContainerImageInfo   `json:"image_info,omitempty"`
+	ImageLayers []vulContainerImageLayer `json:"image_layers,omitempty"`
 }
 
 type vulContainerImageInfo struct {
