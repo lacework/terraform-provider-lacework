@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -54,18 +55,22 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	var (
-		err      error
-		lacework *api.Client
-		account  = d.Get("account").(string)
-		key      = d.Get("api_key").(string)
-		secret   = d.Get("api_secret").(string)
+		err       error
+		lacework  *api.Client
+		account   = d.Get("account").(string)
+		key       = d.Get("api_key").(string)
+		secret    = d.Get("api_secret").(string)
+		userAgent = fmt.Sprintf("Terraform/%s", version)
 	)
 
 	// create a new Lacework api client, verify if the terraform command
 	// was run with any logging mode, if so, pass it to the lacework client
 	logLevel := os.Getenv("TF_LOG")
 	if logLevel == "" {
-		lacework, err = api.NewClient(account, api.WithApiKeys(key, secret))
+		lacework, err = api.NewClient(account,
+			api.WithApiKeys(key, secret),
+			api.WithHeader("User-Agent", userAgent),
+		)
 	} else {
 		// validate that the log level is supported by the api client, if not,
 		// use the highest supported level just to help the user troubleshoot
@@ -75,9 +80,9 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 			logLevel = "DEBUG"
 		}
 
-		lacework, err = api.NewClient(
-			account,
+		lacework, err = api.NewClient(account,
 			api.WithApiKeys(key, secret),
+			api.WithHeader("User-Agent", userAgent),
 			api.WithLogLevelAndWriter(logLevel, log.Writer()),
 		)
 	}
