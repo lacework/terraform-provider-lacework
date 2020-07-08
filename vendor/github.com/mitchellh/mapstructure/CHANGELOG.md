@@ -1,3 +1,11 @@
+## 1.3.2
+
+* Decode into interface type with a struct value is supported [GH-187]
+
+## 1.3.1
+
+* Squash should only squash embedded structs. [GH-194]
+
 ## 1.3.0
 
 * Added `",omitempty"` support. This will ignore zero values in the source
