@@ -1,4 +1,4 @@
-# 0.1.1 (Unreleased)
+# 0.1.1 (July 09, 2020)
 
 ## Improvements
 * Add `User-Agent` header for Lacework API backend metrics
