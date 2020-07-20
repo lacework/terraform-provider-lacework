@@ -43,6 +43,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_integration_aws_ct":    resourceLaceworkIntegrationAwsCloudTrail(),
 			"lacework_integration_azure_cfg": resourceLaceworkIntegrationAzureCfg(),
 			"lacework_integration_azure_al":  resourceLaceworkIntegrationAzureActivityLog(),
+			"lacework_alert_channel_slack":   resourceLaceworkAlertChannelSlack(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
