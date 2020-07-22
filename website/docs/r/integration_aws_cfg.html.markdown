@@ -33,8 +33,8 @@ The following arguments are supported:
 
 `credentials` supports the following arguments:
 
-* `role_arn`: (Required) The ARN of the IAM role.
-* `external_id`: (Required) The external ID for the IAM role.
+* `role_arn` - (Required) The ARN of the IAM role.
+* `external_id` - (Required) The external ID for the IAM role.
 
 ## Import
 
