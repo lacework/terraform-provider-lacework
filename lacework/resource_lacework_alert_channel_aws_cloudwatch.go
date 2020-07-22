@@ -3,18 +3,19 @@ package lacework
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
 )
 
-func resourceLaceworkAlertChannelSlack() *schema.Resource {
+func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceLaceworkAlertChannelSlackCreate,
-		Read:   resourceLaceworkAlertChannelSlackRead,
-		Update: resourceLaceworkAlertChannelSlackUpdate,
-		Delete: resourceLaceworkAlertChannelSlackDelete,
+		Create: resourceLaceworkAlertChannelAwsCloudWatchCreate,
+		Read:   resourceLaceworkAlertChannelAwsCloudWatchRead,
+		Update: resourceLaceworkAlertChannelAwsCloudWatchUpdate,
+		Delete: resourceLaceworkAlertChannelAwsCloudWatchDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: importLaceworkIntegration,
@@ -34,9 +35,29 @@ func resourceLaceworkAlertChannelSlack() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
-			"slack_url": {
+			"event_bus_arn": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"group_issues_by": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "EVENTS",
+				StateFunc: func(v interface{}) string {
+					return strings.Title(strings.ToLower(v.(string)))
+				},
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch strings.ToUpper(value.(string)) {
+					case "EVENTS", "RESOURCES":
+						return nil, nil
+					default:
+						return nil, []error{
+							fmt.Errorf(
+								"%s: can only be either 'EVENTS' or 'RESOURCES' (default: EVENTS)", key,
+							),
+						}
+					}
+				},
 			},
 			"min_alert_severity": {
 				Type:     schema.TypeInt,
@@ -74,28 +95,29 @@ func resourceLaceworkAlertChannelSlack() *schema.Resource {
 	}
 }
 
-func resourceLaceworkAlertChannelSlackCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		slack    = api.NewSlackAlertChannel(d.Get("name").(string),
-			api.SlackChannelData{
-				SlackUrl:         d.Get("slack_url").(string),
+		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
+			api.AwsCloudWatchData{
+				EventBusArn:      d.Get("event_bus_arn").(string),
+				IssueGrouping:    d.Get("group_issues_by").(string),
 				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
 			},
 		)
 	)
 	if !d.Get("enabled").(bool) {
-		slack.Enabled = 0
+		alert.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.SlackChannelIntegration, slack)
-	response, err := lacework.Integrations.CreateSlackAlertChannel(slack)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
+	response, err := lacework.Integrations.CreateAwsCloudWatchAlertChannel(alert)
 	if err != nil {
 		return err
 	}
 
 	log.Println("[INFO] Verifying server response data")
-	err = validateSlackAlertChannelResponse(&response)
+	err = validateAwsCloudWatchAlertChannelResponse(&response)
 	if err != nil {
 		return err
 	}
@@ -111,15 +133,15 @@ func resourceLaceworkAlertChannelSlackCreate(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.SlackChannelIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCloudWatchIntegration, integration.IntgGuid)
 	return nil
 }
 
-func resourceLaceworkAlertChannelSlackRead(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.SlackChannelIntegration, d.Id())
-	response, err := lacework.Integrations.GetSlackAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	response, err := lacework.Integrations.GetAwsCloudWatchAlertChannel(d.Id())
 	if err != nil {
 		return err
 	}
@@ -134,11 +156,12 @@ func resourceLaceworkAlertChannelSlackRead(d *schema.ResourceData, meta interfac
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
 
-			d.Set("slack_url", integration.Data.SlackUrl)
+			d.Set("event_bus_arn", integration.Data.EventBusArn)
+			d.Set("group_issues_by", integration.Data.IssueGrouping)
 			d.Set("min_alert_severity", integration.Data.MinAlertSeverity)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
-				api.SlackChannelIntegration, integration.IntgGuid)
+				api.AwsCloudWatchIntegration, integration.IntgGuid)
 			return nil
 		}
 	}
@@ -147,31 +170,32 @@ func resourceLaceworkAlertChannelSlackRead(d *schema.ResourceData, meta interfac
 	return nil
 }
 
-func resourceLaceworkAlertChannelSlackUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		slack    = api.NewSlackAlertChannel(d.Get("name").(string),
-			api.SlackChannelData{
-				SlackUrl:         d.Get("slack_url").(string),
+		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
+			api.AwsCloudWatchData{
+				EventBusArn:      d.Get("event_bus_arn").(string),
+				IssueGrouping:    d.Get("group_issues_by").(string),
 				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
 			},
 		)
 	)
 
 	if !d.Get("enabled").(bool) {
-		slack.Enabled = 0
+		alert.Enabled = 0
 	}
 
-	slack.IntgGuid = d.Id()
+	alert.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.SlackChannelIntegration, slack)
-	response, err := lacework.Integrations.UpdateSlackAlertChannel(slack)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
+	response, err := lacework.Integrations.UpdateAwsCloudWatchAlertChannel(alert)
 	if err != nil {
 		return err
 	}
 
 	log.Println("[INFO] Verifying server response data")
-	err = validateSlackAlertChannelResponse(&response)
+	err = validateAwsCloudWatchAlertChannelResponse(&response)
 	if err != nil {
 		return err
 	}
@@ -186,27 +210,27 @@ func resourceLaceworkAlertChannelSlackUpdate(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.SlackChannelIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
 	return nil
 }
 
-func resourceLaceworkAlertChannelSlackDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelAwsCloudWatchDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.SlackChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.SlackChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
 	return nil
 }
 
-// validateSlackAlertChannelResponse checks weather or not the server response has
+// validateAwsCloudWatchAlertChannelResponse checks weather or not the server response has
 // any inconsistent data, it returns a friendly error message describing the
 // problem and how to report it
-func validateSlackAlertChannelResponse(response *api.SlackAlertChannelResponse) error {
+func validateAwsCloudWatchAlertChannelResponse(response *api.AwsCloudWatchResponse) error {
 	if len(response.Data) == 0 {
 		// @afiune this edge case should never happen, if we land here it means that
 		// something went wrong in the server side of things (Lacework API), so let
