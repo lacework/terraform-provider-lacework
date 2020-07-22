@@ -11,42 +11,42 @@ import (
 )
 
 const (
-	testAccAlertChannelSlackResourceType = "lacework_alert_channel_slack"
-	testAccAlertChannelSlackResourceName = "example"
+	testAccAlertChannelAwsCloudWatchResourceType = "lacework_alert_channel_aws_cloudwatch"
+	testAccAlertChannelAwsCloudWatchResourceName = "example"
 
-	// Environment variables for testing Slack Alert Channel Integrations
-	testAccAlertChannelSlackEnvURL = "SLACK_URL"
+	// Environment variables for testing AWS CloudWatch Alert Channel Integrations
+	testAccAlertChannelEventBusArn = "EVENT_BUS_ARN"
 )
 
-func TestAccAlertChannelSlack(t *testing.T) {
+func TestAccAlertChannelAwsCloudWatch(t *testing.T) {
 	resourceTypeAndName := fmt.Sprintf("%s.%s",
-		testAccAlertChannelSlackResourceType,
-		testAccAlertChannelSlackResourceName,
+		testAccAlertChannelAwsCloudWatchResourceType,
+		testAccAlertChannelAwsCloudWatchResourceName,
 	)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccAlertChannelSlackEnvVarsPreCheck(t)
+			testAccAlertChannelAwsCloudWatchEnvVarsPreCheck(t)
 		},
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAlertChannelSlackDestroy,
+		CheckDestroy: testAccCheckAlertChannelAwsCloudWatchDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAlertChannelSlackConfig(
+				Config: testAccAlertChannelAwsCloudWatchConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAlertChannelSlackExists(resourceTypeAndName),
+					testAccCheckAlertChannelAwsCloudWatchExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
 				),
 			},
 			{
-				Config: testAccAlertChannelSlackConfig(
+				Config: testAccAlertChannelAwsCloudWatchConfig(
 					false,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAlertChannelSlackExists(resourceTypeAndName),
+					testAccCheckAlertChannelAwsCloudWatchExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "false"),
 				),
 			},
@@ -54,15 +54,15 @@ func TestAccAlertChannelSlack(t *testing.T) {
 	})
 }
 
-func testAccCheckAlertChannelSlackDestroy(s *terraform.State) error {
+func testAccCheckAlertChannelAwsCloudWatchDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccAlertChannelSlackResourceType {
+		if rs.Type != testAccAlertChannelAwsCloudWatchResourceType {
 			continue
 		}
 
-		response, err := lacework.Integrations.GetSlackAlertChannel(rs.Primary.ID)
+		response, err := lacework.Integrations.GetAwsCloudWatchAlertChannel(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
@@ -71,7 +71,7 @@ func testAccCheckAlertChannelSlackDestroy(s *terraform.State) error {
 			if integration.IntgGuid == rs.Primary.ID {
 				return fmt.Errorf(
 					"the %s integration (%s) still exists",
-					api.SlackChannelIntegration, rs.Primary.ID,
+					api.AwsCloudWatchIntegration, rs.Primary.ID,
 				)
 			}
 		}
@@ -80,7 +80,7 @@ func testAccCheckAlertChannelSlackDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckAlertChannelSlackExists(resourceTypeAndName string) resource.TestCheckFunc {
+func testAccCheckAlertChannelAwsCloudWatchExists(resourceTypeAndName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		lacework := testAccProvider.Meta().(*api.Client)
 
@@ -93,14 +93,14 @@ func testAccCheckAlertChannelSlackExists(resourceTypeAndName string) resource.Te
 			return fmt.Errorf("resource (%s) ID not set", resourceTypeAndName)
 		}
 
-		response, err := lacework.Integrations.GetSlackAlertChannel(rs.Primary.ID)
+		response, err := lacework.Integrations.GetAwsCloudWatchAlertChannel(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
 		if len(response.Data) < 1 {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.SlackChannelIntegration, rs.Primary.ID)
+				api.AwsCloudWatchIntegration, rs.Primary.ID)
 		}
 
 		for _, integration := range response.Data {
@@ -110,27 +110,27 @@ func testAccCheckAlertChannelSlackExists(resourceTypeAndName string) resource.Te
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.SlackChannelIntegration, rs.Primary.ID)
+			api.AwsCloudWatchIntegration, rs.Primary.ID)
 	}
 }
 
-func testAccAlertChannelSlackEnvVarsPreCheck(t *testing.T) {
-	if v := os.Getenv(testAccAlertChannelSlackEnvURL); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelSlackEnvURL)
+func testAccAlertChannelAwsCloudWatchEnvVarsPreCheck(t *testing.T) {
+	if v := os.Getenv(testAccAlertChannelEventBusArn); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelEventBusArn)
 	}
 }
 
-func testAccAlertChannelSlackConfig(enabled bool) string {
+func testAccAlertChannelAwsCloudWatchConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
     name = "integration test"
     enabled = %t
-    slack_url = "%s"
+    event_bus_arn = "%s"
 }
 `,
-		testAccAlertChannelSlackResourceType,
-		testAccAlertChannelSlackResourceName,
+		testAccAlertChannelAwsCloudWatchResourceType,
+		testAccAlertChannelAwsCloudWatchResourceName,
 		enabled,
-		os.Getenv(testAccAlertChannelSlackEnvURL),
+		os.Getenv(testAccAlertChannelEventBusArn),
 	)
 }
