@@ -57,6 +57,11 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 							Type:      schema.TypeString,
 							Required:  true,
 							Sensitive: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// @afiune we can't compare this element since our API, for security reasons,
+								// does NOT return the private key configured in the Lacework server
+								return true
+							},
 						},
 					},
 				},
