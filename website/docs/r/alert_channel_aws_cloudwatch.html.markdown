@@ -30,7 +30,7 @@ The following arguments are supported:
 * `event_bus_arn` - (Required) The ARN of your AWS CloudWatch event bus.
 * `min_alert_severity` - (Optional) The minimum severity level to alert. Defaults to `3`.
   The available levels are:
-  * **1**: Critical Alerts only 
+  * **1**: Critical Alerts only
   * **2**: High Alerts and above
   * **3**: Medium Alerts and above
   * **4**: Low Alerts and above

@@ -61,6 +61,7 @@ provider "lacework" {}
 ```
 
 Terminal:
+
 ```
 $ export LW_ACCOUNT="my-account"
 $ export LW_API_KEY="my-api-key"
