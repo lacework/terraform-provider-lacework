@@ -26,10 +26,10 @@ resource "lacework_alert_channel_slack" "ops_critical" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
-* `slack_url`: (Required) The URL of the incoming Slack webhook.
-* `min_alert_severity`: (Optional) The minimum severity level to alert. Defaults to `3`.
+* `slack_url` - (Required) The URL of the incoming Slack webhook.
+* `min_alert_severity` - (Optional) The minimum severity level to alert. Defaults to `3`.
   The available levels are:
-  * **1**: Critical Alerts only 
+  * **1**: Critical Alerts only
   * **2**: High Alerts and above
   * **3**: Medium Alerts and above
   * **4**: Low Alerts and above
