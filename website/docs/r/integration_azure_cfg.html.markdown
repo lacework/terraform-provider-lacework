@@ -35,8 +35,8 @@ The following arguments are supported:
 
 `credentials` supports the following arguments:
 
-* `client_id`: (Required) The application client ID.
-* `client_secret`: (Required) The client secret.
+* `client_id` - (Required) The application client ID.
+* `client_secret` - (Required) The client secret.
 
 ## Import
 

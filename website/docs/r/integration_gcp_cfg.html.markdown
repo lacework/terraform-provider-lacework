@@ -38,10 +38,10 @@ The following arguments are supported:
 
 `credentials` supports the following arguments:
 
-* `client_id`: (Required) The service account client ID.
-* `client_email`: (Required) The service account client email.
-* `private_key_id`: (Required) The service account private key ID.
-* `private_key`: (Required) The service account private key.
+* `client_id` - (Required) The service account client ID.
+* `client_email` - (Required) The service account client email.
+* `private_key_id` - (Required) The service account private key ID.
+* `private_key` - (Required) The service account private key.
 
 ## Import
 
