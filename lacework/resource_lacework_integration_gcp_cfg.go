@@ -59,7 +59,13 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 							Sensitive: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 								// @afiune we can't compare this element since our API, for security reasons,
-								// does NOT return the private key configured in the Lacework server
+								// does NOT return the private key configured in the Lacework server. So if
+								// any other element changed from the credentials then we trigger a diff
+								if d.HasChange("credentials.0.client_id") ||
+									d.HasChange("credentials.0.private_key_id") ||
+									d.HasChange("credentials.0.client_email") {
+									return false
+								}
 								return true
 							},
 						},
