@@ -1,4 +1,8 @@
-## 0.3.0 (Unreleased)
+## 0.2.1 (Unreleased)
+
+## Bug Fixes
+* fix(gcp): detect a change of credentials [#14](https://github.com/terraform-providers/terraform-provider-lacework/pull/14)
+
 ## 0.2.0 (July 23, 2020)
 
 ## Improvements
