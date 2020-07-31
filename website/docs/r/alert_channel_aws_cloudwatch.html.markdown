@@ -5,7 +5,7 @@ description: |-
   Create an manage AWS CloudWatch Alert Channel integrations
 ---
 
-# lacework\_alert\_channel\_aws_\cloudwatch
+# lacework\_alert\_channel\_aws\_cloudwatch
 
 Configure Lacework to forward alerts to an AWS CloudWatch event bus.
 
