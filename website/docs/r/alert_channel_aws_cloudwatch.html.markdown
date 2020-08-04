@@ -18,7 +18,7 @@ resource "lacework_alert_channel_aws_cloudwatch" "all_events" {
   name               = "All events to default event-bus"
   event_bus_arn      = "arn:aws:events:us-west-2:1234567890:event-bus/default"
   min_alert_severity = 5
-  group_issues_by    = "EVENTS"
+  group_issues_by    = "Events"
 }
 ```
 
@@ -35,10 +35,10 @@ The following arguments are supported:
   * **3**: Medium Alerts and above
   * **4**: Low Alerts and above
   * **5**: All Alerts
-* `group_issues_by` - (Optional) Defines how Lacework compliance events get grouped. Must be one of `EVENTS` or `RESOURCES`. Defaults to `EVENTS`.
+* `group_issues_by` - (Optional) Defines how Lacework compliance events get grouped. Must be one of `Events` or `Resources`. Defaults to `Events`.
   The available options are:
-  * **EVENTS**:	Single AWS CloudWatch events will be created when compliance events of the same type but from different resources are detected by Lacework. For example, if three different S3 resources are generating the same compliance event, only one AWS event is created on the AWS CloudWatch event bus.
-  * **RESOURCES**: Multiple AWS CloudWatch events will be created when multiple resources are generating the same compliance event. For example, if three different S3 resources are generating the same compliance event, three AWS events are created on the AWS CloudWatch event bus.
+  * **Events**:	Single AWS CloudWatch events will be created when compliance events of the same type but from different resources are detected by Lacework. For example, if three different S3 resources are generating the same compliance event, only one AWS event is created on the AWS CloudWatch event bus.
+  * **Resources**: Multiple AWS CloudWatch events will be created when multiple resources are generating the same compliance event. For example, if three different S3 resources are generating the same compliance event, three AWS events are created on the AWS CloudWatch event bus.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import

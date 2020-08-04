@@ -3,7 +3,6 @@ package lacework
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
@@ -42,18 +41,15 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 			"group_issues_by": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "EVENTS",
-				StateFunc: func(v interface{}) string {
-					return strings.Title(strings.ToLower(v.(string)))
-				},
+				Default:  "Events",
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					switch strings.ToUpper(value.(string)) {
-					case "EVENTS", "RESOURCES":
+					switch value.(string) {
+					case "Events", "Resources":
 						return nil, nil
 					default:
 						return nil, []error{
 							fmt.Errorf(
-								"%s: can only be either 'EVENTS' or 'RESOURCES' (default: EVENTS)", key,
+								"%s: can only be either 'Events' or 'Resources' (default: Events)", key,
 							),
 						}
 					}
