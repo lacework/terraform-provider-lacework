@@ -49,6 +49,7 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"lacework_alert_channel_aws_cloudwatch": resourceLaceworkAlertChannelAwsCloudWatch(),
 			"lacework_alert_channel_jira_cloud":     resourceLaceworkAlertChannelJiraCloud(),
+			"lacework_alert_channel_jira_server":    resourceLaceworkAlertChannelJiraServer(),
 			"lacework_alert_channel_pagerduty":      resourceLaceworkAlertChannelPagerDuty(),
 			"lacework_alert_channel_slack":          resourceLaceworkAlertChannelSlack(),
 			"lacework_integration_aws_cfg":          resourceLaceworkIntegrationAwsCfg(),
