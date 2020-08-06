@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_integration_aws_cfg"
 description: |-
-  Create an manage AWS Config integrations
+  Create and manage AWS Config integrations
 ---
 
 # lacework\_integration\_aws\_cfg
