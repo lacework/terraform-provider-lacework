@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_integration_azure_cfg"
 description: |-
-  Create an manage Azure Cloud Config integrations
+  Create and manage Azure Cloud Config integrations
 ---
 
 # lacework\_integration\_azure\_cfg

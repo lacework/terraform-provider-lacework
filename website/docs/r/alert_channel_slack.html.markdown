@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_alert_channel_slack"
 description: |-
-  Create an manage Slack Alert Channel integrations
+  Create and manage Slack Alert Channel integrations
 ---
 
 # lacework\_alert\_channel\_slack
@@ -15,9 +15,8 @@ Configure Lacework to forward alerts to a Slack channel through an incoming webh
 
 ```hcl
 resource "lacework_alert_channel_slack" "ops_critical" {
-  name               = "OPS Critical Alerts"
-  slack_url          = "https://hooks.slack.com/services/ABCD/12345/abcd1234"
-  min_alert_severity = 1
+  name      = "OPS Critical Alerts"
+  slack_url = "https://hooks.slack.com/services/ABCD/12345/abcd1234"
 }
 ```
 
@@ -27,13 +26,6 @@ The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
 * `slack_url` - (Required) The URL of the incoming Slack webhook.
-* `min_alert_severity` - (Optional) The minimum severity level to alert. Defaults to `3`.
-  The available levels are:
-  * **1**: Critical Alerts only
-  * **2**: High Alerts and above
-  * **3**: Medium Alerts and above
-  * **4**: Low Alerts and above
-  * **5**: All Alerts
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import

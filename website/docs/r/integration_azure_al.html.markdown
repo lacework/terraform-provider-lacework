@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_integration_azure_at"
 description: |-
-  Create an manage Azure Cloud Activity Log integrations
+  Create and manage Azure Cloud Activity Log integrations
 ---
 
 # lacework\_integration\_azure\_at

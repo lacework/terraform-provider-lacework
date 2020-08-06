@@ -21,7 +21,12 @@ provider "lacework" {
 }
 
 # Connect an AWS account to Lacework for configuration and compliance assessment
-resource "lacework_integration_aws_cfg" "account_a" {
+resource "lacework_integration_aws_cfg" "account_abc" {
+  # ...
+}
+
+# Configure Lacework to forward alerts to a Slack channel
+resource "lacework_alert_channel_slack" "critical" {
   # ...
 }
 ```

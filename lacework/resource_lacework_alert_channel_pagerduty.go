@@ -39,22 +39,6 @@ func resourceLaceworkAlertChannelPagerDuty() *schema.Resource {
 				Required:  true,
 				Sensitive: true,
 			},
-			"min_alert_severity": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  3,
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					if api.AlertLevel(value.(int)).Valid() {
-						return nil, nil
-					}
-
-					return nil, []error{
-						fmt.Errorf(
-							"%s can only be one of the following values: [1, 2, 3, 4, 5] (default: 3)", key,
-						),
-					}
-				},
-			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -80,8 +64,7 @@ func resourceLaceworkAlertChannelPagerDutyCreate(d *schema.ResourceData, meta in
 		lacework = meta.(*api.Client)
 		alert    = api.NewPagerDutyAlertChannel(d.Get("name").(string),
 			api.PagerDutyData{
-				IntegrationKey:   d.Get("integration_key").(string),
-				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
+				IntegrationKey: d.Get("integration_key").(string),
 			},
 		)
 	)
@@ -134,9 +117,7 @@ func resourceLaceworkAlertChannelPagerDutyRead(d *schema.ResourceData, meta inte
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
-
 			d.Set("integration_key", integration.Data.IntegrationKey)
-			d.Set("min_alert_severity", integration.Data.MinAlertSeverity)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
 				api.PagerDutyIntegration, integration.IntgGuid)
@@ -153,8 +134,7 @@ func resourceLaceworkAlertChannelPagerDutyUpdate(d *schema.ResourceData, meta in
 		lacework = meta.(*api.Client)
 		alert    = api.NewPagerDutyAlertChannel(d.Get("name").(string),
 			api.PagerDutyData{
-				IntegrationKey:   d.Get("integration_key").(string),
-				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
+				IntegrationKey: d.Get("integration_key").(string),
 			},
 		)
 	)

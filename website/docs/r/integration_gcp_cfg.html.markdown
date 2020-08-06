@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_integration_gcp_cfg"
 description: |-
-  Create an manage Google Cloud Config integrations
+  Create and manage Google Cloud Config integrations
 ---
 
 # lacework\_integration\_gcp\_cfg

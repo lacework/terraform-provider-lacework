@@ -55,22 +55,6 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 					}
 				},
 			},
-			"min_alert_severity": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  3,
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					if api.AlertLevel(value.(int)).Valid() {
-						return nil, nil
-					}
-
-					return nil, []error{
-						fmt.Errorf(
-							"%s can only be one of the following values: [1, 2, 3, 4, 5] (default: 3)", key,
-						),
-					}
-				},
-			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -96,9 +80,8 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 		lacework = meta.(*api.Client)
 		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
 			api.AwsCloudWatchData{
-				EventBusArn:      d.Get("event_bus_arn").(string),
-				IssueGrouping:    d.Get("group_issues_by").(string),
-				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
+				EventBusArn:   d.Get("event_bus_arn").(string),
+				IssueGrouping: d.Get("group_issues_by").(string),
 			},
 		)
 	)
@@ -154,7 +137,6 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 
 			d.Set("event_bus_arn", integration.Data.EventBusArn)
 			d.Set("group_issues_by", integration.Data.IssueGrouping)
-			d.Set("min_alert_severity", integration.Data.MinAlertSeverity)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
 				api.AwsCloudWatchIntegration, integration.IntgGuid)
@@ -171,9 +153,8 @@ func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, met
 		lacework = meta.(*api.Client)
 		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
 			api.AwsCloudWatchData{
-				EventBusArn:      d.Get("event_bus_arn").(string),
-				IssueGrouping:    d.Get("group_issues_by").(string),
-				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
+				EventBusArn:   d.Get("event_bus_arn").(string),
+				IssueGrouping: d.Get("group_issues_by").(string),
 			},
 		)
 	)

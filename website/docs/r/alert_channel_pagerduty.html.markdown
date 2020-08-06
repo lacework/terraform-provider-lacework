@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_alert_channel_pagerduty"
 description: |-
-  Create an manage PagerDuty Alert Channel integrations
+  Create and manage PagerDuty Alert Channel integrations
 ---
 
 # lacework\_alert\_channel\_pagerduty
@@ -26,9 +26,8 @@ For additional information about incidents and alerts, see https://support.pager
 
 ```hcl
 resource "lacework_alert_channel_pagerduty" "critical" {
-  name               = "Forward Critical Alerts"
-  integration_key    = "1234abc8901abc567abc123abc78e012"
-  min_alert_severity = 1
+  name            = "Forward Critical Alerts"
+  integration_key = "1234abc8901abc567abc123abc78e012"
 }
 ```
 
@@ -38,13 +37,6 @@ The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
 * `integration_key` - (Required) The PagerDuty service integration key.
-* `min_alert_severity` - (Optional) The minimum severity level to alert. Defaults to `3`.
-  The available levels are:
-  * **1**: Critical Alerts only
-  * **2**: High Alerts and above
-  * **3**: Medium Alerts and above
-  * **4**: Low Alerts and above
-  * **5**: All Alerts
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import
