@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_integration_gcp_at"
 description: |-
-  Create an manage Google Cloud Audit Trail integrations
+  Create and manage Google Cloud Audit Trail integrations
 ---
 
 # lacework\_integration\_gcp\_at

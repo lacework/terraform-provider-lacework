@@ -9,12 +9,12 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
+func resourceLaceworkAlertChannelJiraServer() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceLaceworkAlertChannelAwsCloudWatchCreate,
-		Read:   resourceLaceworkAlertChannelAwsCloudWatchRead,
-		Update: resourceLaceworkAlertChannelAwsCloudWatchUpdate,
-		Delete: resourceLaceworkAlertChannelAwsCloudWatchDelete,
+		Create: resourceLaceworkAlertChannelJiraServerCreate,
+		Read:   resourceLaceworkAlertChannelJiraServerRead,
+		Update: resourceLaceworkAlertChannelJiraServerUpdate,
+		Delete: resourceLaceworkAlertChannelJiraServerDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: importLaceworkIntegration,
@@ -34,9 +34,26 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
-			"event_bus_arn": {
+			"jira_url": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"issue_type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"project_key": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"username": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"password": {
+				Type:      schema.TypeString,
+				Required:  true,
+				Sensitive: true,
 			},
 			"group_issues_by": {
 				Type:     schema.TypeString,
@@ -75,28 +92,32 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 	}
 }
 
-func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelJiraServerCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
-			api.AwsCloudWatchData{
-				EventBusArn:   d.Get("event_bus_arn").(string),
+		jira     = api.NewJiraServerAlertChannel(d.Get("name").(string),
+			api.JiraAlertChannelData{
+				JiraUrl:       d.Get("jira_url").(string),
+				IssueType:     d.Get("issue_type").(string),
 				IssueGrouping: d.Get("group_issues_by").(string),
+				ProjectID:     d.Get("project_key").(string),
+				Username:      d.Get("username").(string),
+				Password:      d.Get("password").(string),
 			},
 		)
 	)
 	if !d.Get("enabled").(bool) {
-		alert.Enabled = 0
+		jira.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
-	response, err := lacework.Integrations.CreateAwsCloudWatchAlertChannel(alert)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.JiraIntegration, jira)
+	response, err := lacework.Integrations.CreateJiraAlertChannel(jira)
 	if err != nil {
 		return err
 	}
 
 	log.Println("[INFO] Verifying server response data")
-	err = validateAwsCloudWatchAlertChannelResponse(&response)
+	err = validateJiraAlertChannelResponse(&response)
 	if err != nil {
 		return err
 	}
@@ -112,15 +133,15 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCloudWatchIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %v\n", api.JiraIntegration, integration.IntgGuid)
 	return nil
 }
 
-func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelJiraServerRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
-	response, err := lacework.Integrations.GetAwsCloudWatchAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.JiraIntegration, d.Id())
+	response, err := lacework.Integrations.GetJiraAlertChannel(d.Id())
 	if err != nil {
 		return err
 	}
@@ -135,11 +156,14 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
 
-			d.Set("event_bus_arn", integration.Data.EventBusArn)
+			d.Set("jira_url", integration.Data.JiraUrl)
+			d.Set("issue_type", integration.Data.IssueType)
 			d.Set("group_issues_by", integration.Data.IssueGrouping)
+			d.Set("project_key", integration.Data.ProjectID)
+			d.Set("username", integration.Data.Username)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
-				api.AwsCloudWatchIntegration, integration.IntgGuid)
+				api.JiraIntegration, integration.IntgGuid)
 			return nil
 		}
 	}
@@ -148,31 +172,35 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 	return nil
 }
 
-func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelJiraServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
-			api.AwsCloudWatchData{
-				EventBusArn:   d.Get("event_bus_arn").(string),
+		jira     = api.NewJiraServerAlertChannel(d.Get("name").(string),
+			api.JiraAlertChannelData{
+				JiraUrl:       d.Get("jira_url").(string),
+				IssueType:     d.Get("issue_type").(string),
 				IssueGrouping: d.Get("group_issues_by").(string),
+				ProjectID:     d.Get("project_key").(string),
+				Username:      d.Get("username").(string),
+				Password:      d.Get("password").(string),
 			},
 		)
 	)
 
 	if !d.Get("enabled").(bool) {
-		alert.Enabled = 0
+		jira.Enabled = 0
 	}
 
-	alert.IntgGuid = d.Id()
+	jira.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
-	response, err := lacework.Integrations.UpdateAwsCloudWatchAlertChannel(alert)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.JiraIntegration, jira)
+	response, err := lacework.Integrations.UpdateJiraAlertChannel(jira)
 	if err != nil {
 		return err
 	}
 
 	log.Println("[INFO] Verifying server response data")
-	err = validateAwsCloudWatchAlertChannelResponse(&response)
+	err = validateJiraAlertChannelResponse(&response)
 	if err != nil {
 		return err
 	}
@@ -187,55 +215,19 @@ func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, met
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.JiraIntegration, d.Id())
 	return nil
 }
 
-func resourceLaceworkAlertChannelAwsCloudWatchDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkAlertChannelJiraServerDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.JiraIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
-	return nil
-}
-
-// validateAwsCloudWatchAlertChannelResponse checks weather or not the server response has
-// any inconsistent data, it returns a friendly error message describing the
-// problem and how to report it
-func validateAwsCloudWatchAlertChannelResponse(response *api.AwsCloudWatchResponse) error {
-	if len(response.Data) == 0 {
-		// @afiune this edge case should never happen, if we land here it means that
-		// something went wrong in the server side of things (Lacework API), so let
-		// us inform that to our users
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		// @afiune if we are creating a single integration and the server returns
-		// more than one integration inside the 'data' field, it is definitely another
-		// edge case that should never happen
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.JiraIntegration, d.Id())
 	return nil
 }

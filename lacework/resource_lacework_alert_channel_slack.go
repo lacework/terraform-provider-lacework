@@ -38,22 +38,6 @@ func resourceLaceworkAlertChannelSlack() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"min_alert_severity": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  3,
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					if api.AlertLevel(value.(int)).Valid() {
-						return nil, nil
-					}
-
-					return nil, []error{
-						fmt.Errorf(
-							"%s can only be one of the following values: [1, 2, 3, 4, 5] (default: 3)", key,
-						),
-					}
-				},
-			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -79,8 +63,7 @@ func resourceLaceworkAlertChannelSlackCreate(d *schema.ResourceData, meta interf
 		lacework = meta.(*api.Client)
 		slack    = api.NewSlackAlertChannel(d.Get("name").(string),
 			api.SlackChannelData{
-				SlackUrl:         d.Get("slack_url").(string),
-				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
+				SlackUrl: d.Get("slack_url").(string),
 			},
 		)
 	)
@@ -133,9 +116,7 @@ func resourceLaceworkAlertChannelSlackRead(d *schema.ResourceData, meta interfac
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
-
 			d.Set("slack_url", integration.Data.SlackUrl)
-			d.Set("min_alert_severity", integration.Data.MinAlertSeverity)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
 				api.SlackChannelIntegration, integration.IntgGuid)
@@ -152,8 +133,7 @@ func resourceLaceworkAlertChannelSlackUpdate(d *schema.ResourceData, meta interf
 		lacework = meta.(*api.Client)
 		slack    = api.NewSlackAlertChannel(d.Get("name").(string),
 			api.SlackChannelData{
-				SlackUrl:         d.Get("slack_url").(string),
-				MinAlertSeverity: api.AlertLevel(d.Get("min_alert_severity").(int)),
+				SlackUrl: d.Get("slack_url").(string),
 			},
 		)
 	)

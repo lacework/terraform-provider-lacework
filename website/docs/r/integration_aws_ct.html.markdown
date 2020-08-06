@@ -2,7 +2,7 @@
 layout: "lacework"
 page_title: "Lacework: lacework_integration_aws_ct"
 description: |-
-  Create an manage AWS CloudTrail integrations
+  Create and manage AWS CloudTrail integrations
 ---
 
 # lacework\_integration\_aws\_ct
