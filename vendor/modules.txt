@@ -217,7 +217,7 @@ github.com/jmespath/go-jmespath
 github.com/jstemmer/go-junit-report
 github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
-# github.com/lacework/go-sdk v0.1.24-0.20200803213148-55de6baec9f0
+# github.com/lacework/go-sdk v0.1.25-0.20200813185420-a58e4cae1691
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
