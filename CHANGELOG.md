@@ -1,4 +1,11 @@
-## 0.3.0 (Unreleased)
+## 0.2.2 (Unreleased)
+
+## New Resources
+
+Management of alert channel integrations:
+* `lacework_alert_channel_jira_cloud`: Create and manage Jira Cloud Alert Channel integrations
+* `lacework_alert_channel_jira_server`: Create and manage Jira Server Alert Channel integrations
+
 ## 0.2.1 (July 24, 2020)
 
 ## Bug Fixes
