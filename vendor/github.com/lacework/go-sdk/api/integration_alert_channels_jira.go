@@ -18,6 +18,12 @@
 
 package api
 
+import (
+	"encoding/base64"
+	"fmt"
+	"strings"
+)
+
 const (
 	JiraCloudAlertType  = "JIRA_CLOUD"
 	JiraServerAlertType = "JIRA_SERVER"
@@ -126,5 +132,31 @@ type JiraAlertChannelData struct {
 	Password      string `json:"PASSWORD,omitempty" mapstructure:"PASSWORD"`   // Jira Server
 	IssueGrouping string `json:"ISSUE_GROUPING,omitempty" mapstructure:"ISSUE_GROUPING"`
 
-	//CustomTemplateFile string `json:"CUSTOM_TEMPLATE_FILE,omitempty"`
+	// This field must be a base64 encode with the following format:
+	//
+	// "data:application/json;name=i.json;base64,[ENCODING]"
+	//
+	// [ENCODING] is the the base64 encode, use EncodeCustomTemplateFile() to encode a JSON template
+	CustomTemplateFile string `json:"CUSTOM_TEMPLATE_FILE,omitempty" mapstructure:"CUSTOM_TEMPLATE_FILE"`
+}
+
+func (jira *JiraAlertChannelData) EncodeCustomTemplateFile(template string) {
+	encodedTemplate := base64.StdEncoding.EncodeToString([]byte(template))
+	jira.CustomTemplateFile = fmt.Sprintf("data:application/json;name=i.json;base64,%s", encodedTemplate)
+}
+
+func (jira *JiraAlertChannelData) DecodeCustomTemplateFile() (string, error) {
+	if len(jira.CustomTemplateFile) == 0 {
+		return "", nil
+	}
+
+	var (
+		b64      = strings.Split(jira.CustomTemplateFile, ",")
+		raw, err = base64.StdEncoding.DecodeString(b64[1])
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return string(raw), nil
 }
