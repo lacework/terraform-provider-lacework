@@ -9,4 +9,17 @@ resource "lacework_alert_channel_jira_cloud" "example" {
 	api_token   = "abcd1234"
 
 	group_issues_by = "Events"
+	custom_template_file = <<TEMPLATE
+{
+    "fields": {
+        "labels": [
+            "myLabel"
+        ],
+        "priority":
+        {
+            "id": "1"
+        }
+    }
+}
+TEMPLATE
 }

@@ -130,6 +130,9 @@ func testAccAlertChannelJiraServerEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccAlertChannelJiraGroupIssuesBy); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraGroupIssuesBy)
 	}
+	if v := os.Getenv(testAccAlertChannelJiraCustomTemplateFile); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraCustomTemplateFile)
+	}
 	if v := os.Getenv(testAccAlertChannelJiraPassword); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraPassword)
 	}
@@ -146,6 +149,7 @@ resource "%s" "%s" {
     username    = "%s"
     password    = "%s"
     group_issues_by = "%s"
+    custom_template_file = "%s"
 }
 `,
 		testAccAlertChannelJiraServerResourceType,
@@ -157,5 +161,6 @@ resource "%s" "%s" {
 		os.Getenv(testAccAlertChannelJiraUsername),
 		os.Getenv(testAccAlertChannelJiraPassword),
 		os.Getenv(testAccAlertChannelJiraGroupIssuesBy),
+		os.Getenv(testAccAlertChannelJiraCustomTemplateFile),
 	)
 }
