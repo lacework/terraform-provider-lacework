@@ -1,4 +1,4 @@
-## 0.2.3 (Unreleased)
+## 0.2.3 (August 27, 2020)
 
 Both, `lacework_alert_channel_jira_cloud` and `lacework_alert_channel_jira_server` have now
 a new optional argument named `custom_template_file` to specify a Custom Template file in JSON
