@@ -55,6 +55,12 @@ func resourceLaceworkAlertChannelJiraCloud() *schema.Resource {
 				Required:  true,
 				Sensitive: true,
 			},
+			"custom_template_file": {
+				Type:     schema.TypeString,
+				Optional: true,
+				// @afiune when we migrate to terraform-plugin-sdk/v2
+				//ValidateFunc: validation.StringIsJSON,
+			},
 			"group_issues_by": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -94,18 +100,23 @@ func resourceLaceworkAlertChannelJiraCloud() *schema.Resource {
 
 func resourceLaceworkAlertChannelJiraCloudCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
-		jira     = api.NewJiraCloudAlertChannel(d.Get("name").(string),
-			api.JiraAlertChannelData{
-				JiraUrl:       d.Get("jira_url").(string),
-				IssueType:     d.Get("issue_type").(string),
-				IssueGrouping: d.Get("group_issues_by").(string),
-				ProjectID:     d.Get("project_key").(string),
-				Username:      d.Get("username").(string),
-				ApiToken:      d.Get("api_token").(string),
-			},
-		)
+		lacework           = meta.(*api.Client)
+		customTemplateJSON = d.Get("custom_template_file").(string)
+		jiraData           = api.JiraAlertChannelData{
+			JiraUrl:       d.Get("jira_url").(string),
+			IssueType:     d.Get("issue_type").(string),
+			IssueGrouping: d.Get("group_issues_by").(string),
+			ProjectID:     d.Get("project_key").(string),
+			Username:      d.Get("username").(string),
+			ApiToken:      d.Get("api_token").(string),
+		}
 	)
+
+	if len(customTemplateJSON) != 0 {
+		jiraData.EncodeCustomTemplateFile(customTemplateJSON)
+	}
+
+	jira := api.NewJiraCloudAlertChannel(d.Get("name").(string), jiraData)
 	if !d.Get("enabled").(bool) {
 		jira.Enabled = 0
 	}
@@ -162,6 +173,14 @@ func resourceLaceworkAlertChannelJiraCloudRead(d *schema.ResourceData, meta inte
 			d.Set("project_key", integration.Data.ProjectID)
 			d.Set("username", integration.Data.Username)
 
+			customTemplateString, err := integration.Data.DecodeCustomTemplateFile()
+			if err != nil {
+				log.Printf("[ERROR] Unable to decode CustomTemplateFile: %v\n", integration.Data.CustomTemplateFile)
+				d.Set("custom_template_file", integration.Data.CustomTemplateFile)
+			} else {
+				d.Set("custom_template_file", customTemplateString)
+			}
+
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
 				api.JiraIntegration, integration.IntgGuid)
 			return nil
@@ -174,19 +193,23 @@ func resourceLaceworkAlertChannelJiraCloudRead(d *schema.ResourceData, meta inte
 
 func resourceLaceworkAlertChannelJiraCloudUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
-		jira     = api.NewJiraCloudAlertChannel(d.Get("name").(string),
-			api.JiraAlertChannelData{
-				JiraUrl:       d.Get("jira_url").(string),
-				IssueType:     d.Get("issue_type").(string),
-				IssueGrouping: d.Get("group_issues_by").(string),
-				ProjectID:     d.Get("project_key").(string),
-				Username:      d.Get("username").(string),
-				ApiToken:      d.Get("api_token").(string),
-			},
-		)
+		lacework           = meta.(*api.Client)
+		customTemplateJSON = d.Get("custom_template_file").(string)
+		jiraData           = api.JiraAlertChannelData{
+			JiraUrl:       d.Get("jira_url").(string),
+			IssueType:     d.Get("issue_type").(string),
+			IssueGrouping: d.Get("group_issues_by").(string),
+			ProjectID:     d.Get("project_key").(string),
+			Username:      d.Get("username").(string),
+			ApiToken:      d.Get("api_token").(string),
+		}
 	)
 
+	if len(customTemplateJSON) != 0 {
+		jiraData.EncodeCustomTemplateFile(customTemplateJSON)
+	}
+
+	jira := api.NewJiraCloudAlertChannel(d.Get("name").(string), jiraData)
 	if !d.Get("enabled").(bool) {
 		jira.Enabled = 0
 	}

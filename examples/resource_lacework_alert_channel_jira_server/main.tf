@@ -9,4 +9,17 @@ resource "lacework_alert_channel_jira_server" "example" {
 	password    = "my-password"
 
 	group_issues_by = "Resources"
+	custom_template_file = <<TEMPLATE
+{
+    "fields": {
+        "labels": [
+            "myLabel"
+        ],
+        "priority":
+        {
+            "id": "1"
+        }
+    }
+}
+TEMPLATE
 }

@@ -45,6 +45,7 @@ The following arguments are supported:
   * **Events**:	Single Jira issue will be created when compliance events of the same type but from different resources are detected by Lacework. For example, if three different S3 resources are generating the same compliance event, only one Jira ticket is created.
   * **Resources**: Multiple Jira issues will be created when multiple resources are generating the same compliance event. For example, if three different S3 resources are generating the same compliance event, three Jira issues are created.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `custom_template_file` - (Optional) A Custom Template JSON file to populate fields in the new Jira issues.
 
 ## Import
 
