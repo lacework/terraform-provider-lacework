@@ -15,11 +15,12 @@ const (
 	testAccAlertChannelJiraCloudResourceName = "example"
 
 	// Environment variables for testing Jira Alert Channel Integrations
-	testAccAlertChannelJiraURL           = "JIRA_URL"
-	testAccAlertChannelJiraIssueType     = "JIRA_ISSUE_TYPE"
-	testAccAlertChannelJiraProjectKey    = "JIRA_PROJECT_KEY"
-	testAccAlertChannelJiraUsername      = "JIRA_USERNAME"
-	testAccAlertChannelJiraGroupIssuesBy = "JIRA_GROUP_ISSUES_BY"
+	testAccAlertChannelJiraURL                = "JIRA_URL"
+	testAccAlertChannelJiraIssueType          = "JIRA_ISSUE_TYPE"
+	testAccAlertChannelJiraProjectKey         = "JIRA_PROJECT_KEY"
+	testAccAlertChannelJiraUsername           = "JIRA_USERNAME"
+	testAccAlertChannelJiraGroupIssuesBy      = "JIRA_GROUP_ISSUES_BY"
+	testAccAlertChannelJiraCustomTemplateFile = "JIRA_CUSTOM_TEMPLATE_FILE"
 
 	// this is only for Jira Cloud
 	testAccAlertChannelJiraApiToken = "JIRA_API_TOKEN"
@@ -137,6 +138,9 @@ func testAccAlertChannelJiraCloudEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccAlertChannelJiraGroupIssuesBy); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraGroupIssuesBy)
 	}
+	if v := os.Getenv(testAccAlertChannelJiraCustomTemplateFile); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraCustomTemplateFile)
+	}
 	if v := os.Getenv(testAccAlertChannelJiraApiToken); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraApiToken)
 	}
@@ -153,6 +157,7 @@ resource "%s" "%s" {
     username    = "%s"
     api_token   = "%s"
     group_issues_by = "%s"
+    custom_template_file = "%s"
 }
 `,
 		testAccAlertChannelJiraCloudResourceType,
@@ -164,5 +169,6 @@ resource "%s" "%s" {
 		os.Getenv(testAccAlertChannelJiraUsername),
 		os.Getenv(testAccAlertChannelJiraApiToken),
 		os.Getenv(testAccAlertChannelJiraGroupIssuesBy),
+		os.Getenv(testAccAlertChannelJiraCustomTemplateFile),
 	)
 }
