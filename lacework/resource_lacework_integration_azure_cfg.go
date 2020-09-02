@@ -49,8 +49,21 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 							Required: true,
 						},
 						"client_secret": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// @afiune we can't compare this element since our API, for security reasons,
+								// does NOT return the client secret configured in the Lacework server. So if
+								// any other element changed from the credentials then we trigger a diff
+								if d.HasChanges(
+									"name", "tenant_id", "org_level",
+									"enabled", "credentials.0.client_id",
+								) {
+									return false
+								}
+								return true
+							},
 						},
 					},
 				},
