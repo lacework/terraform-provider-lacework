@@ -1,7 +1,7 @@
-provider "lacework" { }
+provider "lacework" {}
 
-data "lacework_api_token" "test" { }
+data "lacework_api_token" "test" {}
 
 output "lacework_api_token" {
-	value = data.lacework_api_token.test.token
+  value = data.lacework_api_token.test.token
 }
