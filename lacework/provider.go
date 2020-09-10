@@ -58,6 +58,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_integration_azure_al":         resourceLaceworkIntegrationAzureActivityLog(),
 			"lacework_integration_docker_hub":       resourceLaceworkIntegrationDockerHub(),
 			"lacework_integration_docker_v2":        resourceLaceworkIntegrationDockerV2(),
+			"lacework_integration_ecr":              resourceLaceworkIntegrationEcr(),
 			"lacework_integration_gcp_cfg":          resourceLaceworkIntegrationGcpCfg(),
 			"lacework_integration_gcp_at":           resourceLaceworkIntegrationGcpAt(),
 			"lacework_integration_gcr":              resourceLaceworkIntegrationGcr(),
