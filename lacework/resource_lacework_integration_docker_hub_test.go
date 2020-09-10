@@ -20,7 +20,7 @@ const (
 	testAccIntegrationContainerRegEnvLimitByRepos = "LIMIT_BY_REP"
 	testAccIntegrationContainerRegEnvLimitNumImg  = "LIMIT_NUM_IMG"
 	testAccIntegrationDockerHubEnvUsername        = "DOCKER_USERNAME"
-	testAccIntegrationDockerHubEnvPassword        = "PASSWORD"
+	testAccIntegrationDockerHubEnvPassword        = "DOCKER_PASSWORD"
 )
 
 func TestAccIntegrationDockerHub(t *testing.T) {
@@ -156,11 +156,11 @@ resource "%s" "%s" {
 		testAccIntegrationDockerHubResourceType,
 		testAccIntegrationDockerHubResourceName,
 		enabled,
+		os.Getenv(testAccIntegrationDockerHubEnvUsername),
+		os.Getenv(testAccIntegrationDockerHubEnvPassword),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitByTag),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitByLabel),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitByRepos),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitNumImg),
-		os.Getenv(testAccIntegrationDockerHubEnvUsername),
-		os.Getenv(testAccIntegrationDockerHubEnvPassword),
 	)
 }
