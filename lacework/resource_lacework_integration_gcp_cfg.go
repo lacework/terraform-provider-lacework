@@ -147,7 +147,7 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		data.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating GCP_CFG integration with data:\n%+v\n", data)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.GcpCfgIntegration.String(), data)
 	response, err := lacework.Integrations.CreateGcp(data)
 	if err != nil {
 		return err
@@ -165,7 +165,8 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		d.Set("type_name", integration.TypeName)
 		d.Set("org_level", integration.IsOrg == 1)
 
-		log.Printf("[INFO] Created GCP_CFG integration with guid: %v\n", integration.IntgGuid)
+		log.Printf("[INFO] Created %s integration with guid: %v\n",
+			api.GcpCfgIntegration.String(), integration.IntgGuid)
 		return nil
 	}
 
@@ -175,7 +176,7 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading GCP_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.GcpCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetGcp(d.Id())
 	if err != nil {
 		return err
@@ -199,7 +200,8 @@ func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interfac
 			d.Set("resource_level", integration.Data.IDType)
 			d.Set("resource_id", integration.Data.ID)
 
-			log.Printf("[INFO] Read GCP_CFG integration with guid: %v\n", integration.IntgGuid)
+			log.Printf("[INFO] Read %s integration with guid: %v\n",
+				api.GcpCfgIntegration.String(), integration.IntgGuid)
 			return nil
 		}
 	}
@@ -237,7 +239,7 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 
 	data.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating GCP_CFG integration with data:\n%+v\n", data)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.GcpCfgIntegration.String(), data)
 	response, err := lacework.Integrations.UpdateGcp(data)
 	if err != nil {
 		return err
@@ -256,7 +258,7 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
 
-			log.Printf("[INFO] Updated GCP_CFG integration with guid: %v\n", d.Id())
+			log.Printf("[INFO] Updated %s integration with guid: %v\n", api.GcpCfgIntegration.String(), d.Id())
 			return nil
 		}
 	}
@@ -267,12 +269,12 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 func resourceLaceworkIntegrationGcpCfgDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting GCP_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.GcpCfgIntegration.String(), d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted GCP_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.GcpCfgIntegration.String(), d.Id())
 	return nil
 }
