@@ -107,7 +107,7 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 	}
 
 	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating AZURE_CFG integration with data:\n%+v\n", azure)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AzureCfgIntegration.String(), azure)
 	response, err := lacework.Integrations.CreateAzure(azure)
 	if err != nil {
 		return err
@@ -130,14 +130,14 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created AZURE_CFG integration with guid: %v\n", integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AzureCfgIntegration.String(), integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading AZURE_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAzure(d.Id())
 	if err != nil {
 		return err
@@ -158,7 +158,7 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 			d.Set("credentials", []map[string]string{creds})
 			d.Set("tenant_id", integration.Data.TenantID)
 
-			log.Printf("[INFO] Read AZURE_CFG integration with guid: %v\n", integration.IntgGuid)
+			log.Printf("[INFO] Read %s integration with guid: %v\n", api.AzureCfgIntegration.String(), integration.IntgGuid)
 			return nil
 		}
 	}
@@ -188,7 +188,7 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 
 	azure.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating AZURE_CFG integration with data:\n%+v\n", azure)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AzureCfgIntegration.String(), azure)
 	response, err := lacework.Integrations.UpdateAzure(azure)
 	if err != nil {
 		return err
@@ -210,20 +210,20 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated AZURE_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAzureCfgDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting AZURE_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAzure(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted AZURE_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
 	return nil
 }
 

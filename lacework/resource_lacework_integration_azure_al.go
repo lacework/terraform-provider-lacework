@@ -111,7 +111,7 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 	}
 
 	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating AZURE_AL_SEQ integration with data:\n%+v\n", azure)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AzureActivityLogIntegration.String(), azure)
 	response, err := lacework.Integrations.CreateAzure(azure)
 	if err != nil {
 		return err
@@ -134,14 +134,15 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created AZURE_AL_SEQ integration with guid: %v\n", integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %v\n",
+		api.AzureActivityLogIntegration.String(), integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkIntegrationAzureActivityLogRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading AZURE_AL_SEQ integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAzure(d.Id())
 	if err != nil {
 		return err
@@ -163,7 +164,7 @@ func resourceLaceworkIntegrationAzureActivityLogRead(d *schema.ResourceData, met
 			d.Set("queue_url", integration.Data.QueueUrl)
 			d.Set("tenant_id", integration.Data.TenantID)
 
-			log.Printf("[INFO] Read AZURE_AL_SEQ integration with guid: %v\n", integration.IntgGuid)
+			log.Printf("[INFO] Read %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), integration.IntgGuid)
 			return nil
 		}
 	}
@@ -194,7 +195,7 @@ func resourceLaceworkIntegrationAzureActivityLogUpdate(d *schema.ResourceData, m
 
 	azure.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating AZURE_AL_SEQ integration with data:\n%+v\n", azure)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AzureActivityLogIntegration.String(), azure)
 	response, err := lacework.Integrations.UpdateAzure(azure)
 	if err != nil {
 		return err
@@ -216,19 +217,19 @@ func resourceLaceworkIntegrationAzureActivityLogUpdate(d *schema.ResourceData, m
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated AZURE_AL_SEQ integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Updated %sw integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAzureActivityLogDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting AZURE_AL_SEQ integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAzure(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted AZURE_AL_SEQ integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
 	return nil
 }
