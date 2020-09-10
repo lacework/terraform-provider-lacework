@@ -27,7 +27,7 @@ resource "lacework_integration_aws_ct" "account_abc" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework AWS CloudTrail integration name.
+* `name` - (Required) The AWS CloudTrail integration name.
 * `queue_url` - (Required) The SQS Queue URL.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.

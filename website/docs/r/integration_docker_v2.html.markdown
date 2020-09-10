@@ -12,7 +12,7 @@ Use the Docker V2 Registry integration for private Docker V2 registries only.
 ~> **Note:** For Docker Hub, ECR, and GCR, use their corresponding container registry types.
 
 The Docker V2 Registry integration functions differently than Lacework's other container registry
-integrations. This integration performs on-demand image assessment via the CLI/API, while the other
+integrations. This integration performs on-demand image assessment via the Lacework API, while the other
 integrations automatically assess images at regular intervals.
 
 Supported Docker V2 registries:
@@ -30,7 +30,7 @@ The Lacework CLI makes it easy to request on-demand scans of new images designed
 integration (CI) pipelines. You can find more information on integrating the Lacework CLI for
 container vulnerability scanning in CI pipelines [here](https://support.lacework.com/hc/en-us/articles/360052476154-Integrate-Lacework-APIs-with-Continuous-Integration-CI-Pipelines).
 
--> **Note:** The Docker V2 Registry status displays Integration Successful only after its first assessment completes. 
+-> **Note:** The Docker V2 Registry status displays `Integration Successful` only after its first assessment completes.
 
 For more information visit the [documentation for the Lacework CLI](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
 
@@ -50,7 +50,7 @@ resource "lacework_integration_docker_v2" "jfrog" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework container registry integration name.
+* `name` - (Required) The Docker V2 Registry integration name.
 * `registry_domain` - (Required) The registry domain. Allowed formats are `YourIP:YourPort` or `YourDomain:YourPort`.
 * `username` - (Required) The user that has at permissions to pull from the container registry the images to be assessed.
 * `password` - (Required) The password for the specified user.

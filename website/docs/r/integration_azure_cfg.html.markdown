@@ -26,7 +26,7 @@ resource "lacework_integration_azure_cfg" "account_abc" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework Azure Config integration name.
+* `name` - (Required) The Azure Config integration name.
 * `tenant_id` - (Required) The directory tenant ID.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.

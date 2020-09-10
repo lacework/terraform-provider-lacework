@@ -30,7 +30,7 @@ resource "lacework_integration_gcr" "example" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework container registry integration name.
+* `name` - (Required) The GCR integration name.
 * `registry_domain` - (Required) The GCR domain, which specifies the location where you store the images. Supported domains are `gcr.io`, `us.gcr.io`, `eu.gcr.io`, or `asia.gcr.io`.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `limit_by_tag` - (Optional) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`.

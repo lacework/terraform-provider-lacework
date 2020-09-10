@@ -11,7 +11,7 @@ Use this resource to integrate an Amazon Container Registry (ECR) with Lacework 
 and report vulnerabilities found in the operating system software packages in a Docker container
 image.
 
-~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new image and does not create a new entry. To assess a retagged image, use on-demand assessment through the Lacework CLI/API. For more information, see the [container vulnerability section in the Lacework CLI documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
+~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new image and does not create a new entry. To assess a retagged image, use on-demand assessment through the Lacework CLI. For more information, see the [container vulnerability section in the Lacework CLI documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
 
 ## Example Usage
 
@@ -28,7 +28,7 @@ resource "lacework_integration_ecr" "example" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework container registry integration name.
+* `name` - (Required) The ECR integration name.
 * `registry_domain` - (Required) The Amazon Container Registry (ECR) domain in the format `YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com`, where `YourAWSAcount` is the AWS account number for the AWS IAM user that has a role with permissions to access the ECR and `YourRegion` is your AWS region such as `us-west-2`.
 * `access_key_id` - (Required) The AWS access key ID for an AWS IAM user that has a role with permissions to access the Amazon Container Registry (ECR).
 * `secret_access_key` - (Required) The AWS secret key for the specified AWS access key.

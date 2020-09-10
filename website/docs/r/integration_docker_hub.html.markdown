@@ -25,7 +25,7 @@ resource "lacework_integration_docker_hub" "example" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework container registry integration name.
+* `name` - (Required) The Container Registry integration name.
 * `username` - (Required) The Docker user that has at least read-only permissions to the Docker Hub container repositories.
 * `password` - (Required) The password for the specified Docker Hub user.
 * `limit_by_tag` - (Optional) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`.
