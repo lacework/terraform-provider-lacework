@@ -11,47 +11,46 @@ import (
 )
 
 const (
-	testAccIntegrationDockerHubResourceType = "lacework_integration_docker_hub"
-	testAccIntegrationDockerHubResourceName = "example"
+	testAccIntegrationGcrResourceType = "lacework_integration_gcr"
+	testAccIntegrationGcrResourceName = "example"
 
-	// Environment variables for testing Docker Hub Container Registry Integrations
-	testAccIntegrationContainerRegEnvLimitByTag   = "LIMIT_BY_TAG"
-	testAccIntegrationContainerRegEnvLimitByLabel = "LIMIT_BY_LABEL"
-	testAccIntegrationContainerRegEnvLimitByRepos = "LIMIT_BY_REP"
-	testAccIntegrationContainerRegEnvLimitNumImg  = "LIMIT_NUM_IMG"
-	testAccIntegrationDockerHubEnvUsername        = "DOCKER_USERNAME"
-	testAccIntegrationDockerHubEnvPassword        = "DOCKER_PASSWORD"
+	// Environment variables for testing GCR Integrations
+	testAccIntegrationGcrEnvRegistryDomain = "GCR_DOMAIN"
+	testAccIntegrationGcrEnvClientID       = "GCR_CLIENT_ID"
+	testAccIntegrationGcrEnvPrivateKeyID   = "GCR_PRIVATE_KEY_ID"
+	testAccIntegrationGcrEnvPrivateKey     = "GCR_PRIVATE_KEY"
+	testAccIntegrationGcrEnvClientEmail    = "GCR_CLIENT_EMAIL"
 )
 
-func TestAccIntegrationDockerHub(t *testing.T) {
+func TestAccIntegrationGcr(t *testing.T) {
 	resourceTypeAndName := fmt.Sprintf("%s.%s",
-		testAccIntegrationDockerHubResourceType,
-		testAccIntegrationDockerHubResourceName,
+		testAccIntegrationGcrResourceType,
+		testAccIntegrationGcrResourceName,
 	)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
-			testAccIntegrationDockerHubEnvVarsPreCheck(t)
+			testAccIntegrationGcrEnvVarsPreCheck(t)
 		},
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckIntegrationDockerHubDestroy,
+		CheckDestroy: testAccCheckIntegrationGcrDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccIntegrationDockerHubConfig(
+				Config: testAccIntegrationGcrConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationDockerHubExists(resourceTypeAndName),
+					testAccCheckIntegrationGcrExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
 				),
 			},
 			{
-				Config: testAccIntegrationDockerHubConfig(
+				Config: testAccIntegrationGcrConfig(
 					false,
 				),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckIntegrationDockerHubExists(resourceTypeAndName),
+					testAccCheckIntegrationGcrExists(resourceTypeAndName),
 					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "false"),
 				),
 			},
@@ -59,11 +58,11 @@ func TestAccIntegrationDockerHub(t *testing.T) {
 	})
 }
 
-func testAccCheckIntegrationDockerHubDestroy(s *terraform.State) error {
+func testAccCheckIntegrationGcrDestroy(s *terraform.State) error {
 	lacework := testAccProvider.Meta().(*api.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != testAccIntegrationDockerHubResourceType {
+		if rs.Type != testAccIntegrationGcrResourceType {
 			continue
 		}
 
@@ -85,7 +84,7 @@ func testAccCheckIntegrationDockerHubDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccCheckIntegrationDockerHubExists(resourceTypeAndName string) resource.TestCheckFunc {
+func testAccCheckIntegrationGcrExists(resourceTypeAndName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		lacework := testAccProvider.Meta().(*api.Client)
 
@@ -119,7 +118,7 @@ func testAccCheckIntegrationDockerHubExists(resourceTypeAndName string) resource
 	}
 }
 
-func testAccIntegrationDockerHubEnvVarsPreCheck(t *testing.T) {
+func testAccIntegrationGcrEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccIntegrationContainerRegEnvLimitByTag); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationContainerRegEnvLimitByTag)
 	}
@@ -132,32 +131,49 @@ func testAccIntegrationDockerHubEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccIntegrationContainerRegEnvLimitNumImg); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationContainerRegEnvLimitNumImg)
 	}
-	if v := os.Getenv(testAccIntegrationDockerHubEnvUsername); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationDockerHubEnvUsername)
+	if v := os.Getenv(testAccIntegrationGcrEnvRegistryDomain); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcrEnvRegistryDomain)
 	}
-	if v := os.Getenv(testAccIntegrationDockerHubEnvPassword); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationDockerHubEnvPassword)
+	if v := os.Getenv(testAccIntegrationGcrEnvClientID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcrEnvClientID)
+	}
+	if v := os.Getenv(testAccIntegrationGcrEnvPrivateKeyID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcrEnvPrivateKeyID)
+	}
+	if v := os.Getenv(testAccIntegrationGcrEnvPrivateKey); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcrEnvPrivateKey)
+	}
+	if v := os.Getenv(testAccIntegrationGcrEnvClientEmail); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationGcrEnvClientEmail)
 	}
 }
 
-func testAccIntegrationDockerHubConfig(enabled bool) string {
+func testAccIntegrationGcrConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
-    name           = "integration test"
-    enabled        = %t
-    username       = "%s"
-    password       = "%s"
-    limit_by_tag   = "%s"
-    limit_by_label = "%s"
+    name            = "integration test"
+    enabled         = %t
+    registry_domain = "%s"
+    credentials {
+        client_id = "%s"
+        private_key_id = "%s"
+        client_email = "%s"
+        private_key = "%s"
+    }
+    limit_by_tag    = "%s"
+    limit_by_label  = "%s"
     limit_by_repos = "%s"
     limit_num_imgs = %s
 }
 `,
-		testAccIntegrationDockerHubResourceType,
-		testAccIntegrationDockerHubResourceName,
+		testAccIntegrationGcrResourceType,
+		testAccIntegrationGcrResourceName,
 		enabled,
-		os.Getenv(testAccIntegrationDockerHubEnvUsername),
-		os.Getenv(testAccIntegrationDockerHubEnvPassword),
+		os.Getenv(testAccIntegrationGcrEnvRegistryDomain),
+		os.Getenv(testAccIntegrationGcrEnvClientID),
+		os.Getenv(testAccIntegrationGcrEnvPrivateKeyID),
+		os.Getenv(testAccIntegrationGcrEnvClientEmail),
+		os.Getenv(testAccIntegrationGcrEnvPrivateKey),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitByTag),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitByLabel),
 		os.Getenv(testAccIntegrationContainerRegEnvLimitByRepos),
