@@ -28,7 +28,7 @@ resource "lacework_integration_gcp_cfg" "account_abc" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework GCP Config integration name.
+* `name` - (Required) The GCP Config integration name.
 * `resource_id` - (Required) The organization or project ID.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `resource_level` - (Optional) The integration level. Must be one of `PROJECT` or `ORGANIZATION`. Defaults to `PROJECT`.

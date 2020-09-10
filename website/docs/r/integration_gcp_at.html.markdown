@@ -30,7 +30,7 @@ resource "lacework_integration_gcp_at" "account_abc" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework GCP Audit Trail integration name.
+* `name` - (Required) The GCP Audit Trail integration name.
 * `resource_id` - (Required) The organization or project ID.
 * `subscription` - (Required) The subscription queue name.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.

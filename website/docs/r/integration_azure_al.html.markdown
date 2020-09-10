@@ -28,7 +28,7 @@ resource "lacework_integration_azure_at" "account_abc" {
 
 The following arguments are supported:
 
-* `name` - (Required) The Lacework Azure Config integration name.
+* `name` - (Required) The Azure Activity Log integration name.
 * `tenant_id` - (Required) The directory tenant ID.
 * `queue_url` - (Required) The storage queue URL.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
