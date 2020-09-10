@@ -89,7 +89,7 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 	}
 
 	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating AWS_CFG integration with data:\n%+v\n", aws)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCfgIntegration.String(), aws)
 	response, err := lacework.Integrations.CreateAws(aws)
 	if err != nil {
 		return err
@@ -113,14 +113,14 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created AWS_CFG integration with guid: %v\n", integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCfgIntegration.String(), integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAws(d.Id())
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interfac
 			creds["external_id"] = integration.Data.Credentials.ExternalID
 			d.Set("credentials", []map[string]string{creds})
 
-			log.Printf("[INFO] Read AWS_CFG integration with guid: %v\n", integration.IntgGuid)
+			log.Printf("[INFO] Read %s integration with guid: %v\n", api.AwsCfgIntegration.String(), integration.IntgGuid)
 			return nil
 		}
 	}
@@ -170,7 +170,7 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 
 	aws.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating AWS_CFG integration with data:\n%+v\n", aws)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCfgIntegration.String(), aws)
 	response, err := lacework.Integrations.UpdateAws(aws)
 	if err != nil {
 		return err
@@ -192,20 +192,20 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAwsCfgDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAws(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
 	return nil
 }
 

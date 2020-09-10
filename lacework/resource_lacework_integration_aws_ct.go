@@ -93,7 +93,7 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 	}
 
 	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating AWS_CFG integration with data:\n%+v\n", aws)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCloudTrailIntegration.String(), aws)
 	response, err := lacework.Integrations.CreateAws(aws)
 	if err != nil {
 		return err
@@ -117,14 +117,15 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created AWS_CFG integration with guid: %v\n", integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %v\n",
+		api.AwsCloudTrailIntegration.String(), integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsCloudTrailIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAws(d.Id())
 	if err != nil {
 		return err
@@ -146,7 +147,8 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 			d.Set("credentials", []map[string]string{creds})
 			d.Set("queue_url", integration.Data.QueueUrl)
 
-			log.Printf("[INFO] Read AWS_CFG integration with guid: %v\n", integration.IntgGuid)
+			log.Printf("[INFO] Read %s integration with guid: %v\n",
+				api.AwsCloudTrailIntegration.String(), integration.IntgGuid)
 			return nil
 		}
 	}
@@ -176,7 +178,7 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 
 	aws.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating AWS_CFG integration with data:\n%+v\n", aws)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCloudTrailIntegration.String(), aws)
 	response, err := lacework.Integrations.UpdateAws(aws)
 	if err != nil {
 		return err
@@ -198,19 +200,19 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsCloudTrailIntegration.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAwsCloudTrailDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsCloudTrailIntegration.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAws(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted AWS_CFG integration with guid: %v\n", d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCloudTrailIntegration.String(), d.Id())
 	return nil
 }

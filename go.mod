@@ -20,7 +20,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk v1.15.0
 	github.com/hashicorp/terraform-svchost v0.0.0-20191119180714-d2e4933b9136 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
-	github.com/lacework/go-sdk v0.2.1-0.20200827193425-2630ab5fb746
+	github.com/lacework/go-sdk v0.2.1-0.20200909201246-18a8c8b60ef6
 	github.com/manifoldco/promptui v0.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mitchellh/cli v1.1.1 // indirect
