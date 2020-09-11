@@ -1,4 +1,4 @@
-## 0.2.4 (Unreleased)
+## 0.2.4 (September 11, 2020)
 
 ## New Resources
 
