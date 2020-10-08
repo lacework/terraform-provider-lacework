@@ -4,9 +4,19 @@ WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=lacework
 DIR=~/.terraform.d/plugins
 GO_CLIENT_VERSION=master
-export GOFLAGS=-mod=vendor
+COVERAGEOUT?=coverage.out
+GOLANGCILINTVERSION?=1.23.8
+GOFLAGS=-mod=vendor
+CGO_ENABLED?=0
+PACKAGENAME?=terraform-provider-lacework
+VERSION=$(shell cat VERSION)
+export GOFLAGS CGO_ENABLED
 
 default: build
+
+ci: lint test fmtcheck imports-check
+
+prepare: install-tools go-vendor
 
 deps:
 ifdef UPDATE_DEP
@@ -18,20 +28,38 @@ alldeps:
 	@go get -u
 	@go mod vendor
 
+go-vendor:
+	go mod tidy
+	go mod vendor
+	go mod verify
+
 build: fmtcheck
 	go install
 
+build-cross-platform:
+	gox -output="bin/$(PACKAGENAME)_$(VERSION)_{{.OS}}_{{.Arch}}" \
+            -os="darwin linux windows freebsd" \
+            -osarch="linux/arm linux/arm64 freebsd/arm freebsd/arm64" \
+            -arch="amd64 386" \
+            github.com/lacework/$(PACKAGENAME)
+
 install: fmtcheck
 	mkdir -vp $(DIR)
-	go build -o $(DIR)/terraform-provider-lacework
+	go build -o $(DIR)/$(PACKAGENAME)
 
 uninstall:
-	@rm -vf $(DIR)/terraform-provider-lacework
+	@rm -vf $(DIR)/$(PACKAGENAME)
+
+integration-test:
+	@echo "to-be-implemented"
 
 test: fmtcheck
 	go test $(TEST) || exit 1
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+
+lint:
+	golangci-lint run
 
 testacc: fmtcheck
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
@@ -77,3 +105,14 @@ endif
 	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider-test PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
 
 .PHONY: build test testacc vet fmt fmtcheck errcheck test-compile website website-test
+
+install-tools:
+ifeq (, $(shell which golangci-lint))
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v$(GOLANGCILINTVERSION)
+endif
+ifeq (, $(shell which goimports))
+	go get golang.org/x/tools/cmd/goimports
+endif
+ifeq (, $(shell which gox))
+	go get github.com/mitchellh/gox
+endif
