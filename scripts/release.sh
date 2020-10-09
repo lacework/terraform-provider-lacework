@@ -271,10 +271,11 @@ remove_tag_version() {
 update_changelog() {
   log "updating CHANGELOG.md"
   _changelog=$(cat CHANGELOG.md)
-  echo "# v$VERSION" > CHANGELOG.md
+  _date=$(date +"%B %d, %Y")
+  echo "## v$VERSION ($_date)" > CHANGELOG.md
   echo "" >> CHANGELOG.md
   echo "$(cat CHANGES.md)" >> CHANGELOG.md
-  echo "---" >> CHANGELOG.md
+  echo "" >> CHANGELOG.md
   echo "$_changelog" >> CHANGELOG.md
   # clean changes file since we don't need it anymore
   rm CHANGES.md
