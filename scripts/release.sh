@@ -170,20 +170,22 @@ compress_targets() {
   local _target_with_ext
   local _cli_name
 
-  for target in ${TARGETS[*]}; do
-    if [[ "$target" =~ exe ]]; then
-      _cli_name="bin/${BINARY}.exe"
-    else
-      _cli_name="bin/${BINARY}"
-    fi
+  ( cd bin/
+    for target in ${TARGETS[*]}; do
+      if [[ "$target" =~ exe ]]; then
+        _cli_name="${BINARY}.exe"
+      else
+        _cli_name="${BINARY}"
+      fi
 
-    cp "bin/${target}" "$_cli_name"
-    _target_with_ext="bin/${target%.exe}.zip"
-    zip "$_target_with_ext" "$_cli_name" >/dev/null
+      mv "${target}" "$_cli_name"
+      _target_with_ext="${target%.exe}.zip"
+      zip "$_target_with_ext" "$_cli_name" >/dev/null
 
-    log $_target_with_ext
-    rm -f "$_cli_name"
-  done
+      log $_target_with_ext
+      rm -f "$_cli_name"
+    done
+  )
 }
 
 generate_shasums() {
