@@ -18,6 +18,9 @@ ci: lint test fmtcheck imports-check
 
 prepare: install-tools go-vendor
 
+release: build-cross-platform
+	scripts/release.sh prepare
+
 deps:
 ifdef UPDATE_DEP
 	@go get -u "$(UPDATE_DEP)"
