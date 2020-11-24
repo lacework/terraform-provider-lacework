@@ -1,6 +1,8 @@
 package lacework
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -8,69 +10,107 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
-	return &schema.Resource{
-		Create: resourceLaceworkIntegrationAwsCloudTrailCreate,
-		Read:   resourceLaceworkIntegrationAwsCloudTrailRead,
-		Update: resourceLaceworkIntegrationAwsCloudTrailUpdate,
-		Delete: resourceLaceworkIntegrationAwsCloudTrailDelete,
-
-		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+var awsCloudTrailIntegrationSchema = map[string]*schema.Schema{
+	"name": {
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "The integration name.",
+	},
+	"intg_guid": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"enabled": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "The state of the external integration.",
+	},
+	"queue_url": {
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "The SQS Queue URL.",
+	},
+	"credentials": {
+		Type:        schema.TypeList,
+		MaxItems:    1,
+		Required:    true,
+		Description: "The credentials needed by the integration.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"role_arn": {
+					Type:     schema.TypeString,
+					Required: true,
+				},
+				"external_id": {
+					Type:     schema.TypeString,
+					Required: true,
+				},
+			},
 		},
-
-		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
-			},
-			"queue_url": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"credentials": {
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Required: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"role_arn": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"external_id": {
-							Type:     schema.TypeString,
-							Required: true,
+	},
+	"org_account_mappings": {
+		Type:        schema.TypeList,
+		Optional:    true,
+		MaxItems:    1,
+		Description: "Mapping of AWS accounts to Lacework accounts within a Lacework organization.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"default_lacework_account": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "The default Lacework account name where any non-mapped AWS account will appear",
+				},
+				"mapping": {
+					Type:        schema.TypeSet,
+					Required:    true,
+					Description: "A map of AWS accounts to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"lacework_account": {
+								Type:        schema.TypeString,
+								Required:    true,
+								Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+							},
+							"aws_accounts": {
+								Type:        schema.TypeSet,
+								Elem:        &schema.Schema{Type: schema.TypeString},
+								MinItems:    1,
+								Required:    true,
+								Description: "The list of AWS account IDs to map.",
+							},
 						},
 					},
 				},
 			},
-			"created_or_updated_time": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"created_or_updated_by": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"type_name": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"org_level": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 		},
+	},
+	"created_or_updated_time": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"created_or_updated_by": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"type_name": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"org_level": {
+		Type:     schema.TypeBool,
+		Computed: true,
+	},
+}
+
+func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
+	return &schema.Resource{
+		Create:   resourceLaceworkIntegrationAwsCloudTrailCreate,
+		Read:     resourceLaceworkIntegrationAwsCloudTrailRead,
+		Update:   resourceLaceworkIntegrationAwsCloudTrailUpdate,
+		Delete:   resourceLaceworkIntegrationAwsCloudTrailDelete,
+		Schema:   awsCloudTrailIntegrationSchema,
+		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
 	}
 }
 
@@ -90,6 +130,20 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 	)
 	if !d.Get("enabled").(bool) {
 		aws.Enabled = 0
+	}
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d)
+	accountMapFileBytes, err := json.Marshal(accountMapFile)
+	if err != nil {
+		return err
+	}
+
+	aws.Data.EncodeAccountMappingFile(string(accountMapFileBytes))
+
+	if !accountMapFile.Empty() {
+		// switch this integration to be at the organization level
+		aws.IsOrg = 1
 	}
 
 	// @afiune should we do this if there is sensitive information?
@@ -147,8 +201,27 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 			d.Set("credentials", []map[string]string{creds})
 			d.Set("queue_url", integration.Data.QueueUrl)
 
+			accountMapFileStr, err := integration.Data.DecodeAccountMappingFile()
+			if err != nil {
+				return err
+			}
+
+			// The integration has an account mapping file
+			accountMapFile := new(accountMappingsFile)
+			if accountMapFileStr != "" {
+				err := json.Unmarshal([]byte(accountMapFileStr), accountMapFile)
+				if err != nil {
+					return fmt.Errorf("Error decoding organization account mapping: %s", err)
+				}
+			}
+			err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile))
+			if err != nil {
+				return fmt.Errorf("Error flattening organization account mapping: %s", err)
+			}
+
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
-				api.AwsCloudTrailIntegration.String(), integration.IntgGuid)
+				api.AwsCloudTrailIntegration.String(), integration.IntgGuid,
+			)
 			return nil
 		}
 	}
@@ -177,6 +250,19 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 	}
 
 	aws.IntgGuid = d.Id()
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d)
+	accountMapFileBytes, err := json.Marshal(accountMapFile)
+	if err != nil {
+		return err
+	}
+
+	aws.Data.EncodeAccountMappingFile(string(accountMapFileBytes))
+	if !accountMapFile.Empty() {
+		// switch this integration to be at the organization level
+		aws.IsOrg = 1
+	}
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCloudTrailIntegration.String(), aws)
 	response, err := lacework.Integrations.UpdateAws(aws)
@@ -215,4 +301,73 @@ func resourceLaceworkIntegrationAwsCloudTrailDelete(d *schema.ResourceData, meta
 
 	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCloudTrailIntegration.String(), d.Id())
 	return nil
+}
+
+type accountMappingsFile struct {
+	DefaultLaceworkAccount string                 `json:"defaultLaceworkAccountAws"`
+	Mappings               map[string]interface{} `json:"integration_mappings"`
+}
+
+func (f *accountMappingsFile) Empty() bool {
+	return f.DefaultLaceworkAccount == ""
+}
+
+func getResourceOrgAccountMappings(d *schema.ResourceData) *accountMappingsFile {
+	accountMapFile := new(accountMappingsFile)
+	accMapsInt := d.Get("org_account_mappings").([]interface{})
+	if len(accMapsInt) != 0 && accMapsInt[0] != nil {
+		accountMappings := accMapsInt[0].(map[string]interface{})
+
+		accountMapFile = &accountMappingsFile{
+			DefaultLaceworkAccount: accountMappings["default_lacework_account"].(string),
+			Mappings:               map[string]interface{}{},
+		}
+
+		mappingSet := accountMappings["mapping"].(*schema.Set)
+		for _, m := range mappingSet.List() {
+			mapping := m.(map[string]interface{})
+			accountMapFile.Mappings[mapping["lacework_account"].(string)] = map[string]interface{}{
+				"aws_accounts": castStringArray(mapping["aws_accounts"].(*schema.Set).List()),
+			}
+		}
+
+	}
+
+	return accountMapFile
+}
+
+func flattenOrgAccountMappings(mappingFile *accountMappingsFile) []map[string]interface{} {
+	orgAccMappings := make([]map[string]interface{}, 0, 1)
+
+	if mappingFile.Empty() {
+		return orgAccMappings
+	}
+
+	mappings := map[string]interface{}{
+		"default_lacework_account": mappingFile.DefaultLaceworkAccount,
+		"mapping":                  flattenMappings(mappingFile.Mappings),
+	}
+
+	orgAccMappings = append(orgAccMappings, mappings)
+	return orgAccMappings
+}
+
+func flattenMappings(mappings map[string]interface{}) *schema.Set {
+	var (
+		orgAccountMappingsSchema = awsCloudTrailIntegrationSchema["org_account_mappings"].Elem.(*schema.Resource)
+		mappingSchema            = orgAccountMappingsSchema.Schema["mapping"].Elem.(*schema.Resource)
+		awsAccountsSchema        = mappingSchema.Schema["aws_accounts"].Elem.(*schema.Schema)
+		res                      = schema.NewSet(schema.HashResource(mappingSchema), []interface{}{})
+	)
+	for laceworkAccount, m := range mappings {
+		mappingValue := m.(map[string]interface{})
+		res.Add(map[string]interface{}{
+			"lacework_account": laceworkAccount,
+			"aws_accounts": schema.NewSet(schema.HashSchema(awsAccountsSchema),
+				mappingValue["aws_accounts"].([]interface{}),
+			),
+		})
+	}
+
+	return res
 }
