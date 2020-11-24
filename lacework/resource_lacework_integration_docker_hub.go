@@ -148,7 +148,6 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 			d.Set("org_level", integration.IsOrg == 1)
 
 			d.Set("username", integration.Data.Credentials.Username)
-			d.Set("password", integration.Data.Credentials.Password)
 			d.Set("limit_by_tag", integration.Data.LimitByTag)
 			d.Set("limit_by_label", integration.Data.LimitByLabel)
 			d.Set("limit_by_repos", integration.Data.LimitByRep)
