@@ -139,9 +139,9 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 		return err
 	}
 
-	aws.Data.EncodeAccountMappingFile(string(accountMapFileBytes))
-
 	if !accountMapFile.Empty() {
+		aws.Data.EncodeAccountMappingFile(accountMapFileBytes)
+
 		// switch this integration to be at the organization level
 		aws.IsOrg = 1
 	}
@@ -201,19 +201,22 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 			d.Set("credentials", []map[string]string{creds})
 			d.Set("queue_url", integration.Data.QueueUrl)
 
-			accountMapFileStr, err := integration.Data.DecodeAccountMappingFile()
+			accountMapFileBytes, err := integration.Data.DecodeAccountMappingFile()
 			if err != nil {
 				return err
 			}
 
-			// The integration has an account mapping file
 			accountMapFile := new(accountMappingsFile)
-			if accountMapFileStr != "" {
-				err := json.Unmarshal([]byte(accountMapFileStr), accountMapFile)
+			if len(accountMapFileBytes) != 0 {
+				// The integration has an account mapping file
+				// unmarshal its content into the account mapping struct
+				err := json.Unmarshal(accountMapFileBytes, accountMapFile)
 				if err != nil {
 					return fmt.Errorf("Error decoding organization account mapping: %s", err)
 				}
+
 			}
+
 			err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile))
 			if err != nil {
 				return fmt.Errorf("Error flattening organization account mapping: %s", err)
@@ -258,8 +261,9 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 		return err
 	}
 
-	aws.Data.EncodeAccountMappingFile(string(accountMapFileBytes))
 	if !accountMapFile.Empty() {
+		aws.Data.EncodeAccountMappingFile(accountMapFileBytes)
+
 		// switch this integration to be at the organization level
 		aws.IsOrg = 1
 	}
