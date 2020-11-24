@@ -217,7 +217,7 @@ github.com/jmespath/go-jmespath
 github.com/jstemmer/go-junit-report
 github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
-# github.com/lacework/go-sdk v0.2.6
+# github.com/lacework/go-sdk v0.2.10-0.20201202210122-3d71ed1dcb01
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
@@ -253,6 +253,8 @@ github.com/oklog/run
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
 # github.com/posener/complete v1.2.3
 ## explicit
 github.com/posener/complete
@@ -262,6 +264,9 @@ github.com/posener/complete/cmd/install
 ## explicit
 github.com/spf13/afero
 github.com/spf13/afero/mem
+# github.com/stretchr/testify v1.5.1
+## explicit
+github.com/stretchr/testify/assert
 # github.com/ulikunitz/xz v0.5.7
 ## explicit
 github.com/ulikunitz/xz
@@ -492,3 +497,5 @@ google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/emptypb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/pluginpb
+# gopkg.in/yaml.v2 v2.3.0
+gopkg.in/yaml.v2
