@@ -1,4 +1,5 @@
 ---
+subcategory: "Other Resources"
 layout: "lacework"
 page_title: "Lacework: lacework_api_token"
 description: |-

@@ -1,4 +1,5 @@
 ---
+subcategory: "Container Registry Integrations"
 layout: "lacework"
 page_title: "Lacework: lacework_integration_docker_hub"
 description: |-
