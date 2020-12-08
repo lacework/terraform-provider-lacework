@@ -1,4 +1,5 @@
 ---
+subcategory: "Alert Channels"
 layout: "lacework"
 page_title: "Lacework: lacework_alert_channel_jira_cloud"
 description: |-
