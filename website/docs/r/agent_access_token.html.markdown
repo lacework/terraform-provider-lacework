@@ -9,7 +9,7 @@ description: |-
 # lacework\_agent\_access\_token
 
 To connect to the Lacework platform, Lacework agents require an agent access token. Use this resource to
-mange agent tokens within your Lacework account. 
+manage agent tokens within your Lacework account. 
 
 !> **Warning:** Agent tokens should be treated as secret and not published. A token uniquely identifies
 a Lacework customer. If you suspect your token has been publicly exposed or compromised, generate a new
@@ -56,4 +56,3 @@ $ terraform import lacework_agent_access_token.k8s YourAgentToken
 -> **Note:** To list all agent access tokens in your Lacework account, use the
 	Lacework CLI command `lacework agent token list`. To install this tool follow
 	[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
-
