@@ -1,4 +1,5 @@
 ---
+subcategory: "Cloud Account Integrations"
 layout: "lacework"
 page_title: "Lacework: lacework_integration_aws_cfg"
 description: |-
