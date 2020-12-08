@@ -83,7 +83,7 @@ func resourceLaceworkAgentAccessTokenCreate(d *schema.ResourceData, meta interfa
 
 	// @afiune at this point in time, we know the data field has a value
 	token := response.Data[0]
-	d.SetId(token.AccessToken)
+	d.SetId(token.TokenAlias)
 	d.Set("name", token.TokenAlias)
 	d.Set("token", token.AccessToken)
 	d.Set("description", token.Props.Description)
@@ -111,13 +111,13 @@ func resourceLaceworkAgentAccessTokenRead(d *schema.ResourceData, meta interface
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading agent access token.")
-	response, err := lacework.Agents.GetToken(d.Id())
+	response, err := lacework.Agents.GetToken(d.Get("token").(string))
 	if err != nil {
 		return err
 	}
 
 	for _, token := range response.Data {
-		if token.AccessToken == d.Id() {
+		if token.TokenAlias == d.Id() {
 			d.Set("name", token.TokenAlias)
 			d.Set("token", token.AccessToken)
 			d.Set("description", token.Props.Description)
@@ -155,7 +155,7 @@ func resourceLaceworkAgentAccessTokenUpdate(d *schema.ResourceData, meta interfa
 
 	log.Printf("[INFO] Updating agent access token. name=%s, description=%s, enabled=%t",
 		token.TokenAlias, token.Props.Description, d.Get("enabled").(bool))
-	response, err := lacework.Agents.UpdateToken(d.Id(), token)
+	response, err := lacework.Agents.UpdateToken(d.Get("token").(string), token)
 	if err != nil {
 		return err
 	}
@@ -168,6 +168,7 @@ func resourceLaceworkAgentAccessTokenUpdate(d *schema.ResourceData, meta interfa
 
 	// @afiune at this point in time, we know the data field has a value
 	nToken := response.Data[0]
+	d.SetId(token.TokenAlias)
 	d.Set("name", nToken.TokenAlias)
 	d.Set("token", nToken.AccessToken)
 	d.Set("description", nToken.Props.Description)
@@ -196,7 +197,7 @@ func resourceLaceworkAgentAccessTokenDelete(d *schema.ResourceData, meta interfa
 	// field has a unique constraint. There can't be two tokens with the same alias.
 
 	log.Printf("[INFO] Disabling agent access token. name=%s", tokenName)
-	_, err := lacework.Agents.UpdateToken(d.Id(), token)
+	_, err := lacework.Agents.UpdateToken(d.Get("token").(string), token)
 	if err != nil {
 		return err
 	}
@@ -218,6 +219,10 @@ func importLaceworkAgentAccessToken(d *schema.ResourceData, meta interface{}) ([
 		if token.AccessToken == d.Id() {
 			log.Printf("[INFO] agent access token found. name=%s, description=%s, enabled=%t",
 				token.TokenAlias, token.Props.Description, token.Status())
+
+			d.Set("token", token.AccessToken)
+			d.SetId(token.TokenAlias)
+
 			return []*schema.ResourceData{d}, nil
 		}
 	}
