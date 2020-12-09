@@ -7,4 +7,4 @@
 package lacework
 
 // version is the semver coming from the VERSION file
-const version = "0.2.6-release"
+const version = "0.2.6"
