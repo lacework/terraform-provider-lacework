@@ -13,8 +13,9 @@ func dataSourceLaceworkApiToken() *schema.Resource {
 		Read: dataSourceLaceworkApiTokenRead,
 		Schema: map[string]*schema.Schema{
 			"token": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
 			},
 		},
 	}
