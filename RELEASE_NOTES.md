@@ -1,8 +1,13 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v0.2.5`.
+Another day, another release. These are the release notes for the version `v0.2.6`.
 
 ## Features
-* feat: trigger initial compliance report automatically (#39) (Salim Afiune)([a9f4dae](https://github.com/lacework/terraform-provider-lacework/commit/a9f4dae0e98a600fa9bdff23c78c578a97cee6d7))
+* feat(data-source): new lacework_agent_access_token (Salim Afiune Maya)([6283e63](https://github.com/lacework/terraform-provider-lacework/commit/6283e63a3b29df85525cac3044767edf07a97f58))
+* feat(resource): new lacework_agent_access_token (#45) (Salim Afiune)([de8b2cc](https://github.com/lacework/terraform-provider-lacework/commit/de8b2cc5c9727a30cd7915e3f3c0032d8b34771d))
+* feat(resource): AWS consolidated CloudTrail support (Salim Afiune Maya)([b232e16](https://github.com/lacework/terraform-provider-lacework/commit/b232e163e612b0790b27493df74eb0ac79a840ce))
+## Bug Fixes
+* fix(docker): avoid loading non-existing password (Salim Afiune Maya)([5ea1e5d](https://github.com/lacework/terraform-provider-lacework/commit/5ea1e5d6d18db86c72baff9ed40151475964d269))
+* fix: only encode mapping account when there is one (Salim Afiune Maya)([aedbee8](https://github.com/lacework/terraform-provider-lacework/commit/aedbee8cdf8e2021ecdd14f4daa64795271eb7af))
 ## Other Changes
-* ci: zip binaries without bin/ (#38) (Salim Afiune)([2d57b92](https://github.com/lacework/terraform-provider-lacework/commit/2d57b92bbf7f514ed9c11d10a47855d095625fcb))
-* ci: add date to CHANGELOG.md (#37) (Salim Afiune)([509e4db](https://github.com/lacework/terraform-provider-lacework/commit/509e4dbd0daa88a63666be1c974554ad14e0b9ce))
+* chore(deps): update github.com/lacework/go-sdk (Salim Afiune Maya)([ad616a6](https://github.com/lacework/terraform-provider-lacework/commit/ad616a6ef57eb4b19581d5284a660fb1dfe383f5))
+* ci: improve release notes generation (Salim Afiune Maya)([11e4604](https://github.com/lacework/terraform-provider-lacework/commit/11e4604e4c6d6919c8f3f005f198e531773f5a0b))
