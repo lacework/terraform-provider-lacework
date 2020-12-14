@@ -41,8 +41,8 @@ build: fmtcheck
 
 build-cross-platform:
 	gox -output="bin/$(PACKAGENAME)_$(VERSION)_{{.OS}}_{{.Arch}}" \
-            -os="darwin linux windows freebsd" \
-            -osarch="linux/arm linux/arm64 freebsd/arm freebsd/arm64" \
+            -os="linux windows freebsd" \
+            -osarch="darwin/amd64 linux/arm linux/arm64 freebsd/arm freebsd/arm64" \
             -arch="amd64 386" \
             github.com/lacework/$(PACKAGENAME)
 
