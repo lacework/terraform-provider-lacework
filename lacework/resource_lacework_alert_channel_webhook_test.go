@@ -70,7 +70,7 @@ func testAccCheckAlertChannelWebhookDestroy(s *terraform.State) error {
 			if integration.IntgGuid == rs.Primary.ID {
 				return fmt.Errorf(
 					"the %s integration (%s) still exists",
-					api.WebhookChannelIntegration, rs.Primary.ID,
+					api.WebhookIntegration, rs.Primary.ID,
 				)
 			}
 		}
@@ -99,7 +99,7 @@ func testAccCheckAlertChannelWebhookExists(resourceTypeAndName string) resource.
 
 		if len(response.Data) < 1 {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.WebhookChannelIntegration, rs.Primary.ID)
+				api.WebhookIntegration, rs.Primary.ID)
 		}
 
 		for _, integration := range response.Data {
@@ -109,7 +109,7 @@ func testAccCheckAlertChannelWebhookExists(resourceTypeAndName string) resource.
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.WebhookChannelIntegration, rs.Primary.ID)
+			api.WebhookIntegration, rs.Primary.ID)
 	}
 }
 
