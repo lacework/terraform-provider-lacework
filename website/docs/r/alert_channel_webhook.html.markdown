@@ -10,7 +10,7 @@ description: |-
 
 Configure Lacework to forward alerts to a 3rd party Webhook.
 
--> **Note:**  If the third-party that is receiving the HTTP POST request requires an API token, enter the API Token as part of the URL eg. https://webhook.com?api-token=123
+-> **Note:**  If the third-party application receiving the HTTP POST request requires an API token, enter the API token as part of the URL eg. https://webhook.com?api-token=123
 
 ## Example Usage
 
