@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_alert\_channel\_webhook
 
-Configure Lacework to forward alerts to a 3rd party Webhook.
+You can use this resource to create a custom webhook that receives Lacework alert notifications from a Lacework alert channel and forwards those alerts to a third-party application.
 
 -> **Note:**  If the third-party application receiving the HTTP POST request requires an API token, enter the API token as part of the URL eg. https://webhook.com?api-token=123
 
