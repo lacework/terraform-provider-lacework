@@ -12,8 +12,7 @@ You can use this resource to create a custom webhook that receives Lacework aler
 
 -> **Note:**  If the third-party application receiving the HTTP POST request requires an API token, enter the API token as part of the URL eg. https://webhook.com?api-token=123
 
-To find more information about the payload view the lacework support documentation
-https://support.lacework.com/hc/en-us/articles/360034367393-Webhook
+To find more information about the alert payload, see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360034367393-Webhook).
 
 ## Example Usage
 
