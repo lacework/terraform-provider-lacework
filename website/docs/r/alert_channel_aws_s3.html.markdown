@@ -15,9 +15,9 @@ Create the S3 alert channel that Lacework uses to send the data to your designat
 ```hcl
 resource "lacework_alert_channel_aws_s3" "account_abc" {
   name = "s3 Alerts"
+  bucket_arn  = "arn:aws:s3:::bucket_name/key_name"
   credentials {
     role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
-    bucket_arn  = "arn:aws:s3:::bucket_name/key_name"
     external_id = "12345"
   }
 ```
@@ -29,13 +29,12 @@ The following arguments are supported:
 * `name` - (Required) The Alert Channel integration name.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-
+* `bucket_arn` - (Required) The ARN of the S3 bucket.
 ### Credentials
 
 `credentials` supports the following arguments:
 
 * `role_arn` - (Required) The ARN of the IAM role.
-* `bucket_arn` - (Required) The ARN of the S3 bucket.
 * `external_id` - (Required) The external ID for the IAM role.
 
 ## Import
