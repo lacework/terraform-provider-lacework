@@ -144,7 +144,7 @@ func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interfac
 			d.Set("credentials", []map[string]string{creds})
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
-				api.SlackChannelIntegration, integration.IntgGuid)
+				api.AwsS3ChannelIntegration, integration.IntgGuid)
 			return nil
 		}
 	}
@@ -173,7 +173,7 @@ func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interf
 
 	s3.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.SlackChannelIntegration, s3)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsS3ChannelIntegration, s3)
 	response, err := lacework.Integrations.UpdateAwsS3AlertChannel(s3)
 	if err != nil {
 		return err
@@ -201,13 +201,13 @@ func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interf
 func resourceLaceworkAlertChannelAwsS3Delete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.SlackChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsS3ChannelIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.SlackChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsS3ChannelIntegration, d.Id())
 	return nil
 }
 
