@@ -37,6 +37,10 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"bucket_arn": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 			"credentials": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
@@ -45,15 +49,11 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"external_id": {
 							Type:     schema.TypeString,
-							Computed: true,
+							Required: true,
 						},
 						"role_arn": {
 							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"bucket_arn": {
-							Type:     schema.TypeString,
-							Computed: true,
+							Required: true,
 						},
 					},
 				},
@@ -80,8 +80,8 @@ func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interf
 		s3       = api.NewAwsS3AlertChannel(d.Get("name").(string),
 			api.AwsS3ChannelData{
 				Credentials: api.AwsS3Creds{
-					ExternalID: d.Get("external_id").(string),
-					RoleArn:    d.Get("role_arn").(string),
+					ExternalID: d.Get("credentials.0.external_id").(string),
+					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					BucketArn:  d.Get("bucket_arn").(string),
 				},
 			},
@@ -135,11 +135,11 @@ func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interfac
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
+			d.Set("bucket_arn", integration.Data.Credentials.BucketArn)
 
 			creds := make(map[string]string)
 			creds["role_arn"] = integration.Data.Credentials.RoleArn
 			creds["external_id"] = integration.Data.Credentials.ExternalID
-			creds["bucket_arn"] = integration.Data.Credentials.BucketArn
 
 			d.Set("credentials", []map[string]string{creds})
 
@@ -161,7 +161,7 @@ func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interf
 				Credentials: api.AwsS3Creds{
 					ExternalID: d.Get("credentials.0.external_id").(string),
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
-					BucketArn:  d.Get("credentials.0.bucket_arn").(string),
+					BucketArn:  d.Get("bucket_arn").(string),
 				},
 			},
 		)
