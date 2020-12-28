@@ -130,15 +130,15 @@ func testAccAlertChannelAwsS3EnvVarsPreCheck(t *testing.T) {
 
 func testAccAlertChannelAwsS3Config(enabled bool) string {
 	return fmt.Sprintf(`
-		resource "%s" "%s" {
-			name = "integration test"
-			enabled = %t
-			bucket_arn = "%s"
-			credentials {
-		    external_id = "%s"
-			  role_arn = "%s"
-			}
-		}
+resource "%s" "%s" {
+  name = "integration test"
+  enabled = %t
+  bucket_arn = "%s"
+  credentials {
+    external_id = "%s"
+    role_arn = "%s"
+  }
+}
 		`,
 		testAccAlertChannelAwsS3ResourceType,
 		testAccAlertChannelAwsS3ResourceName,
