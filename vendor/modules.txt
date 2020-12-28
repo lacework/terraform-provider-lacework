@@ -286,7 +286,7 @@ github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
 # github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 github.com/kevinburke/ssh_config
-# github.com/lacework/go-sdk v0.2.11-0.20201208210442-c3fe8bcc41ef
+# github.com/lacework/go-sdk v0.2.12-0.20201228082642-383de18bedfa
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array

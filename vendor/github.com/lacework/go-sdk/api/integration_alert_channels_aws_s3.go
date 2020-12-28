@@ -31,11 +31,11 @@ package api
 //
 //   awsS3Channel := api.NewAwsS3AlertChannel("foo",
 //     api.AwsS3ChannelData{
-//	     Credentials: api.AwsS3Creds{
-//         ExternalID: "1234",
-//         RoleArn: "arn:aws:iam::account-id:role/role-name-with-path,
-//         BucketArn: "arn:aws:s3:::bucket_name/key_name",
-//		  },
+//       Credentials: api.AwsS3Creds{
+//         ExternalID:  "1234",
+//         RoleArn:     "arn:aws:iam::account-id:role/role-name-with-path",
+//         BucketArn:   "arn:aws:s3:::bucket_name/key_name",
+//       },
 //     },
 //   )
 //
@@ -52,7 +52,7 @@ func NewAwsS3AlertChannel(name string, data AwsS3ChannelData) AwsS3AlertChannel 
 	}
 }
 
-// CreateAwsS3AlertChannel creates a awsS3 alert channel integration on the Lacework Server
+// CreateAwsS3AlertChannel creates an AWS_S3 alert channel integration on the Lacework Server
 func (svc *IntegrationsService) CreateAwsS3AlertChannel(integration AwsS3AlertChannel) (
 	response AwsS3AlertChannelResponse,
 	err error,
@@ -61,7 +61,7 @@ func (svc *IntegrationsService) CreateAwsS3AlertChannel(integration AwsS3AlertCh
 	return
 }
 
-// GetAwsS3AlertChannel gets a awsS3 alert channel integration that matches with
+// GetAwsS3AlertChannel gets an AWS_S3 alert channel integration that matches with
 // the provided integration guid on the Lacework Server
 func (svc *IntegrationsService) GetAwsS3AlertChannel(guid string) (
 	response AwsS3AlertChannelResponse,
@@ -71,7 +71,7 @@ func (svc *IntegrationsService) GetAwsS3AlertChannel(guid string) (
 	return
 }
 
-// UpdateAwsS3AlertChannel updates a single awsS3 alert channel integration
+// UpdateAwsS3AlertChannel updates a single AWS_S3 alert channel integration
 func (svc *IntegrationsService) UpdateAwsS3AlertChannel(data AwsS3AlertChannel) (
 	response AwsS3AlertChannelResponse,
 	err error,
