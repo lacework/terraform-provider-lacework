@@ -8,12 +8,24 @@ description: |-
 
 # lacework\_alert\_channel\_aws\_s3
 
-Create the S3 alert channel that Lacework uses to send the data to your designated bucket in AWS
+S3 data export allows you to export data collected from your Lacework account and send it to an S3 bucket of
+your choice. You can extend Lacework processed/normalized data to report/visualize alone or combine with other
+business/security data to get insights and make meaningful business decisions.
+
+!> **Warning:** This feature is currently in beta.
+
+Every hour, Lacework collects data from your Lacework account and sends it to an internal Lacework S3 bucket as
+a staging location. The data remains in the internal Lacework S3 bucket until its hourly scheduled export to your
+designated S3 bucket.
+
+For detailed information about the data exported by Lacework, see [Lacework Data Share](https://support.lacework.com/hc/sections/360011719393).
+
+-> **Note:** Before proceeding, ensure that the bucket that will receive the data from Lacework already exists in AWS.
 
 ## Example Usage
 
 ```hcl
-resource "lacework_alert_channel_aws_s3" "account_abc" {
+resource "lacework_alert_channel_aws_s3" "data_export" {
   name = "s3 Alerts"
   bucket_arn  = "arn:aws:s3:::bucket_name/key_name"
   credentials {
@@ -27,9 +39,10 @@ resource "lacework_alert_channel_aws_s3" "account_abc" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
+* `bucket_arn` - (Required) The ARN of the S3 bucket.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `bucket_arn` - (Required) The ARN of the S3 bucket.
+
 ### Credentials
 
 `credentials` supports the following arguments:
@@ -39,10 +52,10 @@ The following arguments are supported:
 
 ## Import
 
-A Lacework Aws S3 Alert Channel integration can be imported using a `INT_GUID`, e.g.
+A Lacework AWS S3 Alert Channel integration can be imported using a `INT_GUID`, e.g.
 
 ```
-$ terraform import lacework_alert_channel_aws_s3.account_abc EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
+$ terraform import lacework_alert_channel_aws_s3.data_export EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
