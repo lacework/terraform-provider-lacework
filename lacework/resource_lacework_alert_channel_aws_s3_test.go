@@ -135,16 +135,16 @@ func testAccAlertChannelAwsS3Config(enabled bool) string {
 			enabled = %t
 			bucket_arn = "%s"
 			credentials {
-			external_id = "%s"
-			role_arn = "%s"
+		    external_id = "%s"
+			  role_arn = "%s"
 			}
 		}
 		`,
 		testAccAlertChannelAwsS3ResourceType,
 		testAccAlertChannelAwsS3ResourceName,
 		enabled,
+		os.Getenv(testAccAlertChannelAwsS3BucketArn),
 		os.Getenv(testAccAlertChannelAwsS3ExternalID),
 		os.Getenv(testAccAlertChannelAwsS3RoleArn),
-		os.Getenv(testAccAlertChannelAwsS3BucketArn),
 	)
 }
