@@ -28,7 +28,7 @@ resource "lacework_integration_gcp_cfg" "account_abc" {
 ## GCP Config Module Usage
 
 Lacework maintains a Terraform module that can be used to create and manage the necessary
-resources required from both, the cloud provider platform as well as the Lacework platform.
+resources required for both, the cloud provider platform as well as the Lacework platform.
 
 Here is a basic usage of this module:
 ```hcl
