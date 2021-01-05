@@ -27,6 +27,21 @@ resource "lacework_integration_gcp_at" "account_abc" {
 }
 ```
 
+## GCP Audit Trail Module Usage
+
+Lacework maintains a Terraform module that can be used to create and manage the necessary
+resources required from both, the cloud provider platform as well as the Lacework platform.
+
+Here is a basic usage of this module:
+```hcl
+module "config" {
+  source  = "lacework/audit-log/gcp"
+  version = "~> 0.1.1"
+}
+```
+
+To see the list of inputs, outputs and dependencies, visit the [Terraform registry page of this module](https://registry.terraform.io/modules/lacework/audit-log/gcp/latest).
+
 ## Argument Reference
 
 The following arguments are supported:
