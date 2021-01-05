@@ -10,8 +10,6 @@ description: |-
 
 Use this resource to configure a GCP Config integration to analyze configuration compliance.
 
-~> **Note:** 
-
 ## Example Usage
 
 ```hcl
