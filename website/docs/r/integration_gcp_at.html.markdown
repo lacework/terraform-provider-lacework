@@ -33,6 +33,7 @@ Lacework maintains a Terraform module that can be used to create and manage the 
 resources required for both, the cloud provider platform as well as the Lacework platform.
 
 Here is a basic usage of this module:
+
 ```hcl
 module "config" {
   source  = "lacework/audit-log/gcp"
