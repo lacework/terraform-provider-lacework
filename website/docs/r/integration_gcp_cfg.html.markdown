@@ -25,6 +25,21 @@ resource "lacework_integration_gcp_cfg" "account_abc" {
 }
 ```
 
+## GCP Config Module Usage
+
+Lacework maintains a Terraform module that can be used to create and manage the necessary
+resources required for both, the cloud provider platform as well as the Lacework platform.
+
+Here is a basic usage of this module:
+```hcl
+module "config" {
+  source  = "lacework/config/gcp"
+  version = "~> 0.1.1"
+}
+```
+
+To see the list of inputs, outputs and dependencies, visit the [Terraform registry page of this module](https://registry.terraform.io/modules/lacework/config/gcp/latest).
+
 ## Argument Reference
 
 The following arguments are supported:
