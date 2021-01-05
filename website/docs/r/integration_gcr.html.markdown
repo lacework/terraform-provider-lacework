@@ -27,7 +27,7 @@ resource "lacework_integration_gcr" "example" {
 }
 ```
 
-## Example Loading Credentials from Local File
+## Example Loading Credentials from Local File
 
 This example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys) using the Cloud Console
 or the `gcloud` command-line tool located on a local file on disk:
@@ -83,4 +83,3 @@ $ terraform import lacework_integration_gcr.example EXAMPLE_1234BAE1E42182964D23
 -> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
 	[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
-
