@@ -53,6 +53,7 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 			"ssl": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  false,
 			},
 			"event_data": {
 				Type:     schema.TypeList,
