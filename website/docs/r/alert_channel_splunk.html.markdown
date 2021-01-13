@@ -8,14 +8,14 @@ description: |-
 
 # lacework\_alert\_channel\_splunk
 
-You can use this resource enabled Lacework to forward alerts to Splunk using an HTTP Event Collector.
+You can use this resource to enable Lacework to forward alerts to Splunk using an HTTP Event Collector.
 
 To find more information see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360007889274-Splunk).
 
 ## Example Usage
 
 ```hcl
-resource "lacework_alert_channel_" "ops_critical" {
+resource "lacework_alert_channel_splunk" "ops_critical" {
   name      = "OPS Critical Alerts"
   hec_token = "AA111111-11AA-1AA1-11AA-11111AA1111A"
   host = "localhost"
@@ -32,11 +32,11 @@ resource "lacework_alert_channel_" "ops_critical" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
-* `channel` - (Optional) The Splunk channel name
 * `hec_token` - (Required) The token you generate when you create a new HEC input.
 * `host` - (Required) The hostname of the client from which you're sending data.
-* `port` - (Required) The destination port for forwarding events [80 or 443].
+* `port` - (Required) The destination port for forwarding events.
 * `ssl` - (Optional) Enable or Disable SSL.
+* `channel` - (Optional) The Splunk channel name.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ### Event Data

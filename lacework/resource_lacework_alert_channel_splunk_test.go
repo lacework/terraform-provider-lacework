@@ -146,19 +146,19 @@ func testAccAlertChannelSplunkEnvVarsPreCheck(t *testing.T) {
 func testAccAlertChannelSplunkConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
-    name = "integration test"
-    enabled = %t
-	channel = "%s"
-	hec_token = "%s"
-	host = "%s"
-	port = "%s"
-	ssl = "%s"
-	event_data {
-	  index = "%s"
-	  source = "%s"
-	}
+  name = "integration test"
+  enabled = %t
+  channel = "%s"
+  hec_token = "%s"
+  host = "%s"
+  port = "%s"
+  ssl = "%s"
+  event_data {
+    index = "%s"
+    source = "%s"
+  }
 }
-`,
+	`,
 		testAccAlertChannelSplunkResourceType,
 		testAccAlertChannelSplunkResourceName,
 		enabled,
