@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-
 	"github.com/lacework/go-sdk/api"
 )
 
@@ -49,6 +48,13 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 			"port": {
 				Type:     schema.TypeInt,
 				Required: true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(int)
+					if v < 0 || v > 65536 {
+						errs = append(errs, fmt.Errorf("%q must be between 0 and 65536 inclusive, got: %d", key, v))
+					}
+					return
+				},
 			},
 			"ssl": {
 				Type:     schema.TypeBool,
