@@ -37,7 +37,6 @@ The following arguments are supported:
 * `host` - (Required) The hostname of the client from which you're sending data.
 * `port` - (Required) The destination port for forwarding events [80 or 443].
 * `ssl` - (Optional) Enable or Disable SSL.
-
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ### Event Data
