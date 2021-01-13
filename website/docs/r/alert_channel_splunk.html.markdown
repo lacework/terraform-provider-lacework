@@ -17,11 +17,9 @@ To find more information see the [Lacework support documentation](https://suppor
 ```hcl
 resource "lacework_alert_channel_" "ops_critical" {
   name      = "OPS Critical Alerts"
-  channel = "channel-name"
   hec_token = "AA111111-11AA-1AA1-11AA-11111AA1111A"
   host = "localhost"
   port = "80"
-  ssl = false
   event_data {
     index = "index"
     source = "source"
@@ -47,7 +45,7 @@ The following arguments are supported:
 `event_data` supports the following arguments:
 
 * `source` - (Required) The Splunk source.
-* `index` - (Required) The Splunk index to which you would like the data to be written to.
+* `index` - (Required) Index to store generated events.
 
 ## Import
 

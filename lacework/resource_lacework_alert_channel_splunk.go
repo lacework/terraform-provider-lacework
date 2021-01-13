@@ -100,8 +100,10 @@ func resourceLaceworkAlertChannelSplunkCreate(d *schema.ResourceData, meta inter
 				Host:     d.Get("host").(string),
 				Port:     d.Get("port").(int),
 				Ssl:      d.Get("ssl").(bool),
-				Index:    d.Get("event_data.0.index").(string),
-				Source:   d.Get("event_data.0.source").(string),
+				EventData: api.SplunkEventData{
+					Index:  d.Get("event_data.0.index").(string),
+					Source: d.Get("event_data.0.source").(string),
+				},
 			},
 		)
 	)
@@ -160,8 +162,8 @@ func resourceLaceworkAlertChannelSplunkRead(d *schema.ResourceData, meta interfa
 			d.Set("ssl", integration.Data.Ssl)
 
 			eventData := make(map[string]string)
-			eventData["index"] = integration.Data.Index
-			eventData["source"] = integration.Data.Source
+			eventData["index"] = integration.Data.EventData.Index
+			eventData["source"] = integration.Data.EventData.Source
 
 			d.Set("event_data", []map[string]string{eventData})
 
@@ -185,8 +187,10 @@ func resourceLaceworkAlertChannelSplunkUpdate(d *schema.ResourceData, meta inter
 				Host:     d.Get("host").(string),
 				Port:     d.Get("port").(int),
 				Ssl:      d.Get("ssl").(bool),
-				Index:    d.Get("event_data.0.index").(string),
-				Source:   d.Get("event_data.0.source").(string),
+				EventData: api.SplunkEventData{
+					Index:  d.Get("event_data.0.index").(string),
+					Source: d.Get("event_data.0.source").(string),
+				},
 			},
 		)
 	)
