@@ -17,7 +17,7 @@ To find more information see the [Lacework support documentation](https://suppor
 ```hcl
 resource "lacework_alert_channel_splunk" "ops_critical" {
   name      = "OPS Critical Alerts"
-  hec_token = "AA111111-11AA-1AA1-11AA-11111AA1111A"
+  hec_token = "BA696D5E-CA2F-4347-97CB-3C89F834816F"
   host = "localhost"
   port = "80"
   event_data {
