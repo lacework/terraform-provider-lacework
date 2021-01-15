@@ -1,3 +1,8 @@
+## v0.2.9 (January 15, 2021)
+
+## Features
+* feat: new lacework_alert_channel_splunk resource (#56) (Darren)([b1cd97b](https://github.com/lacework/terraform-provider-lacework/commit/b1cd97be62106bdc465bc30b585fe5f10aaae1a8))
+
 ## v0.2.8 (January 05, 2021)
 
 ## Features
