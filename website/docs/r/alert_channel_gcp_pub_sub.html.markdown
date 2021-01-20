@@ -34,7 +34,7 @@ The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
 * `project_id` - (Required) The name of the Gcp Project.
-* `topic_id` - (Required) The id of the Gcp Pub Sub Topic.
+* `topic_id` - (Required) The ID of the Google Cloud Pub/Sub topic.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
