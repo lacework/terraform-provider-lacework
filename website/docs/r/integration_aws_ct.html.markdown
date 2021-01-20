@@ -31,9 +31,9 @@ to selected Lacework accounts within your organization.
 The following snippet adds an AWS CloudTrail integration at the Lacework organization level with
 the following distribution from AWS accounts to Lacework accounts:
 
-* AWS accounts `234556677` and `774564564` will appear in the Lacework account `lw_acocunt_2` 
-* AWS accounts `553453453` and `934534535` will appear in the Lacework account `lw_acocunt_3` 
-* All other AWS accounts that are not mapped will appear in the Lacework account `lw_acocunt_1`
+* AWS accounts `234556677` and `774564564` will appear in the Lacework account `lw_account_2` 
+* AWS accounts `553453453` and `934534535` will appear in the Lacework account `lw_account_3` 
+* All other AWS accounts that are not mapped will appear in the Lacework account `lw_account_1`
 
 ```hcl
 resource "lacework_integration_aws_ct" "consolidated" {
