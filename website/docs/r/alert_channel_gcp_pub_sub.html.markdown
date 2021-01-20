@@ -16,14 +16,14 @@ To find more information see the [Lacework support documentation](https://suppor
 
 ```hcl
 resource "lacework_alert_channel_gcp_pub_sub" "example" {
-  name       = "S3 Data Export"
-  project_id = "my-sample-project-191923"
-  topic_id   = "mytopic"
+  name       = "gcp-pub_sub"
+  project_id = "lacework-191923"
+  topic_id   = "lacework-alerts"
   credentials {
-    client_id = "client_id"
-    client_email = "foo@example.iam.gserviceaccount.com"
-    private_key = "priv_key"
-    private_key_id = "p_key_id"
+    client_id      = "123456789012345678900"
+    client_email   = "email@abc-project-name.iam.gserviceaccount.com"
+    private_key_id = "1234abcd1234abcd1234abcd1234abcd1234abcd"
+    private_key    = "-----BEGIN PRIVATE KEY-----\n ... -----END PRIVATE KEY-----\n"
   }
 }
 ```
@@ -33,8 +33,8 @@ resource "lacework_alert_channel_gcp_pub_sub" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
-* `project_id` - (Required) The name of the Google Cloud Project.
-* `topic_id` - (Required) The ID of the Google Cloud Pub/Sub topic.
+* `project_id` - (Required) The name of the Gcp Project.
+* `topic_id` - (Required) The id of the Gcp Pub Sub Topic.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 

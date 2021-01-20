@@ -60,8 +60,19 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 							Required: true,
 						},
 						"private_key": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								if d.HasChanges(
+									"name", "resource_level", "resource_id", "org_level", "enabled",
+									"credentials.0.client_id", "credentials.0.private_key_id",
+									"credentials.0.client_email",
+								) {
+									return false
+								}
+								return true
+							},
 						},
 						"private_key_id": {
 							Type:     schema.TypeString,
