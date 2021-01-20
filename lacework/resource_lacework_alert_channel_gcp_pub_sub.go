@@ -65,7 +65,7 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 							Sensitive: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 								if d.HasChanges(
-									"name", "resource_level", "resource_id", "org_level", "enabled",
+									"name", "project_id", "topic_id", "org_level", "enabled",
 									"credentials.0.client_id", "credentials.0.private_key_id",
 									"credentials.0.client_email",
 								) {
