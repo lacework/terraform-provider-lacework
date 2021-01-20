@@ -33,7 +33,7 @@ resource "lacework_alert_channel_gcp_pub_sub" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
-* `project_id` - (Required) The name of the Gcp Project.
+* `project_id` - (Required) The name of the Google Cloud Project.
 * `topic_id` - (Required) The id of the Gcp Pub Sub Topic.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
