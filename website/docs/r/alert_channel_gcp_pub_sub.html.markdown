@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_alert\_channel\_gcp\_pub\_sub
 
-You can configure Lacework to forward events to this Google Cloud Pub/Sub asynchronous messaging service using the Lacework Google Cloud Pub/Sub alert channel.
+You can configure Lacework to forward events to Google Cloud Pub/Sub asynchronous messaging service using the Lacework Google Cloud Pub/Sub alert channel.
 
 To find more information see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360047496514-Google-Cloud-Pub-Sub).
 
