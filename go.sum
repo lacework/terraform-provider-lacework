@@ -356,6 +356,8 @@ github.com/lacework/go-sdk v0.2.13 h1:GxXE1qQA8IBW7otgOE9bk1OG//j7M7xrU1kwq3FmTP
 github.com/lacework/go-sdk v0.2.13/go.mod h1:yiEjWVHT4TjkZZ1pa9eS8fIfnnoVuzj1VNTIVEIsSKE=
 github.com/lacework/go-sdk v0.2.14 h1:Jem7vu3JQYHCuvoTaI/z8DNmp8zkLkQ9bvBN70M9ILE=
 github.com/lacework/go-sdk v0.2.14/go.mod h1:yiEjWVHT4TjkZZ1pa9eS8fIfnnoVuzj1VNTIVEIsSKE=
+github.com/lacework/go-sdk v0.2.15 h1:O4hWfVT1b/hBAM4V8UmS8ZbGmsjmiKPyZEoYfkd4Zzg=
+github.com/lacework/go-sdk v0.2.15/go.mod h1:yiEjWVHT4TjkZZ1pa9eS8fIfnnoVuzj1VNTIVEIsSKE=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
