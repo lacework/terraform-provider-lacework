@@ -120,14 +120,23 @@ func testAccCheckAlertChannelGcpPubSubExists(resourceTypeAndName string) resourc
 }
 
 func testAccAlertChannelGcpPubSubEnvVarsPreCheck(t *testing.T) {
-	if v := os.Getenv(testAccAlertChannelGcpPubSubExternalID); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubExternalID)
+	if v := os.Getenv(testAccAlertChannelGcpPubSubProjectID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubProjectID)
 	}
-	if v := os.Getenv(testAccAlertChannelGcpPubSubRoleArn); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubRoleArn)
+	if v := os.Getenv(testAccAlertChannelGcpPubSubTopicID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubTopicID)
 	}
-	if v := os.Getenv(testAccAlertChannelGcpPubSubBucketArn); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubBucketArn)
+	if v := os.Getenv(testAccAlertChannelGcpPubSubClientID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubClientID)
+	}
+	if v := os.Getenv(testAccAlertChannelGcpPubSubClientEmail); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubClientEmail)
+	}
+	if v := os.Getenv(testAccAlertChannelGcpPubSubPrivateKey); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubPrivateKey)
+	}
+	if v := os.Getenv(testAccAlertChannelGcpPubSubPrivateKeyID); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubPrivateKeyID)
 	}
 }
 
