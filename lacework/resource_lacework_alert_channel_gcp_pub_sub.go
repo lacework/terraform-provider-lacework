@@ -49,6 +49,18 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "Events",
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch value.(string) {
+					case "Events", "Resources":
+						return nil, nil
+					default:
+						return nil, []error{
+							fmt.Errorf(
+								"%s: can only be either 'Events' or 'Resources' (default: Events)", key,
+							),
+						}
+					}
+				},
 			},
 			"credentials": {
 				Type:     schema.TypeList,
