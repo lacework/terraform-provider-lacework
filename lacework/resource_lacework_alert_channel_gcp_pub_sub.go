@@ -45,6 +45,11 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"issue_grouping": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "Events",
+			},
 			"credentials": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
