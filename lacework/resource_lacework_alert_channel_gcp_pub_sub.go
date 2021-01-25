@@ -65,7 +65,7 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 							Sensitive: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 								if d.HasChanges(
-									"name", "project_id", "topic_id", "org_level", "enabled",
+									"name", "project_id", "topic_id", "org_level", "enabled", "issue_grouping",
 									"credentials.0.client_id", "credentials.0.private_key_id",
 									"credentials.0.client_email",
 								) {
@@ -102,8 +102,9 @@ func resourceLaceworkAlertChannelGcpPubSubCreate(d *schema.ResourceData, meta in
 		lacework = meta.(*api.Client)
 		s3       = api.NewGcpPubSubAlertChannel(d.Get("name").(string),
 			api.GcpPubSubChannelData{
-				ProjectID: d.Get("project_id").(string),
-				TopicID:   d.Get("topic_id").(string),
+				ProjectID:     d.Get("project_id").(string),
+				TopicID:       d.Get("topic_id").(string),
+				IssueGrouping: d.Get("issue_grouping").(string),
 				Credentials: api.GcpCredentials{
 					ClientID:     d.Get("credentials.0.client_id").(string),
 					ClientEmail:  d.Get("credentials.0.client_email").(string),
@@ -163,6 +164,7 @@ func resourceLaceworkAlertChannelGcpPubSubRead(d *schema.ResourceData, meta inte
 			d.Set("org_level", integration.IsOrg == 1)
 			d.Set("project_id", integration.Data.ProjectID)
 			d.Set("topic_id", integration.Data.TopicID)
+			d.Set("issue_grouoing", integration.Data.IssueGrouping)
 
 			creds := make(map[string]string)
 			creds["client_id"] = integration.Data.Credentials.ClientID
@@ -187,8 +189,9 @@ func resourceLaceworkAlertChannelGcpPubSubUpdate(d *schema.ResourceData, meta in
 		lacework = meta.(*api.Client)
 		s3       = api.NewGcpPubSubAlertChannel(d.Get("name").(string),
 			api.GcpPubSubChannelData{
-				ProjectID: d.Get("project_id").(string),
-				TopicID:   d.Get("topic_id").(string),
+				ProjectID:     d.Get("project_id").(string),
+				TopicID:       d.Get("topic_id").(string),
+				IssueGrouping: d.Get("issue_grouping").(string),
 				Credentials: api.GcpCredentials{
 					ClientID:     d.Get("credentials.0.client_id").(string),
 					ClientEmail:  d.Get("credentials.0.client_email").(string),

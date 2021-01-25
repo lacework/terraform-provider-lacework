@@ -16,9 +16,10 @@ To find more information see the [Lacework support documentation](https://suppor
 
 ```hcl
 resource "lacework_alert_channel_gcp_pub_sub" "example" {
-  name       = "gcp-pub_sub"
-  project_id = "lacework-191923"
-  topic_id   = "lacework-alerts"
+  name            = "gcp-pub_sub"
+  project_id      = "lacework-191923"
+  topic_id        = "lacework-alerts"
+  issue_grouping  = "Events"
   credentials {
     client_id      = "123456789012345678900"
     client_email   = "email@abc-project-name.iam.gserviceaccount.com"
@@ -37,6 +38,7 @@ The following arguments are supported:
 * `topic_id` - (Required) The ID of the Google Cloud Pub/Sub topic.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `issue_grouping` - (Optional) Defines how Lacework compliance events get grouped. Must be one of `Events` or `Resources`. Defaults to `Events`.
 
 ### Credentials
 
