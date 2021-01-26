@@ -16,10 +16,9 @@ To find more information see the [Lacework support documentation](https://suppor
 
 ```hcl
 resource "lacework_alert_channel_gcp_pub_sub" "example" {
-  name            = "gcp-pub_sub"
-  project_id      = "lacework-191923"
-  topic_id        = "lacework-alerts"
-  issue_grouping  = "Events"
+  name       = "gcp-pub_sub"
+  project_id = "lacework-191923"
+  topic_id   = "lacework-alerts"
   credentials {
     client_id      = "123456789012345678900"
     client_email   = "email@abc-project-name.iam.gserviceaccount.com"
