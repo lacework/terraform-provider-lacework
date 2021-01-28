@@ -15,12 +15,13 @@ const (
 	testAccAlertChannelGcpPubSubResourceName = "example"
 
 	// Environment variables for testing Gcp Pub Sub Alert Channel Integrations
-	testAccAlertChannelGcpPubSubProjectID    = "GCP_PUB_SUB_PROJECT_ID"
-	testAccAlertChannelGcpPubSubTopicID      = "GCP_PUB_SUB_TOPIC_ID"
-	testAccAlertChannelGcpPubSubClientID     = "GCP_PUB_SUB_CLIENT_ID"
-	testAccAlertChannelGcpPubSubClientEmail  = "GCP_PUB_SUB_CLEINT_EMAIL"
-	testAccAlertChannelGcpPubSubPrivateKey   = "GCP_PUB_SUB_PRIVATE_KEY"
-	testAccAlertChannelGcpPubSubPrivateKeyID = "GCP_PUB_SUB_PRIVATE_KEY_ID"
+	testAccAlertChannelGcpPubSubProjectID     = "GCP_PUB_SUB_PROJECT_ID"
+	testAccAlertChannelGcpPubSubTopicID       = "GCP_PUB_SUB_TOPIC_ID"
+	testAccAlertChannelGcpPubSubIssueGrouping = "GCP_PUB_SUB_ISSUE_GROUPING"
+	testAccAlertChannelGcpPubSubClientID      = "GCP_PUB_SUB_CLIENT_ID"
+	testAccAlertChannelGcpPubSubClientEmail   = "GCP_PUB_SUB_CLEINT_EMAIL"
+	testAccAlertChannelGcpPubSubPrivateKey    = "GCP_PUB_SUB_PRIVATE_KEY"
+	testAccAlertChannelGcpPubSubPrivateKeyID  = "GCP_PUB_SUB_PRIVATE_KEY_ID"
 )
 
 func TestAccAlertChannelGcpPubSub(t *testing.T) {
@@ -126,6 +127,9 @@ func testAccAlertChannelGcpPubSubEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccAlertChannelGcpPubSubTopicID); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubTopicID)
 	}
+	if v := os.Getenv(testAccAlertChannelGcpPubSubIssueGrouping); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubIssueGrouping)
+	}
 	if v := os.Getenv(testAccAlertChannelGcpPubSubClientID); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelGcpPubSubClientID)
 	}
@@ -147,6 +151,7 @@ resource "%s" "%s" {
   enabled = %t
   project_id = "%s"
   topic_id = "%s"
+  issue_grouping = "%s"
   credentials {
     client_id = "%s"
     client_email = "%s"
@@ -160,6 +165,7 @@ resource "%s" "%s" {
 		enabled,
 		os.Getenv(testAccAlertChannelGcpPubSubProjectID),
 		os.Getenv(testAccAlertChannelGcpPubSubTopicID),
+		os.Getenv(testAccAlertChannelGcpPubSubIssueGrouping),
 		os.Getenv(testAccAlertChannelGcpPubSubClientID),
 		os.Getenv(testAccAlertChannelGcpPubSubClientEmail),
 		os.Getenv(testAccAlertChannelGcpPubSubPrivateKey),
