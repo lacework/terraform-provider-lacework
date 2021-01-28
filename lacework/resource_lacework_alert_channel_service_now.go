@@ -88,7 +88,7 @@ func resourceLaceworkAlertChannelServiceNowCreate(d *schema.ResourceData, meta i
 		lacework   = meta.(*api.Client)
 		serviceNow = api.NewServiceNowAlertChannel(d.Get("name").(string),
 			api.ServiceNowChannelData{
-				InstanceURL:   d.Get("instanceURL").(string),
+				InstanceURL:   d.Get("instance_url").(string),
 				Username:      d.Get("username").(string),
 				Password:      d.Get("password").(string),
 				IssueGrouping: d.Get("issue_grouping").(string),
@@ -162,7 +162,7 @@ func resourceLaceworkAlertChannelServiceNowUpdate(d *schema.ResourceData, meta i
 		lacework   = meta.(*api.Client)
 		serviceNow = api.NewServiceNowAlertChannel(d.Get("name").(string),
 			api.ServiceNowChannelData{
-				InstanceURL:   d.Get("instanceURL").(string),
+				InstanceURL:   d.Get("instance_url").(string),
 				Username:      d.Get("username").(string),
 				Password:      d.Get("password").(string),
 				IssueGrouping: d.Get("issue_grouping").(string),
