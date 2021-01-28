@@ -37,6 +37,7 @@ The following arguments are supported:
 * `topic_id` - (Required) The ID of the Google Cloud Pub/Sub topic.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `issue_grouping` - (Optional) Defines how Lacework compliance events get grouped. Must be one of `Events` or `Resources`. Defaults to `Events`.
 
 ### Credentials
 
