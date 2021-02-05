@@ -28,9 +28,9 @@ resource "lacework_alert_channel_datadog" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
-* `datadog_site` - (Required) Where to store your logs, either the US or Europe. Must be one of `com` or `eu`. Defaults to `com`.
-* `datadog_service` - (Required) The level of detail of logs or event stream.  `Logs Detail`, `Logs Summary`, or `Events Summary`. Defaults to `Logs Detail`.
 * `api_key` - (Required) The Datadog api key required to submit metrics and events to Datadog
+* `datadog_site` - (Optional) Where to store your logs, either the US or Europe. Must be one of `com` or `eu`. Defaults to `com`.
+* `datadog_service` - (Optional) The level of detail of logs or event stream.  `Logs Detail`, `Logs Summary`, or `Events Summary`. Defaults to `Logs Detail`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import

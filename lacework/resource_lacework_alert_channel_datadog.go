@@ -35,7 +35,8 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 			},
 			"datadog_site": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  string(api.DatadogSiteCom),
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
 					case string(api.DatadogSiteEu), string(api.DatadogSiteCom):
@@ -51,7 +52,8 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 			},
 			"datadog_service": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default:  string(api.DatadogServiceLogsDetails),
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
 					case string(api.DatadogServiceLogsDetails), string(api.DatadogServiceLogsSummary), string(api.DatadogServiceEventsSummary):
