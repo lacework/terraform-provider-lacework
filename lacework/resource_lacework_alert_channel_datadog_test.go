@@ -133,7 +133,7 @@ resource "%s" "%s" {
   name = "integration test"
   enabled = %t
   datadog_site = "%s"
-  datadog_site = "%s"
+  datadog_service = "%s"
   api_key = "%s"
 }
 	`,
