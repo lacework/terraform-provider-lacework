@@ -72,7 +72,7 @@ func testAccCheckAlertChannelDatadogDestroy(s *terraform.State) error {
 			if integration.IntgGuid == rs.Primary.ID {
 				return fmt.Errorf(
 					"the %s integration (%s) still exists",
-					api.DatadogIntegration, rs.Primary.ID,
+					api.DatadogChannelIntegration, rs.Primary.ID,
 				)
 			}
 		}
@@ -101,7 +101,7 @@ func testAccCheckAlertChannelDatadogExists(resourceTypeAndName string) resource.
 
 		if len(response.Data) < 1 {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.DatadogIntegration, rs.Primary.ID)
+				api.DatadogChannelIntegration, rs.Primary.ID)
 		}
 
 		for _, integration := range response.Data {
@@ -111,7 +111,7 @@ func testAccCheckAlertChannelDatadogExists(resourceTypeAndName string) resource.
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.DatadogIntegration, rs.Primary.ID)
+			api.DatadogChannelIntegration, rs.Primary.ID)
 	}
 }
 
