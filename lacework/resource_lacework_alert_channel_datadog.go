@@ -61,7 +61,8 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 					default:
 						return nil, []error{
 							fmt.Errorf(
-								"%s: can only be either 'Logs Detail', 'Logs Summary' or 'Events Summary'", key,
+								"%s: can only be either '%s', '%s' or '%s'", key,
+								api.DatadogServiceLogsDetails, api.DatadogServiceLogsSummary, api.DatadogServiceEventsSummary,
 							),
 						}
 					}
