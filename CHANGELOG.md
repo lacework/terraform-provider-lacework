@@ -1,3 +1,8 @@
+## v0.2.12 (February 05, 2021)
+
+## Features
+* feat: new Datadog alert channel resource (#66) (Darren)([ec90fc4](https://github.com/lacework/terraform-provider-lacework/commit/ec90fc4d98104cb6940d202a33acbf878d4fc83c))
+
 ## v0.2.11 (January 28, 2021)
 
 ## Features
