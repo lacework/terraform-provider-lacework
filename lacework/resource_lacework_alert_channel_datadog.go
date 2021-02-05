@@ -44,7 +44,8 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 					default:
 						return nil, []error{
 							fmt.Errorf(
-								"%s: can only be either 'eu' or 'com'", key,
+								"%s: can only be either '%s' or '%s'", key,
+								api.DatadogSiteEu, api.DatadogSiteCom,
 							),
 						}
 					}
