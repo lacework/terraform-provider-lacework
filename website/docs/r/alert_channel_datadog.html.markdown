@@ -10,13 +10,13 @@ description: |-
 
 The Datadog alert channel provides a unified view of your metrics, logs, and performance data combined with your cloud security data.
 
-To find more information about the Datadog alert integration, see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360036989953-Datadog).
+To find more information about the Datadog alert channel integration, see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360036989953-Datadog).
 
 ## Example Usage
 
 ```hcl
-resource "lacework_alert_channel_" "ops_critical" {
-  name      = "OPS Critical Alerts"
+resource "lacework_alert_channel_datadog" "example" {
+  name      = "Example Datadog Alerts"
   datadog_site = "eu"
   datadog_service = "Events Summary"
   api_key = "datadog-key"
@@ -29,8 +29,8 @@ The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
 * `datadog_site` - (Required) Where to store your logs, either the US or Europe. Must be one of `com` or `eu`. Defaults to `com`.
-* `datadog_service` - (Required) `Logs Detail`, `Logs Summary`, or `Events Summary`. Defaults to `Logs Detail`.
-* `api_key` - (Required) The URL of your datadog that will receive the HTTP POST.
+* `datadog_service` - (Required) The level of detail of logs or event stream.  `Logs Detail`, `Logs Summary`, or `Events Summary`. Defaults to `Logs Detail`.
+* `api_key` - (Required) The Datadog api key required to submit metrics and events to Datadog
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import
