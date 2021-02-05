@@ -38,7 +38,7 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 				Required: true,
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
-					case api.DatadogSiteEu.String(), api.DatadogSiteCom.String():
+					case string(api.DatadogSiteEu), string(api.DatadogSiteCom):
 						return nil, nil
 					default:
 						return nil, []error{
@@ -54,7 +54,7 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 				Required: true,
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
-					case api.DatadogServiceLogsDetails.String(), api.DatadogServiceLogsSummary.String(), api.DatadogServiceEventsSummary.String():
+					case string(api.DatadogServiceLogsDetails), string(api.DatadogServiceLogsSummary), string(api.DatadogServiceEventsSummary):
 						return nil, nil
 					default:
 						return nil, []error{
@@ -90,12 +90,15 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 }
 
 func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta interface{}) error {
+	site, _ := api.DatadogSite(d.Get("datadog_site").(string))
+	service, _ := api.DatadogService(d.Get("datadog_service").(string))
+
 	var (
 		lacework = meta.(*api.Client)
 		datadog  = api.NewDatadogAlertChannel(d.Get("name").(string),
 			api.DatadogChannelData{
-				DatadogSite:    d.Get("datadog_site").(string),
-				DatadogService: d.Get("datadog_service").(string),
+				DatadogSite:    site,
+				DatadogService: service,
 				ApiKey:         d.Get("api_key").(string),
 			},
 		)
@@ -163,12 +166,15 @@ func resourceLaceworkAlertChannelDatadogRead(d *schema.ResourceData, meta interf
 }
 
 func resourceLaceworkAlertChannelDatadogUpdate(d *schema.ResourceData, meta interface{}) error {
+	site, _ := api.DatadogSite(d.Get("datadog_site").(string))
+	service, _ := api.DatadogService(d.Get("datadog_service").(string))
+
 	var (
 		lacework = meta.(*api.Client)
 		datadog  = api.NewDatadogAlertChannel(d.Get("name").(string),
 			api.DatadogChannelData{
-				DatadogSite:    d.Get("datadog_site").(string),
-				DatadogService: d.Get("datadog_service").(string),
+				DatadogSite:    site,
+				DatadogService: service,
 				ApiKey:         d.Get("api_key").(string),
 			},
 		)
