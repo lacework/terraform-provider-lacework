@@ -131,7 +131,7 @@ func resourceLaceworkAlertChannelMicrosoftTeamsUpdate(d *schema.ResourceData, me
 		lacework       = meta.(*api.Client)
 		microsoftTeams = api.NewMicrosoftTeamsAlertChannel(d.Get("name").(string),
 			api.MicrosoftTeamsChannelData{
-				TeamsURL: d.Get("teams_urls").(string),
+				TeamsURL: d.Get("teams_url").(string),
 			},
 		)
 	)
