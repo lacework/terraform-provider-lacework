@@ -9,6 +9,7 @@ description: |-
 # lacework\_alert\_channel\_microsoft_teams
 
 You can configure Lacework to forward alerts to a Microsoft Teams channel through an incoming webhook.
+[Create a incoming webhook](https://docs.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook)
 
 To find more information about the alert payload, see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360051656053-Microsoft-Teams).
 
