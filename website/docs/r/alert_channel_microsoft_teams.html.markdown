@@ -17,7 +17,7 @@ To find more information about the alert payload, see the [Lacework support docu
 ```hcl
 resource "lacework_alert_channel_microsoft_teams" "example" {
   name      = "Microsoft Teams Alerts"
-  teams_url = "https://outlook.office.com/webhook/api-token"
+  webhook_url = "https://outlook.office.com/webhook/api-token"
 }
 ```
 
@@ -26,7 +26,7 @@ resource "lacework_alert_channel_microsoft_teams" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The Alert Channel integration name.
-* `teams_url` - (Required) The URL of your Microsoft Teams incoming webhook.
+* `webhook_url` - (Required) The URL of your Microsoft Teams incoming webhook.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import

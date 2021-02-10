@@ -15,7 +15,7 @@ const (
 	testAccAlertChannelMicrosoftTeamsResourceName = "example"
 
 	// Environment variables for testing Microsoft Teams Alert Channel Integrations
-	testAccAlertChannelMicrosoftTeamsURL = "MICROSOFT_TEAMS_URL"
+	testAccAlertChannelMicrosoftWebhookURL = "MICROSOFT_TEAMS_WEBHOOK_URL"
 )
 
 func TestAccAlertChannelMicrosoftTeams(t *testing.T) {
@@ -115,8 +115,8 @@ func testAccCheckAlertChannelMicrosoftTeamsExists(resourceTypeAndName string) re
 }
 
 func testAccAlertChannelMicrosoftTeamsEnvVarsPreCheck(t *testing.T) {
-	if v := os.Getenv(testAccAlertChannelMicrosoftTeamsURL); v == "" {
-		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelMicrosoftTeamsURL)
+	if v := os.Getenv(testAccAlertChannelMicrosoftWebhookURL); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelMicrosoftWebhookURL)
 	}
 }
 
@@ -125,12 +125,12 @@ func testAccAlertChannelMicrosoftTeamsConfig(enabled bool) string {
 resource "%s" "%s" {
   name = "integration test"
   enabled = %t
-  teams_url = "%s"
+  webhook_url = "%s"
 }
 		`,
 		testAccAlertChannelMicrosoftTeamsResourceType,
 		testAccAlertChannelMicrosoftTeamsResourceName,
 		enabled,
-		os.Getenv(testAccAlertChannelMicrosoftTeamsURL),
+		os.Getenv(testAccAlertChannelMicrosoftWebhookURL),
 	)
 }

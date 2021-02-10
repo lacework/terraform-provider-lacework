@@ -33,7 +33,7 @@ func resourceLaceworkAlertChannelMicrosoftTeams() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
-			"teams_url": {
+			"webhook_url": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -62,7 +62,7 @@ func resourceLaceworkAlertChannelMicrosoftTeamsCreate(d *schema.ResourceData, me
 		lacework       = meta.(*api.Client)
 		microsoftTeams = api.NewMicrosoftTeamsAlertChannel(d.Get("name").(string),
 			api.MicrosoftTeamsChannelData{
-				TeamsURL: d.Get("teams_url").(string),
+				WebhookURL: d.Get("webhook_url").(string),
 			},
 		)
 	)
@@ -114,7 +114,7 @@ func resourceLaceworkAlertChannelMicrosoftTeamsRead(d *schema.ResourceData, meta
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("teams_url", integration.Data.TeamsURL)
+			d.Set("webhook_url", integration.Data.WebhookURL)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
 				api.MicrosoftTeamsChannelIntegration, integration.IntgGuid)
@@ -131,7 +131,7 @@ func resourceLaceworkAlertChannelMicrosoftTeamsUpdate(d *schema.ResourceData, me
 		lacework       = meta.(*api.Client)
 		microsoftTeams = api.NewMicrosoftTeamsAlertChannel(d.Get("name").(string),
 			api.MicrosoftTeamsChannelData{
-				TeamsURL: d.Get("teams_url").(string),
+				WebhookURL: d.Get("webhook_url").(string),
 			},
 		)
 	)
