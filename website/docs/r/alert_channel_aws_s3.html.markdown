@@ -32,6 +32,7 @@ resource "lacework_alert_channel_aws_s3" "data_export" {
     role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
     external_id = "12345"
   }
+}
 ```
 
 ## Argument Reference
