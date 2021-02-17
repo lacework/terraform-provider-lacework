@@ -61,6 +61,9 @@ const (
 	// Azure Activity Log integration type
 	AzureActivityLogIntegration
 
+	// Cisco Webex integration type
+	CiscoWebexChannelIntegration
+
 	// Container registry integration type
 	ContainerRegistryIntegration
 
@@ -84,6 +87,9 @@ const (
 
 	// Jira integration type
 	JiraIntegration
+
+	// VictorOps channel integration type
+	VictorOpsChannelIntegration
 
 	// Webhook channel integration type
 	WebhookIntegration

@@ -18,7 +18,11 @@ require (
 	github.com/hashicorp/terraform-plugin-test v1.4.3 // indirect
 	github.com/hashicorp/terraform-svchost v0.0.0-20191119180714-d2e4933b9136 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
+<<<<<<< HEAD
 	github.com/lacework/go-sdk v0.2.19-0.20210211001048-e41422624b52
+=======
+	github.com/lacework/go-sdk v0.2.20-0.20210216214810-cac9fc27f696
+>>>>>>> cee2250 (chore: Update go sdk dependencies)
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mitchellh/cli v1.1.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
