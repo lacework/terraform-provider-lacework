@@ -55,6 +55,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_alert_channel_gcp_pub_sub":     resourceLaceworkAlertChannelGcpPubSub(),
 			"lacework_alert_channel_jira_cloud":      resourceLaceworkAlertChannelJiraCloud(),
 			"lacework_alert_channel_jira_server":     resourceLaceworkAlertChannelJiraServer(),
+			"lacework_alert_channel_new_relic":       resourceLaceworkAlertChannelNewRelic(),
 			"lacework_alert_channel_pagerduty":       resourceLaceworkAlertChannelPagerDuty(),
 			"lacework_alert_channel_microsoft_teams": resourceLaceworkAlertChannelMicrosoftTeams(),
 			"lacework_alert_channel_slack":           resourceLaceworkAlertChannelSlack(),
