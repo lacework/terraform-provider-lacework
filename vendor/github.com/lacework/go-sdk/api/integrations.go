@@ -116,6 +116,7 @@ var IntegrationTypes = map[integrationType]string{
 	AwsCloudWatchIntegration:         "CLOUDWATCH_EB",
 	PagerDutyIntegration:             "PAGER_DUTY_API",
 	JiraIntegration:                  "JIRA",
+	VictorOpsChannelIntegration:      "VICTOR_OPS",
 	WebhookIntegration:               "WEBHOOK",
 }
 
