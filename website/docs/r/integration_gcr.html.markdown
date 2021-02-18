@@ -60,7 +60,7 @@ resource "lacework_integration_gcr" "example" {
 
 ## Example Loading Credentials from Local File
 
-Alternatevely, this example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys)
+Alternatively, this example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys)
 using the Cloud Console or the `gcloud` command-line tool located on a local file on disk:
 
 ```hcl
