@@ -101,6 +101,7 @@ var IntegrationTypes = map[integrationType]string{
 	AwsCfgIntegration:                "AWS_CFG",
 	AwsCloudTrailIntegration:         "AWS_CT_SQS",
 	AwsS3ChannelIntegration:          "AWS_S3",
+	CiscoWebexChannelIntegration:     "CISCO_SPARK_WEBHOOK",
 	DatadogChannelIntegration:        "DATADOG",
 	GcpCfgIntegration:                "GCP_CFG",
 	GcpAuditLogIntegration:           "GCP_AT_SES",
@@ -115,6 +116,7 @@ var IntegrationTypes = map[integrationType]string{
 	AwsCloudWatchIntegration:         "CLOUDWATCH_EB",
 	PagerDutyIntegration:             "PAGER_DUTY_API",
 	JiraIntegration:                  "JIRA",
+	VictorOpsChannelIntegration:      "VICTOR_OPS",
 	WebhookIntegration:               "WEBHOOK",
 }
 
