@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	testAccAlertChannelNewRelicResourceType = "lacework_alert_channel_new_relic"
+	testAccAlertChannelNewRelicResourceType = "lacework_alert_channel_newrelic"
 	testAccAlertChannelNewRelicResourceName = "example"
 
 	testAccAlertChannelNewRelicAccountID = "ACCOUNT_ID"
