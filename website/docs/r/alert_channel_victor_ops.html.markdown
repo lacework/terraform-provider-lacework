@@ -6,7 +6,7 @@ description: |-
   Create and manage Victor Ops Alert Channel integrations
 ---
 
-# lacework\_alert\_channel\_victor_ops
+# lacework\_alert\_channel\_victorops
 
 You can configure Lacework to forward alerts to specific VictorOps groups using a VictorOps REST endpoint.
 
