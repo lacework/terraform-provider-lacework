@@ -16,7 +16,7 @@ To find more information about the New Relic Insights alert channel integration,
 
 ```hcl
 resource "lacework_alert_channel_new_relic" "example" {
-  name      = "Example New Relic Insights Alert"
+  name       = "Example New Relic Insights Alert"
   account_id = 2338053
   insert_key = "x-xx-xxxxxxxxxxxxxxxxxx"
 }
