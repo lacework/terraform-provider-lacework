@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	testAccAlertChannelVictorOpsResourceType = "lacework_alert_channel_victor_ops"
+	testAccAlertChannelVictorOpsResourceType = "lacework_alert_channel_victorops"
 	testAccAlertChannelVictorOpsResourceName = "example"
 
 	testAccAlertChannelVictorOpsWebhookURL = "INTG_URL"

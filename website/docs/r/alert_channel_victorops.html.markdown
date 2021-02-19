@@ -1,7 +1,7 @@
 ---
 subcategory: "Alert Channels"
 layout: "lacework"
-page_title: "Lacework: lacework_alert_channel_victor_ops"
+page_title: "Lacework: lacework_alert_channel_victorops"
 description: |-
   Create and manage Victor Ops Alert Channel integrations
 ---
