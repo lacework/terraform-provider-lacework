@@ -1,7 +1,7 @@
 ---
 subcategory: "Alert Channels"
 layout: "lacework"
-page_title: "Lacework: lacework_alert_channel_new_relic"
+page_title: "Lacework: lacework_alert_channel_newrelic"
 description: |-
   Create and manage New Relic Insights Alert Channel integrations
 ---
@@ -15,7 +15,7 @@ To find more information about the New Relic Insights alert channel integration,
 ## Example Usage
 
 ```hcl
-resource "lacework_alert_channel_new_relic" "example" {
+resource "lacework_alert_channel_newrelic" "example" {
   name       = "Example New Relic Insights Alert"
   account_id = 2338053
   insert_key = "x-xx-xxxxxxxxxxxxxxxxxx"
@@ -36,7 +36,7 @@ The following arguments are supported:
 A Lacework New Relic Insights Alert Channel integration can be imported using a `INT_GUID`, e.g.
 
 ```
-$ terraform import lacework_alert_channel_new_relic.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
+$ terraform import lacework_alert_channel_newrelic.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
