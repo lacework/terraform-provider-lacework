@@ -59,7 +59,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_alert_channel_slack":           resourceLaceworkAlertChannelSlack(),
 			"lacework_alert_channel_splunk":          resourceLaceworkAlertChannelSplunk(),
 			"lacework_alert_channel_service_now":     resourceLaceworkAlertChannelServiceNow(),
-			"lacework_alert_channel_victor_ops":      resourceLaceworkAlertChannelVictorOps(),
+			"lacework_alert_channel_victorops":      resourceLaceworkAlertChannelVictorOps(),
 			"lacework_alert_channel_webhook":         resourceLaceworkAlertChannelWebhook(),
 			"lacework_integration_aws_cfg":           resourceLaceworkIntegrationAwsCfg(),
 			"lacework_integration_aws_ct":            resourceLaceworkIntegrationAwsCloudTrail(),
