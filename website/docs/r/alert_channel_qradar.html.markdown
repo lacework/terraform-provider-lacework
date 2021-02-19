@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_alert\_channel\_qradar
 
-You can configure an alert channel to receive Lacework alert notifications in IBM QRadar.
+You can configure an alert channel to send Lacework alert notifications to IBM QRadar.
 
 To find more information about the IBM QRadar alert channel integration, see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360056898693-IBM-QRadar).
 
