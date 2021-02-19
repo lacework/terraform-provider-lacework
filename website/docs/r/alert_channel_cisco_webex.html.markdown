@@ -16,7 +16,7 @@ To find more information about the Cisco Webex alert channel integration, see th
 
 ```hcl
 resource "lacework_alert_channel_cisco_webex" "example" {
-  name      = "Example Cisco Webex Alert "
+  name       = "Example Cisco Webex Alert"
   webhook_url = "https://webexapis.com/v1/webhooks/incoming/api-token"
 }
 ```
