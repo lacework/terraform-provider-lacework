@@ -50,6 +50,7 @@ func Provider() terraform.ResourceProvider {
 			"lacework_agent_access_token":            resourceLaceworkAgentAccessToken(),
 			"lacework_alert_channel_aws_cloudwatch":  resourceLaceworkAlertChannelAwsCloudWatch(),
 			"lacework_alert_channel_aws_s3":          resourceLaceworkAlertChannelAwsS3(),
+			"lacework_alert_channel_cisco_webex":     resourceLaceworkAlertChannelCiscoWebex(),
 			"lacework_alert_channel_datadog":         resourceLaceworkAlertChannelDatadog(),
 			"lacework_alert_channel_gcp_pub_sub":     resourceLaceworkAlertChannelGcpPubSub(),
 			"lacework_alert_channel_jira_cloud":      resourceLaceworkAlertChannelJiraCloud(),
