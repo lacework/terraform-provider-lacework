@@ -6,7 +6,7 @@ description: |-
   Create and manage New Relic Insights Alert Channel integrations
 ---
 
-# lacework\_alert\_channel\_new\_relic
+# lacework\_alert\_channel\_newrelic
 
 You can configure a Lacework alert channel to forward alerts to New Relic using the Insights API.
 
