@@ -27,10 +27,41 @@ resource "lacework_integration_gcr" "example" {
 }
 ```
 
+## Example Creating a Service Account
+
+This example shows how to create a new service account using the [Lacework service-account module](https://registry.terraform.io/modules/lacework/service-account/gcp/latest)
+and use it to create a new GCR integration:
+
+```hcl
+locals {
+  gcr_credentials = jsondecode(base64decode(module.lacework_gcr_svc_account.private_key))
+}
+
+module "lacework_gcr_svc_account" {
+  source         = "lacework/service-account/gcp"
+  version        = "~> 0.1.4"
+  for_gcr        = true
+  for_compliance = false
+
+  # Optionally, a project ID  can be specified with the input 'project_id'
+}
+
+resource "lacework_integration_gcr" "example" {
+  name            = "GRC Integration with Module"
+  registry_domain = "gcr.io"
+  credentials {
+    client_id      = local.gcr_credentials.client_id
+    client_email   = local.gcr_credentials.client_email
+    private_key_id = local.gcr_credentials.private_key_id
+    private_key    = local.gcr_credentials.private_key
+  }
+}
+```
+
 ## Example Loading Credentials from Local File
 
-This example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys) using the Cloud Console
-or the `gcloud` command-line tool located on a local file on disk:
+Alternatively, this example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys)
+using the Cloud Console or the `gcloud` command-line tool located on a local file on disk:
 
 ```hcl
 locals {
@@ -41,10 +72,10 @@ resource "lacework_integration_gcr" "example" {
   name            = "GRC Example"
   registry_domain = "gcr.io"
   credentials {
-    client_id      = local.gcr_credentials["client_id"]
-    client_email   = local.gcr_credentials["client_email"]
-    private_key_id = local.gcr_credentials["private_key_id"]
-    private_key    = local.gcr_credentials["private_key"]
+    client_id      = local.gcr_credentials.client_id
+    client_email   = local.gcr_credentials.client_email
+    private_key_id = local.gcr_credentials.private_key_id
+    private_key    = local.gcr_credentials.private_key
   }
 }
 ```
