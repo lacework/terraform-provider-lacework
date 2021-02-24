@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/lacework/go-sdk/api"
 )
 
@@ -56,10 +56,9 @@ func resourceLaceworkAlertChannelJiraServer() *schema.Resource {
 				Sensitive: true,
 			},
 			"custom_template_file": {
-				Type:     schema.TypeString,
-				Optional: true,
-				// @afiune when we migrate to terraform-plugin-sdk/v2
-				//ValidateFunc: validation.StringIsJSON,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringIsJSON,
 			},
 			"group_issues_by": {
 				Type:     schema.TypeString,

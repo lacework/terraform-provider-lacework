@@ -7,11 +7,10 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/aws/aws-sdk-go v1.33.3 // indirect
-	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/hcl/v2 v2.6.0 // indirect
-	github.com/hashicorp/terraform-plugin-sdk v1.16.0
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
 	github.com/hashicorp/terraform-svchost v0.0.0-20191119180714-d2e4933b9136 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/lacework/go-sdk v0.2.21-0.20210224193400-129bc2861f7b
