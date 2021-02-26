@@ -31,6 +31,7 @@ The following arguments are supported:
 * `instance_url` - (Required) The ServiceNow instance URL.
 * `username` - (Required) The ServiceNow user name.
 * `password` - (Required) The ServiceNow password.
+* `custom_template_file` - (Optional)  Populate fields in the new ServiceNow incidents with values from a custom template JSON file.
 * `issue_grouping` - (Optional) Defines how Lacework compliance events get grouped. Must be one of `Events` or `Resources`. Defaults to `Events`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
