@@ -63,6 +63,10 @@ func resourceLaceworkAlertChannelServiceNow() *schema.Resource {
 					}
 				},
 			},
+			"custom_template_file": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -85,16 +89,21 @@ func resourceLaceworkAlertChannelServiceNow() *schema.Resource {
 
 func resourceLaceworkAlertChannelServiceNowCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework   = meta.(*api.Client)
-		serviceNow = api.NewServiceNowAlertChannel(d.Get("name").(string),
-			api.ServiceNowChannelData{
-				InstanceURL:   d.Get("instance_url").(string),
-				Username:      d.Get("username").(string),
-				Password:      d.Get("password").(string),
-				IssueGrouping: d.Get("issue_grouping").(string),
-			},
-		)
+		lacework           = meta.(*api.Client)
+		customTemplateJSON = d.Get("custom_template_file").(string)
+		snowData           = api.ServiceNowChannelData{
+			InstanceURL:   d.Get("instance_url").(string),
+			Username:      d.Get("username").(string),
+			Password:      d.Get("password").(string),
+			IssueGrouping: d.Get("issue_grouping").(string),
+		}
 	)
+
+	if len(customTemplateJSON) != 0 {
+		snowData.EncodeCustomTemplateFile(customTemplateJSON)
+	}
+
+	serviceNow := api.NewServiceNowAlertChannel(d.Get("name").(string), snowData)
 	if !d.Get("enabled").(bool) {
 		serviceNow.Enabled = 0
 	}
@@ -159,17 +168,21 @@ func resourceLaceworkAlertChannelServiceNowRead(d *schema.ResourceData, meta int
 
 func resourceLaceworkAlertChannelServiceNowUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework   = meta.(*api.Client)
-		serviceNow = api.NewServiceNowAlertChannel(d.Get("name").(string),
-			api.ServiceNowChannelData{
-				InstanceURL:   d.Get("instance_url").(string),
-				Username:      d.Get("username").(string),
-				Password:      d.Get("password").(string),
-				IssueGrouping: d.Get("issue_grouping").(string),
-			},
-		)
+		lacework           = meta.(*api.Client)
+		customTemplateJSON = d.Get("custom_template_file").(string)
+		snowData           = api.ServiceNowChannelData{
+			InstanceURL:   d.Get("instance_url").(string),
+			Username:      d.Get("username").(string),
+			Password:      d.Get("password").(string),
+			IssueGrouping: d.Get("issue_grouping").(string),
+		}
 	)
 
+	if len(customTemplateJSON) != 0 {
+		snowData.EncodeCustomTemplateFile(customTemplateJSON)
+	}
+
+	serviceNow := api.NewServiceNowAlertChannel(d.Get("name").(string), snowData)
 	if !d.Get("enabled").(bool) {
 		serviceNow.Enabled = 0
 	}
