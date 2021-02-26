@@ -7,8 +7,7 @@ import (
 	"path"
 
 	"github.com/BurntSushi/toml"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 
@@ -16,8 +15,8 @@ import (
 	"github.com/lacework/go-sdk/lwlogger"
 )
 
-// Provider returns a Lacework terraform.ResourceProvider
-func Provider() terraform.ResourceProvider {
+// Provider returns a Lacework schema.Provider
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"profile": {
