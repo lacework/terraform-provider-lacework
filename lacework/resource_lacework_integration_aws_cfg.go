@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -33,6 +34,11 @@ func resourceLaceworkIntegrationAwsCfg() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+			},
+			"retries": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  5,
 			},
 			"credentials": {
 				Type:     schema.TypeList,
@@ -73,8 +79,10 @@ func resourceLaceworkIntegrationAwsCfg() *schema.Resource {
 
 func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
-		aws      = api.NewAwsIntegration(d.Get("name").(string),
+		lacework   = meta.(*api.Client)
+		retries    = 0
+		maxretries = d.Get("retries").(int)
+		aws        = api.NewAwsIntegration(d.Get("name").(string),
 			api.AwsCfgIntegration,
 			api.AwsIntegrationData{
 				Credentials: api.AwsIntegrationCreds{
@@ -84,37 +92,47 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 			},
 		)
 	)
+
 	if !d.Get("enabled").(bool) {
 		aws.Enabled = 0
 	}
 
-	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCfgIntegration.String(), aws)
-	response, err := lacework.Integrations.CreateAws(aws)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		log.Printf("[INFO] Creating %s integration (retry:%d)\n", api.AwsCfgIntegration.String(), retries)
+		response, err := lacework.Integrations.CreateAws(aws)
+		if err != nil {
+			if retries >= maxretries {
+				return resource.NonRetryableError(fmt.Errorf("Error creating %s integration: %s", api.AwsCfgIntegration.String(), err))
+			}
+			retries++
+			log.Printf("[INFO] Unable to create %s integration: \n%s\n", api.AwsCfgIntegration.String(), err)
+			return resource.RetryableError(fmt.Errorf(
+				"Unable to create %s integration (retrying %d of %d)",
+				api.AwsCfgIntegration.String(), retries, maxretries,
+			))
+		}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
+		log.Printf("[INFO] Verifying server response.\n%v\n", response)
+		err = validateAwsIntegrationResponse(&response)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.SetId(integration.IntgGuid)
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
+		// @afiune at this point of time, we know the data field has a single value
+		integration := response.Data[0]
+		d.SetId(integration.IntgGuid)
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
 
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.TypeName)
+		d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCfgIntegration.String(), integration.IntgGuid)
-	return nil
+		log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCfgIntegration.String(), integration.IntgGuid)
+		return resource.NonRetryableError(nil)
+	})
 }
 
 func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interface{}) error {

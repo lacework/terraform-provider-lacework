@@ -29,6 +29,7 @@ The following arguments are supported:
 * `name` - (Required) The AWS Config integration name.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
 
 ### Credentials
 
