@@ -11,4 +11,5 @@ resource "lacework_integration_gcp_at" "example" {
   resource_level = "PROJECT"
   resource_id    = "example-project_id"
   subscription   = "projects/example-project_id/subscriptions/example-subscription"
+  retries        = 10
 }

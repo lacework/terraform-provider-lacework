@@ -53,6 +53,7 @@ The following arguments are supported:
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `resource_level` - (Optional) The integration level. Must be one of `PROJECT` or `ORGANIZATION`. Defaults to `PROJECT`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
 
 ### Credentials
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -25,6 +26,12 @@ var awsCloudTrailIntegrationSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Default:     true,
 		Description: "The state of the external integration.",
+	},
+	"retries": {
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Default:     5,
+		Description: "The number of attempts to create the external integration.",
 	},
 	"queue_url": {
 		Type:        schema.TypeString,
@@ -117,6 +124,7 @@ func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
 func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
+		retries  = d.Get("retries").(int)
 		aws      = api.NewAwsIntegration(d.Get("name").(string),
 			api.AwsCloudTrailIntegration,
 			api.AwsIntegrationData{
@@ -146,34 +154,49 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 		aws.IsOrg = 1
 	}
 
-	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCloudTrailIntegration.String(), aws)
-	response, err := lacework.Integrations.CreateAws(aws)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		retries--
+		log.Printf("[INFO] Creating %s integration\n", api.AwsCloudTrailIntegration.String())
+		response, err := lacework.Integrations.CreateAws(aws)
+		if err != nil {
+			if retries <= 0 {
+				return resource.NonRetryableError(
+					fmt.Errorf("Error creating %s integration: %s",
+						api.AwsCloudTrailIntegration.String(), err,
+					))
+			}
+			log.Printf(
+				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
+				api.AwsCloudTrailIntegration.String(), retries, err,
+			)
+			return resource.RetryableError(fmt.Errorf(
+				"Unable to create %s integration (retrying %d more time(s))",
+				api.AwsCloudTrailIntegration.String(), retries,
+			))
+		}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
+		log.Println("[INFO] Verifying server response data")
+		err = validateAwsIntegrationResponse(&response)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.SetId(integration.IntgGuid)
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
+		// @afiune at this point of time, we know the data field has a single value
+		integration := response.Data[0]
+		d.SetId(integration.IntgGuid)
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
 
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.TypeName)
+		d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n",
-		api.AwsCloudTrailIntegration.String(), integration.IntgGuid)
-	return nil
+		log.Printf("[INFO] Created %s integration with guid: %v\n",
+			api.AwsCloudTrailIntegration.String(), integration.IntgGuid)
+		return nil
+	})
 }
 
 func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta interface{}) error {
