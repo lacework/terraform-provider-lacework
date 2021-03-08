@@ -142,7 +142,7 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 			return resource.NonRetryableError(err)
 		}
 
-		// @afiune at this point of time, we know the data field has a single value
+		// @afiune at this point in time, we know the data field has a single value
 		integration := response.Data[0]
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
@@ -227,7 +227,7 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 		return err
 	}
 
-	// @afiune at this point of time, we know the data field has a single value
+	// @afiune at this point in time, we know the data field has a single value
 	integration := response.Data[0]
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
