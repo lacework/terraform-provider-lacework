@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -33,6 +34,12 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+			},
+			"retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5,
+				Description: "The number of attempts to create the external integration.",
 			},
 			"tenant_id": {
 				Type:     schema.TypeString,
@@ -91,6 +98,7 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
+		retries  = d.Get("retries").(int)
 		azure    = api.NewAzureIntegration(d.Get("name").(string),
 			api.AzureCfgIntegration,
 			api.AzureIntegrationData{
@@ -102,42 +110,60 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 			},
 		)
 	)
+
 	if !d.Get("enabled").(bool) {
 		azure.Enabled = 0
 	}
 
-	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AzureCfgIntegration.String(), azure)
-	response, err := lacework.Integrations.CreateAzure(azure)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		retries--
+		log.Printf("[INFO] Creating %s integration\n", api.AzureCfgIntegration.String())
+		response, err := lacework.Integrations.CreateAzure(azure)
+		if err != nil {
+			if retries <= 0 {
+				return resource.NonRetryableError(
+					fmt.Errorf("Error creating %s integration: %s",
+						api.AzureCfgIntegration.String(), err,
+					))
+			}
+			log.Printf(
+				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
+				api.AzureCfgIntegration.String(), retries, err,
+			)
+			return resource.RetryableError(fmt.Errorf(
+				"Unable to create %s integration (retrying %d more time(s))",
+				api.AzureCfgIntegration.String(), retries,
+			))
+		}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAzureIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
+		log.Println("[INFO] Verifying server response data")
+		err = validateAzureIntegrationResponse(&response)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.SetId(integration.IntgGuid)
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
+		// @afiune at this point of time, we know the data field has a single value
+		integration := response.Data[0]
+		d.SetId(integration.IntgGuid)
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.TypeName)
+		d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AzureCfgIntegration.String(), integration.IntgGuid)
-	return nil
+		log.Printf("[INFO] Created %s integration with guid: %v\n",
+			api.AzureCfgIntegration.String(), integration.IntgGuid)
+		return nil
+	})
 }
 
 func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n",
+		api.AzureCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAzure(d.Id())
 	if err != nil {
 		return err
@@ -188,7 +214,8 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 
 	azure.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AzureCfgIntegration.String(), azure)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n",
+		api.AzureCfgIntegration.String(), azure)
 	response, err := lacework.Integrations.UpdateAzure(azure)
 	if err != nil {
 		return err
@@ -210,20 +237,23 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n",
+		api.AzureCfgIntegration.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAzureCfgDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n",
+		api.AzureCfgIntegration.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAzure(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AzureCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
+		api.AzureCfgIntegration.String(), d.Id())
 	return nil
 }
 
