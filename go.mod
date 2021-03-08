@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.6.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.3
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
-	github.com/lacework/go-sdk v0.2.21-0.20210224193400-129bc2861f7b
+	github.com/lacework/go-sdk v0.2.21-0.20210308192429-2bbc8b38d7f5
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
