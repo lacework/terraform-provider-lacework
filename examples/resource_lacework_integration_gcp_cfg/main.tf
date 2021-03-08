@@ -10,4 +10,5 @@ resource "lacework_integration_gcp_cfg" "example" {
   }
   resource_level = "PROJECT"
   resource_id    = "example-project_id"
+  retries        = 10
 }

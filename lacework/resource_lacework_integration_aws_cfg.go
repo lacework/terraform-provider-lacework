@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -33,6 +34,12 @@ func resourceLaceworkIntegrationAwsCfg() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+			},
+			"retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5,
+				Description: "The number of attempts to create the external integration.",
 			},
 			"credentials": {
 				Type:     schema.TypeList,
@@ -74,6 +81,7 @@ func resourceLaceworkIntegrationAwsCfg() *schema.Resource {
 func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
+		retries  = d.Get("retries").(int)
 		aws      = api.NewAwsIntegration(d.Get("name").(string),
 			api.AwsCfgIntegration,
 			api.AwsIntegrationData{
@@ -84,43 +92,61 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 			},
 		)
 	)
+
 	if !d.Get("enabled").(bool) {
 		aws.Enabled = 0
 	}
 
-	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCfgIntegration.String(), aws)
-	response, err := lacework.Integrations.CreateAws(aws)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		retries--
+		log.Printf("[INFO] Creating %s integration\n", api.AwsCfgIntegration.String())
+		response, err := lacework.Integrations.CreateAws(aws)
+		if err != nil {
+			if retries <= 0 {
+				return resource.NonRetryableError(
+					fmt.Errorf("Error creating %s integration: %s",
+						api.AwsCfgIntegration.String(), err,
+					))
+			}
+			log.Printf(
+				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
+				api.AwsCfgIntegration.String(), retries, err,
+			)
+			return resource.RetryableError(fmt.Errorf(
+				"Unable to create %s integration (retrying %d more time(s))",
+				api.AwsCfgIntegration.String(), retries,
+			))
+		}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
+		log.Printf("[INFO] Verifying server response")
+		err = validateAwsIntegrationResponse(&response)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.SetId(integration.IntgGuid)
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
+		// @afiune at this point in time, we know the data field has a single value
+		integration := response.Data[0]
+		d.SetId(integration.IntgGuid)
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
 
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.TypeName)
+		d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCfgIntegration.String(), integration.IntgGuid)
-	return nil
+		log.Printf("[INFO] Created %s integration with guid: %v\n",
+			api.AwsCfgIntegration.String(), integration.IntgGuid)
+		return nil
+	})
 }
 
 func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n",
+		api.AwsCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAws(d.Id())
 	if err != nil {
 		return err
@@ -141,7 +167,8 @@ func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interfac
 			creds["external_id"] = integration.Data.Credentials.ExternalID
 			d.Set("credentials", []map[string]string{creds})
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n", api.AwsCfgIntegration.String(), integration.IntgGuid)
+			log.Printf("[INFO] Read %s integration with guid: %v\n",
+				api.AwsCfgIntegration.String(), integration.IntgGuid)
 			return nil
 		}
 	}
@@ -170,7 +197,8 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 
 	aws.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCfgIntegration.String(), aws)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n",
+		api.AwsCfgIntegration.String(), aws)
 	response, err := lacework.Integrations.UpdateAws(aws)
 	if err != nil {
 		return err
@@ -182,7 +210,7 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 		return err
 	}
 
-	// @afiune at this point of time, we know the data field has a single value
+	// @afiune at this point in time, we know the data field has a single value
 	integration := response.Data[0]
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
@@ -192,20 +220,23 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Updated %s integration with guid: %v\n",
+		api.AwsCfgIntegration.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAwsCfgDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n",
+		api.AwsCfgIntegration.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAws(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCfgIntegration.String(), d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
+		api.AwsCfgIntegration.String(), d.Id())
 	return nil
 }
 

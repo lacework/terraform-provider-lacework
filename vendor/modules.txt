@@ -14,8 +14,6 @@ github.com/BurntSushi/toml
 # github.com/agext/levenshtein v1.2.3
 ## explicit
 github.com/agext/levenshtein
-# github.com/apparentlymart/go-cidr v1.1.0
-## explicit
 # github.com/apparentlymart/go-textseg/v12 v12.0.0
 github.com/apparentlymart/go-textseg/v12/textseg
 # github.com/aws/aws-sdk-go v1.33.3
@@ -159,8 +157,6 @@ github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags
 github.com/hashicorp/terraform-plugin-sdk/v2/meta
 github.com/hashicorp/terraform-plugin-sdk/v2/plugin
 github.com/hashicorp/terraform-plugin-sdk/v2/terraform
-# github.com/hashicorp/terraform-svchost v0.0.0-20191119180714-d2e4933b9136
-## explicit
 # github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce
 ## explicit
 github.com/hashicorp/yamux
@@ -170,8 +166,6 @@ github.com/jmespath/go-jmespath
 github.com/jstemmer/go-junit-report
 github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
-# github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
-github.com/kevinburke/ssh_config
 # github.com/lacework/go-sdk v0.2.21-0.20210224193400-129bc2861f7b
 ## explicit
 github.com/lacework/go-sdk/api
@@ -205,10 +199,6 @@ github.com/oklog/run
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/posener/complete v1.2.3
-## explicit
-# github.com/spf13/afero v1.3.1
-## explicit
 # github.com/stretchr/testify v1.7.0
 ## explicit
 github.com/stretchr/testify/assert
@@ -218,7 +208,6 @@ github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
 github.com/ulikunitz/xz/lzma
 # github.com/vmihailenco/msgpack v4.0.4+incompatible
-## explicit
 github.com/vmihailenco/msgpack
 github.com/vmihailenco/msgpack/codes
 # github.com/zclconf/go-cty v1.5.1
@@ -230,8 +219,6 @@ github.com/zclconf/go-cty/cty/function/stdlib
 github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
 github.com/zclconf/go-cty/cty/set
-# github.com/zclconf/go-cty-yaml v1.0.2
-## explicit
 # go.opencensus.io v0.22.4
 go.opencensus.io
 go.opencensus.io/internal

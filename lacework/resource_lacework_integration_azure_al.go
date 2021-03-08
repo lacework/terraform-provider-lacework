@@ -1,8 +1,10 @@
 package lacework
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -32,6 +34,12 @@ func resourceLaceworkIntegrationAzureActivityLog() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+			},
+			"retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5,
+				Description: "The number of attempts to create the external integration.",
 			},
 			"tenant_id": {
 				Type:     schema.TypeString,
@@ -94,6 +102,7 @@ func resourceLaceworkIntegrationAzureActivityLog() *schema.Resource {
 func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
+		retries  = d.Get("retries").(int)
 		azure    = api.NewAzureIntegration(d.Get("name").(string),
 			api.AzureActivityLogIntegration,
 			api.AzureIntegrationData{
@@ -110,33 +119,48 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 		azure.Enabled = 0
 	}
 
-	// @afiune should we do this if there is sensitive information?
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AzureActivityLogIntegration.String(), azure)
-	response, err := lacework.Integrations.CreateAzure(azure)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		retries--
+		log.Printf("[INFO] Creating %s integration\n", api.AzureActivityLogIntegration.String())
+		response, err := lacework.Integrations.CreateAzure(azure)
+		if err != nil {
+			if retries <= 0 {
+				return resource.NonRetryableError(
+					fmt.Errorf("Error creating %s integration: %s",
+						api.AzureActivityLogIntegration.String(), err,
+					))
+			}
+			log.Printf(
+				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
+				api.AzureActivityLogIntegration.String(), retries, err,
+			)
+			return resource.RetryableError(fmt.Errorf(
+				"Unable to create %s integration (retrying %d more time(s))",
+				api.AzureActivityLogIntegration.String(), retries,
+			))
+		}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAzureIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
+		log.Println("[INFO] Verifying server response data")
+		err = validateAzureIntegrationResponse(&response)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
 
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
-	d.SetId(integration.IntgGuid)
-	d.Set("name", integration.Name)
-	d.Set("intg_guid", integration.IntgGuid)
-	d.Set("enabled", integration.Enabled == 1)
-	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
-	d.Set("org_level", integration.IsOrg == 1)
+		// @afiune at this point of time, we know the data field has a single value
+		integration := response.Data[0]
+		d.SetId(integration.IntgGuid)
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.TypeName)
+		d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n",
-		api.AzureActivityLogIntegration.String(), integration.IntgGuid)
-	return nil
+		log.Printf("[INFO] Created %s integration with guid: %v\n",
+			api.AzureActivityLogIntegration.String(), integration.IntgGuid)
+		return nil
+	})
 }
 
 func resourceLaceworkIntegrationAzureActivityLogRead(d *schema.ResourceData, meta interface{}) error {

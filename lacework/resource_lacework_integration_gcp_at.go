@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -34,6 +35,12 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+			},
+			"retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5,
+				Description: "The number of attempts to create the external integration.",
 			},
 			"credentials": {
 				Type:     schema.TypeList,
@@ -126,10 +133,14 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework      = meta.(*api.Client)
+		retries       = d.Get("retries").(int)
 		resourceLevel = api.GcpProjectIntegration
 	)
 
-	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganizationIntegration.String() {
+	// @afiune do we really need this ToUpper?
+	if strings.ToUpper(
+		d.Get("resource_level").(string),
+	) == api.GcpOrganizationIntegration.String() {
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
@@ -151,14 +162,35 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 		data.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n",
-		api.GcpAuditLogIntegration.String(), data)
-	response, err := lacework.Integrations.CreateGcp(data)
-	if err != nil {
-		return err
-	}
+	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+		retries--
+		log.Printf("[INFO] Creating %s integration\n", api.GcpAuditLogIntegration.String())
+		response, err := lacework.Integrations.CreateGcp(data)
+		if err != nil {
+			if retries <= 0 {
+				return resource.NonRetryableError(
+					fmt.Errorf("Error creating %s integration: %s",
+						api.GcpAuditLogIntegration.String(), err,
+					))
+			}
+			log.Printf(
+				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
+				api.GcpAuditLogIntegration.String(), retries, err,
+			)
+			return resource.RetryableError(fmt.Errorf(
+				"Unable to create %s integration (retrying %d more time(s))",
+				api.GcpAuditLogIntegration.String(), retries,
+			))
+		}
 
-	for _, integration := range response.Data {
+		log.Printf("[INFO] Verifying server response")
+		err = validateGcpIntegrationResponse(&response)
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
+
+		// @afiune at this point in time, we know the data field has a single value
+		integration := response.Data[0]
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
@@ -175,9 +207,7 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
 			api.GcpAuditLogIntegration.String(), integration.IntgGuid)
 		return nil
-	}
-
-	return nil
+	})
 }
 
 func resourceLaceworkIntegrationGcpAtRead(d *schema.ResourceData, meta interface{}) error {
@@ -257,26 +287,28 @@ func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interfa
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("resource_level", integration.Data.IDType)
-			d.Set("resource_id", integration.Data.ID)
-			d.Set("subscription", integration.Data.SubscriptionName)
-
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-
-			log.Printf("[INFO] Updated %s integration with guid: %v\n",
-				api.GcpAuditLogIntegration.String(), d.Id())
-			return nil
-		}
+	log.Println("[INFO] Verifying server response data")
+	err = validateGcpIntegrationResponse(&response)
+	if err != nil {
+		return err
 	}
 
+	// @afiune at this point in time, we know the data field has a single value
+	integration := response.Data[0]
+	d.Set("name", integration.Name)
+	d.Set("intg_guid", integration.IntgGuid)
+	d.Set("enabled", integration.Enabled == 1)
+	d.Set("resource_level", integration.Data.IDType)
+	d.Set("resource_id", integration.Data.ID)
+	d.Set("subscription", integration.Data.SubscriptionName)
+
+	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+	d.Set("type_name", integration.TypeName)
+	d.Set("org_level", integration.IsOrg == 1)
+
+	log.Printf("[INFO] Updated %s integration with guid: %v\n",
+		api.GcpAuditLogIntegration.String(), d.Id())
 	return nil
 }
 
