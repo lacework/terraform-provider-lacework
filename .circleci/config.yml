@@ -6,7 +6,7 @@ parameters:
     default: 'S01JP5A3ACQ'
   only_for_branches:
     type: string
-    default: 'master'
+    default: 'main'
 
 orbs:
   slack: circleci/slack@3.4.2
@@ -70,7 +70,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "b4:1c:0c:81:82:bb:77:cd:67:51:7a:92:ae:9d:a5:f0"
+            - "c4:de:d2:af:7c:fd:39:0e:10:b3:37:d8:ff:5c:c5:b6"
       - run: scripts/release.sh trigger
   release:
     executor: go-executor
@@ -101,7 +101,7 @@ workflows:
             - integration-test-linux
           filters:
             branches:
-              only: master
+              only: main
 
   verify-release:
     jobs:
@@ -118,6 +118,7 @@ workflows:
                only: /^v.*/
             branches:
               ignore: /.*/
+          context: techally_releases
 
   nightly:
     triggers:
@@ -125,7 +126,7 @@ workflows:
           cron: "0 12 * * *"
           filters:
             branches:
-              only: master
+              only: main
     jobs:
       - unit-test
       - build
