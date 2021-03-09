@@ -75,6 +75,7 @@ The following arguments are supported:
 * `queue_url` - (Required) The SQS Queue URL.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
 * `org_account_mappings` - (Optional) Mapping of AWS accounts to Lacework accounts within a Lacework organization. See [Account Mappings](#organization-account-mappings) below for details.
 
 ### Credentials
