@@ -12,8 +12,8 @@ set -eou pipefail
 
 readonly project_name=terraform-provider-lacework
 readonly org_name=lacework
-readonly git_user="Salim Afiune Maya"
-readonly git_email="afiune@lacework.net"
+readonly git_user="Lacework Inc."
+readonly git_email="ops+releng@lacework.net"
 VERSION=$(cat VERSION)
 BINARY="${project_name}_v${VERSION}"
 SHASUMS="${project_name}_${VERSION}_SHA256SUMS"
@@ -268,7 +268,7 @@ update_changelog() {
 
 load_list_of_changes() {
   latest_version=$(find_latest_version)
-  local _list_of_changes=$(git log --no-merges --pretty="* %s (%an)([%h](https://github.com/${org_name}/${project_name}/commit/%H))" ${latest_version}..master)
+  local _list_of_changes=$(git log --no-merges --pretty="* %s (%an)([%h](https://github.com/${org_name}/${project_name}/commit/%H))" ${latest_version}..main)
 
   # init changes file
   true > CHANGES.md
@@ -342,17 +342,17 @@ push_release() {
 
 prerequisites() {
   local _branch=$(git rev-parse --abbrev-ref HEAD)
-  if [ "$_branch" != "master" ]; then
-    warn "Releases must be generated from the 'master' branch. (current $_branch)"
-    warn "Switch to the master branch and try again."
+  if [ "$_branch" != "main" ]; then
+    warn "Releases must be generated from the 'main' branch. (current $_branch)"
+    warn "Switch to the main branch and try again."
     exit 127
   fi
 
   local _unsaved_changes=$(git status -s)
   if [ "$_unsaved_changes" != "" ]; then
-    warn "You have unsaved changes in the master branch. Are you resuming a release?"
+    warn "You have unsaved changes in the main branch. Are you resuming a release?"
     warn "To resume a release you have to start over, to remove all unsaved changes run the command:"
-    warn "  git reset --hard origin/master"
+    warn "  git reset --hard origin/main"
     exit 127
   fi
 }
@@ -394,7 +394,7 @@ bump_version() {
   git add VERSION
   git add lacework/version.go # file genereted by scripts/version_updater.sh
   git commit -m "version bump to v$VERSION"
-  git push origin master
+  git push origin main
 }
 
 log() {
