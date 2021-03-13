@@ -85,7 +85,7 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 		aws      = api.NewAwsIntegration(d.Get("name").(string),
 			api.AwsCfgIntegration,
 			api.AwsIntegrationData{
-				Credentials: api.AwsIntegrationCreds{
+				Credentials: api.AwsCrossAccountCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
@@ -183,7 +183,7 @@ func resourceLaceworkIntegrationAwsCfgUpdate(d *schema.ResourceData, meta interf
 		aws      = api.NewAwsIntegration(d.Get("name").(string),
 			api.AwsCfgIntegration,
 			api.AwsIntegrationData{
-				Credentials: api.AwsIntegrationCreds{
+				Credentials: api.AwsCrossAccountCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
