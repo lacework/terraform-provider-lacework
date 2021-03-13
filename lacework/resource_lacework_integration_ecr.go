@@ -88,16 +88,18 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 
 func resourceLaceworkIntegrationEcrCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	data := api.NewAwsEcrRegistryIntegration(d.Get("name").(string),
-		api.AwsEcrData{
-			LimitByTag:     d.Get("limit_by_tag").(string),
-			LimitByLabel:   d.Get("limit_by_label").(string),
-			LimitByRep:     d.Get("limit_by_repos").(string),
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
-			Credentials: api.AwsEcrCreds{
+	data := api.NewAwsEcrWithAccessKeyIntegration(d.Get("name").(string),
+		api.AwsEcrDataWithAccessKeyCreds{
+			Credentials: api.AwsEcrAccessKeyCreds{
 				AccessKeyID:     d.Get("access_key_id").(string),
 				SecretAccessKey: d.Get("secret_access_key").(string),
+			},
+			AwsEcrCommonData: api.AwsEcrCommonData{
+				LimitByTag:     d.Get("limit_by_tag").(string),
+				LimitByLabel:   d.Get("limit_by_label").(string),
+				LimitByRep:     d.Get("limit_by_repos").(string),
+				LimitNumImg:    d.Get("limit_num_imgs").(int),
+				RegistryDomain: d.Get("registry_domain").(string),
 			},
 		},
 	)
@@ -108,7 +110,7 @@ func resourceLaceworkIntegrationEcrCreate(d *schema.ResourceData, meta interface
 
 	log.Printf("[INFO] Creating %s integration %s registry type with data:\n%+v\n",
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), data)
-	response, err := lacework.Integrations.CreateAwsEcrRegistry(data)
+	response, err := lacework.Integrations.CreateAwsEcrWithAccessKey(data)
 	if err != nil {
 		return err
 	}
@@ -136,7 +138,7 @@ func resourceLaceworkIntegrationEcrRead(d *schema.ResourceData, meta interface{}
 
 	log.Printf("[INFO] Reading %s integration %s registry type with guid: %v\n",
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
-	response, err := lacework.Integrations.GetAwsEcrRegistry(d.Id())
+	response, err := lacework.Integrations.GetAwsEcrWithAccessKey(d.Id())
 
 	if err != nil {
 		return err
@@ -171,16 +173,18 @@ func resourceLaceworkIntegrationEcrRead(d *schema.ResourceData, meta interface{}
 
 func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	data := api.NewAwsEcrRegistryIntegration(d.Get("name").(string),
-		api.AwsEcrData{
-			LimitByTag:     d.Get("limit_by_tag").(string),
-			LimitByLabel:   d.Get("limit_by_label").(string),
-			LimitByRep:     d.Get("limit_by_repos").(string),
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
-			Credentials: api.AwsEcrCreds{
+	data := api.NewAwsEcrWithAccessKeyIntegration(d.Get("name").(string),
+		api.AwsEcrDataWithAccessKeyCreds{
+			Credentials: api.AwsEcrAccessKeyCreds{
 				AccessKeyID:     d.Get("access_key_id").(string),
 				SecretAccessKey: d.Get("secret_access_key").(string),
+			},
+			AwsEcrCommonData: api.AwsEcrCommonData{
+				LimitByTag:     d.Get("limit_by_tag").(string),
+				LimitByLabel:   d.Get("limit_by_label").(string),
+				LimitByRep:     d.Get("limit_by_repos").(string),
+				LimitNumImg:    d.Get("limit_num_imgs").(int),
+				RegistryDomain: d.Get("registry_domain").(string),
 			},
 		},
 	)
@@ -193,7 +197,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 
 	log.Printf("[INFO] Updating %s integration %s registry type with data:\n%+v\n",
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), data)
-	response, err := lacework.Integrations.UpdateAwsEcrRegistry(data)
+	response, err := lacework.Integrations.UpdateAwsEcrWithAccessKey(data)
 	if err != nil {
 		return err
 	}
