@@ -23,7 +23,7 @@ This resource has two authentication methods:
 * AWS IAM Role-Based Authentication
 
 !> **Warning:** It is possible to switch authentication methods but the resource
-will be destroyed and recreated.
+will be destroyed and recreated. This will generate a new `INT_GUID`.
 
 For more information, see [Integrate Amazon Container Registry documentation](https://support.lacework.com/hc/en-us/articles/360048500133-Integrate-Amazon-Container-Registry)
 
