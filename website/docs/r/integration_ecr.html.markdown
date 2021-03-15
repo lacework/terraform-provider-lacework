@@ -12,12 +12,18 @@ Use this resource to integrate an Amazon Container Registry (ECR) with Lacework 
 and report vulnerabilities found in the operating system software packages in a Docker container
 image.
 
-~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new image and does not create a new entry. To assess a retagged image, use on-demand assessment through the Lacework CLI. For more information, see the [container vulnerability section in the Lacework CLI documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
+~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new
+image and does not create a new entry. To assess a retagged image, use on-demand assessment through
+the Lacework CLI. For more information, see the [container vulnerability section in the Lacework CLI
+documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
 
 This resource has two authentication methods:
 
 * AWS Access Key-Based Authentication
 * AWS IAM Role-Based Authentication
+
+!> **Warning:** It is possible to switch authentication methods but the resource
+will be destroyed and recreated.
 
 For more information, see [Integrate Amazon Container Registry documentation](https://support.lacework.com/hc/en-us/articles/360048500133-Integrate-Amazon-Container-Registry)
 
@@ -26,7 +32,7 @@ For more information, see [Integrate Amazon Container Registry documentation](ht
 ### Authentication via AWS Access Key
 ```hcl
 resource "lacework_integration_ecr" "access_key" {
-  name            = "ERC Example"
+  name            = "ECR using Access Keys"
   registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
   credentials {
     access_key_id     = "AWS123abcAccessKeyID"
@@ -38,7 +44,7 @@ resource "lacework_integration_ecr" "access_key" {
 ### Authentication via AWS IAM Role
 ```hcl
 resource "lacework_integration_ecr" "iam_role" {
-  name            = "ERC Example"
+  name            = "ECR using IAM Role"
   registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
   credentials {
     role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
