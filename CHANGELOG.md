@@ -1,3 +1,8 @@
+## v0.3.1 (March 16, 2021)
+
+## Documentation Updates
+* docs(website): fix ECR Module example (#88) (Salim Afiune)([f0a02f2](https://github.com/lacework/terraform-provider-lacework/commit/f0a02f2587a451ae1efad3040d8389f4265ea9d5))
+
 ## v0.3.0 (March 16, 2021)
 
 ## Features
