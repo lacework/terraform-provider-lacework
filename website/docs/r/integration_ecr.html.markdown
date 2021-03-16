@@ -12,16 +12,69 @@ Use this resource to integrate an Amazon Container Registry (ECR) with Lacework 
 and report vulnerabilities found in the operating system software packages in a Docker container
 image.
 
-~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new image and does not create a new entry. To assess a retagged image, use on-demand assessment through the Lacework CLI. For more information, see the [container vulnerability section in the Lacework CLI documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
+~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new
+image and does not create a new entry. To assess a retagged image, use on-demand assessment through
+the Lacework CLI. For more information, see the [container vulnerability section in the Lacework CLI
+documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
+
+This resource has two authentication methods:
+
+* AWS Access Key-Based Authentication
+* AWS IAM Role-Based Authentication
+
+!> **Warning:** It is possible to switch authentication methods but the resource
+will be destroyed and recreated. This will generate a new `INT_GUID`.
+
+For more information, see [Integrate Amazon Container Registry documentation](https://support.lacework.com/hc/en-us/articles/360048500133-Integrate-Amazon-Container-Registry)
 
 ## Example Usage
 
+### Authentication via AWS Access Key
 ```hcl
-resource "lacework_integration_ecr" "example" {
-  name              = "ERC Example"
-  registry_domain   = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
-  access_key_id     = "AWS123abcAccessKeyID"
-  secret_access_key = "AWS123abc123abcSecretAccessKey0000000000"
+resource "lacework_integration_ecr" "access_key" {
+  name            = "ECR using Access Keys"
+  registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
+  credentials {
+    access_key_id     = "AWS123abcAccessKeyID"
+    secret_access_key = "AWS123abc123abcSecretAccessKey0000000000"
+  }
+}
+```
+
+### Authentication via AWS IAM Role
+```hcl
+resource "lacework_integration_ecr" "iam_role" {
+  name            = "ECR using IAM Role"
+  registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
+  credentials {
+    role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
+    external_id = "12345"
+  }
+}
+```
+
+## Creating an IAM Role for ECR Integration
+
+This example shows how to create a new IAM role using the [Lacework iam-role module](https://registry.terraform.io/modules/lacework/iam-role/aws/latest)
+and use it to create a new ECR integration:
+
+```hcl
+module "lacework_iam_role_for_ecr" {
+  source  = "lacework/iam-role/aws"
+  version = "~> 0.2.0"
+  for_ecr = true
+
+  # Optionally, it is possible to pass a list of ECR registries to
+  # grant access to by using the input 'ecr_registries'
+}
+
+resource "lacework_integration_ecr" "module" {
+  name            = "ERC Integration with Module"
+  registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
+  credentials {
+    role_arn    = local.lacework_iam_role_for_ecr.arn
+    external_id = local.lacework_iam_role_for_ecr.external_id
+  }
 }
 ```
 
@@ -31,13 +84,25 @@ The following arguments are supported:
 
 * `name` - (Required) The ECR integration name.
 * `registry_domain` - (Required) The Amazon Container Registry (ECR) domain in the format `YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com`, where `YourAWSAcount` is the AWS account number for the AWS IAM user that has a role with permissions to access the ECR and `YourRegion` is your AWS region such as `us-west-2`.
-* `access_key_id` - (Required) The AWS access key ID for an AWS IAM user that has a role with permissions to access the Amazon Container Registry (ECR).
-* `secret_access_key` - (Required) The AWS secret key for the specified AWS access key.
+* `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `limit_by_tag` - (Optional) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`.
 * `limit_by_label` - (Optional) An image label to limit the assessment of images with matching label. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`.
 * `limit_by_repos` - (Optional) A comma-separated list of repositories to assess. (without spaces recommended)
 * `limit_num_imgs` - (Optional) The maximum number of newest container images to assess per repository. Must be one of `5`, `10`, or `15`. Defaults to `5`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+
+
+### Credentials
+
+`credentials` supports the combination of the following arguments.
+
+**For AWS IAM Role-Based Authentication, only both of these arguments are required:**
+* `role_arn` - The ARN of the IAM role with permissions to access the Amazon Container Registry (ECR).
+* `external_id` - The external ID for the IAM role.
+
+**For AWS Access Key-Based Authentication, only both of these arguments are required:**
+* `access_key_id` - The AWS access key ID for an AWS IAM user that has a role with permissions to access the Amazon Container Registry (ECR).
+* `secret_access_key` - The AWS secret key for the specified AWS access key.
 
 ## Import
 

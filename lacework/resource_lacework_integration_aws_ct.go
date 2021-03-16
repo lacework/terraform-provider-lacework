@@ -129,7 +129,7 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 			api.AwsCloudTrailIntegration,
 			api.AwsIntegrationData{
 				QueueUrl: d.Get("queue_url").(string),
-				Credentials: api.AwsIntegrationCreds{
+				Credentials: api.AwsCrossAccountCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
@@ -263,7 +263,7 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 			api.AwsCloudTrailIntegration,
 			api.AwsIntegrationData{
 				QueueUrl: d.Get("queue_url").(string),
-				Credentials: api.AwsIntegrationCreds{
+				Credentials: api.AwsCrossAccountCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
