@@ -53,28 +53,21 @@ resource "lacework_integration_ecr" "iam_role" {
 }
 ```
 
-## Creating an IAM Role for ECR Integration
+## ECR Module: Create an ECR Integration with an IAM Role
 
-This example shows how to create a new IAM role using the [Lacework iam-role module](https://registry.terraform.io/modules/lacework/iam-role/aws/latest)
-and use it to create a new ECR integration:
+This example shows how to leverage the [Lacework ECR Terraform Module](https://registry.terraform.io/modules/lacework/ecr/aws/latest)
+to automatically create a new IAM role and use it to create an ECR integration:
 
 ```hcl
-module "lacework_iam_role_for_ecr" {
-  source  = "lacework/iam-role/aws"
-  version = "~> 0.2.0"
-  for_ecr = true
+provider "lacework" {}
 
-  # Optionally, it is possible to pass a list of ECR registries to
-  # grant access to by using the input 'ecr_registries'
+provider "aws" {
+  region = "us-west-2"
 }
 
-resource "lacework_integration_ecr" "module" {
-  name            = "ERC Integration with Module"
-  registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
-  credentials {
-    role_arn    = local.lacework_iam_role_for_ecr.arn
-    external_id = local.lacework_iam_role_for_ecr.external_id
-  }
+module "lacework_ecr" {
+  source  = "lacework/ecr/aws"
+  version = "~> 0.1"
 }
 ```
 
