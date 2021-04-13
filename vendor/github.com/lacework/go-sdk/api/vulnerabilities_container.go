@@ -224,6 +224,45 @@ func (report *VulnContainerAssessment) VulnFixableCount(severity string) int32 {
 	return fixable
 }
 
+// HighestSeverity returns the highest severity level vulnerability in a VulnContainerAssessment
+func (report *VulnContainerAssessment) HighestSeverity() string {
+	if report.CriticalVulnerabilities != 0 {
+		return "critical"
+	}
+	if report.HighVulnerabilities != 0 {
+		return "high"
+	}
+	if report.MediumVulnerabilities != 0 {
+		return "medium"
+	}
+	if report.LowVulnerabilities != 0 {
+		return "low"
+	}
+	return "unknown"
+}
+
+// HighestFixableSeverity returns the highest fixable severity level vulnerability in a VulnContainerAssessment
+func (report *VulnContainerAssessment) HighestFixableSeverity() string {
+	if report.VulnFixableCount("critical") != 0 {
+		return "critical"
+	}
+	if report.VulnFixableCount("high") != 0 {
+		return "high"
+	}
+	if report.VulnFixableCount("medium") != 0 {
+		return "medium"
+	}
+	if report.VulnFixableCount("low") != 0 {
+		return "low"
+	}
+	return "unknown"
+}
+
+// TotalFixableVulnerabilities returns the total number of vulnerabilities that have a fix available
+func (report *VulnContainerAssessment) TotalFixableVulnerabilities() int32 {
+	return report.FixableVulnerabilities
+}
+
 type VulnContainerImage struct {
 	ImageInfo   *vulnContainerImageInfo   `json:"image_info,omitempty"`
 	ImageLayers []vulnContainerImageLayer `json:"image_layers,omitempty"`
@@ -394,26 +433,26 @@ func (self NanoTime) UTC() time.Time {
 }
 
 type VulnContainerAssessmentSummary struct {
-	EvalGuid                    string          `json:"eval_guid"`
-	EvalStatus                  string          `json:"eval_status"`
-	EvalType                    string          `json:"eval_type"`
-	ImageCreatedTime            Json16DigitTime `json:"image_created_time"`
-	ImageDigest                 string          `json:"image_digest"`
-	ImageID                     string          `json:"image_id"`
-	ImageNamespace              string          `json:"image_namespace"`
-	ImageRegistry               string          `json:"image_registry"`
-	ImageRepo                   string          `json:"image_repo"`
-	ImageScanErrorMsg           string          `json:"image_scan_error_msg"`
-	ImageScanStatus             string          `json:"image_scan_status"`
-	ImageScanTime               Json16DigitTime `json:"image_scan_time"`
-	ImageSize                   string          `json:"image_size"`
-	ImageTags                   []string        `json:"image_tags"`
-	NdvContainers               string          `json:"ndv_containers"`
-	NumFixes                    string          `json:"num_fixes"`
-	NumVulnerabilitiesSeverity1 string          `json:"num_vulnerabilities_severity_1"`
-	NumVulnerabilitiesSeverity2 string          `json:"num_vulnerabilities_severity_2"`
-	NumVulnerabilitiesSeverity3 string          `json:"num_vulnerabilities_severity_3"`
-	NumVulnerabilitiesSeverity4 string          `json:"num_vulnerabilities_severity_4"`
-	NumVulnerabilitiesSeverity5 string          `json:"num_vulnerabilities_severity_5"`
-	StartTime                   NanoTime        `json:"start_time"`
+	EvalGuid                    string   `json:"eval_guid"`
+	EvalStatus                  string   `json:"eval_status"`
+	EvalType                    string   `json:"eval_type"`
+	ImageCreatedTime            NanoTime `json:"image_created_time"`
+	ImageDigest                 string   `json:"image_digest"`
+	ImageID                     string   `json:"image_id"`
+	ImageNamespace              string   `json:"image_namespace"`
+	ImageRegistry               string   `json:"image_registry"`
+	ImageRepo                   string   `json:"image_repo"`
+	ImageScanErrorMsg           string   `json:"image_scan_error_msg"`
+	ImageScanStatus             string   `json:"image_scan_status"`
+	ImageScanTime               NanoTime `json:"image_scan_time"`
+	ImageSize                   string   `json:"image_size"`
+	ImageTags                   []string `json:"image_tags"`
+	NdvContainers               string   `json:"ndv_containers"`
+	NumFixes                    string   `json:"num_fixes"`
+	NumVulnerabilitiesSeverity1 string   `json:"num_vulnerabilities_severity_1"`
+	NumVulnerabilitiesSeverity2 string   `json:"num_vulnerabilities_severity_2"`
+	NumVulnerabilitiesSeverity3 string   `json:"num_vulnerabilities_severity_3"`
+	NumVulnerabilitiesSeverity4 string   `json:"num_vulnerabilities_severity_4"`
+	NumVulnerabilitiesSeverity5 string   `json:"num_vulnerabilities_severity_5"`
+	StartTime                   NanoTime `json:"start_time"`
 }
