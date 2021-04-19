@@ -166,7 +166,7 @@ github.com/jmespath/go-jmespath
 github.com/jstemmer/go-junit-report
 github.com/jstemmer/go-junit-report/formatter
 github.com/jstemmer/go-junit-report/parser
-# github.com/lacework/go-sdk v0.4.0
+# github.com/lacework/go-sdk v0.6.0
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
@@ -185,8 +185,7 @@ github.com/mitchellh/go-homedir
 github.com/mitchellh/go-testing-interface
 # github.com/mitchellh/go-wordwrap v1.0.0
 github.com/mitchellh/go-wordwrap
-# github.com/mitchellh/mapstructure v1.3.2
-## explicit
+# github.com/mitchellh/mapstructure v1.4.1
 github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.1
 github.com/mitchellh/reflectwalk
