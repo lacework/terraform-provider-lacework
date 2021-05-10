@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 
-	"github.com/BurntSushi/toml"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 
 	"github.com/lacework/go-sdk/api"
+	"github.com/lacework/go-sdk/lwconfig"
 	"github.com/lacework/go-sdk/lwlogger"
 )
 
@@ -118,27 +116,22 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 
 	log.Printf("[INFO] Missing credentials, loading '%s' profile from the Lacework configuration file\n", profile)
 
-	// read config file $HOME/.lacework.toml
-	home, err := homedir.Dir()
+	cPath, err := lwconfig.DefaultConfigPath()
 	if err != nil {
 		return nil, err
 	}
-
-	var (
-		profiles = Profiles{}
-		cPath    = path.Join(home, ".lacework.toml")
-	)
 
 	// if the Lacework configuration file doesn't exist, we are unable to proceed
 	if !fileExist(cPath) {
 		return nil, errors.New(providerMisconfiguredErrorMessage())
 	}
 
-	if _, err := toml.DecodeFile(cPath, &profiles); err != nil {
-		return nil, errors.Wrap(err, "unable to decode profiles from config")
+	profiles, err := lwconfig.LoadProfilesFrom(cPath)
+	if err != nil {
+		return nil, err
 	}
 
-	creds, ok := profiles[profile]
+	config, ok := profiles[profile]
 	if !ok {
 		return nil, errors.Errorf(
 			"profile '%s' not found.\n\nTry using the Lacework CLI command 'lacework configure --profile %s'.",
@@ -148,13 +141,17 @@ func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	// Once we have the right credentials loaded from the configuration file,
 	// we need to verify if any static setting was provided
 	if account == "" {
-		account = creds.Account
+		account = config.Account
+		if config.Version == 2 && config.Subaccount != "" {
+			log.Printf("[INFO] Lacework v2 config. Overriding account '%s' with subaccount '%s'\n", config.Account, config.Subaccount)
+			account = config.Subaccount
+		}
 	}
 	if key == "" {
-		key = creds.ApiKey
+		key = config.ApiKey
 	}
 	if secret == "" {
-		secret = creds.ApiSecret
+		secret = config.ApiSecret
 	}
 
 	apiOpts = append(apiOpts, api.WithApiKeys(key, secret))
@@ -173,12 +170,4 @@ missing. Refer to the provider documentation for more information:
 func fileExist(name string) bool {
 	_, err := os.Stat(name)
 	return !os.IsNotExist(err)
-}
-
-type Profiles map[string]credsDetails
-
-type credsDetails struct {
-	Account   string `toml:"account"`
-	ApiKey    string `toml:"api_key"`
-	ApiSecret string `toml:"api_secret"`
 }
