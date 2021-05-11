@@ -241,9 +241,27 @@ prepare_release() {
   log "preparing new release"
   prerequisites
   remove_tag_version
+  check_for_minor_version_bump
   generate_release_notes
   update_changelog
   push_release
+  open_pull_request
+}
+
+check_for_minor_version_bump() {
+  if release_contains_features; then
+    log "new feature detected, minor version bump"
+    echo $VERSION | awk -F. '{printf("%d.%d.0", $1, $2+1)}' > VERSION
+    VERSION=$(cat VERSION)
+    scripts/version_updater.sh
+    log "updated version to v$VERSION"
+  fi
+}
+
+release_contains_features() {
+  latest_version=$(find_latest_version)
+  git log --no-merges --pretty="%s" ${latest_version}..main | grep "feat[:(]" >/dev/null
+  return $?
 }
 
 remove_tag_version() {
@@ -333,11 +351,13 @@ generate_release_notes() {
 push_release() {
   log "commiting and pushing the release to github"
   _version_no_tag=$(echo $VERSION | awk -F. '{printf("%d.%d.%d", $1, $2, $3)}')
+  if [ "$CI" != "" ]; then
+    git config --global user.email $git_email
+    git config --global user.name $git_user
+  fi
   git checkout -B release
-  git commit -am "Release v$_version_no_tag"
-  git push origin release
-  log ""
-  log "Follow the above url and open a pull request"
+  git commit -am "release: v$_version_no_tag"
+  git push origin release -f
 }
 
 prerequisites() {
@@ -362,6 +382,35 @@ find_latest_version() {
   local _versions
   _versions=$(git ls-remote --tags --quiet | grep $_pattern | tr '/' ' ' | awk '{print $NF}')
   echo "$_versions" | tr '.' ' ' | sort -nr -k 1 -k 2 -k 3 | tr ' ' '.' | head -1
+}
+
+open_pull_request() {
+  local _body="/tmp/pr.json"
+  local _pr="/tmp/pr.out"
+
+  log "opening GH pull request"
+  generate_pr_body "$_body"
+  curl -XPOST -H "Authorization: token $GITHUB_TOKEN" --data  "@$_body" \
+        https://api.github.com/repos/${org_name}/${project_name}/pulls > $_pr
+
+  _pr_url=$(jq .html_url $_pr)
+  log ""
+  log "It is time to review the release!"
+  log "    $_pr_url"
+}
+
+generate_pr_body() {
+  _file=${1:-pr.json}
+  _version_no_tag=$(echo $VERSION | awk -F. '{printf("%d.%d.%d", $1, $2, $3)}')
+  _release_notes=$(jq -aRs .  <<< cat RELEASE_NOTES.md)
+  cat <<EOF > $_file
+{
+  "base": "main",
+  "head": "release",
+  "title": "Release v$_version_no_tag",
+  "body": $_release_notes
+}
+EOF
 }
 
 bump_version() {
