@@ -1,8 +1,9 @@
 Terraform Provider
 ==================
 
+[![Codefresh build status]( https://g.codefresh.io/api/badges/pipeline/lacework/terraform-provider-lacework%2Ftest-build?type=cf-1&key=eyJhbGciOiJIUzI1NiJ9.NWVmNTAxOGU4Y2FjOGQzYTkxYjg3ZDEx.RJ3DEzWmBXrJX7m38iExJ_ntGv4_Ip8VTa-an8gBwBo)]( https://g.codefresh.io/pipelines/edit/new/builds?id=609b056f1e9a4249a520b52e&pipeline=test-build&projects=terraform-provider-lacework&projectId=609b049ae23d572127fccaff)
+
 - Website: https://www.terraform.io
-- [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
 - Mailing list: [Google Groups](http://groups.google.com/group/terraform-tool)
 
 <img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-hashicorp.svg" width="600px">
