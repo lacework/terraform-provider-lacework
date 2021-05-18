@@ -19,6 +19,7 @@ BINARY="${project_name}_v${VERSION}"
 SHASUMS="${project_name}_${VERSION}_SHA256SUMS"
 TARGETS=(
   ${project_name}_${VERSION}_darwin_amd64
+  ${project_name}_${VERSION}_darwin_arm64
   ${project_name}_${VERSION}_windows_386.exe
   ${project_name}_${VERSION}_windows_amd64.exe
   ${project_name}_${VERSION}_linux_386
