@@ -16,5 +16,4 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.0
 	go.uber.org/zap v1.15.0 // indirect
-	golang.org/x/tools v0.1.1 // indirect
 )
