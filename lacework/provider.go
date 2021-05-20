@@ -63,6 +63,7 @@ func Provider() *schema.Provider {
 			"lacework_alert_channel_webhook":         resourceLaceworkAlertChannelWebhook(),
 			"lacework_integration_aws_cfg":           resourceLaceworkIntegrationAwsCfg(),
 			"lacework_integration_aws_ct":            resourceLaceworkIntegrationAwsCloudTrail(),
+			"lacework_integration_aws_govcloud_cfg":  resourceLaceworkIntegrationAwsGovCloudCfg(),
 			"lacework_integration_azure_cfg":         resourceLaceworkIntegrationAzureCfg(),
 			"lacework_integration_azure_al":          resourceLaceworkIntegrationAzureActivityLog(),
 			"lacework_integration_docker_hub":        resourceLaceworkIntegrationDockerHub(),
