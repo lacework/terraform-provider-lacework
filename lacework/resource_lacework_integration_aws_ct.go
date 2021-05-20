@@ -129,7 +129,7 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 			api.AwsCloudTrailIntegration,
 			api.AwsIntegrationData{
 				QueueUrl: d.Get("queue_url").(string),
-				Credentials: api.AwsCrossAccountCreds{
+				Credentials: &api.AwsCrossAccountCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					ExternalID: d.Get("credentials.0.external_id").(string),
 				},
@@ -219,8 +219,9 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 			d.Set("org_level", integration.IsOrg == 1)
 
 			creds := make(map[string]string)
-			creds["role_arn"] = integration.Data.Credentials.RoleArn
-			creds["external_id"] = integration.Data.Credentials.ExternalID
+			credentials := integration.Data.GetCredentials()
+			creds["role_arn"] = credentials.RoleArn
+			creds["external_id"] = credentials.ExternalID
 			d.Set("credentials", []map[string]string{creds})
 			d.Set("queue_url", integration.Data.QueueUrl)
 
@@ -263,7 +264,7 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 			api.AwsCloudTrailIntegration,
 			api.AwsIntegrationData{
 				QueueUrl: d.Get("queue_url").(string),
-				Credentials: api.AwsCrossAccountCreds{
+				Credentials: &api.AwsCrossAccountCreds{
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					ExternalID: d.Get("credentials.0.external_id").(string),
 				},

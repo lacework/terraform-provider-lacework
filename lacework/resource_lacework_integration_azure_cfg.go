@@ -257,7 +257,7 @@ func resourceLaceworkIntegrationAzureCfgDelete(d *schema.ResourceData, meta inte
 	return nil
 }
 
-// validateAzureIntegrationResponse checks weather or not the server response has
+// validateAzureIntegrationResponse checks whether or not the server response has
 // any inconsistent data, it returns a friendly error message describing the
 // problem and how to report it
 func validateAzureIntegrationResponse(response *api.AzureIntegrationsResponse) error {
