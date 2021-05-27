@@ -31,7 +31,7 @@ func dataSourceLaceworkApiTokenRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	d.SetId(time.Now().UTC().String())
-	d.Set("token", response.Token())
+	d.Set("token", response.Token)
 
 	return nil
 }
