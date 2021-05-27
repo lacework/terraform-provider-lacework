@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_integration\_aws\_govcloud\_cfg
 
-Use this resource to configure an AWS GovCloud Config integration to analyze AWS configuration compliance.
+Use this resource to configure an AWS Config integration for AWS GovCloud to analyze AWS configuration compliance.
 
 To find more information see the [Lacework support documentation](https://support.lacework.com/hc/en-us/articles/360021140214-Initial-Setup-of-AWS-GovCloud-Integration).
 
@@ -30,7 +30,7 @@ resource "lacework_integration_aws_govcloud_cfg" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The AWS GovCloud Config integration name.
-* `account_id` - The AWS account ID.
+* `account_id` - (Required) The AWS account ID.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
@@ -39,8 +39,8 @@ The following arguments are supported:
 
 `credentials` supports the following arguments:
 
-* `access_key_id` - The AWS access key ID.
-* `secret_access_key` - The AWS secret key for the specified AWS access key.
+* `access_key_id` - (Required) The AWS access key ID.
+* `secret_access_key` - (Required) The AWS secret key for the specified AWS access key.
 
 ## Import
 
