@@ -44,10 +44,10 @@ The following arguments are supported:
 
 ## Import
 
-A Lacework AWS GovCloud Config integration can be imported using a `INT_GUID`, e.g.
+A Lacework AWS Config integration for AWS GovCloud can be imported using a `INT_GUID`, e.g.
 
 ```
-$ terraform import lacework_integration_aws_govcloud_cfg.account_abc EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
+$ terraform import lacework_integration_aws_govcloud_cfg.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
