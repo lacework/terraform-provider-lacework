@@ -6,7 +6,7 @@ description: |-
   Create and manage AWS GovCloud Config integrations
 ---
 
-# lacework\_integration\_aws\_gov\_cloud\_cfg
+# lacework\_integration\_aws\_govcloud\_cfg
 
 Use this resource to configure an AWS GovCloud Config integration to analyze AWS configuration compliance.
 
