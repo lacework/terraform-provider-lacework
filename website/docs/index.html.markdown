@@ -86,6 +86,51 @@ provider "lacework" {
 }
 ```
 
+## Organizational Accounts
+
+An organization can contain multiple accounts so you can manage components such as alerts, resource groups,
+team members, and audit logs at a more granular level inside an organization. A team member may have access
+to multiple accounts and can easily switch between them.
+
+-> **Note:** To enroll your account in an organization follow the [Organization Enrollment Process](https://support.lacework.com/hc/en-us/articles/360041727394-Organization-Overview) documentation.
+
+Use the argument `subaccount` to switch to a different account inside your organizational account.
+
+For example, having a `default` profile that has access to your primary account named `my-company`:
+```toml
+[default]
+  account = "my-company"
+  api_key = "my-api-key"
+  api_secret = "my-api-secret"
+  version = 2
+```
+
+To access your sub-account named `business-unit` you would specify the argument `subaccount`.
+```hcl
+provider "lacework" {
+  alias = "primary"
+}
+
+provider "lacework" {
+  alias      = "business-unit"
+  subaccount = "business-unit"
+}
+```
+
+From there, you can pass the [`alias` meta-argument](https://www.terraform.io/docs/language/providers/configuration.html#alias-multiple-provider-configurations) to any resource to switch between accounts:
+```hcl
+resource "lacework_alert_channel_slack" "primary_critical" {
+  alias = lacework.primary
+  # ...
+}
+resource "lacework_alert_channel_slack" "business_unit_critical" {
+  alias = lacework.business-unit
+  # ...
+}
+```
+
+!> **Warning:** To manage multiple accounts, your user should have the Organization Administrator Role.
+
 ## Argument Reference
 
 The following arguments are supported in the `provider` block:
@@ -105,5 +150,9 @@ The following arguments are supported in the `provider` block:
 * `api_secret` - (Optional) This is a Lacework API access secret. It must be provided, but it
   can also be sourced from the `LW_API_SECRET` environment variable, or via the configuration
   file if `profile` is specified.
+
+* `subaccount` - (Optional) The sub-account name inside your organization (for organization
+  administrators only). It can also be sourced from the `LW_SUBACCOUNT` environment variable,
+  or via the configuration file if `profile` is specified.
 
 -> **Note:** To generate a set of API access keys follow [this documentation](https://support.lacework.com/hc/en-us/articles/360011403853-Generate-API-Access-Keys-and-Tokens).
