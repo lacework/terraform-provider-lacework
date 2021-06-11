@@ -167,10 +167,11 @@ github.com/klauspost/compress/huff0
 github.com/klauspost/compress/snappy
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v0.7.2-0.20210526210458-63097d55ae37
+# github.com/lacework/go-sdk v0.8.0
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
+github.com/lacework/go-sdk/internal/domain
 github.com/lacework/go-sdk/lwconfig
 github.com/lacework/go-sdk/lwlogger
 github.com/lacework/go-sdk/lwtime

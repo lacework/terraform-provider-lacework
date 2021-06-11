@@ -5,5 +5,6 @@ data "lacework_agent_access_token" "k8s" {
 }
 
 output "lacework_agent_access_token" {
-  value = data.lacework_agent_access_token.k8s.token
+  value     = data.lacework_agent_access_token.k8s.token
+  sensitive = true
 }
