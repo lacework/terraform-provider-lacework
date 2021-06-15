@@ -1,12 +1,23 @@
 package lacework
 
-// turn an interface array into a string array
-func castStringArray(iArray []interface{}) []string {
-	return castAndTransformStringArray(iArray, func(s string) string { return s })
+import (
+	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+// extract an attribute from the provided ResourceData and convert it into a string slice
+func castAttributeToStringSlice(d *schema.ResourceData, attr string) []string {
+	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return s })
 }
 
-// turn an interface array into a string array and apply a transformation func
-func castAndTransformStringArray(iArray []interface{}, f func(string) string) []string {
+// turn an interface slice into a string slice
+func castStringSlice(iArray []interface{}) []string {
+	return castAndTransformStringSlice(iArray, func(s string) string { return s })
+}
+
+// turn an interface slice into a string slice and apply a transformation func
+func castAndTransformStringSlice(iArray []interface{}, f func(string) string) []string {
 	var a []string
 	for _, v := range iArray {
 		if v == nil {
@@ -17,11 +28,32 @@ func castAndTransformStringArray(iArray []interface{}, f func(string) string) []
 	return a
 }
 
-// turn a string array into an instance array
-func castStringArrayToInterface(strs []string) []interface{} {
+// turn a string slice into an instance slice
+func castStringSliceToInterface(strs []string) []interface{} {
 	arr := make([]interface{}, len(strs))
 	for i, str := range strs {
 		arr[i] = str
 	}
 	return arr
+}
+
+// extract an attribute from the provided ResourceData and convert it into a map of strings
+// with string keys
+func castAttributeToStringKeyMapOfStrings(d *schema.ResourceData, attr string) map[string]string {
+	mapStrings := d.Get(attr).(map[string]interface{})
+	newParams := make(map[string]string, len(mapStrings))
+	for key, val := range mapStrings {
+		newParams[key] = val.(string)
+	}
+
+	return newParams
+}
+
+// TODO @afiune remove this function when we release v1.0
+func joinMapStrings(m map[string]string, delimit string) string {
+	out := make([]string, 0)
+	for _, val := range m {
+		out = append(out, val)
+	}
+	return strings.Join(out, delimit)
 }

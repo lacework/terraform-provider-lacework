@@ -25,27 +25,19 @@ Supported Docker V2 registries:
 
 ~> **Note:** You must whitelist the Lacework outbound IPs to allow the vulnerability scanner to communicate with your private registries. See [Lacework Outbound IPs](https://support.lacework.com/hc/en-us/articles/360052140433)
 
-## Set Up Image Assessments
-
-The Lacework CLI makes it easy to request on-demand scans of new images designed for continuous
-integration (CI) pipelines. You can find more information on integrating the Lacework CLI for
-container vulnerability scanning in CI pipelines [here](https://support.lacework.com/hc/en-us/articles/360052476154-Integrate-Lacework-APIs-with-Continuous-Integration-CI-Pipelines).
-
--> **Note:** The Docker V2 Registry status displays `Integration Successful` only after its first assessment completes.
-
-For more information visit the [documentation for the Lacework CLI](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
-
 ## Example Usage
 
 ```hcl
 resource "lacework_integration_docker_v2" "jfrog" {
-  name = "My Docker V2 Registry"
+  name            = "My Docker V2 Registry"
   registry_domain = "my-dockerv2.jfrog.io"
-  username = "my-user"
-  password = "a-secret-password"
-  ssl = true
+  username        = "my-user"
+  password        = "a-secret-password"
+  ssl             = true
 }
 ```
+
+-> **Note:** The Docker V2 Registry status displays `Integration Successful` only after its first assessment completes.
 
 ## Argument Reference
 
@@ -56,9 +48,11 @@ The following arguments are supported:
 * `username` - (Required) The user that has at permissions to pull from the container registry the images to be assessed.
 * `password` - (Required) The password for the specified user.
 * `ssl` - (Optional) Enable or disable SSL communication. Defaults to `false`.
-* `limit_by_tag` - (Optional) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`.
-* `limit_by_label` - (Optional) An image label to limit the assessment of images with matching label. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`.
+* `limit_by_tag` - (Optional, **Deprecated**) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`. This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider.
+* `limit_by_label` - (Optional, **Deprecated**) An image label to limit the assessment of images with matching label. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`. This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
+* `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 
 ## Import
 
