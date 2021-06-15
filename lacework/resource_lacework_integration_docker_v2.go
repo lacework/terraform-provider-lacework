@@ -47,16 +47,22 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+
+			// TODO @afiune remove these resources when we release 1.0
 			"limit_by_tag": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "*",
+				Type:       schema.TypeString,
+				Optional:   true,
+				Default:    "*",
+				Deprecated: "This attribute will be removed in version 1.0 of the Lacework provider",
 			},
 			"limit_by_label": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "*",
+				Type:       schema.TypeString,
+				Optional:   true,
+				Default:    "*",
+				Deprecated: "This attribute will be removed in version 1.0 of the Lacework provider",
 			},
+			// END TODO @afiune
+
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
