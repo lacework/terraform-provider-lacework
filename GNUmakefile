@@ -1,3 +1,8 @@
+# Tooling versions
+GOLANGCILINTVERSION?=1.23.8
+GOIMPORTSVERSION?=v0.1.2
+GOXVERSION?=v1.0.1
+
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
@@ -5,7 +10,6 @@ PKG_NAME=lacework
 DIR=~/.terraform.d/plugins
 GO_CLIENT_VERSION=master
 COVERAGEOUT?=coverage.out
-GOLANGCILINTVERSION?=1.23.8
 GOFLAGS=-mod=vendor
 CGO_ENABLED?=0
 PACKAGENAME?=terraform-provider-lacework
@@ -114,8 +118,8 @@ ifeq (, $(shell which golangci-lint))
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v$(GOLANGCILINTVERSION)
 endif
 ifeq (, $(shell which goimports))
-	go get golang.org/x/tools/cmd/goimports
+	go get golang.org/x/tools/cmd/goimports@$(GOIMPORTSVERSION)
 endif
 ifeq (, $(shell which gox))
-	go get github.com/mitchellh/gox
+	go get github.com/mitchellh/gox@$(GOXVERSION)
 endif
