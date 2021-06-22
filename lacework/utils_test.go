@@ -37,6 +37,20 @@ func TestCastAndTransformStringSlice(t *testing.T) {
 	)
 }
 
+func TestCastStringSliceToInterface(t *testing.T) {
+	expected := make([]interface{}, 3)
+	expected[0] = "abc"
+	expected[1] = "xyz"
+	expected[2] = "bubulubu"
+
+	subject := []string{"abc", "xyz", "bubulubu"}
+	actual := castStringSliceToInterface(subject)
+
+	assert.ElementsMatchf(t, expected, actual,
+		"%s did not match expected value: %s", actual, expected,
+	)
+}
+
 func TestCastAttributeToStringSlice(t *testing.T) {
 	var (
 		expected     = []string{"foo", "bar"}
@@ -48,6 +62,21 @@ func TestCastAttributeToStringSlice(t *testing.T) {
 	actual := castAttributeToStringSlice(testResource, "limit_by_tags")
 
 	assert.ElementsMatchf(t, expected, actual,
+		"%s did not match expected value: %s", actual, expected,
+	)
+}
+
+func TestCastAttributeToStringKeyMapOfStrings(t *testing.T) {
+	var (
+		expected     = map[string]string{"foo": "bar", "key": "value"}
+		d            = resourceLaceworkIntegrationGcr()
+		testResource = d.TestResourceData()
+	)
+
+	testResource.Set("limit_by_labels", expected)
+	actual := castAttributeToStringKeyMapOfStrings(testResource, "limit_by_labels")
+
+	assert.Equal(t, expected, actual,
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
