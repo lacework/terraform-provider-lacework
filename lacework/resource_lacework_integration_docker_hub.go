@@ -48,6 +48,7 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 			"limit_by_tag": {
 				Type:          schema.TypeString,
 				Optional:      true,
+				Default:       "*",
 				Description:   "A comma-separated list of image tags to limit the assessment of images with matching tags",
 				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider",
 				ConflictsWith: []string{"limit_by_tags"},
@@ -55,6 +56,7 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 			"limit_by_label": {
 				Type:          schema.TypeString,
 				Optional:      true,
+				Default:       "*",
 				Description:   "A comma-separated list of image labels to limit the assessment of images with matching labels",
 				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider",
 				ConflictsWith: []string{"limit_by_labels"},
@@ -219,22 +221,22 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 			d.Set("username", integration.Data.Credentials.Username)
 			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
 
-			if _, ok := d.GetOk("limit_by_tag"); ok {
-				d.Set("limit_by_tag", integration.Data.LimitByTag)
-			} else {
+			if _, ok := d.GetOk("limit_by_tags"); ok {
 				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
+			} else {
+				d.Set("limit_by_tag", integration.Data.LimitByTag)
 			}
 
-			if _, ok := d.GetOk("limit_by_label"); ok {
-				d.Set("limit_by_label", integration.Data.LimitByLabel)
-			} else {
+			if _, ok := d.GetOk("limit_by_labels"); ok {
 				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
+			} else {
+				d.Set("limit_by_label", integration.Data.LimitByLabel)
 			}
 
-			if _, ok := d.GetOk("limit_by_repos"); ok {
-				d.Set("limit_by_repos", integration.Data.LimitByRep)
-			} else {
+			if _, ok := d.GetOk("limit_by_repositories"); ok {
 				d.Set("limit_by_repositories", strings.Split(integration.Data.LimitByRep, ","))
+			} else {
+				d.Set("limit_by_repos", integration.Data.LimitByRep)
 			}
 
 			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
