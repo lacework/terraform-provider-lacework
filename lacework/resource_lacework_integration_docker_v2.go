@@ -2,6 +2,7 @@ package lacework
 
 import (
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -47,15 +48,49 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+
+			// TODO @afiune remove these resources when we release v1.0
 			"limit_by_tag": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "*",
+				Type:          schema.TypeString,
+				Optional:      true,
+				Default:       "*",
+				Description:   "A comma-separated list of image tags to limit the assessment of images with matching tags",
+				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider",
+				ConflictsWith: []string{"limit_by_tags"},
 			},
 			"limit_by_label": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "*",
+				Type:          schema.TypeString,
+				Optional:      true,
+				Default:       "*",
+				Description:   "A comma-separated list of image labels to limit the assessment of images with matching labels",
+				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider",
+				ConflictsWith: []string{"limit_by_labels"},
+			},
+			// END TODO @afiune
+
+			"limit_by_tags": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+				Optional:      true,
+				Description:   "A list of image tags to limit the assessment of images with matching tags",
+				ConflictsWith: []string{"limit_by_tag"},
+			},
+			"limit_by_labels": {
+				Type: schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+				Optional:      true,
+				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
+				ConflictsWith: []string{"limit_by_label"},
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
@@ -83,10 +118,21 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 
 func resourceLaceworkIntegrationDockerV2Create(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
+
+	limitByTags := d.Get("limit_by_tag").(string)
+	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
+		limitByTags = strings.Join(tags, ",")
+	}
+
+	limitByLabels := d.Get("limit_by_label").(string)
+	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
+		limitByLabels = joinMapStrings(labels, ",")
+	}
+
 	data := api.NewDockerV2RegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:     d.Get("limit_by_tag").(string),
-			LimitByLabel:   d.Get("limit_by_label").(string),
+			LimitByTag:     limitByTags,
+			LimitByLabel:   limitByLabels,
 			RegistryDomain: d.Get("registry_domain").(string),
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
@@ -150,8 +196,18 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 			d.Set("username", integration.Data.Credentials.Username)
 			d.Set("password", integration.Data.Credentials.Password)
 			d.Set("ssl", integration.Data.Credentials.SSL)
-			d.Set("limit_by_tag", integration.Data.LimitByTag)
-			d.Set("limit_by_label", integration.Data.LimitByLabel)
+
+			if _, ok := d.GetOk("limit_by_tags"); ok {
+				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
+			} else {
+				d.Set("limit_by_tag", integration.Data.LimitByTag)
+			}
+
+			if _, ok := d.GetOk("limit_by_labels"); ok {
+				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
+			} else {
+				d.Set("limit_by_label", integration.Data.LimitByLabel)
+			}
 
 			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
 				api.ContainerRegistryIntegration.String(), api.DockerV2Registry.String(), integration.IntgGuid)
@@ -165,10 +221,21 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 
 func resourceLaceworkIntegrationDockerV2Update(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
+
+	limitByTags := d.Get("limit_by_tag").(string)
+	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
+		limitByTags = strings.Join(tags, ",")
+	}
+
+	limitByLabels := d.Get("limit_by_label").(string)
+	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
+		limitByLabels = joinMapStrings(labels, ",")
+	}
+
 	data := api.NewDockerV2RegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:     d.Get("limit_by_tag").(string),
-			LimitByLabel:   d.Get("limit_by_label").(string),
+			LimitByTag:     limitByTags,
+			LimitByLabel:   limitByLabels,
 			RegistryDomain: d.Get("registry_domain").(string),
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),

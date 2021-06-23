@@ -355,7 +355,7 @@ func getResourceOrgAccountMappings(d *schema.ResourceData) *accountMappingsFile 
 		for _, m := range mappingSet.List() {
 			mapping := m.(map[string]interface{})
 			accountMapFile.Mappings[mapping["lacework_account"].(string)] = map[string]interface{}{
-				"aws_accounts": castStringArray(mapping["aws_accounts"].(*schema.Set).List()),
+				"aws_accounts": castStringSlice(mapping["aws_accounts"].(*schema.Set).List()),
 			}
 		}
 

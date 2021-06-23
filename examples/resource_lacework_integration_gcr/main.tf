@@ -9,8 +9,13 @@ resource "lacework_integration_gcr" "example" {
     client_email   = "email@some-project-name.iam.gserviceaccount.com"
     private_key    = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   }
-  limit_by_tag   = "dev*"
-  limit_by_label = "*label"
-  limit_by_repos = "my-repo,other-repo"
-  limit_num_imgs = 10
+
+  limit_num_imgs        = 10
+  limit_by_tags         = ["dev*", "*test"]
+  limit_by_repositories = ["my-repo", "other-repo"]
+
+  limit_by_labels = {
+    key1 = "label1"
+    key2 = "label2"
+  }
 }

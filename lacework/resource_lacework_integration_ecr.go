@@ -3,6 +3,7 @@ package lacework
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/pkg/errors"
@@ -105,23 +106,69 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 					},
 				},
 			},
+
+			// TODO @afiune remove these resources when we release v1.0
 			"limit_by_tag": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "*",
-				Description: "An image tag to limit the assessment of images with matching tag",
+				Type:          schema.TypeString,
+				Optional:      true,
+				Default:       "*",
+				Description:   "A comma-separated list of image tags to limit the assessment of images with matching tags",
+				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider",
+				ConflictsWith: []string{"limit_by_tags"},
 			},
 			"limit_by_label": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "*",
-				Description: "An image label to limit the assessment of images with matching label",
+				Type:          schema.TypeString,
+				Optional:      true,
+				Default:       "*",
+				Description:   "A comma-separated list of image labels to limit the assessment of images with matching labels",
+				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider",
+				ConflictsWith: []string{"limit_by_labels"},
 			},
+
 			"limit_by_repos": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "",
-				Description: "A comma-separated list of repositories to assess",
+				Type:          schema.TypeString,
+				Optional:      true,
+				Description:   "A comma-separated list of repositories to assess",
+				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_repositories` in version 1.0 of the Lacework provider",
+				ConflictsWith: []string{"limit_by_repositories"},
+			},
+			// END TODO @afiune
+
+			"limit_by_tags": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+				Optional:      true,
+				Description:   "A list of image tags to limit the assessment of images with matching tags",
+				ConflictsWith: []string{"limit_by_tag"},
+			},
+			"limit_by_labels": {
+				Type: schema.TypeMap,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+				Optional:      true,
+				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
+				ConflictsWith: []string{"limit_by_label"},
+			},
+			"limit_by_repositories": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+				Optional:      true,
+				Description:   "A list of repositories to assess",
+				ConflictsWith: []string{"limit_by_repos"},
 			},
 			"limit_num_imgs": {
 				Type:        schema.TypeInt,
@@ -229,10 +276,25 @@ func resourceLaceworkIntegrationEcrReadWithIAMRole(d *schema.ResourceData, lacew
 			creds["external_id"] = integration.Data.Credentials.ExternalID
 			d.Set("credentials", []map[string]string{creds})
 
-			d.Set("limit_by_tag", integration.Data.LimitByTag)
-			d.Set("limit_by_label", integration.Data.LimitByLabel)
-			d.Set("limit_by_repos", integration.Data.LimitByRep)
 			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
+
+			if _, ok := d.GetOk("limit_by_tags"); ok {
+				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
+			} else {
+				d.Set("limit_by_tag", integration.Data.LimitByTag)
+			}
+
+			if _, ok := d.GetOk("limit_by_labels"); ok {
+				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
+			} else {
+				d.Set("limit_by_label", integration.Data.LimitByLabel)
+			}
+
+			if _, ok := d.GetOk("limit_by_repositories"); ok {
+				d.Set("limit_by_repositories", strings.Split(integration.Data.LimitByRep, ","))
+			} else {
+				d.Set("limit_by_repos", integration.Data.LimitByRep)
+			}
 
 			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
 				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
@@ -270,10 +332,25 @@ func resourceLaceworkIntegrationEcrReadWithAccessKey(d *schema.ResourceData, lac
 			creds["access_key_id"] = integration.Data.Credentials.AccessKeyID
 			d.Set("credentials", []map[string]string{creds})
 
-			d.Set("limit_by_tag", integration.Data.LimitByTag)
-			d.Set("limit_by_label", integration.Data.LimitByLabel)
-			d.Set("limit_by_repos", integration.Data.LimitByRep)
 			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
+
+			if _, ok := d.GetOk("limit_by_tags"); ok {
+				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
+			} else {
+				d.Set("limit_by_tag", integration.Data.LimitByTag)
+			}
+
+			if _, ok := d.GetOk("limit_by_labels"); ok {
+				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
+			} else {
+				d.Set("limit_by_label", integration.Data.LimitByLabel)
+			}
+
+			if _, ok := d.GetOk("limit_by_repositories"); ok {
+				d.Set("limit_by_repositories", strings.Split(integration.Data.LimitByRep, ","))
+			} else {
+				d.Set("limit_by_repos", integration.Data.LimitByRep)
+			}
 
 			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
 				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
@@ -347,6 +424,22 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 }
 
 func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lacework *api.Client) error {
+
+	limitByTags := d.Get("limit_by_tag").(string)
+	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
+		limitByTags = strings.Join(tags, ",")
+	}
+
+	limitByLabels := d.Get("limit_by_label").(string)
+	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
+		limitByLabels = joinMapStrings(labels, ",")
+	}
+
+	limitByRepos := d.Get("limit_by_repos").(string)
+	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
+		limitByRepos = strings.Join(repos, ",")
+	}
+
 	data := api.NewAwsEcrWithCrossAccountIntegration(d.Get("name").(string),
 		api.AwsEcrDataWithCrossAccountCreds{
 			Credentials: api.AwsCrossAccountCreds{
@@ -354,9 +447,9 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 				ExternalID: d.Get("credentials.0.external_id").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     d.Get("limit_by_tag").(string),
-				LimitByLabel:   d.Get("limit_by_label").(string),
-				LimitByRep:     d.Get("limit_by_repos").(string),
+				LimitByTag:     limitByTags,
+				LimitByLabel:   limitByLabels,
+				LimitByRep:     limitByRepos,
 				LimitNumImg:    d.Get("limit_num_imgs").(int),
 				RegistryDomain: d.Get("registry_domain").(string),
 			},
@@ -401,6 +494,22 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 }
 
 func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, lacework *api.Client) error {
+
+	limitByTags := d.Get("limit_by_tag").(string)
+	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
+		limitByTags = strings.Join(tags, ",")
+	}
+
+	limitByLabels := d.Get("limit_by_label").(string)
+	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
+		limitByLabels = joinMapStrings(labels, ",")
+	}
+
+	limitByRepos := d.Get("limit_by_repos").(string)
+	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
+		limitByRepos = strings.Join(repos, ",")
+	}
+
 	data := api.NewAwsEcrWithAccessKeyIntegration(d.Get("name").(string),
 		api.AwsEcrDataWithAccessKeyCreds{
 			Credentials: api.AwsEcrAccessKeyCreds{
@@ -408,9 +517,9 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 				SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     d.Get("limit_by_tag").(string),
-				LimitByLabel:   d.Get("limit_by_label").(string),
-				LimitByRep:     d.Get("limit_by_repos").(string),
+				LimitByTag:     limitByTags,
+				LimitByLabel:   limitByLabels,
+				LimitByRep:     limitByRepos,
 				LimitNumImg:    d.Get("limit_num_imgs").(int),
 				RegistryDomain: d.Get("registry_domain").(string),
 			},
@@ -558,6 +667,22 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 }
 
 func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lacework *api.Client) error {
+
+	limitByTags := d.Get("limit_by_tag").(string)
+	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
+		limitByTags = strings.Join(tags, ",")
+	}
+
+	limitByLabels := d.Get("limit_by_label").(string)
+	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
+		limitByLabels = joinMapStrings(labels, ",")
+	}
+
+	limitByRepos := d.Get("limit_by_repos").(string)
+	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
+		limitByRepos = strings.Join(repos, ",")
+	}
+
 	data := api.NewAwsEcrWithCrossAccountIntegration(d.Get("name").(string),
 		api.AwsEcrDataWithCrossAccountCreds{
 			Credentials: api.AwsCrossAccountCreds{
@@ -565,9 +690,9 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 				ExternalID: d.Get("credentials.0.external_id").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     d.Get("limit_by_tag").(string),
-				LimitByLabel:   d.Get("limit_by_label").(string),
-				LimitByRep:     d.Get("limit_by_repos").(string),
+				LimitByTag:     limitByTags,
+				LimitByLabel:   limitByLabels,
+				LimitByRep:     limitByRepos,
 				LimitNumImg:    d.Get("limit_num_imgs").(int),
 				RegistryDomain: d.Get("registry_domain").(string),
 			},
