@@ -25,9 +25,17 @@ func importLaceworkIntegration(d *schema.ResourceData, meta interface{}) ([]*sch
 		}
 	}
 
-	log.Printf("[INFO] Raw integration response: %v\n", response)
-	return nil, fmt.Errorf(
-		"Unable to import Lacework resource. Integration with guid '%s' was not found.",
-		d.Id(),
-	)
+	log.Printf("[INFO] Raw APIv1 integration response: %v\n", response)
+
+	log.Println("[WARN] Trying APIv2")
+	cloudAccount, err := lacework.V2.CloudAccounts.Get(d.Id())
+	if err != nil {
+		return nil, fmt.Errorf(
+			"Unable to import Lacework resource. Integration with guid '%s' was not found.",
+			d.Id(),
+		)
+	}
+	log.Printf("[INFO] Cloud account integration found using APIv2 with guid: %v\n", cloudAccount.Data.IntgGuid)
+	return []*schema.ResourceData{d}, nil
+
 }
