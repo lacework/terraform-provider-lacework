@@ -318,6 +318,8 @@ github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+
 github.com/kyokomi/emoji/v2 v2.2.8/go.mod h1:JUcn42DTdsXJo1SWanHh4HKDEyPaR5CqkmoirZZP9qE=
 github.com/lacework/go-sdk v0.9.1 h1:5XROhhI50jfUkuci3AkoWfF8Q5K/g4VPy+BdIEfwtWQ=
 github.com/lacework/go-sdk v0.9.1/go.mod h1:xo8sl/KJvGZbmcKR2XzlknlbNXESqXzSgom5jL4twXk=
+github.com/lacework/go-sdk v0.9.2-0.20210624161354-fdcdb4968f59 h1:6CQSwKi6x1w9oamzAICiHyRU/KkKLlrV63yjcM66bL8=
+github.com/lacework/go-sdk v0.9.2-0.20210624161354-fdcdb4968f59/go.mod h1:xo8sl/KJvGZbmcKR2XzlknlbNXESqXzSgom5jL4twXk=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.2/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
