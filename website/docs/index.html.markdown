@@ -131,6 +131,17 @@ resource "lacework_alert_channel_slack" "business_unit_critical" {
 
 !> **Warning:** To manage multiple accounts, your user should have the Organization Administrator Role.
 
+### Organization Level Access
+
+Organization administrators can access organization level data sets by setting the `organization` argument to `true`.
+```hcl
+provider "lacework" {
+  organization = true
+}
+```
+
+!> **Warning:** When accessing organization level data sets, the `subaccount` argument is ignored.
+
 ## Argument Reference
 
 The following arguments are supported in the `provider` block:
@@ -154,5 +165,9 @@ The following arguments are supported in the `provider` block:
 * `subaccount` - (Optional) The sub-account name inside your organization (for organization
   administrators only). It can also be sourced from the `LW_SUBACCOUNT` environment variable,
   or via the configuration file if `profile` is specified.
+
+* `organization` - (Optional) Set this argument to `true` to access organization level data
+  sets (for organization administrators only). It can also be sourced from the `LW_ORGANIZATION`
+  environment variable.
 
 -> **Note:** To generate a set of API access keys follow [this documentation](https://support.lacework.com/hc/en-us/articles/360011403853-Generate-API-Access-Keys-and-Tokens).

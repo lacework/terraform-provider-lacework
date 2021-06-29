@@ -49,6 +49,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("LW_API_SECRET", nil),
 				Description: "Lacework API access secret",
 			},
+			"organization": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("LW_ORGANIZATION", nil),
+				Description: "Set it to true to access organization level data sets (org admins only)",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -93,15 +99,16 @@ func Provider() *schema.Provider {
 
 func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	var (
-		diags      diag.Diagnostics
-		logLevel   = os.Getenv("TF_LOG")
-		profile    = d.Get("profile").(string)
-		account    = d.Get("account").(string)
-		subaccount = d.Get("subaccount").(string)
-		key        = d.Get("api_key").(string)
-		secret     = d.Get("api_secret").(string)
-		userAgent  = fmt.Sprintf("Terraform/%s", version)
-		apiOpts    = []api.Option{api.WithHeader("User-Agent", userAgent)}
+		diags        diag.Diagnostics
+		logLevel     = os.Getenv("TF_LOG")
+		profile      = d.Get("profile").(string)
+		account      = d.Get("account").(string)
+		subaccount   = d.Get("subaccount").(string)
+		organization = d.Get("organization").(bool)
+		key          = d.Get("api_key").(string)
+		secret       = d.Get("api_secret").(string)
+		userAgent    = fmt.Sprintf("Terraform/%s", version)
+		apiOpts      = []api.Option{api.WithHeader("User-Agent", userAgent)}
 	)
 
 	// validate that the log level is supported by the api client, if not,
@@ -121,6 +128,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		if subaccount != "" {
 			apiOpts = append(apiOpts, api.WithSubaccount(subaccount))
 			apiOpts = append(apiOpts, api.WithApiV2()) // only APIv2 understands sub-accounts
+		}
+
+		if organization {
+			apiOpts = append(apiOpts, api.WithOrgAccess())
 		}
 
 		lw, err := api.NewClient(account, apiOpts...)
@@ -227,6 +238,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 
 	if subaccount != "" {
 		apiOpts = append(apiOpts, api.WithSubaccount(subaccount))
+	}
+
+	if organization {
+		apiOpts = append(apiOpts, api.WithOrgAccess())
 	}
 
 	lw, err := api.NewClient(account, apiOpts...)
