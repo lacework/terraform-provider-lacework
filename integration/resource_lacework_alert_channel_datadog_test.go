@@ -13,7 +13,5 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
-	res := terraform.InitAndApply(t, terraformOptions)
-	fmt.Printf("Res: %v", res)
-	assert.Equal(t, res, "lacework_alert_channel_datadog.example: Creating...")
+	terraform.InitAndApply(t, terraformOptions)
 }
