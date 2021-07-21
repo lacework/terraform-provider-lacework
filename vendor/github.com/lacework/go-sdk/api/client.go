@@ -43,13 +43,13 @@ type Client struct {
 	c          *http.Client
 	log        *zap.Logger
 	headers    map[string]string
+	callbacks  LifecycleCallbacks
 
 	Account         *AccountService
 	Agents          *AgentsService
 	Compliance      *ComplianceService
 	Events          *EventsService
 	Integrations    *IntegrationsService
-	LQL             *LQLService
 	Policy          *PolicyService
 	Vulnerabilities *VulnerabilitiesService
 
@@ -102,8 +102,6 @@ func NewClient(account string, opts ...Option) (*Client, error) {
 	c.Compliance = &ComplianceService{c}
 	c.Events = &EventsService{c}
 	c.Integrations = &IntegrationsService{c}
-	c.LQL = &LQLService{c}
-	c.Policy = &PolicyService{c}
 	c.Vulnerabilities = NewVulnerabilityService(c)
 	c.V2 = NewV2Endpoints(c)
 
