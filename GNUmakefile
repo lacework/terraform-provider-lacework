@@ -58,7 +58,7 @@ uninstall:
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
 integration-test:
-	@echo "to-be-implemented"
+	go test ./integration -v
 
 test: fmtcheck
 	go test $(TEST) || exit 1
