@@ -9,7 +9,7 @@ import (
 
 var LwIntegrationClient *api.Client
 
-func init(){
+func init() {
 	LwIntegrationClient = lwTestCLient()
 }
 
