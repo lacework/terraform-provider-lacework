@@ -14,6 +14,8 @@ GOFLAGS=-mod=vendor
 CGO_ENABLED?=0
 PACKAGENAME?=terraform-provider-lacework
 VERSION=$(shell cat VERSION)
+LOCAL_PROVIDERS="$$HOME/.terraform.d/plugins"
+BINARY_PATH="registry.terraform.io/lacework/lacework/99.0.0/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-lacework_v99.0.0"
 export GOFLAGS CGO_ENABLED
 
 default: build
@@ -123,3 +125,9 @@ endif
 ifeq (, $(shell which gox))
 	go get github.com/mitchellh/gox@$(GOXVERSION)
 endif
+
+write-terraform-rc:
+	scripts/mirror-provider.sh
+
+mirror-lacework-provider: write-terraform-rc
+	go build -o "${LOCAL_PROVIDERS}/${BINARY_PATH}"
