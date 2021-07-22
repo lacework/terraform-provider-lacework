@@ -3,7 +3,7 @@ GOLANGCILINTVERSION?=1.23.8
 GOIMPORTSVERSION?=v0.1.2
 GOXVERSION?=v1.0.1
 
-TEST?=$$(go list ./... |grep -v 'vendor')
+TEST?=$$(go list ./... |grep -v 'vendor' | grep -v 'integration')
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=lacework
@@ -58,7 +58,7 @@ uninstall:
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
 integration-test:
-	@echo "to-be-implemented"
+	go test ./integration -v
 
 test: fmtcheck
 	go test $(TEST) || exit 1
