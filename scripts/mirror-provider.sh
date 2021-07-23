@@ -4,7 +4,7 @@ write_terraform_rc() {
   cat > ~/.terraformrc << EOL
 provider_installation {
             filesystem_mirror {
-              path    = "~/.terraform.d/plugins"
+              path    = "/root/.terraform.d/plugins"
               include = ["lacework/lacework"]
             }
             direct {
