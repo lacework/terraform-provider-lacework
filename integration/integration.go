@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var LwIntegrationClient *api.Client
+var LwClient *api.Client
 
 func init() {
 	LwIntegrationClient = lwTestCLient()
