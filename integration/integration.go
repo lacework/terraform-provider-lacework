@@ -10,7 +10,7 @@ import (
 var LwClient *api.Client
 
 func init() {
-	LwIntegrationClient = lwTestCLient()
+	LwClient = lwTestCLient()
 }
 
 func lwTestCLient() (lw *api.Client) {
@@ -27,7 +27,7 @@ func GetIntegrationName(result string) string {
 	resultSplit := strings.Split(result, "[id=")
 	id := strings.Split(resultSplit[1], "]")[0]
 
-	res, err := LwIntegrationClient.Integrations.Get(id)
+	res, err := LwClient.Integrations.Get(id)
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %v", id)
 	}
