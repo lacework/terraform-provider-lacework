@@ -3,7 +3,7 @@ GOLANGCILINTVERSION?=1.23.8
 GOIMPORTSVERSION?=v0.1.2
 GOXVERSION?=v1.0.1
 
-TEST?=$$(go list ./... |grep -v 'vendor')
+TEST?=$$(go list ./... |grep -v 'vendor' | grep -v 'integration')
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=lacework
@@ -14,6 +14,8 @@ GOFLAGS=-mod=vendor
 CGO_ENABLED?=0
 PACKAGENAME?=terraform-provider-lacework
 VERSION=$(shell cat VERSION)
+LOCAL_PROVIDERS="$$HOME/.terraform.d/plugins"
+BINARY_PATH="registry.terraform.io/lacework/lacework/99.0.0/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-lacework_v99.0.0"
 export GOFLAGS CGO_ENABLED
 
 default: build
@@ -58,7 +60,7 @@ uninstall:
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
 integration-test:
-	@echo "to-be-implemented"
+	go test ./integration -v
 
 test: fmtcheck
 	go test $(TEST) || exit 1
@@ -123,3 +125,9 @@ endif
 ifeq (, $(shell which gox))
 	go get github.com/mitchellh/gox@$(GOXVERSION)
 endif
+
+write-terraform-rc:
+	scripts/mirror-provider.sh
+
+mirror-lacework-provider: write-terraform-rc
+	go build -o "${LOCAL_PROVIDERS}/${BINARY_PATH}"
