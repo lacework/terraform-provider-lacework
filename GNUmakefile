@@ -14,7 +14,6 @@ GOFLAGS=-mod=vendor
 CGO_ENABLED?=0
 PACKAGENAME?=terraform-provider-lacework
 VERSION=$(shell cat VERSION)
-LOCAL_PROVIDERS="$$HOME/.terraform.d/plugins"
 BINARY_PATH="registry.terraform.io/lacework/lacework/99.0.0/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-lacework_v99.0.0"
 export GOFLAGS CGO_ENABLED
 
@@ -52,14 +51,14 @@ build-cross-platform:
             -arch="amd64 386" \
             github.com/lacework/$(PACKAGENAME)
 
-install: fmtcheck
+install: write-terraform-rc fmtcheck
 	mkdir -vp $(DIR)
-	go build -o $(DIR)/$(PACKAGENAME)
+	go build -o $(DIR)/$(BINARY_PATH)
 
 uninstall:
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
-integration-test:
+integration-test: install
 	go test ./integration -v
 
 test: fmtcheck
@@ -129,5 +128,5 @@ endif
 write-terraform-rc:
 	scripts/mirror-provider.sh
 
-mirror-lacework-provider: write-terraform-rc
-	go build -o "${LOCAL_PROVIDERS}/${BINARY_PATH}"
+clean-test:
+	find . \( -name ".terraform*" -o -name "terraform.tfstate*" \) -exec rm -rf {} \;
