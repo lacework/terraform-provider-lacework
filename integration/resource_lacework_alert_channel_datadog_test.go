@@ -1,9 +1,10 @@
 package integration
 
 import (
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TestDatadogAlertChannelCreate applies integration terraform '../examples/resource_lacework_alert_channel_datadog'
@@ -17,12 +18,12 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 
 	// Create new Datadog Alert Channel
 	create := terraform.InitAndApply(t, terraformOptions)
-	assert.Equal(t, "Datadog Channel Alert Example", GetIntegrationName(create))
+	assert.Equal(t, "Datadog Alert Channel Example", GetIntegrationName(create))
 
 	// Update Datadog Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name": "Datadog Channel Alert Updated"}
+		"channel_name": "Datadog Alert Channel Updated"}
 
 	update := terraform.Apply(t, terraformOptions)
-	assert.Equal(t, "Datadog Channel Alert Updated", GetIntegrationName(update))
+	assert.Equal(t, "Datadog Alert Channel Updated", GetIntegrationName(update))
 }
