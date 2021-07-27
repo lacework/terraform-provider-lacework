@@ -1,10 +1,11 @@
 package integration
 
 import (
-	"github.com/lacework/go-sdk/api"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/lacework/go-sdk/api"
 )
 
 var LwClient *api.Client
@@ -15,7 +16,10 @@ func init() {
 
 func lwTestCLient() (lw *api.Client) {
 	lw, err := api.NewClient(os.Getenv("LW_ACCOUNT"),
-		api.WithApiKeys(os.Getenv("LW_API_KEY"), os.Getenv("LW_API_SECRET")))
+		api.WithApiKeys(os.Getenv("LW_API_KEY"), os.Getenv("LW_API_SECRET")),
+		api.WithSubaccount(os.Getenv("LW_SUBACCOUNT")),
+		api.WithApiV2(),
+	)
 
 	if err != nil {
 		log.Fatalf("Failed to create new go-sdk client, %v", err)
@@ -28,8 +32,8 @@ func GetIntegrationName(result string) string {
 	id := strings.Split(resultSplit[1], "]")[0]
 
 	res, err := LwClient.Integrations.Get(id)
-	if err != nil {
-		log.Fatalf("Unable to find integration id: %v", id)
+	if err != nil || len(res.Data) == 0 {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
 
 	return res.Data[0].Name
