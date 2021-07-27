@@ -486,10 +486,6 @@ github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348/go.mod h1:B69LE
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/kyokomi/emoji/v2 v2.2.8/go.mod h1:JUcn42DTdsXJo1SWanHh4HKDEyPaR5CqkmoirZZP9qE=
-github.com/lacework/go-sdk v0.10.1 h1:3RASm189SDo6jXRCP7oEtciWCHTVpL4XJnzCiHAzb44=
-github.com/lacework/go-sdk v0.10.1/go.mod h1:YRkaH/2GLcUqkvqXr55nqxcJfC+/j/h4EUUUwwVga7Y=
-github.com/lacework/go-sdk v0.10.2-0.20210724174255-10f6fdf9ad38 h1:FsT/7JJ/pTKXXgKhYkMTRT8hLGWTVvM14kZpy/nGK0Q=
-github.com/lacework/go-sdk v0.10.2-0.20210724174255-10f6fdf9ad38/go.mod h1:YRkaH/2GLcUqkvqXr55nqxcJfC+/j/h4EUUUwwVga7Y=
 github.com/lacework/go-sdk v0.11.0 h1:VTqw4pofbN3Jr1Vk5izHhKCdI97gyHk4roglJHhZ1nY=
 github.com/lacework/go-sdk v0.11.0/go.mod h1:YRkaH/2GLcUqkvqXr55nqxcJfC+/j/h4EUUUwwVga7Y=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
