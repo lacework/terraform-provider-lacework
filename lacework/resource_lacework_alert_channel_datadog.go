@@ -21,22 +21,21 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"datadog_site": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  string(api.DatadogSiteCom),
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     string(api.DatadogSiteCom),
+				Description: "Where to store your logs, either the US or Europe",
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
 					case string(api.DatadogSiteEu), string(api.DatadogSiteCom):
@@ -52,9 +51,10 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 				},
 			},
 			"datadog_service": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  string(api.DatadogServiceLogsDetails),
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     string(api.DatadogServiceLogsDetails),
+				Description: "The level of detail of logs or event stream",
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
 					case string(api.DatadogServiceLogsDetails), string(api.DatadogServiceLogsSummary), string(api.DatadogServiceEventsSummary):
@@ -70,8 +70,14 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 				},
 			},
 			"api_key": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Sensitive:   true,
+				Description: "The Datadog api key required to submit metrics and events to Datadog",
+			},
+			"intg_guid": {
 				Type:     schema.TypeString,
-				Required: true,
+				Computed: true,
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,

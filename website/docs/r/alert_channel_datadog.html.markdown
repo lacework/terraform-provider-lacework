@@ -15,11 +15,11 @@ To find more information about the Datadog alert channel integration, see the [L
 ## Example Usage
 
 ```hcl
-resource "lacework_alert_channel_datadog" "example" {
-  name      = "Example Datadog Alerts"
-  datadog_site = "eu"
+resource "lacework_alert_channel_datadog" "ops_critical" {
+  name            = "Ops Datadog Alerts"
+  datadog_site    = "eu"
   datadog_service = "Events Summary"
-  api_key = "datadog-key"
+  api_key         = "datadog-key"
 }
 ```
 
