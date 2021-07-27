@@ -157,7 +157,6 @@ func resourceLaceworkAlertChannelDatadogRead(d *schema.ResourceData, meta interf
 			d.Set("org_level", integration.IsOrg == 1)
 			d.Set("datadog_site", integration.Data.DatadogSite)
 			d.Set("datadog_service", integration.Data.DatadogService)
-			d.Set("api_key", integration.Data.ApiKey)
 
 			log.Printf("[INFO] Read %s integration with guid: %v\n",
 				api.DatadogChannelIntegration, integration.IntgGuid)
