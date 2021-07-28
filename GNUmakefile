@@ -58,7 +58,7 @@ install: write-terraform-rc fmtcheck
 uninstall:
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
-integration-test: install
+integration-test: clean-test install
 	go test ./integration -v
 
 test: fmtcheck
