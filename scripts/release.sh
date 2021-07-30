@@ -13,7 +13,7 @@ set -eou pipefail
 readonly project_name=terraform-provider-lacework
 readonly org_name=lacework
 readonly git_user="Lacework Inc."
-readonly git_email="ops+releng@lacework.net"
+readonly git_email="tech-ally@lacework.net"
 VERSION=$(cat VERSION)
 BINARY="${project_name}_v${VERSION}"
 SHASUMS="${project_name}_${VERSION}_SHA256SUMS"
@@ -355,9 +355,10 @@ push_release() {
   if [ "$CI" != "" ]; then
     git config --global user.email $git_email
     git config --global user.name $git_user
+    git config --global user.signingkey $GPG_SIGNING_KEY
   fi
   git checkout -B release
-  git commit -am "release: v$_version_no_tag"
+  git commit -sS -am "release: v$_version_no_tag"
   git push origin release -f
 }
 
@@ -439,11 +440,14 @@ bump_version() {
   fi
 
   log "commiting and pushing the vertion bump to github"
-  git config --global user.email $git_email
-  git config --global user.name $git_user
+  if [ "$CI" != "" ]; then
+    git config --global user.email $git_email
+    git config --global user.name $git_user
+    git config --global user.signingkey $GPG_SIGNING_KEY
+  fi
   git add VERSION
   git add lacework/version.go # file genereted by scripts/version_updater.sh
-  git commit -m "version bump to v$VERSION"
+  git commit -sS -m "ci: version bump to v$VERSION"
   git push origin main
 }
 
