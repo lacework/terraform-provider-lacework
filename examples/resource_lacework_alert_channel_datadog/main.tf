@@ -18,4 +18,5 @@ resource "lacework_alert_channel_datadog" "example" {
   datadog_site    = "eu"
   datadog_service = "Events Summary"
   api_key         = "datadog-key"
+  disable_test    = true
 }
