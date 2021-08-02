@@ -14,9 +14,9 @@ variable "channel_name" {
 }
 
 resource "lacework_alert_channel_datadog" "example" {
-  name            = var.channel_name
-  datadog_site    = "eu"
-  datadog_service = "Events Summary"
-  api_key         = "datadog-key"
-  disable_test    = true
+  name             = var.channel_name
+  datadog_site     = "eu"
+  datadog_service  = "Events Summary"
+  api_key          = "datadog-key"
+  test_integration = false
 }
