@@ -16,4 +16,5 @@ variable "channel_name" {
 resource "lacework_alert_channel_email" "example" {
   name       = var.channel_name
   recipients = ["foo@example.com"]
+  test_integration = false
 }
