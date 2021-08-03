@@ -10,7 +10,7 @@ provider "lacework" {}
 
 variable "channel_name" {
   type    = string
-  default = "Datadog Alert Channel Test Example 2"
+  default = "Datadog Alert Channel Example"
 }
 
 resource "lacework_alert_channel_datadog" "example" {
