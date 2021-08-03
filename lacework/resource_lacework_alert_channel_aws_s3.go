@@ -58,6 +58,12 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 					},
 				},
 			},
+			"test_integration": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to test the integration of an alert channel upon creation",
+			},
 			"created_or_updated_by": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -86,6 +92,7 @@ func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interf
 				},
 			},
 		)
+		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		s3.Enabled = 0
@@ -112,6 +119,15 @@ func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interf
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
+
+	if testIntegration {
+		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
+		err := VerifyAlertChannel(d.Id(), lacework)
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+	}
 
 	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsS3ChannelIntegration, integration.IntgGuid)
 	return nil

@@ -44,6 +44,12 @@ func resourceLaceworkAlertChannelEmail() *schema.Resource {
 					},
 				},
 			},
+			"test_integration": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to test the integration of an alert channel upon creation",
+			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -79,6 +85,7 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 				},
 			},
 		)
+		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		emailAlertChan.Enabled = 0
@@ -98,6 +105,15 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
+
+	if testIntegration {
+		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
+		err := VerifyAlertChannel(d.Id(), lacework)
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+	}
 
 	log.Printf("[INFO] Created %s integration with guid: %s\n", api.EmailUserAlertChannel, response.Data.IntgGuid)
 	return nil

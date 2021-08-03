@@ -39,6 +39,12 @@ func resourceLaceworkAlertChannelPagerDuty() *schema.Resource {
 				Required:  true,
 				Sensitive: true,
 			},
+			"test_integration": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to test the integration of an alert channel upon creation",
+			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -67,6 +73,7 @@ func resourceLaceworkAlertChannelPagerDutyCreate(d *schema.ResourceData, meta in
 				IntegrationKey: d.Get("integration_key").(string),
 			},
 		)
+		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		alert.Enabled = 0
@@ -94,6 +101,15 @@ func resourceLaceworkAlertChannelPagerDutyCreate(d *schema.ResourceData, meta in
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
+
+	if testIntegration {
+		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
+		err := VerifyAlertChannel(d.Id(), lacework)
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+	}
 
 	log.Printf("[INFO] Created %s integration with guid: %v\n", api.PagerDutyIntegration, integration.IntgGuid)
 	return nil
