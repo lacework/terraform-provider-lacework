@@ -422,7 +422,6 @@ github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce/go.mod h1:+NfK9FKe
 github.com/hinshun/vt10x v0.0.0-20180616224451-1954e6464174/go.mod h1:DqJ97dSdRW1W22yXSB90986pcOyQ7r45iio1KN2ez1A=
 github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c/go.mod h1:DqJ97dSdRW1W22yXSB90986pcOyQ7r45iio1KN2ez1A=
 github.com/hokaccha/go-prettyjson v0.0.0-20190818114111-108c894c2c0e/go.mod h1:pFlLw2CfqZiIBOx6BuCeRLCrfxBJipTY0nIOF/VbGcI=
-github.com/honeycombio/libhoney-go v1.15.3/go.mod h1:SMz4WFtnFt0WxkBfJRLju/3UueS9V6pePG9KoI5c7rg=
 github.com/honeycombio/libhoney-go v1.15.4/go.mod h1:heFH+SMgmpF2m3aHwnQqUS5feImLHnzP6RaIvFkWsKU=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/huandu/xstrings v1.3.2/go.mod h1:y5/lhBue+AyNmUVz9RLU9xbLR0o4KIIExikq4ovT0aE=
@@ -468,8 +467,6 @@ github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQL
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/klauspost/compress v1.11.2/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
-github.com/klauspost/compress v1.12.2 h1:2KCfW3I9M7nSc5wOqXAlW2v2U6v+w6cbjvbfp+OykW8=
-github.com/klauspost/compress v1.12.2/go.mod h1:8dP1Hq4DHOhN9w426knH3Rhby4rFm6D8eO+e+Dq5Gzg=
 github.com/klauspost/compress v1.12.3 h1:G5AfA94pHPysR56qqrkO2pxEexdDzrpFJ6yt/VqWxVU=
 github.com/klauspost/compress v1.12.3/go.mod h1:8dP1Hq4DHOhN9w426knH3Rhby4rFm6D8eO+e+Dq5Gzg=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
@@ -491,10 +488,6 @@ github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348/go.mod h1:B69LE
 github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0SNc=
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/kyokomi/emoji/v2 v2.2.8/go.mod h1:JUcn42DTdsXJo1SWanHh4HKDEyPaR5CqkmoirZZP9qE=
-github.com/lacework/go-sdk v0.11.0 h1:VTqw4pofbN3Jr1Vk5izHhKCdI97gyHk4roglJHhZ1nY=
-github.com/lacework/go-sdk v0.11.0/go.mod h1:YRkaH/2GLcUqkvqXr55nqxcJfC+/j/h4EUUUwwVga7Y=
-github.com/lacework/go-sdk v0.11.2-0.20210803232800-d3756e4b666d h1:pXZvj1D/maT4O3UUzou9BdjVemCZRxvKKjjCxrLtKbc=
-github.com/lacework/go-sdk v0.11.2-0.20210803232800-d3756e4b666d/go.mod h1:ApQ8ZBUGm74eU2hVk5qmVIndC89m7PIACy9vvgC3rog=
 github.com/lacework/go-sdk v0.11.2-0.20210804172004-72a103ddf4c5 h1:6QkhIsW5L+qT3sFd1gDBD5PAoHpFMi18hokEeW9B0vk=
 github.com/lacework/go-sdk v0.11.2-0.20210804172004-72a103ddf4c5/go.mod h1:GT+Qwty35VR06r3sBnBsChlv/CBIGXLEUYKh4MfWrGU=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
