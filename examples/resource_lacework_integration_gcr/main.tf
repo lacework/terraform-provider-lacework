@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    lacework = {
+      source = "lacework/lacework"
+    }
+  }
+}
+
 provider "lacework" {}
 
 resource "lacework_integration_gcr" "example" {

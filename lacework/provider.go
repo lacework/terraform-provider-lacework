@@ -86,6 +86,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_ecr":               resourceLaceworkIntegrationEcr(),
 			"lacework_integration_gcp_cfg":           resourceLaceworkIntegrationGcpCfg(),
 			"lacework_integration_gcp_at":            resourceLaceworkIntegrationGcpAt(),
+			"lacework_integration_gar":               resourceLaceworkIntegrationGar(),
 			"lacework_integration_gcr":               resourceLaceworkIntegrationGcr(),
 		},
 

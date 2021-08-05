@@ -80,3 +80,51 @@ func TestCastAttributeToStringKeyMapOfStrings(t *testing.T) {
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
+
+func TestContainsStr(t *testing.T) {
+	assert.True(t, ContainsStr([]string{"a", "b", "c"}, "b"))
+	assert.True(t, ContainsStr([]string{"exact string!"}, "exact string!"))
+	assert.False(t, ContainsStr([]string{"abc"}, "bc"))
+	assert.False(t, ContainsStr([]string{}, "foo"))
+}
+
+func TestCastAttributeToArrayOfStringKeyMapOfStrings(t *testing.T) {
+	var (
+		mockLabels = []map[string]string{
+			{"key": "foo", "value": "bar"},
+			{"key": "key", "value": "value"},
+		}
+		expected = []map[string]string{
+			{"foo": "bar"},
+			{"key": "value"},
+		}
+		d            = resourceLaceworkIntegrationGar()
+		testResource = d.TestResourceData()
+	)
+
+	testResource.Set("limit_by_label", mockLabels)
+	subject := castAttributeToArrayOfKeyValueMap(testResource, "limit_by_label")
+
+	assert.ElementsMatch(t, expected, subject,
+		"%s did not match expected value: %s", subject, expected,
+	)
+}
+
+func TestCastArrayOfStringKeyMapOfStringsToLimitByLabelSet(t *testing.T) {
+	var (
+		mockLabels = []map[string]string{
+			{"foo": "bar"},
+			{"key": "value"},
+		}
+		expected = []map[string]string{
+			{"key": "foo", "value": "bar"},
+			{"key": "key", "value": "value"},
+		}
+	)
+
+	subject := castArrayOfStringKeyMapOfStringsToLimitByLabelSet(mockLabels)
+
+	assert.Equal(t, expected, subject,
+		"%s did not match expected value: %s", subject, expected,
+	)
+}
