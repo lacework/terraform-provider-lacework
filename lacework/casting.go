@@ -49,6 +49,80 @@ func castAttributeToStringKeyMapOfStrings(d *schema.ResourceData, attr string) m
 	return newParams
 }
 
+// extract an attribute from the provided ResourceData and convert it into an array of map of strings
+// with string keys. (needed for API v2 ContainerRegistry Limits)
+//
+// Example of key/value TypeSet:
+//
+// label {
+//   key = "foo"
+//   value = "bar"
+// }
+//
+// label {
+//   key = "abc"
+//   value = "xyz"
+// }
+//
+// label {
+//   key = "key"
+//   value = "value"
+// }
+//
+// The returned array of map of strings with string keys:
+//
+// []map[string]string{
+//   {"foo": "bar"},
+//   {"abc": "xyz"},
+//   {"key": "value"},
+// }
+func castAttributeToArrayOfKeyValueMap(d *schema.ResourceData, attr string) []map[string]string {
+	list := d.Get(attr).(*schema.Set).List()
+	aMap := make([]map[string]string, len(list))
+	for i, v := range list {
+		val := v.(map[string]interface{})
+		aMap[i] = map[string]string{val["key"].(string): val["value"].(string)}
+		i++
+	}
+
+	return aMap
+}
+
+// convert an array of map of strings with string keys to a key/value TypeSet
+// needed for API v2 ContainerRegistry Limits
+//
+// @afiune This function reverts the array of map (from APIv2) to a TypeSet array
+//         which is pretty much what castAttributeToArrayOfKeyValueMap() returns
+//
+// Example of an array of map of strings with string keys:
+//
+// []map[string]string{
+//   {"foo": "bar"},
+//   {"abc": "xyz"},
+//   {"key": "value"},
+// }
+//
+// The returned array of key/value TypeSet:
+//
+// mockLabels = []map[string]string{
+//   {"key": "foo", "value": "bar"},
+//   {"key": "abc", "value": "xyz"},
+//   {"key": "key", "value": "value"},
+// }
+func castArrayOfStringKeyMapOfStringsToLimitByLabelSet(list []map[string]string) []map[string]string {
+	aMap := make([]map[string]string, len(list))
+
+	for i, mStrings := range list {
+		aMap[i] = map[string]string{}
+		for k, v := range mStrings {
+			aMap[i]["key"] = k
+			aMap[i]["value"] = v
+		}
+	}
+
+	return aMap
+}
+
 // TODO @afiune remove this function when we release v1.0
 func joinMapStrings(m map[string]string, delimit string) string {
 	out := make([]string, 0)
@@ -56,4 +130,13 @@ func joinMapStrings(m map[string]string, delimit string) string {
 		out = append(out, val)
 	}
 	return strings.Join(out, delimit)
+}
+
+func ContainsStr(array []string, expected string) bool {
+	for _, value := range array {
+		if expected == value {
+			return true
+		}
+	}
+	return false
 }
