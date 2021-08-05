@@ -1,16 +1,11 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v0.7.0`.
+Another day, another release. These are the release notes for the version `v0.8.0`.
 
 ## Features
-* feat: new lacework_alert_channel_email resource (Salim Afiune Maya)([0cdb690](https://github.com/lacework/terraform-provider-lacework/commit/0cdb690f7188aac8af9fea7741b7df6509f9badb))
-## Bug Fixes
-* fix: drifts with lacework_alert_channel_datadog (Salim Afiune Maya)([be38f69](https://github.com/lacework/terraform-provider-lacework/commit/be38f69dfc16f12e0afad782397288310efb37d2))
-## Documentation Updates
-* docs: update lacework_alert_channel_datadog resource (Salim Afiune Maya)([99cedc7](https://github.com/lacework/terraform-provider-lacework/commit/99cedc701f9f7715c38a243e694b756253634c9c))
-* docs: new lacework_alert_channel_email resource (Salim Afiune Maya)([844065a](https://github.com/lacework/terraform-provider-lacework/commit/844065a87a7d7aa96fd0c23427399dc40197366d))
+* feat: new Google Artifact Registry (GAR) resource (#135) (Salim Afiune)([39e0a2a](https://github.com/lacework/terraform-provider-lacework/commit/39e0a2a168e334933ddc6d562f6aaa0c4dfb12cc))
 ## Other Changes
-* chore(deps): update github.com/lacework/go-sdk to v0.11.0 (#126) (Salim Afiune)([5dbefc4](https://github.com/lacework/terraform-provider-lacework/commit/5dbefc44acba06c70902f5e1775af31b1413e022))
-* chore(deps): update github.com/lacework/go-sdk (Salim Afiune Maya)([e282b3e](https://github.com/lacework/terraform-provider-lacework/commit/e282b3ea850a0b5b3aebe333e9032a159122998e))
-* ci: fix dependencies (#127) (Salim Afiune)([9cbef84](https://github.com/lacework/terraform-provider-lacework/commit/9cbef84ed82dd54fa68e9b8a9675ed0276ede025))
-* ci: fix integration tests (Salim Afiune Maya)([9a6f1e2](https://github.com/lacework/terraform-provider-lacework/commit/9a6f1e2764d10e489fd65a160ad940048932bea2))
-* test: e2e testing with terratest (#121) (Darren)([8bc0bd9](https://github.com/lacework/terraform-provider-lacework/commit/8bc0bd9e6b970d2a071698f08d0c0a1f61d2fba7))
+* chore: fixed deps by running make go-vendor (#136) (Salim Afiune)([e359b88](https://github.com/lacework/terraform-provider-lacework/commit/e359b8818db20cffb47b5de114abbc887e94214b))
+* build(deps): bump github.com/gruntwork-io/terratest (#130) (dependabot[bot])([4a47a07](https://github.com/lacework/terraform-provider-lacework/commit/4a47a07ab56772064b543ce5d6b13479ced979f3))
+* ci: sign lacework-releng commits (#132) (Salim Afiune)([495a264](https://github.com/lacework/terraform-provider-lacework/commit/495a264b4b772ae8d73f0b5184a08cef9b41ead5))
+* ci: make clean-test directive (#131) (Salim Afiune)([8d1c9af](https://github.com/lacework/terraform-provider-lacework/commit/8d1c9afa44c9e95e3843756620a5ec5245bff791))
+* ci: clean left over files during integration test (#129) (Salim Afiune)([d777278](https://github.com/lacework/terraform-provider-lacework/commit/d77727841592c032c9bf855ed9e9ad6be1c0cab9))
