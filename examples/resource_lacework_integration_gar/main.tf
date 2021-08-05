@@ -9,13 +9,13 @@ terraform {
 provider "lacework" {}
 
 resource "lacework_integration_gar" "example" {
-  name            = "Google Artifact Registry Example"
+  name            = var.integration_name
   registry_domain = "us-west1-docker.pkg.dev"
   credentials {
-    client_id      = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    private_key_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    client_email   = "email@some-project-name.iam.gserviceaccount.com"
-    private_key    = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    client_id      = var.client_id
+    client_email   = var.client_email
+    private_key_id = var.private_key_id
+    private_key    = var.private_key
   }
 
   limit_num_imgs        = 10
