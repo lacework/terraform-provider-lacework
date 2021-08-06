@@ -82,7 +82,7 @@ func castAttributeToArrayOfKeyValueMap(d *schema.ResourceData, attr string) []ma
 	for i, v := range list {
 		val := v.(map[string]interface{})
 		aMap[i] = map[string]string{val["key"].(string): val["value"].(string)}
-		i++
+		i += 1
 	}
 
 	return aMap
