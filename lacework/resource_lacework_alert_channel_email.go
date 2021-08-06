@@ -48,7 +48,7 @@ func resourceLaceworkAlertChannelEmail() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether to test the integration of an alert channel upon creation",
+				Description: "Whether to test the integration of an alert channel upon creation and modification",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
@@ -85,7 +85,6 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 				},
 			},
 		)
-		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		emailAlertChan.Enabled = 0
@@ -106,13 +105,12 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
 
-	if testIntegration {
-		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
-		err := VerifyAlertChannel(d.Id(), lacework)
-		if err != nil {
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannel, d.Id())
+		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.EmailUserAlertChannel, d.Id())
 	}
 
 	log.Printf("[INFO] Created %s integration with guid: %s\n", api.EmailUserAlertChannel, response.Data.IntgGuid)
@@ -176,7 +174,15 @@ func resourceLaceworkAlertChannelEmailUpdate(d *schema.ResourceData, meta interf
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %s\n", api.EmailUserAlertChannel, d.Id())
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannel, d.Id())
+		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully\n", api.EmailUserAlertChannel, d.Id())
+	}
+
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.EmailUserAlertChannel, d.Id())
 	return nil
 }
 

@@ -62,7 +62,7 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether to test the integration of an alert channel upon creation",
+				Description: "Whether to test the integration of an alert channel upon creation and modification",
 			},
 			"created_or_updated_by": {
 				Type:     schema.TypeString,
@@ -92,7 +92,6 @@ func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interf
 				},
 			},
 		)
-		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		s3.Enabled = 0
@@ -120,23 +119,22 @@ func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	if testIntegration {
-		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
-		err := VerifyAlertChannel(d.Id(), lacework)
-		if err != nil {
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsS3ChannelIntegration, d.Id())
+		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsS3ChannelIntegration, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsS3ChannelIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.AwsS3ChannelIntegration, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsS3ChannelIntegration, d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
 	response, err := lacework.Integrations.GetAwsS3AlertChannel(d.Id())
 	if err != nil {
 		return err
@@ -159,7 +157,7 @@ func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interfac
 
 			d.Set("credentials", []map[string]string{creds})
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n",
+			log.Printf("[INFO] Read %s integration with guid %s\n",
 				api.AwsS3ChannelIntegration, integration.IntgGuid)
 			return nil
 		}
@@ -210,20 +208,28 @@ func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interf
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsS3ChannelIntegration, d.Id())
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsS3ChannelIntegration, d.Id())
+		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsS3ChannelIntegration, d.Id())
+	}
+
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsS3Delete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsS3ChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsS3ChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
 	return nil
 }
 
