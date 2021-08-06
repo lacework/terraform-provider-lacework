@@ -192,7 +192,7 @@ github.com/klauspost/compress/fse
 github.com/klauspost/compress/huff0
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v0.11.2-0.20210804172004-72a103ddf4c5
+# github.com/lacework/go-sdk v0.12.0
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
