@@ -129,4 +129,5 @@ write-terraform-rc:
 	scripts/mirror-provider.sh
 
 clean-test:
-	find . -name ".terraform*" -o -name "terraform.tfstate*" -exec rm -rf {} \;
+	find . -name ".terraform*" -type f -exec rm -rf {} \;
+	find . -name "terraform.tfstate*" -type f -exec rm -rf {} \;
