@@ -52,7 +52,7 @@ type AlertChannelsService struct {
 //     },
 //   )
 //
-//   client.V2.AlertChannels.Creates(emailAlertChan)
+//   client.V2.AlertChannels.Create(emailAlertChan)
 //
 func NewAlertChannel(name string, iType alertChannelType, data interface{}) AlertChannelRaw {
 	return AlertChannelRaw{
@@ -152,9 +152,8 @@ func (svc *AlertChannelsService) Test(guid string) error {
 //  Get<Type>(guid)
 //
 //    Where <Type> is the Alert Channel integration type.
-func (svc *AlertChannelsService) Get(guid string) (response AlertChannelResponse, err error) {
-	err = svc.get(guid, &response)
-	return
+func (svc *AlertChannelsService) Get(guid string, response interface{}) error {
+	return svc.get(guid, &response)
 }
 
 type AlertChannelRaw struct {
