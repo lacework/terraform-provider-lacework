@@ -43,7 +43,7 @@ func resourceLaceworkAlertChannelPagerDuty() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether to test the integration of an alert channel upon creation",
+				Description: "Whether to test the integration of an alert channel upon creation or modification",
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -73,7 +73,6 @@ func resourceLaceworkAlertChannelPagerDutyCreate(d *schema.ResourceData, meta in
 				IntegrationKey: d.Get("integration_key").(string),
 			},
 		)
-		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		alert.Enabled = 0
@@ -102,23 +101,22 @@ func resourceLaceworkAlertChannelPagerDutyCreate(d *schema.ResourceData, meta in
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	if testIntegration {
-		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
-		err := VerifyAlertChannel(d.Id(), lacework)
-		if err != nil {
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.PagerDutyIntegration, d.Id())
+		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.PagerDutyIntegration, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.PagerDutyIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.PagerDutyIntegration, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelPagerDutyRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.PagerDutyIntegration, d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.PagerDutyIntegration, d.Id())
 	response, err := lacework.Integrations.GetPagerDutyAlertChannel(d.Id())
 	if err != nil {
 		return err
@@ -135,7 +133,7 @@ func resourceLaceworkAlertChannelPagerDutyRead(d *schema.ResourceData, meta inte
 			d.Set("org_level", integration.IsOrg == 1)
 			d.Set("integration_key", integration.Data.IntegrationKey)
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n",
+			log.Printf("[INFO] Read %s integration with guid %s\n",
 				api.PagerDutyIntegration, integration.IntgGuid)
 			return nil
 		}
@@ -183,20 +181,28 @@ func resourceLaceworkAlertChannelPagerDutyUpdate(d *schema.ResourceData, meta in
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.PagerDutyIntegration, d.Id())
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.PagerDutyIntegration, d.Id())
+		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.PagerDutyIntegration, d.Id())
+	}
+
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.PagerDutyIntegration, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelPagerDutyDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.PagerDutyIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.PagerDutyIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.PagerDutyIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.PagerDutyIntegration, d.Id())
 	return nil
 }
 

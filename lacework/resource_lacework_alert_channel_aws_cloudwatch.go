@@ -59,7 +59,7 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether to test the integration of an alert channel upon creation",
+				Description: "Whether to test the integration of an alert channel upon creation and modification",
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -90,7 +90,6 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 				IssueGrouping: d.Get("group_issues_by").(string),
 			},
 		)
-		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		alert.Enabled = 0
@@ -119,23 +118,22 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	if testIntegration {
-		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
-		err := VerifyAlertChannel(d.Id(), lacework)
-		if err != nil {
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsCloudWatchIntegration, d.Id())
+		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsCloudWatchIntegration, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.AwsCloudWatchIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.AwsCloudWatchIntegration, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
 	response, err := lacework.Integrations.GetAwsCloudWatchAlertChannel(d.Id())
 	if err != nil {
 		return err
@@ -154,7 +152,7 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 			d.Set("event_bus_arn", integration.Data.EventBusArn)
 			d.Set("group_issues_by", integration.Data.IssueGrouping)
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n",
+			log.Printf("[INFO] Read %s integration with guid %s\n",
 				api.AwsCloudWatchIntegration, integration.IntgGuid)
 			return nil
 		}
@@ -203,20 +201,28 @@ func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, met
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsCloudWatchIntegration, d.Id())
+		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsCloudWatchIntegration, d.Id())
+	}
+
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsCloudWatchDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
 	return nil
 }
 

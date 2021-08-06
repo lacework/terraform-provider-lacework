@@ -70,7 +70,7 @@ func resourceLaceworkAlertChannelQRadar() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "Whether to test the integration of an alert channel upon creation",
+				Description: "Whether to test the integration of an alert channel upon creation or modification",
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -104,7 +104,6 @@ func resourceLaceworkAlertChannelQRadarCreate(d *schema.ResourceData, meta inter
 				CommunicationType: comm,
 			},
 		)
-		testIntegration = d.Get("test_integration").(bool)
 	)
 	if !d.Get("enabled").(bool) {
 		qradar.Enabled = 0
@@ -132,23 +131,23 @@ func resourceLaceworkAlertChannelQRadarCreate(d *schema.ResourceData, meta inter
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	if testIntegration {
-		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
-		err := VerifyAlertChannel(d.Id(), lacework)
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.QRadarChannelIntegration, d.Id())
+		err := VerifyAlertChannelAndRollback(d.Id(), lacework)
 		if err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.QRadarChannelIntegration, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.QRadarChannelIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.QRadarChannelIntegration, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelQRadarRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.QRadarChannelIntegration, d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.QRadarChannelIntegration, d.Id())
 	response, err := lacework.Integrations.GetQRadarAlertChannel(d.Id())
 	if err != nil {
 		return err
@@ -167,7 +166,7 @@ func resourceLaceworkAlertChannelQRadarRead(d *schema.ResourceData, meta interfa
 			d.Set("host_port", integration.Data.HostPort)
 			d.Set("communicaton_type", integration.Data.CommunicationType)
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n",
+			log.Printf("[INFO] Read %s integration with guid %s\n",
 				api.QRadarChannelIntegration, integration.IntgGuid)
 			return nil
 		}
@@ -218,20 +217,29 @@ func resourceLaceworkAlertChannelQRadarUpdate(d *schema.ResourceData, meta inter
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %s integration with guid: %v\n", api.QRadarChannelIntegration, d.Id())
+	if d.Get("test_integration").(bool) {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.QRadarChannelIntegration, d.Id())
+		err := lacework.V2.AlertChannels.Test(d.Id())
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.QRadarChannelIntegration, d.Id())
+	}
+
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.QRadarChannelIntegration, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelQRadarDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.QRadarChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.QRadarChannelIntegration, d.Id())
 	_, err := lacework.Integrations.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.QRadarChannelIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.QRadarChannelIntegration, d.Id())
 	return nil
 }
 
