@@ -77,6 +77,12 @@ func resourceLaceworkAlertChannelJiraServer() *schema.Resource {
 					}
 				},
 			},
+			"test_integration": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to test the integration of an alert channel upon creation",
+			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -109,6 +115,7 @@ func resourceLaceworkAlertChannelJiraServerCreate(d *schema.ResourceData, meta i
 			Username:      d.Get("username").(string),
 			Password:      d.Get("password").(string),
 		}
+		testIntegration = d.Get("test_integration").(bool)
 	)
 
 	if len(customTemplateJSON) != 0 {
@@ -142,6 +149,15 @@ func resourceLaceworkAlertChannelJiraServerCreate(d *schema.ResourceData, meta i
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
+
+	if testIntegration {
+		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
+		err := VerifyAlertChannel(d.Id(), lacework)
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+	}
 
 	log.Printf("[INFO] Created %s integration with guid: %v\n", api.JiraIntegration, integration.IntgGuid)
 	return nil

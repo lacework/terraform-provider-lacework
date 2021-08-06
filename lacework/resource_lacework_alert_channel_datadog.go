@@ -75,6 +75,12 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 				Sensitive:   true,
 				Description: "The Datadog api key required to submit metrics and events to Datadog",
 			},
+			"test_integration": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to test the integration of an alert channel upon creation",
+			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -102,6 +108,7 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta interface{}) error {
 	site, _ := api.DatadogSite(d.Get("datadog_site").(string))
 	service, _ := api.DatadogService(d.Get("datadog_service").(string))
+	testIntegration := d.Get("test_integration").(bool)
 
 	var (
 		lacework = meta.(*api.Client)
@@ -139,7 +146,16 @@ func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta inte
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Created %s integration with guid: %v\n", api.DatadogChannelIntegration, integration.IntgGuid)
+	if testIntegration {
+		log.Printf("[INFO] Testing %s integration for guid:%s\n", api.DatadogChannelIntegration, d.Id())
+		err := VerifyAlertChannel(d.Id(), lacework)
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully \n", api.DatadogChannelIntegration, d.Id())
+	}
+
+	log.Printf("[INFO] Created %s integration with guid: %s\n", api.DatadogChannelIntegration, d.Id())
 	return nil
 }
 
