@@ -91,7 +91,7 @@ github.com/golang/protobuf/ptypes/timestamp
 github.com/golang/snappy
 # github.com/googleapis/gax-go/v2 v2.0.5
 github.com/googleapis/gax-go/v2
-# github.com/gruntwork-io/terratest v0.37.2
+# github.com/gruntwork-io/terratest v0.37.4
 ## explicit
 github.com/gruntwork-io/terratest/modules/collections
 github.com/gruntwork-io/terratest/modules/files
