@@ -1,7 +1,6 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -30,21 +29,6 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
-			},
-			"registry_domain": {
-				Type:     schema.TypeString,
-				Required: true,
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					if value.(string) == "ghcr.io" {
-						return nil, nil
-					} else {
-						return nil, []error{
-							fmt.Errorf(
-								"%s: can only be 'ghcr.io'", key,
-							),
-						}
-					}
-				},
 			},
 			"registry_notifications": {
 				Type:     schema.TypeBool,
@@ -154,7 +138,7 @@ func resourceLaceworkIntegrationGhcrCreate(d *schema.ResourceData, meta interfac
 			LimitByLabel:          castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			LimitByRep:            castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:           d.Get("limit_num_imgs").(int),
-			RegistryDomain:        d.Get("registry_domain").(string),
+			RegistryDomain:        "ghcr",
 			RegistryNotifications: d.Get("registry_notifications").(bool),
 			Credentials: api.GhcrCredentials{
 				Username: d.Get("credentials.0.username").(string),
@@ -237,7 +221,6 @@ func resourceLaceworkIntegrationGhcrUpdate(d *schema.ResourceData, meta interfac
 			LimitByLabel:          castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			LimitByRep:            castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:           d.Get("limit_num_imgs").(int),
-			RegistryDomain:        d.Get("registry_domain").(string),
 			RegistryNotifications: d.Get("registry_notifications").(bool),
 			Credentials: api.GhcrCredentials{
 				Username: d.Get("credentials.0.username").(string),
