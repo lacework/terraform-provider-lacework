@@ -98,6 +98,10 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 				Optional: true,
 				Default:  5,
 			},
+			"repository_domain": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,

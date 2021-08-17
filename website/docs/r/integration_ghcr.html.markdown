@@ -16,10 +16,10 @@ image. For more information, see the [Integrate Github Container Registry docume
 
 ```hcl
 resource "lacework_integration_ghrc" "example" {
-  name            		 = "My Github registry Registry"
-  username        		 = "my-user"
-  password        		 = "a-secret-password"
-  ssl             		 = true
+  name     = "My Github registry Registry"
+  username = "my-user"
+  password = "a-secret-password"
+  ssl      = true
 }
 ```
 
