@@ -12,6 +12,5 @@ variable "password" {
 }
 variable "ssl" {
   type      = bool
-  sensitive = true
 }
 
