@@ -184,14 +184,9 @@ func resourceLaceworkIntegrationGhcrRead(d *schema.ResourceData, meta interface{
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
 
-	creds := struct {
-		username string
-		password string
-		ssl      bool
-	}{username: response.Data.Data.Credentials.Username,
-		password: response.Data.Data.Credentials.Password,
-		ssl:      response.Data.Data.Credentials.Ssl}
-	d.Set("credentials", creds)
+	d.Set("username", response.Data.Data.Credentials.Username)
+	d.Set("password", response.Data.Data.Credentials.Password)
+	d.Set("ssl", response.Data.Data.Credentials.Ssl)
 	d.Set("registry_domain", response.Data.Data.RegistryDomain)
 	d.Set("registry_notifications", response.Data.Data.RegistryNotifications)
 	d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
