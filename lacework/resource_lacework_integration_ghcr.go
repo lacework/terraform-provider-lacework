@@ -33,7 +33,7 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 			"registry_notifications": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Default: 	 false,
+				Default:     false,
 				Description: "Subscribe to Registry Notifications",
 			},
 			"username": {
