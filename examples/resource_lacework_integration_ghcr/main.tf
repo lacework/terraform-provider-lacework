@@ -9,8 +9,7 @@ terraform {
 provider "lacework" {}
 
 resource "lacework_integration_ghcr" "example" {
-  name                   = var.integration_name
-  registry_notifications = false
+  name     = var.integration_name
   username = var.username
   password = var.password
   ssl      = var.ssl
