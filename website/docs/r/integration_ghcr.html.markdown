@@ -38,6 +38,11 @@ The following arguments are supported:
 * `limit_by_label` - (Optional) A list of key/value labels to limit the assessment of images. If you specify `limit_by_tags` and `limit_by_label` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
 
+The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
+* `key` - (Required) The key of the label.
+* `value` - (Required) The value of the label.
+
+
 ## Import
 
 A Lacework Github container registry integration can be imported using a `INT_GUID`, e.g.
