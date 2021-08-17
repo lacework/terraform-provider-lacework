@@ -35,30 +35,20 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
-			"credentials": {
-				Type:     schema.TypeList,
-				MaxItems: 1,
+			"username": {
+				Type:     schema.TypeString,
 				Required: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"username": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"password": {
-							Type:      schema.TypeString,
-							Sensitive: true,
-							Required:  true,
-						},
-						"ssl": {
-							Type:     schema.TypeBool,
-							Optional: true,
-							Default:  false,
-						},
-					},
-				},
 			},
-
+			"password": {
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Required:  true,
+			},
+			"ssl": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
 			"limit_by_tags": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
@@ -138,12 +128,11 @@ func resourceLaceworkIntegrationGhcrCreate(d *schema.ResourceData, meta interfac
 			LimitByLabel:          castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			LimitByRep:            castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:           d.Get("limit_num_imgs").(int),
-			RegistryDomain:        "ghcr",
 			RegistryNotifications: d.Get("registry_notifications").(bool),
 			Credentials: api.GhcrCredentials{
-				Username: d.Get("credentials.0.username").(string),
-				Password: d.Get("credentials.0.password").(string),
-				Ssl:      d.Get("credentials.0.ssl").(bool),
+				Username: d.Get("username").(string),
+				Password: d.Get("password").(string),
+				Ssl:      d.Get("ssl").(bool),
 			},
 		},
 	)
@@ -223,9 +212,9 @@ func resourceLaceworkIntegrationGhcrUpdate(d *schema.ResourceData, meta interfac
 			LimitNumImg:           d.Get("limit_num_imgs").(int),
 			RegistryNotifications: d.Get("registry_notifications").(bool),
 			Credentials: api.GhcrCredentials{
-				Username: d.Get("credentials.0.username").(string),
-				Password: d.Get("credentials.0.password").(string),
-				Ssl:      d.Get("credentials.0.ssl").(bool),
+				Username: d.Get("username").(string),
+				Password: d.Get("password").(string),
+				Ssl:      d.Get("ssl").(bool),
 			},
 		},
 	)

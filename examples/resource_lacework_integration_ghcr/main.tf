@@ -11,11 +11,9 @@ provider "lacework" {}
 resource "lacework_integration_ghcr" "example" {
   name                   = var.integration_name
   registry_notifications = false
-  credentials {
-    username = var.username
-    password = var.password
-    ssl      = var.ssl
-  }
+  username = var.username
+  password = var.password
+  ssl      = var.ssl
 
   limit_num_imgs        = 10
   limit_by_tags         = ["dev*", "*test"]
