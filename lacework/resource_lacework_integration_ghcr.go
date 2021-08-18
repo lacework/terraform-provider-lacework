@@ -189,7 +189,6 @@ func resourceLaceworkIntegrationGhcrRead(d *schema.ResourceData, meta interface{
 	d.Set("org_level", response.Data.IsOrg == 1)
 
 	d.Set("username", response.Data.Data.Credentials.Username)
-	d.Set("password", response.Data.Data.Credentials.Password)
 	d.Set("ssl", response.Data.Data.Credentials.Ssl)
 	d.Set("registry_domain", response.Data.Data.RegistryDomain)
 	d.Set("registry_notifications", response.Data.Data.RegistryNotifications)
