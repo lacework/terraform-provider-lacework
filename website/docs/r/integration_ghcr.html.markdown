@@ -9,13 +9,13 @@ Create and manage Github Container Registry (GHCR) integrations
 # lacework\_integration\_ghcr
 
 Use this resource to integrate a Github Container Registry (GHCR) with Lacework to assess, identify,
-and report vulnerabilities found in the operating system software packages in a Docker container
-image. For more information, see the [Integrate Github Container Registry documentation](https://support.lacework.com/hc/en-us/articles/1500002482302-Integrate-GitHub-Container-Registry).
+and report vulnerabilities found in the operating system software packages in container images. 
+For more information, see the [Integrate Github Container Registry documentation](https://support.lacework.com/hc/en-us/articles/1500002482302-Integrate-GitHub-Container-Registry).
 
 ## Example Usage
 
 ```hcl
-resource "lacework_integration_ghrc" "example" {
+resource "lacework_integration_ghcr" "example" {
   name     = "My Github registry Registry"
   username = "my-user"
   password = "a-secret-password"
@@ -29,7 +29,7 @@ The following arguments are supported:
 
 * `name` - (Required) The integration name.
 * `username` - (Required) The Github username.
-* `password` - (Required) The Github personal access token with permission read:packages.
+* `password` - (Required) The Github personal access token with permission `read:packages`.
 * `ssl` - (Optional) Enable or disable SSL communication. Defaults to `true`.
 * `registry_notifications` - (Optional) Subscribe to registry notifications. Defaults to `false`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
@@ -41,7 +41,6 @@ The following arguments are supported:
 The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
 * `key` - (Required) The key of the label.
 * `value` - (Required) The value of the label.
-
 
 ## Import
 

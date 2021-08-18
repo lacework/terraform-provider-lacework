@@ -22,13 +22,15 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"registry_notifications": {
 				Type:        schema.TypeBool,
@@ -94,11 +96,12 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 				Description: "A list of repositories to assess",
 			},
 			"limit_num_imgs": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  5,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5,
+				Description: "The maximum number of newest container images to assess per repository. Must be one of `5`, `10`, or `15`. Defaults to `5`.",
 			},
-			"repository_domain": {
+			"registry_domain": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},

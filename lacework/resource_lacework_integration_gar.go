@@ -157,9 +157,10 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 				Description: "A list of repositories to assess",
 			},
 			"limit_num_imgs": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  5,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     5,
+				Description: "The maximum number of newest container images to assess per repository.",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
