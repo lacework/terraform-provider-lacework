@@ -35,6 +35,6 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 		terraformOptions.Vars["integration_name"] = "Github Container Registry Updated"
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
-		assert.Equal(t, "Google Artifact Registry Updated", GetIntegrationName(update))
+		assert.Equal(t, "Github Container Registry Example", GetIntegrationName(update))
 	}
 }
