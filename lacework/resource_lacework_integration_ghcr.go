@@ -99,7 +99,7 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Default:     5,
-				Description: "The maximum number of newest container images to assess per repository. Must be one of `5`, `10`, or `15`. Defaults to `5`.",
+				Description: "The maximum number of newest container images to assess per repository.",
 			},
 			"registry_domain": {
 				Type:     schema.TypeString,
