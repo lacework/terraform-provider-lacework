@@ -7,7 +7,7 @@ import (
 
 type ghcrCredentials struct {
 	Username string `json:"username"`
-	Token    string `json:"token"`
+	Token    string `json:"password"`
 }
 
 func ghcrLoadDefaultCredentials() (ghcrCredentials, error) {
