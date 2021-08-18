@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestAlertChannelEmailCreate applies integration terraform:
+// TestIntegrationGARCreate applies integration terraform:
 // => '../examples/resource_lacework_integration_gar'
 //
 // It uses the go-sdk to verify the created integration,
-// applies an update with new alert channel name and destroys it
+// applies an update with new integration name and destroys it
 func TestIntegrationGARCreate(t *testing.T) {
 	gcreds, err := googleLoadDefaultCredentials()
 	if assert.Nil(t, err, "this test requires you to set GOOGLE_CREDENTIALS environment variable") {
@@ -28,11 +28,11 @@ func TestIntegrationGARCreate(t *testing.T) {
 		})
 		defer terraform.Destroy(t, terraformOptions)
 
-		// Create new Email Alert Channel
+		// Create new Google Artifact Registry
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		assert.Equal(t, "Google Artifact Registry Example", GetIntegrationName(create))
 
-		// Update Email Alert Channel
+		// Update Google Artifact Registry
 		terraformOptions.Vars["integration_name"] = "Google Artifact Registry Updated"
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
