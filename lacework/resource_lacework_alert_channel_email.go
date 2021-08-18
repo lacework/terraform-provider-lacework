@@ -78,7 +78,7 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 	var (
 		lacework       = meta.(*api.Client)
 		emailAlertChan = api.NewAlertChannel(d.Get("name").(string),
-			api.EmailUserAlertChannel,
+			api.EmailUserAlertChannelType,
 			api.EmailUserData{
 				ChannelProps: api.EmailUserChannelProps{
 					Recipients: castAttributeToStringSlice(d, "recipients"),
@@ -90,7 +90,7 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 		emailAlertChan.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.EmailUserAlertChannel, emailAlertChan)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.EmailUserAlertChannelType, emailAlertChan)
 	response, err := lacework.V2.AlertChannels.Create(emailAlertChan)
 	if err != nil {
 		return err
@@ -106,21 +106,21 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 	d.Set("org_level", response.Data.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannel, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.EmailUserAlertChannel, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.EmailUserAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid: %s\n", api.EmailUserAlertChannel, response.Data.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid: %s\n", api.EmailUserAlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelEmailRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %s\n", api.EmailUserAlertChannel, d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %s\n", api.EmailUserAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetEmailUser(d.Id())
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func resourceLaceworkAlertChannelEmailRead(d *schema.ResourceData, meta interfac
 	d.Set("recipients", response.Data.Data.ChannelProps.Recipients)
 
 	log.Printf("[INFO] Read %s integration with guid: %s\n",
-		api.EmailUserAlertChannel, response.Data.IntgGuid)
+		api.EmailUserAlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
@@ -145,7 +145,7 @@ func resourceLaceworkAlertChannelEmailUpdate(d *schema.ResourceData, meta interf
 	var (
 		lacework       = meta.(*api.Client)
 		emailAlertChan = api.NewAlertChannel(d.Get("name").(string),
-			api.EmailUserAlertChannel,
+			api.EmailUserAlertChannelType,
 			api.EmailUserData{
 				ChannelProps: api.EmailUserChannelProps{
 					Recipients: castAttributeToStringSlice(d, "recipients"),
@@ -160,7 +160,7 @@ func resourceLaceworkAlertChannelEmailUpdate(d *schema.ResourceData, meta interf
 
 	emailAlertChan.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.EmailUserAlertChannel, emailAlertChan)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.EmailUserAlertChannelType, emailAlertChan)
 	response, err := lacework.V2.AlertChannels.UpdateEmailUser(emailAlertChan)
 	if err != nil {
 		return err
@@ -175,26 +175,26 @@ func resourceLaceworkAlertChannelEmailUpdate(d *schema.ResourceData, meta interf
 	d.Set("org_level", response.Data.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannel, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid: %s successfully\n", api.EmailUserAlertChannel, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid: %s successfully\n", api.EmailUserAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.EmailUserAlertChannel, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.EmailUserAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelEmailDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %s\n", api.EmailUserAlertChannel, d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %s\n", api.EmailUserAlertChannelType, d.Id())
 	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %s\n", api.EmailUserAlertChannel, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %s\n", api.EmailUserAlertChannelType, d.Id())
 	return nil
 }

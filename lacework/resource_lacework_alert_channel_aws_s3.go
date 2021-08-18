@@ -1,7 +1,6 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/lacework/go-sdk/api"
@@ -21,39 +20,37 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
-			},
-			"created_or_updated_time": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"bucket_arn": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The ARN of the S3 bucket",
 			},
 			"credentials": {
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Required: true,
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Required:    true,
+				Description: "The credentials needed by the integration",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"external_id": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The ARN of the IAM role",
 						},
 						"role_arn": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The external ID of the IAM role",
 						},
 					},
 				},
@@ -63,6 +60,14 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 				Description: "Whether to test the integration of an alert channel upon creation and modification",
+			},
+			"intg_guid": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"created_or_updated_time": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"created_or_updated_by": {
 				Type:     schema.TypeString,
@@ -83,9 +88,10 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		s3       = api.NewAwsS3AlertChannel(d.Get("name").(string),
-			api.AwsS3ChannelData{
-				Credentials: api.AwsS3Creds{
+		s3       = api.NewAlertChannel(d.Get("name").(string),
+			api.AwsS3AlertChannelType,
+			api.AwsS3DataV2{
+				Credentials: api.AwsS3Credentials{
 					ExternalID: d.Get("credentials.0.external_id").(string),
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					BucketArn:  d.Get("bucket_arn").(string),
@@ -97,82 +103,70 @@ func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interf
 		s3.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsS3ChannelIntegration, s3)
-	response, err := lacework.Integrations.CreateAwsS3AlertChannel(s3)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsS3AlertChannelType, s3)
+	response, err := lacework.V2.AlertChannels.Create(s3)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsS3AlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsS3ChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsS3AlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsS3ChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsS3AlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.AwsS3ChannelIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.AwsS3AlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
-	response, err := lacework.Integrations.GetAwsS3AlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsS3AlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetAwsS3(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("bucket_arn", integration.Data.Credentials.BucketArn)
+	d.Set("name", response.Data.Name)
+	d.Set("intg_guid", response.Data.IntgGuid)
+	d.Set("enabled", response.Data.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+	d.Set("type_name", response.Data.Type)
+	d.Set("org_level", response.Data.IsOrg == 1)
+	d.Set("bucket_arn", response.Data.Data.Credentials.BucketArn)
 
-			creds := make(map[string]string)
-			creds["role_arn"] = integration.Data.Credentials.RoleArn
-			creds["external_id"] = integration.Data.Credentials.ExternalID
+	creds := make(map[string]string)
+	creds["role_arn"] = response.Data.Data.Credentials.RoleArn
+	creds["external_id"] = response.Data.Data.Credentials.ExternalID
 
-			d.Set("credentials", []map[string]string{creds})
+	d.Set("credentials", []map[string]string{creds})
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.AwsS3ChannelIntegration, integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.AwsS3AlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		s3       = api.NewAwsS3AlertChannel(d.Get("name").(string),
-			api.AwsS3ChannelData{
-				Credentials: api.AwsS3Creds{
+		s3       = api.NewAlertChannel(d.Get("name").(string),
+			api.AwsS3AlertChannelType,
+			api.AwsS3DataV2{
+				Credentials: api.AwsS3Credentials{
 					ExternalID: d.Get("credentials.0.external_id").(string),
 					RoleArn:    d.Get("credentials.0.role_arn").(string),
 					BucketArn:  d.Get("bucket_arn").(string),
@@ -187,75 +181,42 @@ func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interf
 
 	s3.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsS3ChannelIntegration, s3)
-	response, err := lacework.Integrations.UpdateAwsS3AlertChannel(s3)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsS3AlertChannelType, s3)
+	response, err := lacework.V2.AlertChannels.UpdateAwsS3(s3)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsS3AlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsS3ChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsS3AlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsS3ChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsS3AlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.AwsS3AlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsS3Delete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.AwsS3AlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.AwsS3ChannelIntegration, d.Id())
-	return nil
-}
-
-func validateAwsS3AlertChannelResponse(response *api.AwsS3AlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.AwsS3AlertChannelType, d.Id())
 	return nil
 }
