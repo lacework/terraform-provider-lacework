@@ -82,7 +82,7 @@ For more information see [Setup of Organization AWS CloudTrail Integration](http
 
 ### Migrating an existing AWS CloudTrail integration to the Organization level
 
-When trying to migrate and existing AWS CloudTrail integration from one of your Lacework accounts
+When attempting to migrate an existing AWS CloudTrail integration from one of your Lacework accounts
 to the organization level so that you can use the `org_account_mappings` argument, you need to delete
 the integration, update the Lacework provider to access the organization level data set, and run
 `terraform apply` to create a new integration at the organization level.

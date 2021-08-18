@@ -143,11 +143,11 @@ provider "lacework" {
 !> **Warning:** When accessing organization level data sets, the `subaccount` argument is ignored.
 
 Using this type of configuration is intended for managing resources such as alerts, resource groups, team members,
-cloud accounts, ane more, at the organization level.
+cloud accounts, and more, at the organization level.
 
 ### Migrating existing resources to the Organization level
 
-When trying to migrate and existing resource from one of your Lacework accounts to the organization level,
+When attempting to migrate an existing resource from one of your Lacework accounts to the organization level,
 you need to delete the resource, update the Lacework provider to access the organization level data set, and
 run `terraform apply` to create a new resource at the organization level.
 
