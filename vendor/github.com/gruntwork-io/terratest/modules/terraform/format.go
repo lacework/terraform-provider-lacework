@@ -119,8 +119,8 @@ func FormatTerraformPluginDirAsArgs(pluginDir string) []string {
 	return pluginArgs
 }
 
-// FormatTerraformArgs will format multiple args with the arg name (e.g. "-var-file", []string{"foo.tfvars", "bar.tfvars"})
-// returns "-var-file foo.tfvars -var-file bar.tfvars"
+// FormatTerraformArgs will format multiple args with the arg name (e.g. "-var-file", []string{"foo.tfvars", "bar.tfvars", "baz.tfvars.json"})
+// returns "-var-file foo.tfvars -var-file bar.tfvars -var-file baz.tfvars.json"
 func FormatTerraformArgs(argName string, args []string) []string {
 	argsList := []string{}
 	for _, argValue := range args {
