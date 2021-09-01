@@ -53,6 +53,7 @@ The following arguments are supported:
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
+* `non_os_package_support` - (Optional) Enable [program language scanning](https://support.lacework.com/hc/en-us/articles/360035472393-Container-Vulnerability-Assessment-Overview#programming-language-support). Defaults to `false`.
 
 ## Import
 

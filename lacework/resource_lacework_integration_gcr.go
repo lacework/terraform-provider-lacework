@@ -156,6 +156,11 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 				Optional: true,
 				Default:  5,
 			},
+			"non_os_package_support": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -200,11 +205,12 @@ func resourceLaceworkIntegrationGcrCreate(d *schema.ResourceData, meta interface
 
 	data := api.NewGcrRegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:     limitByTags,
-			LimitByLabel:   limitByLabels,
-			LimitByRep:     limitByRepos,
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       limitByTags,
+			LimitByLabel:     limitByLabels,
+			LimitByRep:       limitByRepos,
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.ContainerRegCreds{
 				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
@@ -271,6 +277,7 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 			d.Set("credentials", []map[string]string{creds})
 			d.Set("registry_domain", integration.Data.RegistryDomain)
 			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
+			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
 			if _, ok := d.GetOk("limit_by_tags"); ok {
 				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
@@ -320,11 +327,12 @@ func resourceLaceworkIntegrationGcrUpdate(d *schema.ResourceData, meta interface
 
 	data := api.NewGcrRegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:     limitByTags,
-			LimitByLabel:   limitByLabels,
-			LimitByRep:     limitByRepos,
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       limitByTags,
+			LimitByLabel:     limitByLabels,
+			LimitByRep:       limitByRepos,
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.ContainerRegCreds{
 				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
