@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
-	github.com/lacework/go-sdk v0.13.1-0.20210817225507-3581d0a2237d
+	github.com/lacework/go-sdk v0.14.1-0.20210901193058-92e20e6fa48b
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1

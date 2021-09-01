@@ -490,6 +490,8 @@ github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+
 github.com/kyokomi/emoji/v2 v2.2.8/go.mod h1:JUcn42DTdsXJo1SWanHh4HKDEyPaR5CqkmoirZZP9qE=
 github.com/lacework/go-sdk v0.13.1-0.20210817225507-3581d0a2237d h1:rIlG+3ahEPa8rIqNx2I8ECNkBvPH75Cst3cOB42GnGY=
 github.com/lacework/go-sdk v0.13.1-0.20210817225507-3581d0a2237d/go.mod h1:GT+Qwty35VR06r3sBnBsChlv/CBIGXLEUYKh4MfWrGU=
+github.com/lacework/go-sdk v0.14.1-0.20210901193058-92e20e6fa48b h1:uAtVbwH1jHI7jiYZ3rw5uomHybqFRE4LDx7AhD8E1Hg=
+github.com/lacework/go-sdk v0.14.1-0.20210901193058-92e20e6fa48b/go.mod h1:GT+Qwty35VR06r3sBnBsChlv/CBIGXLEUYKh4MfWrGU=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mailru/easyjson v0.0.0-20160728113105-d5b7844b561a/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
