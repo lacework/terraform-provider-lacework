@@ -157,9 +157,10 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 				Default:  5,
 			},
 			"non_os_package_support": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
