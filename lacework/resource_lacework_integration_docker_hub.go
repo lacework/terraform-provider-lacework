@@ -114,9 +114,9 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 				Description: "The maximum number of newest container images to assess per repository",
 			},
 			"non_os_package_support": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
 				Description: "Enable program language scanning",
 			},
 			"intg_guid": {
