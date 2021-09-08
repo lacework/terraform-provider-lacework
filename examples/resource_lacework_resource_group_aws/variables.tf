@@ -11,5 +11,3 @@ variable "accounts" {
   type = list(string)
   default = ["*"]
 }
-
-

@@ -7,12 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestResourceGroupCreate applies integration terraform:
+// TestResourceGroupAwsCreate applies integration terraform:
 // => '../examples/resource_lacework_resource_group_aws'
 //
 // It uses the go-sdk to verify the created resource group,
 // applies an update with new description and destroys it
-func TestResourceGroupCreate(t *testing.T) {
+func TestResourceGroupAwsCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_aws",
 		Vars: map[string]interface{}{

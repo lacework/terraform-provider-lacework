@@ -21,6 +21,6 @@ func importLaceworkResourceGroup(d *schema.ResourceData, meta interface{}) ([]*s
 			d.Id(),
 		)
 	}
-	log.Printf("[INFO] Resource Group  found using APIv2 with guid: %v\n", response.Data.ResourceGuid)
+	log.Printf("[INFO] Resource Group found with guid: %v\n", response.Data.ResourceGuid)
 	return []*schema.ResourceData{d}, nil
 }

@@ -157,8 +157,8 @@ func resourceLaceworkResourceGroupAwsUpdate(d *schema.ResourceData, meta interfa
 
 	data.ResourceGuid = d.Id()
 
-	log.Printf("[INFO] Updating ContVulnCfg integration for %s registry type with data:\n%+v\n",
-		api.GhcrContainerRegistry.String(), data)
+	log.Printf("[INFO] Updating %s Resource Group with data:\n%+v\n",
+		api.AwsResourceGroup.String(), data)
 	response, err := lacework.V2.ResourceGroups.UpdateAws(&data)
 	if err != nil {
 		return err
