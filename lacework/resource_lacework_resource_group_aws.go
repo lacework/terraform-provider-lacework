@@ -16,7 +16,7 @@ func resourceLaceworkResourceGroupAws() *schema.Resource {
 		Delete: resourceLaceworkResourceGroupAwsDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkResourceGroup,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -29,7 +29,7 @@ func resourceLaceworkResourceGroupAws() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
-				Description: "The state of the external integration",
+				Description: "The state of the resource group",
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -45,7 +45,7 @@ func resourceLaceworkResourceGroupAws() *schema.Resource {
 					},
 				},
 				Required:    true,
-				Description: "The list of aws accounts to include in the resource group",
+				Description: "The list of AWS accounts to include in the resource group",
 			},
 			"id": {
 				Type:        schema.TypeString,
@@ -67,7 +67,7 @@ func resourceLaceworkResourceGroupAws() *schema.Resource {
 				Computed:    true,
 				Description: "The username of the lacework user who performed the last update",
 			},
-			"type_name": {
+			"type": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "The type of the resource group",
@@ -109,7 +109,7 @@ func resourceLaceworkResourceGroupAwsCreate(d *schema.ResourceData, meta interfa
 	d.Set("description", response.Data.Props.Description)
 	d.Set("last_updated", response.Data.Props.LastUpdated)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
-	d.Set("type_name", response.Data.Type)
+	d.Set("type", response.Data.Type)
 
 	log.Printf("[INFO] Created %s Resource Group with guid %s\n",
 		api.AwsResourceGroup.String(), response.Data.ResourceGuid)
@@ -133,7 +133,7 @@ func resourceLaceworkResourceGroupAwsRead(d *schema.ResourceData, meta interface
 	d.Set("description", response.Data.Props.Description)
 	d.Set("last_updated", response.Data.Props.LastUpdated)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
-	d.Set("type_name", response.Data.Type)
+	d.Set("type", response.Data.Type)
 	d.Set("accounts", response.Data.Props.AccountIDs)
 
 	log.Printf("[INFO] Read %s Resource Group with guid %s\n",
@@ -169,7 +169,7 @@ func resourceLaceworkResourceGroupAwsUpdate(d *schema.ResourceData, meta interfa
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("last_updated", response.Data.Props.LastUpdated)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
-	d.Set("type_name", response.Data.Type)
+	d.Set("type", response.Data.Type)
 
 	log.Printf("[INFO] Updated %s Resource Group with guid %s\n",
 		api.AwsResourceGroup.String(), response.Data.ResourceGuid)
