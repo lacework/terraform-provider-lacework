@@ -33,7 +33,7 @@ func resourceLaceworkResourceGroupAws() *schema.Resource {
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Description: "The description of the resource group",
 			},
 			"accounts": {

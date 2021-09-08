@@ -26,8 +26,8 @@ resource "lacework_resource_group_aws" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The resource group name.
-* `description` - (Required) The description of the resource group.
-* `accounts` - (Required) The list of AWS accounts to include in the resource group.
+* `accounts` - (Required) The list of Aws accounts to include in the resource group.
+* `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import
