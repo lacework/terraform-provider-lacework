@@ -92,6 +92,12 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
 				ConflictsWith: []string{"limit_by_label"},
 			},
+			"non_os_package_support": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
+			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -131,9 +137,10 @@ func resourceLaceworkIntegrationDockerV2Create(d *schema.ResourceData, meta inte
 
 	data := api.NewDockerV2RegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:     limitByTags,
-			LimitByLabel:   limitByLabels,
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       limitByTags,
+			LimitByLabel:     limitByLabels,
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),
@@ -196,6 +203,7 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 			d.Set("username", integration.Data.Credentials.Username)
 			d.Set("password", integration.Data.Credentials.Password)
 			d.Set("ssl", integration.Data.Credentials.SSL)
+			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
 			if _, ok := d.GetOk("limit_by_tags"); ok {
 				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
@@ -234,9 +242,10 @@ func resourceLaceworkIntegrationDockerV2Update(d *schema.ResourceData, meta inte
 
 	data := api.NewDockerV2RegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:     limitByTags,
-			LimitByLabel:   limitByLabels,
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       limitByTags,
+			LimitByLabel:     limitByLabels,
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),

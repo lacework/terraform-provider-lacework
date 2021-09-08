@@ -113,6 +113,12 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 				Default:     5,
 				Description: "The maximum number of newest container images to assess per repository",
 			},
+			"non_os_package_support": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
+			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -157,10 +163,11 @@ func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta int
 
 	data := api.NewDockerHubRegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:   limitByTags,
-			LimitByLabel: limitByLabels,
-			LimitByRep:   limitByRepos,
-			LimitNumImg:  d.Get("limit_num_imgs").(int),
+			LimitByTag:       limitByTags,
+			LimitByLabel:     limitByLabels,
+			LimitByRep:       limitByRepos,
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),
@@ -220,6 +227,7 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 
 			d.Set("username", integration.Data.Credentials.Username)
 			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
+			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
 			if _, ok := d.GetOk("limit_by_tags"); ok {
 				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
@@ -269,10 +277,11 @@ func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta int
 
 	data := api.NewDockerHubRegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:   limitByTags,
-			LimitByLabel: limitByLabels,
-			LimitByRep:   limitByRepos,
-			LimitNumImg:  d.Get("limit_num_imgs").(int),
+			LimitByTag:       limitByTags,
+			LimitByLabel:     limitByLabels,
+			LimitByRep:       limitByRepos,
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),
