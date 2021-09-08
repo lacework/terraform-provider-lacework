@@ -93,9 +93,10 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 				ConflictsWith: []string{"limit_by_label"},
 			},
 			"non_os_package_support": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
