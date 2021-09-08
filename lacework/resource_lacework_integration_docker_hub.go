@@ -117,6 +117,7 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
+				Description: "Enable program language scanning",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
