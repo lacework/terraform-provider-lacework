@@ -38,3 +38,15 @@ func GetIntegrationName(result string) string {
 
 	return res.Data[0].Name
 }
+
+func GetResourceGroupDescription(result string) string {
+	resultSplit := strings.Split(result, "[id=")
+	id := strings.Split(resultSplit[1], "]")[0]
+
+	response, err := LwClient.V2.ResourceGroups.GetAws(id)
+	if err != nil {
+		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
+	}
+
+	return response.Data.Props.Description
+}

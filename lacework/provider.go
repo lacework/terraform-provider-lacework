@@ -90,6 +90,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_gar":               resourceLaceworkIntegrationGar(),
 			"lacework_integration_gcr":               resourceLaceworkIntegrationGcr(),
 			"lacework_integration_ghcr":              resourceLaceworkIntegrationGhcr(),
+			"lacework_resource_group_aws":            resourceLaceworkResourceGroupAws(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
