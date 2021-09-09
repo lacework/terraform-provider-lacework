@@ -15,9 +15,10 @@ For more information, see the [Resource Groups documentation](https://support.la
 
 ```hcl
 resource "lacework_resource_group_gcp" "example" {
-  name        = "My GCP Resource Group"
-  description = "This groups a subset of Gcp Projects"
-  accounts    = ["123456789", "234567891"]
+  name         = "My GCP Resource Group"
+  description  = "This groups a subset of Gcp Projects"
+  projects     = ["123456789", "234567891"]
+  organization = "MyGcpOrg"
 }
 ```
 

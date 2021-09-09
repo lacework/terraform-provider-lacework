@@ -4,12 +4,12 @@ variable "resource_group_name" {
 }
 variable "description" {
   type = string
-  default = "Terraform Test All Gcp Accounts"
+  default = "Terraform Test All Gcp Projects"
 }
 
 variable "organization" {
   type = string
-  default = "Terraform Test All Gcp Accounts"
+  default = "Terraform Test All Gcp Projects"
 }
 
 variable "projects" {
