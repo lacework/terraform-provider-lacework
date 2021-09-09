@@ -9,7 +9,7 @@ variable "description" {
 
 variable "organization" {
   type = string
-  default = "Terraform Test All Gcp Projects"
+  default = "MyGcpOrg"
 }
 
 variable "projects" {
