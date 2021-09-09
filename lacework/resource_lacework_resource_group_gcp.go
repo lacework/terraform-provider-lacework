@@ -39,7 +39,7 @@ func resourceLaceworkResourceGroupGcp() *schema.Resource {
 			"organization": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The GCP organization",
+				Description: "The GCP organization id",
 			},
 			"projects": {
 				Type: schema.TypeList,
@@ -50,7 +50,7 @@ func resourceLaceworkResourceGroupGcp() *schema.Resource {
 					},
 				},
 				Required:    true,
-				Description: "The list of GCP projects to include in the resource group",
+				Description: "The list of GCP project id's to include in the resource group",
 			},
 			"id": {
 				Type:        schema.TypeString,

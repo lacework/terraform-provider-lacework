@@ -8,7 +8,7 @@ Create and manage GCP Resource Groups
 
 # lacework\_resource\_group\_gcp
 
-Use this resource to create an GCP Resource Group in order to categorize Lacework-identifiable assets.
+Use this resource to create a GCP Resource Group in order to categorize Lacework-identifiable assets.
 For more information, see the [Resource Groups documentation](https://support.lacework.com/hc/en-us/articles/360041727354-Resource-Groups).
 
 ## Example Usage
@@ -17,8 +17,8 @@ For more information, see the [Resource Groups documentation](https://support.la
 resource "lacework_resource_group_gcp" "example" {
   name         = "My GCP Resource Group"
   description  = "This groups a subset of Gcp Projects"
-  projects     = ["123456789", "234567891"]
-  organization = "MyGcpOrg"
+  projects     = ["project-1", "project-2", "project-3"]
+  organization = "MyGcpOrgID"
 }
 ```
 
@@ -27,8 +27,8 @@ resource "lacework_resource_group_gcp" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The resource group name.
-* `accounts` - (Required) The list of GCP projects to include in the resource group.
-* `organization` - (Required) The GCP organization.
+* `projects` - (Required) The list of GCP project IDs to include in the resource group.
+* `organization` - (Required) The GCP organization ID.
 * `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
