@@ -38,7 +38,7 @@ func resourceLaceworkResourceGroupGcp() *schema.Resource {
 			},
 			"organization": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Description: "The GCP organization",
 			},
 			"projects": {
