@@ -1,13 +1,16 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v0.8.1`.
+Another day, another release. These are the release notes for the version `v0.9.0`.
 
+## Features
+* feat(resource): New lacework_resource_group_azure (#158) (Darren)([6ab2f0c](https://github.com/lacework/terraform-provider-lacework/commit/6ab2f0c75b50e533f987bd31e51ce90ef052d503))
+* feat(resource): New lacework_resource_group_gcp (#156) (Darren)([d88a7b9](https://github.com/lacework/terraform-provider-lacework/commit/d88a7b9671dc759c45e56ac2877694dfead7e278))
+* feat: gracefully handle account config <ACCOUNT>.lacework.net (#157) (Salim Afiune)([cb32670](https://github.com/lacework/terraform-provider-lacework/commit/cb326706d479f5f405dd30c6414ed271e5f38bad))
+* feat: Add Non-OS Package support for GCR, DockerV2, and DockerHub (#152) (Andre Elizondo)([96b4df8](https://github.com/lacework/terraform-provider-lacework/commit/96b4df89fcb52b1cffe6457e5db3df85e219a994))
+* feat(resource): New lacework_resource_group_aws (#155) (Darren)([ca4eb3d](https://github.com/lacework/terraform-provider-lacework/commit/ca4eb3d3556b7dfad07ec749296cc67d76ac8be5))
+* feat: new Github Container Registry (GHCR) resource (#143) (Darren)([7301f74](https://github.com/lacework/terraform-provider-lacework/commit/7301f7461d332d50184868d0ed6450b12d0a5bbb))
 ## Bug Fixes
-* fix: migrate AWS S3 Alert Channels to API v2 (Salim Afiune Maya)([6fa97ac](https://github.com/lacework/terraform-provider-lacework/commit/6fa97ac001549861526e90dbcf788ae6dab91c9d))
-* fix: migrate Slack Alert Channels to use API v2 (Salim Afiune Maya)([d84cc51](https://github.com/lacework/terraform-provider-lacework/commit/d84cc51a1f72e5bd7575f32b1609a1d4766284b0))
-## Documentation Updates
-* docs: improve documentation for org account_mappings (#146) (Salim Afiune)([edbc4b7](https://github.com/lacework/terraform-provider-lacework/commit/edbc4b7ab0704bb05dd048ce936fe71fec2a6356))
+* fix: enable parsing internal accounts (#159) (Salim Afiune)([bb72fb4](https://github.com/lacework/terraform-provider-lacework/commit/bb72fb410b7a4ed5ef1ae2851fcbd0bea17d825b))
 ## Other Changes
-* chore: fix Go deps (#149) (Salim Afiune)([db496ee](https://github.com/lacework/terraform-provider-lacework/commit/db496eef7423a101b1c58521e97f81a5ba8bd14e))
-* chore(deps): update github.com/lacework/go-sdk (Salim Afiune Maya)([a5f3fbe](https://github.com/lacework/terraform-provider-lacework/commit/a5f3fbe28f511cf1e69e92154b2cb785b40afe30))
-* build(deps): bump github.com/gruntwork-io/terratest (#141) (dependabot[bot])([d2d7f2a](https://github.com/lacework/terraform-provider-lacework/commit/d2d7f2a71516cca785fe32b9fcb23070a4a8108c))
-* ci: version bump to v0.8.1-dev (Lacework)([5041c63](https://github.com/lacework/terraform-provider-lacework/commit/5041c63f63a74125e7b3c456758d2a1c34ba2bce))
+* build(deps): bump github.com/hashicorp/terraform-plugin-sdk/v2 (#154) (dependabot[bot])([0e749a3](https://github.com/lacework/terraform-provider-lacework/commit/0e749a3e4b89c3f61ec5ea14df1649bade666e3a))
+* build(deps): bump github.com/gruntwork-io/terratest (#151) (dependabot[bot])([3a8eaed](https://github.com/lacework/terraform-provider-lacework/commit/3a8eaed311a38b42e64d6b3050bd19bd6c605b62))
+* ci: version bump to v0.8.2-dev (Lacework)([b998522](https://github.com/lacework/terraform-provider-lacework/commit/b998522ae2ed362f64ed53736999b8fd4a6f1187))
