@@ -140,7 +140,7 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 				Detail:   err.Error(),
 			})
 		} else {
-			account = d.Account
+			account = d.String()
 		}
 	}
 
