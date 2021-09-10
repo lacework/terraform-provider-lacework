@@ -157,7 +157,7 @@ github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/tfplugin6
 github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/toproto
 github.com/hashicorp/terraform-plugin-go/tfprotov6/server
 github.com/hashicorp/terraform-plugin-go/tftypes
-# github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.0
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.1
 ## explicit
 github.com/hashicorp/terraform-plugin-sdk/v2/diag
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging
@@ -192,13 +192,13 @@ github.com/klauspost/compress/fse
 github.com/klauspost/compress/huff0
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v0.14.1-0.20210907222012-770f0ee26c61
+# github.com/lacework/go-sdk v0.14.1-0.20210909114732-13fb1675fdc3
 ## explicit
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
-github.com/lacework/go-sdk/internal/domain
 github.com/lacework/go-sdk/internal/format
 github.com/lacework/go-sdk/lwconfig
+github.com/lacework/go-sdk/lwdomain
 github.com/lacework/go-sdk/lwlogger
 github.com/lacework/go-sdk/lwtime
 # github.com/mattn/go-colorable v0.1.8

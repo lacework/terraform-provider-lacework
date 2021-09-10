@@ -62,3 +62,17 @@ func GetAzureResourceGroupProps(result string) api.AzureResourceGroupProps {
 
 	return response.Data.Props
 }
+
+func GetGcpResourceGroupProps(result string) api.GcpResourceGroupProps {
+	resultSplit := strings.Split(result, "[id=")
+	id := strings.Split(resultSplit[1], "]")[0]
+
+	response, err := LwClient.V2.ResourceGroups.GetGcp(id)
+	if err != nil {
+		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
+	}
+
+	return response.Data.Props
+}
+
+

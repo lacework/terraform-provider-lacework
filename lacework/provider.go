@@ -12,6 +12,7 @@ import (
 
 	"github.com/lacework/go-sdk/api"
 	"github.com/lacework/go-sdk/lwconfig"
+	"github.com/lacework/go-sdk/lwdomain"
 	"github.com/lacework/go-sdk/lwlogger"
 )
 
@@ -92,6 +93,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_ghcr":              resourceLaceworkIntegrationGhcr(),
 			"lacework_resource_group_aws":            resourceLaceworkResourceGroupAws(),
 			"lacework_resource_group_azure":          resourceLaceworkResourceGroupAzure(),
+			"lacework_resource_group_gcp":            resourceLaceworkResourceGroupGcp(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -126,6 +128,20 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 			logLevel = "DEBUG"
 		}
 		apiOpts = append(apiOpts, api.WithLogLevelAndWriter(logLevel, log.Writer()))
+	}
+
+	// gracefully handle user input for account config like '<ACCOUNT>.lacework.net'
+	if strings.Contains(account, ".lacework.net") {
+		d, err := lwdomain.New(account)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to parse Lacework account",
+				Detail:   err.Error(),
+			})
+		} else {
+			account = d.Account
+		}
 	}
 
 	if account != "" && key != "" && secret != "" {
