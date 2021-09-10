@@ -16,18 +16,28 @@ func TestResourceGroupGcpCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_gcp",
 		Vars: map[string]interface{}{
-			"description": "Terraform Test Gcp Resource Group",
+			"description":  "Terraform Test Gcp Resource Group",
+			"organization": "MyGcpOrg",
+			"projects":     []string{"pro-123", "pro-321"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
 	// Create new Gcp Resource Group
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Terraform Test Gcp Resource Group", GetResourceGroupDescription(create))
+	createProps := GetGcpResourceGroupProps(create)
+	assert.Equal(t, "Terraform Test Gcp Resource Group", createProps.Description)
+	assert.Equal(t, "MyGcpOrg", createProps.Organization)
+	assert.Equal(t, []string{"pro-123", "pro-321"}, createProps.Projects)
 
 	// Update Gcp Resource Group
 	terraformOptions.Vars["description"] = "Updated Terraform Test Gcp Resource Group"
+	terraformOptions.Vars["organization"] = "MyGcpOrgUpdated"
+	terraformOptions.Vars["projects"] = []string{"pro-123-updated", "pro-321-updated"}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Updated Terraform Test Gcp Resource Group", GetResourceGroupDescription(update))
+	updateProps := GetGcpResourceGroupProps(update)
+	assert.Equal(t, "Updated Terraform Test Gcp Resource Group", updateProps.Description)
+	assert.Equal(t, "MyGcpOrgUpdated", updateProps.Organization)
+	assert.Equal(t, []string{"pro-123-updated", "pro-321-updated"}, updateProps.Projects)
 }
