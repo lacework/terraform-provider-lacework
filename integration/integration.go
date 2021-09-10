@@ -74,5 +74,3 @@ func GetGcpResourceGroupProps(result string) api.GcpResourceGroupProps {
 
 	return response.Data.Props
 }
-
-
