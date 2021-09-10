@@ -50,3 +50,15 @@ func GetResourceGroupDescription(result string) string {
 
 	return response.Data.Props.Description
 }
+
+func GetAzureResourceGroupProps(result string) api.AzureResourceGroupProps {
+	resultSplit := strings.Split(result, "[id=")
+	id := strings.Split(resultSplit[1], "]")[0]
+
+	response, err := LwClient.V2.ResourceGroups.GetAzure(id)
+	if err != nil {
+		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
+	}
+
+	return response.Data.Props
+}
