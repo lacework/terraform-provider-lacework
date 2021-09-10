@@ -39,7 +39,7 @@ func resourceLaceworkResourceGroupAzure() *schema.Resource {
 			"tenant": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The tenant of the resource group",
+				Description: "The Azure tenant id",
 			},
 			"subscriptions": {
 				Type: schema.TypeList,
@@ -50,7 +50,7 @@ func resourceLaceworkResourceGroupAzure() *schema.Resource {
 					},
 				},
 				Required:    true,
-				Description: "The list of Azure subscriptions to include in the resource group",
+				Description: "The list of Azure subscription id's to include in the resource group",
 			},
 			"id": {
 				Type:        schema.TypeString,
