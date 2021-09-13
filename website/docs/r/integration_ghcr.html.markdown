@@ -3,7 +3,7 @@ subcategory: "Container Registry Integrations"
 layout: "lacework"
 page_title: "Lacework: lacework_integration_ghcr"
 description: |-
-Create and manage Github Container Registry (GHCR) integrations
+  Create and manage Github Container Registry (GHCR) integrations
 ---
 
 # lacework\_integration\_ghcr

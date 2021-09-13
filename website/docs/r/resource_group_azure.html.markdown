@@ -3,7 +3,7 @@ subcategory: "Resource Groups"
 layout: "lacework"
 page_title: "Lacework: lacework_resource_group_azure"
 description: |-
-Create and manage Azure Resource Groups
+  Create and manage Azure Resource Groups
 ---
 
 # lacework\_resource\_group\_azure
