@@ -27,8 +27,8 @@ resource "lacework_resource_group_gcp" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The resource group name.
-* `projects` - (Required) The list of GCP project IDs to include in the resource group.
-* `organization` - (Required) The GCP organization ID.
+* `projects` - (Required) The list of GCP project ids to include in the resource group.
+* `organization` - (Required) The GCP organization id.
 * `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
