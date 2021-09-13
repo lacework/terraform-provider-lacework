@@ -15,8 +15,8 @@ For more information, see the [Resource Groups documentation](https://support.la
 
 ```hcl
 resource "lacework_resource_group_aws" "example" {
-  name        = "My Aws Resource Group"
-  description = "This groups a subset of Aws Accounts"
+  name        = "My AWS Resource Group"
+  description = "This groups a subset of AWS Accounts"
   accounts    = ["123456789", "234567891"]
 }
 ```
@@ -26,7 +26,7 @@ resource "lacework_resource_group_aws" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The resource group name.
-* `accounts` - (Required) The list of Aws accounts to include in the resource group.
+* `accounts` - (Required) The list of AWS account ids to include in the resource group.
 * `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
