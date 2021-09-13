@@ -3,7 +3,7 @@ subcategory: "Resource Groups"
 layout: "lacework"
 page_title: "Lacework: lacework_resource_group_gcp"
 description: |-
-Create and manage GCP Resource Groups
+  Create and manage GCP Resource Groups
 ---
 
 # lacework\_resource\_group\_gcp
