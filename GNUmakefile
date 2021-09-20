@@ -17,62 +17,85 @@ VERSION=$(shell cat VERSION)
 BINARY_PATH="registry.terraform.io/lacework/lacework/99.0.0/$$(go env GOOS)_$$(go env GOARCH)/terraform-provider-lacework_v99.0.0"
 export GOFLAGS CGO_ENABLED
 
+.PHONY: help
+help:
+	@echo "-------------------------------------------------------------------"
+	@echo "Lacework go-sdk Makefile helper:"
+	@echo ""
+	@grep -Fh "##" $(MAKEFILE_LIST) | grep -v grep | sed -e 's/\\$$//' | sed -E 's/^([^:]*):.*##(.*)/ \1 -\2/'
+	@echo "-------------------------------------------------------------------"
+
 default: build
 
-ci: lint test fmtcheck imports-check
+.PHONY: ci
+ci: lint test fmtcheck imports-check ## *CI ONLY* Runs tests on CI pipeline
 
-prepare: install-tools go-vendor
+.PHONY: prepare
+prepare: install-tools go-vendor ## Initialize the go environment
 
-release: build-cross-platform
+.PHONY: release
+release: build-cross-platform ## *CI ONLY* Prepares a release of the Terraform provider
 	scripts/release.sh prepare
 
-deps:
+.PHONY: deps
+deps: ## Update dependencies provided by UPDATE_DEP argument
 ifdef UPDATE_DEP
 	@go get -u "$(UPDATE_DEP)"
 endif
 	@go mod vendor
 
-alldeps:
+.PHONY: alldeps
+alldeps: ## Update all dependencies
 	@go get -u
 	@go mod vendor
 
-go-vendor:
+PHONY: go-vendor
+go-vendor: ## Runs go mod tidy, vendor and verify to cleanup, copy and verify dependencies
 	go mod tidy
 	go mod vendor
 	go mod verify
 
-build: fmtcheck
+.PHONY: build
+build: fmtcheck ## Runs fmtcheck and go install
 	go install
 
-build-cross-platform:
+.PHONY: build-cross-platform
+build-cross-platform: ## Compiles the Terraform-Provider-Lacework for all supported platforms
 	gox -output="bin/$(PACKAGENAME)_$(VERSION)_{{.OS}}_{{.Arch}}" \
             -os="linux windows freebsd" \
             -osarch="darwin/amd64 darwin/arm64 linux/arm linux/arm64 freebsd/arm freebsd/arm64" \
             -arch="amd64 386" \
             github.com/lacework/$(PACKAGENAME)
 
-install: write-terraform-rc fmtcheck
+.PHONY: install
+install: write-terraform-rc fmtcheck ## Updates the terraformrc to point to the BINARY_PATH. Installs the provider to the BINARY_PATH
 	mkdir -vp $(DIR)
 	go build -o $(DIR)/$(BINARY_PATH)
 
-uninstall:
+.PHONY: uninstall
+uninstall: ## Removes installed provider package from BINARY_PATH
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
-integration-test: clean-test install
+.PHONY: integration-test
+integration-test: clean-test install ## Runs clean-test, install then runs all integration tests
 	go test ./integration -v
 
+.PHONY: test ## Runs fmtcheck then runs all unit tests
 test: fmtcheck
 	go test $(TEST) || exit 1
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
 
-lint:
+.PHONY: lint
+lint: ## Runs go linter
 	golangci-lint run
 
+.PHONY: testacc
 testacc: fmtcheck
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
-vet:
+.PHONY: vet
+vet: ## Runs go vet
 	@echo "go vet ."
 	@go vet $$(go list ./... | grep -v vendor/) ; if [ $$? -eq 1 ]; then \
 		echo ""; \
@@ -81,16 +104,20 @@ vet:
 		exit 1; \
 	fi
 
-fmt:
+.PHONY: fmt
+fmt: ## Runs go formatter
 	gofmt -w $(GOFMT_FILES)
 
-fmtcheck:
+.PHONY: fmtcheck
+fmtcheck: ## Runs formatting check
 	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
 
-errcheck:
+.PHONY: errcheck
+errcheck: ## Runs error checking
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
 
-test-compile:
+.PHONY: test-compile
+test-compile: ## Compile tests
 	@if [ "$(TEST)" = "./..." ]; then \
 		echo "ERROR: Set TEST to a specific package. For example,"; \
 		echo "  make test-compile TEST=./$(PKG_NAME)"; \
@@ -98,6 +125,7 @@ test-compile:
 	fi
 	go test -c $(TEST) $(TESTARGS)
 
+.PHONY: website
 website:
 ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 	echo "$(WEBSITE_REPO) not found in your GOPATH (necessary for layouts and assets), get-ting..."
@@ -105,6 +133,7 @@ ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 endif
 	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
 
+.PHONY: website-test
 website-test:
 ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 	echo "$(WEBSITE_REPO) not found in your GOPATH (necessary for layouts and assets), get-ting..."
@@ -112,9 +141,8 @@ ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
 endif
 	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider-test PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
 
-.PHONY: build test testacc vet fmt fmtcheck errcheck test-compile website website-test
-
-install-tools:
+.PHONY: install-tools
+install-tools: ## Install go indirect dependencies
 ifeq (, $(shell which golangci-lint))
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v$(GOLANGCILINTVERSION)
 endif
@@ -125,9 +153,11 @@ ifeq (, $(shell which gox))
 	go get github.com/mitchellh/gox@$(GOXVERSION)
 endif
 
-write-terraform-rc:
+.PHONY: write-terraform-rc
+write-terraform-rc: ## Write to terraformrc file to mirror lacework/lacework to BINARY_PATH
 	scripts/mirror-provider.sh
 
-clean-test:
+.PHONY: clean-test
+clean-test: ## Find and remove any .terraform directories or tfstate files
 	find . -name ".terraform*" -type f -exec rm -rf {} \;
 	find . -name "terraform.tfstate*" -type f -exec rm -rf {} \;
