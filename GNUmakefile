@@ -20,7 +20,7 @@ export GOFLAGS CGO_ENABLED
 .PHONY: help
 help:
 	@echo "-------------------------------------------------------------------"
-	@echo "Lacework go-sdk Makefile helper:"
+	@echo "Lacework terraform-provider-lacework Makefile helper:"
 	@echo ""
 	@grep -Fh "##" $(MAKEFILE_LIST) | grep -v grep | sed -e 's/\\$$//' | sed -E 's/^([^:]*):.*##(.*)/ \1 -\2/'
 	@echo "-------------------------------------------------------------------"
