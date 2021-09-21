@@ -80,8 +80,8 @@ uninstall: ## Removes installed provider package from BINARY_PATH
 integration-test: clean-test install ## Runs clean-test, install then runs all integration tests
 	go test ./integration -v
 
-.PHONY: test ## Runs fmtcheck then runs all unit tests
-test: fmtcheck
+.PHONY: test
+test: fmtcheck ## Runs fmtcheck then runs all unit tests
 	go test $(TEST) || exit 1
 	echo $(TEST) | \
 		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
