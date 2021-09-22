@@ -28,7 +28,7 @@ The following arguments are supported:
 
 * `name` - (Required) The resource group name.
 * `projects` - (Required) The list of GCP project ids to include in the resource group.
-* `organization` - (Required) The GCP organization id.
+* `organization` - (Required) The GCP organization id. If your project is not part of an organization or if you are looking to group projects across multiple organizations, enter an asterisk `"*"` as a string input. 
 * `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
