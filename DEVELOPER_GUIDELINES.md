@@ -51,3 +51,6 @@ Put as much context as you think it is needed, don’t be shy and explain your t
 
 ### Footer
 The footer is used to reference issues, pull requests or breaking changes, for example, “Fixes ticket #123”.
+
+## Signed Commits
+Signed commits are required for any contribution to this project. Please see Github's documentation on configuring signed commits, [tell git about your signing key](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification/telling-git-about-your-signing-key) and [signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
