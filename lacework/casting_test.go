@@ -66,6 +66,21 @@ func TestCastAttributeToStringSlice(t *testing.T) {
 	)
 }
 
+func TestCastAttributeToStringSliceEmpty(t *testing.T) {
+	var (
+		expected     = []string{}
+		d            = resourceLaceworkIntegrationDockerHub()
+		testResource = d.TestResourceData()
+	)
+
+	testResource.Set("limit_by_tags", expected)
+	actual := castAttributeToStringSlice(testResource, "limit_by_tags")
+
+	assert.Equal(t, expected, actual,
+		"%s did not match expected value: %s", actual, expected,
+	)
+}
+
 func TestCastAttributeToStringKeyMapOfStrings(t *testing.T) {
 	var (
 		expected     = map[string]string{"foo": "bar", "key": "value"}
