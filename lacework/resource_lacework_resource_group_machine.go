@@ -57,8 +57,7 @@ func resourceLaceworkResourceGroupMachine() *schema.Resource {
 				Computed:    true,
 				Description: "The resource group unique identifier",
 			},
-			"lacework_a" +
-				"ccount_id": {
+			"lacework_account_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: "The lacework account id",
