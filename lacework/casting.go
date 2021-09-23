@@ -18,7 +18,7 @@ func castStringSlice(iArray []interface{}) []string {
 
 // turn an interface slice into a string slice and apply a transformation func
 func castAndTransformStringSlice(iArray []interface{}, f func(string) string) []string {
-	var a []string
+	a := make([]string, 0)
 	for _, v := range iArray {
 		if v == nil {
 			continue
