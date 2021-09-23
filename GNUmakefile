@@ -38,7 +38,7 @@ release: build-cross-platform ## *CI ONLY* Prepares a release of the Terraform p
 	scripts/release.sh prepare
 
 .PHONY: deps
-deps: ## Update dependencies provided by UPDATE_DEP argument
+deps: ## Update a single dependency by providing the UPDATE_DEP environment variable
 ifdef UPDATE_DEP
 	@go get -u "$(UPDATE_DEP)"
 endif
@@ -77,7 +77,7 @@ uninstall: ## Removes installed provider package from BINARY_PATH
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
 .PHONY: integration-test
-integration-test: clean-test install ## Runs clean-test, install then runs all integration tests
+integration-test: clean-test install ## Runs clean-test and install, then runs all integration tests
 	go test ./integration -v
 
 .PHONY: test

@@ -21,7 +21,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Please complete the following information):**
  - OS: [e.g. macOS Big Sur 11.5.2 ]
- - Version [e.g. v0.15.0]
+ - Provider Version [e.g. v0.15.0]
 
 **Additional context**
 Add any other context about the problem here.
