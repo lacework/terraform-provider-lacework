@@ -95,6 +95,7 @@ func Provider() *schema.Provider {
 			"lacework_resource_group_azure":          resourceLaceworkResourceGroupAzure(),
 			"lacework_resource_group_container":      resourceLaceworkResourceGroupContainer(),
 			"lacework_resource_group_gcp":            resourceLaceworkResourceGroupGcp(),
+			"lacework_resource_group_machine":        resourceLaceworkResourceGroupMachine(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
