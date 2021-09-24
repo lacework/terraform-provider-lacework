@@ -18,7 +18,7 @@ resource "lacework_resource_group_machine" "example" {
   name        = "My Machine Resource Group"
   description = "This groups a subset of Machine Tags"
   machine_tags {
-    key = "name"
+    key   = "name"
     value = "myMachine"
   }
 }
