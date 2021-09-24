@@ -8,8 +8,10 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-var LwClient *api.Client
-var LwOrgClient *api.Client
+var (
+	LwClient    *api.Client
+	LwOrgClient *api.Client
+)
 
 func init() {
 	LwClient = lwTestCLient()
