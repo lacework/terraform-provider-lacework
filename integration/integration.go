@@ -75,6 +75,18 @@ func GetGcpResourceGroupProps(result string) api.GcpResourceGroupProps {
 	return response.Data.Props
 }
 
+func GetContainerResourceGroupProps(result string) api.ContainerResourceGroupProps {
+	resultSplit := strings.Split(result, "[id=")
+	id := strings.Split(resultSplit[1], "]")[0]
+
+	response, err := LwClient.V2.ResourceGroups.GetContainer(id)
+	if err != nil {
+		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
+	}
+
+	return response.Data.Props
+}
+
 func GetMachineResourceGroupProps(result string) api.MachineResourceGroupProps {
 	resultSplit := strings.Split(result, "[id=")
 	id := strings.Split(resultSplit[1], "]")[0]
