@@ -15,11 +15,11 @@ For more information, see the [Resource Groups documentation](https://support.la
 
 ```hcl
 resource "lacework_resource_group_container" "example" {
-  name        = "My Container Resource Group"
-  description = "This groups a subset of Container Tags"
+  name           = "My Container Resource Group"
+  description    = "This groups a subset of Container Tags"
   container_tags = ["my-container"]
   container_label {
-    key = "name"
+    key   = "name"
     value = "my-container"
   }
 }

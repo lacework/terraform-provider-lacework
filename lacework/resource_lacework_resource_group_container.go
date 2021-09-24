@@ -92,7 +92,7 @@ func resourceLaceworkResourceGroupContainer() *schema.Resource {
 			"is_default": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Whether the resource group is a default resource group.",
+				Description: "Whether the resource group is a default resource group",
 			},
 		},
 	}

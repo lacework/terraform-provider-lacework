@@ -17,17 +17,28 @@ func TestResourceGroupContainerCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_container",
 		Vars: map[string]interface{}{
 			"description": "Terraform Test Container Resource Group",
+			"ctr_tags":    []string{"test-tag"},
+			"ctr_key":     "test-key",
+			"ctr_value":   "test-value",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
 	// Create new Container Resource Group
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Terraform Test Container Resource Group", GetResourceGroupDescription(create))
+	createProps := GetContainerResourceGroupProps(create)
+	assert.Equal(t, "Terraform Test Container Resource Group", createProps.Description)
+	assert.Equal(t, []string{"test-tag"}, createProps.ContainerTags)
+	assert.Equal(t, []map[string]string{{"test-key": "test-value"}}, createProps.ContainerLabels)
 
 	// Update Container Resource Group
 	terraformOptions.Vars["description"] = "Updated Terraform Test Container Resource Group"
+	terraformOptions.Vars["ctr_tags"] = []string{"updated-tag"}
+	terraformOptions.Vars["ctr_value"] = "updated-value"
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Updated Terraform Test Container Resource Group", GetResourceGroupDescription(update))
+	updateProps := GetContainerResourceGroupProps(update)
+	assert.Equal(t, "Updated Terraform Test Container Resource Group", updateProps.Description)
+	assert.Equal(t, []string{"updated-tag"}, updateProps.ContainerTags)
+	assert.Equal(t, []map[string]string{{"test-key": "updated-value"}}, updateProps.ContainerLabels)
 }
