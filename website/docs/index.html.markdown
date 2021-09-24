@@ -117,15 +117,39 @@ provider "lacework" {
 }
 ```
 
-From there, you can pass the [`alias` meta-argument](https://www.terraform.io/docs/language/providers/configuration.html#alias-multiple-provider-configurations) to any resource to switch between accounts:
+From there, you can pass the [`alias` meta-argument](https://www.terraform.io/docs/language/providers/configuration.html#alias-multiple-provider-configurations) to any resource or module to switch between accounts.
+
+For resource blocks you can can reference the `alias` using : 
 ```hcl
 resource "lacework_alert_channel_slack" "primary_critical" {
-  alias = lacework.primary
+  provider = lacework.primary
   # ...
 }
+
 resource "lacework_alert_channel_slack" "business_unit_critical" {
-  alias = lacework.business-unit
+  provider = lacework.business-unit
   # ...
+}business-unit
+```
+
+For module blocks you can can reference the `alias` using :
+```hcl
+module "lacework_module" {
+  source  = "lacework/s3-data-export/aws"
+  version = "~> 0.1"
+  providers = {
+  lacework = lacework.primary
+  }
+  # ...
+}
+
+module "lacework_module" {
+  source  = "lacework/s3-data-export/aws"
+  version = "~> 0.1"
+  providers = {
+  lacework = lacework.business-unit
+  }
+ # ...
 }
 ```
 
