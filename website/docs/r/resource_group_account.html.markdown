@@ -17,14 +17,14 @@ For more information, see the [Resource Groups documentation](https://support.la
 resource "lacework_resource_group_account" "example" {
   name        = "My Lacework Account Resource Group"
   description = "This groups a subset of Lacework accounts"
-  accounts = ["my-account"]
+  accounts    = ["my-account"]
 }
 ```
 
 ### Organization Level Access
 
-`lacework_resource_group_account` is an organization level integration. And requires `organization` argument to `true` 
-in the provider config.
+The `lacework_resource_group_account` is an organization-level resource that requires the Lacework provider to be configured with the `organization` argument to `true`.
+
 ```hcl
 provider "lacework" {
   organization = true
