@@ -91,12 +91,12 @@ func Provider() *schema.Provider {
 			"lacework_integration_gar":               resourceLaceworkIntegrationGar(),
 			"lacework_integration_gcr":               resourceLaceworkIntegrationGcr(),
 			"lacework_integration_ghcr":              resourceLaceworkIntegrationGhcr(),
+			"lacework_resource_group_account":        resourceLaceworkResourceGroupLwAccount(),
 			"lacework_resource_group_aws":            resourceLaceworkResourceGroupAws(),
 			"lacework_resource_group_azure":          resourceLaceworkResourceGroupAzure(),
 			"lacework_resource_group_container":      resourceLaceworkResourceGroupContainer(),
 			"lacework_resource_group_gcp":            resourceLaceworkResourceGroupGcp(),
 			"lacework_resource_group_machine":        resourceLaceworkResourceGroupMachine(),
-			"lacework_resource_group_account":        resourceLaceworkResourceGroupLwAccount(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
