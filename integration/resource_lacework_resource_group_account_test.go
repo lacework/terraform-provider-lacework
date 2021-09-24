@@ -17,7 +17,7 @@ func TestResourceGroupLwAccountCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_account",
 		Vars: map[string]interface{}{
 			"description": "Terraform Test LwAccount Resource Group",
-			"accounts":    []string{"tech-ally"},
+			"lw_accounts": []string{"tech-ally"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -30,7 +30,7 @@ func TestResourceGroupLwAccountCreate(t *testing.T) {
 
 	// Update LwAccount Resource Group
 	terraformOptions.Vars["description"] = "Updated Terraform Test LwAccount Resource Group"
-	terraformOptions.Vars["accounts"] = []string{"tech-ally", "mini-ally"}
+	terraformOptions.Vars["lw_accounts"] = []string{"tech-ally", "mini-ally"}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	updateProps := GetLwAccountResourceGroupProps(update)

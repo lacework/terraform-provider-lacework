@@ -1,8 +1,11 @@
 variable "resource_group_name" {
-  type = string
+  type    = string
   default = "Terraform Test Lacework Accounts Resource Group"
 }
 variable "description" {
-  type = string
+  type    = string
   default = "Terraform Test All Lacework Accounts"
+}
+variable "lw_accounts" {
+  type = list(string)
 }
