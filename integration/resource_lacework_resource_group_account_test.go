@@ -1,9 +1,10 @@
 package integration
 
 import (
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TestResourceGroupLwAccountCreate applies integration terraform:
@@ -16,7 +17,7 @@ func TestResourceGroupLwAccountCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_account",
 		Vars: map[string]interface{}{
 			"description": "Terraform Test LwAccount Resource Group",
-			"accounts": []string{"tech-ally"},
+			"accounts":    []string{"tech-ally"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -25,7 +26,7 @@ func TestResourceGroupLwAccountCreate(t *testing.T) {
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createProps := GetLwAccountResourceGroupProps(create)
 	assert.Equal(t, "Terraform Test LwAccount Resource Group", createProps.Description)
-	assert.Equal(t,[]string{"tech-ally"}, createProps.LwAccounts)
+	assert.Equal(t, []string{"tech-ally"}, createProps.LwAccounts)
 
 	// Update LwAccount Resource Group
 	terraformOptions.Vars["description"] = "Updated Terraform Test LwAccount Resource Group"
