@@ -1,23 +1,23 @@
 variable "resource_group_name" {
-  type = string
+  type    = string
   default = "Terraform Test Container Resource Group"
 }
 variable "description" {
-  type = string
+  type    = string
   default = "Terraform Test All Container Tags"
 }
 
 variable "ctr_key" {
-  type = string
+  type    = string
   default = "test-key"
 }
 
 variable "ctr_value" {
-  type = string
+  type    = string
   default = "test-value"
 }
 
 variable "ctr_tags" {
-  type = list(string)
+  type    = list(string)
   default = ["test-tag"]
 }
