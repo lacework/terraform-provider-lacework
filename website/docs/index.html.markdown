@@ -129,7 +129,7 @@ resource "lacework_alert_channel_slack" "primary_critical" {
 resource "lacework_alert_channel_slack" "business_unit_critical" {
   provider = lacework.business-unit
   # ...
-}business-unit
+}
 ```
 
 For module blocks you can can reference the `alias` using :
