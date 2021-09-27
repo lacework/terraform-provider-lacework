@@ -57,6 +57,18 @@ func GetIntegrationName(result string) string {
 	return res.Data[0].Name
 }
 
+func GetEcrWithCrossAccountCreds(result string) api.AwsEcrWithCrossAccountIntegration {
+	resultSplit := strings.Split(result, "[id=")
+	id := strings.Split(resultSplit[1], "]")[0]
+
+	res, err := LwClient.Integrations.GetAwsEcrWithCrossAccount(id)
+	if err != nil || len(res.Data) == 0 {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res.Data[0]
+}
+
 func GetResourceGroupDescription(result string) string {
 	resultSplit := strings.Split(result, "[id=")
 	id := strings.Split(resultSplit[1], "]")[0]

@@ -106,6 +106,12 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 					},
 				},
 			},
+			"non_os_package_support": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
+			},
 
 			// TODO @afiune remove these resources when we release v1.0
 			"limit_by_tag": {
@@ -267,6 +273,7 @@ func resourceLaceworkIntegrationEcrReadWithIAMRole(d *schema.ResourceData, lacew
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
+			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 			// @afiune this field is important for updates since it will force a new resource
 			d.Set("aws_auth_type", integration.Data.AwsAuthType)
 			d.Set("registry_domain", integration.Data.RegistryDomain)
@@ -323,6 +330,7 @@ func resourceLaceworkIntegrationEcrReadWithAccessKey(d *schema.ResourceData, lac
 			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 			d.Set("type_name", integration.TypeName)
 			d.Set("org_level", integration.IsOrg == 1)
+			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
 			// @afiune this field is important for updates since it will force a new resource
 			d.Set("aws_auth_type", integration.Data.AwsAuthType)
@@ -447,11 +455,12 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 				ExternalID: d.Get("credentials.0.external_id").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     limitByTags,
-				LimitByLabel:   limitByLabels,
-				LimitByRep:     limitByRepos,
-				LimitNumImg:    d.Get("limit_num_imgs").(int),
-				RegistryDomain: d.Get("registry_domain").(string),
+				LimitByTag:       limitByTags,
+				LimitByLabel:     limitByLabels,
+				LimitByRep:       limitByRepos,
+				LimitNumImg:      d.Get("limit_num_imgs").(int),
+				RegistryDomain:   d.Get("registry_domain").(string),
+				NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			},
 		},
 	)
@@ -517,11 +526,12 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 				SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     limitByTags,
-				LimitByLabel:   limitByLabels,
-				LimitByRep:     limitByRepos,
-				LimitNumImg:    d.Get("limit_num_imgs").(int),
-				RegistryDomain: d.Get("registry_domain").(string),
+				LimitByTag:       limitByTags,
+				LimitByLabel:     limitByLabels,
+				LimitByRep:       limitByRepos,
+				LimitNumImg:      d.Get("limit_num_imgs").(int),
+				RegistryDomain:   d.Get("registry_domain").(string),
+				NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			},
 		},
 	)
@@ -622,11 +632,12 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 				SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     d.Get("limit_by_tag").(string),
-				LimitByLabel:   d.Get("limit_by_label").(string),
-				LimitByRep:     d.Get("limit_by_repos").(string),
-				LimitNumImg:    d.Get("limit_num_imgs").(int),
-				RegistryDomain: d.Get("registry_domain").(string),
+				LimitByTag:       d.Get("limit_by_tag").(string),
+				LimitByLabel:     d.Get("limit_by_label").(string),
+				LimitByRep:       d.Get("limit_by_repos").(string),
+				LimitNumImg:      d.Get("limit_num_imgs").(int),
+				RegistryDomain:   d.Get("registry_domain").(string),
+				NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			},
 		},
 	)
@@ -658,6 +669,8 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
+	d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
+
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
@@ -690,11 +703,12 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 				ExternalID: d.Get("credentials.0.external_id").(string),
 			},
 			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:     limitByTags,
-				LimitByLabel:   limitByLabels,
-				LimitByRep:     limitByRepos,
-				LimitNumImg:    d.Get("limit_num_imgs").(int),
-				RegistryDomain: d.Get("registry_domain").(string),
+				LimitByTag:       limitByTags,
+				LimitByLabel:     limitByLabels,
+				LimitByRep:       limitByRepos,
+				LimitNumImg:      d.Get("limit_num_imgs").(int),
+				RegistryDomain:   d.Get("registry_domain").(string),
+				NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			},
 		},
 	)
@@ -726,6 +740,8 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
+	d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
+
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
