@@ -149,10 +149,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 
 	if account != "" && key != "" && secret != "" {
 		apiOpts = append(apiOpts, api.WithApiKeys(key, secret))
+		apiOpts = append(apiOpts, api.WithApiV2()) // default to APIv2
 
 		if subaccount != "" {
 			apiOpts = append(apiOpts, api.WithSubaccount(subaccount))
-			apiOpts = append(apiOpts, api.WithApiV2()) // only APIv2 understands sub-accounts
 		}
 
 		if organization {
