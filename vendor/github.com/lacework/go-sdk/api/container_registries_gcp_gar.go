@@ -59,6 +59,7 @@ type GcpGarData struct {
 	LimitByLabel   []map[string]string `json:"limitByLabel"`
 	LimitByRep     []string            `json:"limitByRep"`
 	LimitNumImg    int                 `json:"limitNumImg"`
+	NonOSPackageEval bool `json:"nonOsPackageEval,omitempty"`
 }
 
 func verifyGcpGarContainerRegistry(data interface{}) interface{} {
