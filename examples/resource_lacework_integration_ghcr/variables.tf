@@ -13,4 +13,7 @@ variable "password" {
 variable "ssl" {
   type = bool
 }
-
+variable "non_os_packages" {
+  type      = bool
+  default   = false
+}
