@@ -493,7 +493,6 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
-	d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
@@ -565,7 +564,6 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
-	d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
@@ -671,7 +669,6 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
-	d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
@@ -742,7 +739,6 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.TypeName)
 	d.Set("org_level", integration.IsOrg == 1)
-	d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
