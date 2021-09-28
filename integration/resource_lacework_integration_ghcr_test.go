@@ -41,6 +41,6 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetContainerRegistryIntegration(update)
 		assert.Equal(t, "Github Container Registry Updated", updateData.Name)
-		assert.Equal(t, false, updateData.Data.NonOSPackageEval)
+		assert.Equal(t, true, updateData.Data.NonOSPackageEval)
 	}
 }
