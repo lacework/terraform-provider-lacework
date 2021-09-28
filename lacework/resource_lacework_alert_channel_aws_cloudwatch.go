@@ -21,22 +21,22 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Required:    true,
+				Description: "The integration unique identifier",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"event_bus_arn": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The ARN of your AWS CloudWatch event bus",
 			},
 			"group_issues_by": {
 				Type:     schema.TypeString,
@@ -54,6 +54,7 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 						}
 					}
 				},
+				Description: "Defines how Lacework compliance events get grouped. Must be one of Events or Resources. Defaults to Events",
 			},
 			"test_integration": {
 				Type:        schema.TypeBool,
@@ -84,9 +85,10 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
-			api.AwsCloudWatchData{
-				EventBusArn:   d.Get("event_bus_arn").(string),
+		alert    = api.NewAlertChannel(d.Get("name").(string),
+			api.CloudwatchEbAlertChannelType,
+			api.CloudwatchEbDataV2{
+				EventBusArn: d.Get("event_bus_arn").(string),
 				IssueGrouping: d.Get("group_issues_by").(string),
 			},
 		)
@@ -96,37 +98,30 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 	}
 
 	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
-	response, err := lacework.Integrations.CreateAwsCloudWatchAlertChannel(alert)
+	response, err := lacework.V2.AlertChannels.Create(alert)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsCloudWatchAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsCloudWatchIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsCloudWatchIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CloudwatchEbAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.AwsCloudWatchIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.CloudwatchEbAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
@@ -134,38 +129,32 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
-	response, err := lacework.Integrations.GetAwsCloudWatchAlertChannel(d.Id())
+	response, err := lacework.V2.AlertChannels.GetCloudwatchEb(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	d.Set("name", response.Data.Name)
+	d.Set("intg_guid", response.Data.IntgGuid)
+	d.Set("enabled", response.Data.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+	d.Set("type_name", response.Data.Type)
+	d.Set("org_level", response.Data.IsOrg == 1)
 
-			d.Set("event_bus_arn", integration.Data.EventBusArn)
-			d.Set("group_issues_by", integration.Data.IssueGrouping)
+	d.Set("event_bus_arn", response.Data.Data.EventBusArn)
+	d.Set("group_issues_by", response.Data.Data.IssueGrouping)
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.AwsCloudWatchIntegration, integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.CloudwatchEbAlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAwsCloudWatchAlertChannel(d.Get("name").(string),
+		alert    = api.NewAlertChannel(d.Get("name").(string),
+			api.CloudwatchEbAlertChannelType,
 			api.AwsCloudWatchData{
 				EventBusArn:   d.Get("event_bus_arn").(string),
 				IssueGrouping: d.Get("group_issues_by").(string),
@@ -180,84 +169,41 @@ func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, met
 	alert.IntgGuid = d.Id()
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
-	response, err := lacework.Integrations.UpdateAwsCloudWatchAlertChannel(alert)
+	response, err := lacework.V2.AlertChannels.UpdateCloudwatchEb(alert)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsCloudWatchAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.AwsCloudWatchIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.AwsCloudWatchIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CloudwatchEbAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelAwsCloudWatchDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
-	return nil
-}
-
-// validateAwsCloudWatchAlertChannelResponse checks weather or not the server response has
-// any inconsistent data, it returns a friendly error message describing the
-// problem and how to report it
-func validateAwsCloudWatchAlertChannelResponse(response *api.AwsCloudWatchResponse) error {
-	if len(response.Data) == 0 {
-		// @afiune this edge case should never happen, if we land here it means that
-		// something went wrong in the server side of things (Lacework API), so let
-		// us inform that to our users
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		// @afiune if we are creating a single integration and the server returns
-		// more than one integration inside the 'data' field, it is definitely another
-		// edge case that should never happen
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
 	return nil
 }
