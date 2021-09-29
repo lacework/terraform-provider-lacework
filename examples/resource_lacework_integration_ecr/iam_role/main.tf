@@ -15,5 +15,5 @@ resource "lacework_integration_ecr" "iam_role" {
     role_arn    = var.role_arn
     external_id = var.external_id
   }
-  non_os_package_support = var.non_os_packages
+  non_os_package_support = var.non_os_package_support
 }

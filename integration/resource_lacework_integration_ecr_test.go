@@ -22,7 +22,7 @@ func TestIntegrationECRCreate(t *testing.T) {
 				"role_arn":         awsCreds.RoleArn,
 				"external_id":      awsCreds.ExternalID,
 				"registry_domain":  awsCreds.RegistryDomain,
-				"non_os_packages":  false,
+				"non_os_package_support":  false,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
@@ -38,7 +38,7 @@ func TestIntegrationECRCreate(t *testing.T) {
 
 		// Update Google Artifact Registry
 		terraformOptions.Vars["integration_name"] = "Amazon Elastic Container Registry Updated"
-		terraformOptions.Vars["non_os_packages"] = true
+		terraformOptions.Vars["non_os_package_support"] = true
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetEcrWithCrossAccountCreds(update)

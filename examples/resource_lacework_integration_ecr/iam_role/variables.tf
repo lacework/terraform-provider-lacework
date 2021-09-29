@@ -16,7 +16,7 @@ variable "registry_domain" {
   type      = string
   default   = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
 }
-variable "non_os_packages" {
+variable "non_os_package_support" {
   type      = bool
   default   = false
 }
