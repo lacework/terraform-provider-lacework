@@ -279,11 +279,11 @@ func resourceLaceworkIntegrationGarUpdate(d *schema.ResourceData, meta interface
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.GcpGarContainerRegistry,
 		api.GcpGarData{
-			LimitByTag:     castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:   castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
-			LimitByRep:     castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
 			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.GcpCredentialsV2{
 				ClientID:     d.Get("credentials.0.client_id").(string),
