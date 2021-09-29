@@ -21,7 +21,7 @@ func TestIntegrationGARCreate(t *testing.T) {
 				"client_id":       gcreds.ClientID,
 				"client_email":    gcreds.ClientEmail,
 				"private_key_id":  gcreds.PrivateKeyID,
-				"non_os_packages": false,
+				"non_os_package_support": false,
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_private_key": gcreds.PrivateKey, // @afiune this will avoid printing secrets in our pipeline
@@ -37,7 +37,7 @@ func TestIntegrationGARCreate(t *testing.T) {
 
 		// Update Google Artifact Registry
 		terraformOptions.Vars["integration_name"] = "Google Artifact Registry Updated"
-		terraformOptions.Vars["non_os_packages"] = true
+		terraformOptions.Vars["non_os_package_support"] = true
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetContainerRegistryIntegration(update)

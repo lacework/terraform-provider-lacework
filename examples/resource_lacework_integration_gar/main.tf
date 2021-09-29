@@ -17,7 +17,7 @@ resource "lacework_integration_gar" "example" {
     private_key_id = var.private_key_id
     private_key    = var.private_key
   }
-  non_os_package_support = var.non_os_packages
+  non_os_package_support = var.non_os_package_support
 
   limit_num_imgs        = 10
   limit_by_tags         = ["dev*", "*test"]
