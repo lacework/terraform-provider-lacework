@@ -55,6 +55,12 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 				Default:     true,
 				Description: "Enable or disable SSL communication",
 			},
+			"non_os_package_support": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
+			},
 			"limit_by_tags": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
@@ -140,6 +146,7 @@ func resourceLaceworkIntegrationGhcrCreate(d *schema.ResourceData, meta interfac
 			LimitByRep:            castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:           d.Get("limit_num_imgs").(int),
 			RegistryNotifications: d.Get("registry_notifications").(bool),
+			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
 			Credentials: api.GhcrCredentials{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),
@@ -195,6 +202,8 @@ func resourceLaceworkIntegrationGhcrRead(d *schema.ResourceData, meta interface{
 	d.Set("ssl", response.Data.Data.Credentials.Ssl)
 	d.Set("registry_domain", response.Data.Data.RegistryDomain)
 	d.Set("registry_notifications", response.Data.Data.RegistryNotifications)
+	d.Set("non_os_package_support", response.Data.Data.NonOSPackageEval)
+
 	d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
 	d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 	d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
@@ -216,6 +225,7 @@ func resourceLaceworkIntegrationGhcrUpdate(d *schema.ResourceData, meta interfac
 			LimitByRep:            castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:           d.Get("limit_num_imgs").(int),
 			RegistryNotifications: d.Get("registry_notifications").(bool),
+			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
 			Credentials: api.GhcrCredentials{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),
