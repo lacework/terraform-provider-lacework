@@ -18,8 +18,8 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_ghcr",
 			Vars: map[string]interface{}{
-				"username":        creds.Username,
-				"ssl":             true,
+				"username":               creds.Username,
+				"ssl":                    true,
 				"non_os_package_support": false,
 			},
 			EnvVars: map[string]string{
