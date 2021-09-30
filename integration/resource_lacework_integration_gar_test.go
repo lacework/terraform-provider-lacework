@@ -18,9 +18,9 @@ func TestIntegrationGARCreate(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_gar",
 			Vars: map[string]interface{}{
-				"client_id":       gcreds.ClientID,
-				"client_email":    gcreds.ClientEmail,
-				"private_key_id":  gcreds.PrivateKeyID,
+				"client_id":              gcreds.ClientID,
+				"client_email":           gcreds.ClientEmail,
+				"private_key_id":         gcreds.PrivateKeyID,
 				"non_os_package_support": false,
 			},
 			EnvVars: map[string]string{
