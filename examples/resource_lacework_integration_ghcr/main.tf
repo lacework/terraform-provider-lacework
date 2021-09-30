@@ -13,7 +13,7 @@ resource "lacework_integration_ghcr" "example" {
   username               = var.username
   password               = var.password
   ssl                    = var.ssl
-  non_os_package_support = var.non_os_packages
+  non_os_package_support = var.non_os_package_support
 
   limit_num_imgs        = 10
   limit_by_tags         = ["dev*", "*test"]

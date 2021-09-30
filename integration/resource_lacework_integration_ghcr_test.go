@@ -20,7 +20,7 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 			Vars: map[string]interface{}{
 				"username":        creds.Username,
 				"ssl":             true,
-				"non_os_packages": false,
+				"non_os_package_support": false,
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_password": creds.Token,
@@ -36,7 +36,7 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 
 		// Update Github Container Registry
 		terraformOptions.Vars["integration_name"] = "Github Container Registry Updated"
-		terraformOptions.Vars["non_os_packages"] = true
+		terraformOptions.Vars["non_os_package_support"] = true
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetContainerRegistryIntegration(update)
