@@ -18,11 +18,11 @@ func TestIntegrationECRCreate(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_ecr/iam_role",
 			Vars: map[string]interface{}{
-				"integration_name": "Amazon Elastic Container Registry Example",
-				"role_arn":         awsCreds.RoleArn,
-				"external_id":      awsCreds.ExternalID,
-				"registry_domain":  awsCreds.RegistryDomain,
-				"non_os_package_support":  false,
+				"integration_name":       "Amazon Elastic Container Registry Example",
+				"role_arn":               awsCreds.RoleArn,
+				"external_id":            awsCreds.ExternalID,
+				"registry_domain":        awsCreds.RegistryDomain,
+				"non_os_package_support": false,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
