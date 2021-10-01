@@ -22,14 +22,13 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: "The integration name",
 			},
 			"intg_guid": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Required:    true,
 				Description: "The integration unique identifier",
 			},
 			"enabled": {

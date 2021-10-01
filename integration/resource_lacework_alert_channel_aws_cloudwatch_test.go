@@ -1,10 +1,10 @@
 package integration
 
 import (
-"testing"
+	"testing"
 
-"github.com/gruntwork-io/terratest/modules/terraform"
-"github.com/stretchr/testify/assert"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
 // TestAlertChannelCloudWatchCreate applies integration terraform:
