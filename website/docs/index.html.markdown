@@ -137,8 +137,9 @@ For module blocks you can can reference the `alias` using :
 module "lacework_module" {
   source  = "lacework/s3-data-export/aws"
   version = "~> 0.1"
+
   providers = {
-  lacework = lacework.primary
+    lacework = lacework.primary
   }
   # ...
 }
