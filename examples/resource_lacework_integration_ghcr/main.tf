@@ -9,10 +9,11 @@ terraform {
 provider "lacework" {}
 
 resource "lacework_integration_ghcr" "example" {
-  name     = var.integration_name
-  username = var.username
-  password = var.password
-  ssl      = var.ssl
+  name                   = var.integration_name
+  username               = var.username
+  password               = var.password
+  ssl                    = var.ssl
+  non_os_package_support = var.non_os_package_support
 
   limit_num_imgs        = 10
   limit_by_tags         = ["dev*", "*test"]
