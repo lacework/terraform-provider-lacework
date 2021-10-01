@@ -147,8 +147,9 @@ module "lacework_module" {
 module "lacework_module" {
   source  = "lacework/s3-data-export/aws"
   version = "~> 0.1"
+
   providers = {
-  lacework = lacework.business-unit
+    lacework = lacework.business-unit
   }
  # ...
 }
