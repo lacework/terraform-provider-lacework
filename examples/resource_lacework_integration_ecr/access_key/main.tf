@@ -1,13 +1,12 @@
-provider "lacework" {}
-
-resource "lacework_integration_ecr" "iam_role" {
-  name            = "ECR using IAM Role"
-  registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
-  credentials {
-    role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
-    external_id = "12345"
+terraform {
+  required_providers {
+    lacework = {
+      source = "lacework/lacework"
+    }
   }
 }
+
+provider "lacework" {}
 
 resource "lacework_integration_ecr" "access_key" {
   name            = "ECR using Access Keys"
