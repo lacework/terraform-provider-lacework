@@ -132,7 +132,7 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsCloudWatchIntegration, d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetCloudwatchEb(d.Id())
 	if err != nil {
 		return err
@@ -172,7 +172,7 @@ func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, met
 
 	alert.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.CloudwatchEbAlertChannelType, alert)
 	response, err := lacework.V2.AlertChannels.UpdateCloudwatchEb(alert)
 	if err != nil {
 		return err
