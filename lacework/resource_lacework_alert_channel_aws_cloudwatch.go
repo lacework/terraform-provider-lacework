@@ -26,11 +26,6 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 				Required:    true,
 				Description: "The integration name",
 			},
-			"intg_guid": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The integration unique identifier",
-			},
 			"enabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -65,6 +60,11 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 				Description: "Whether to test the integration of an alert channel upon creation and modification",
+			},
+			"intg_guid": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The integration unique identifier",
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
