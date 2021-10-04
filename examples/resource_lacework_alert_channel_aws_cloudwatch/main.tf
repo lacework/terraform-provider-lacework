@@ -8,9 +8,20 @@ terraform {
 
 provider "lacework" {}
 
+variable "event_bus_arn" {
+  description = "The ARN for the event bus"
+  type        = string
+  sensitive   = true
+}
+
+variable "name" {
+  description = "The name of the alert channel"
+  type        = string
+}
+
 resource "lacework_alert_channel_aws_cloudwatch" "example" {
-  name            = "My AWS CloudWatch Alert Channel Example"
-  event_bus_arn   = "arn:aws:events:us-west-2:1234567890:event-bus/default"
+  name            = var.name
+  event_bus_arn   = var.event_bus_arn
   group_issues_by = "Events"
   // test_integration input is used in this example only for testing
   // purposes, it help us avoid sending a "test" request to the

@@ -13,8 +13,15 @@ import (
 // It uses the go-sdk to verify the created integration,
 // applies an update with new alert channel name and destroys it
 func TestAlertChannelCloudWatchCreate(t *testing.T) {
+	eventBusArn := cloudwatchEnvVarsDefault()
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_aws_cloudwatch",
+		Vars: map[string]interface{}{
+			"name": "AWS Cloudwatch Alert Channel Example",
+		},
+		EnvVars: map[string]string{
+			"TF_VAR_event_bus_arn": eventBusArn,
+		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -24,7 +31,7 @@ func TestAlertChannelCloudWatchCreate(t *testing.T) {
 
 	// Update CloudwatchEb Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name": "AWS Cloudwatch Alert Channel Updated"}
+		"name": "AWS Cloudwatch Alert Channel Updated"}
 
 	update := terraform.Apply(t, terraformOptions)
 	assert.Equal(t, "AWS Cloudwatch Alert Channel Updated", GetIntegrationName(update))

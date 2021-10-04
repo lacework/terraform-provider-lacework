@@ -159,7 +159,7 @@ func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, met
 		lacework = meta.(*api.Client)
 		alert    = api.NewAlertChannel(d.Get("name").(string),
 			api.CloudwatchEbAlertChannelType,
-			api.AwsCloudWatchData{
+			api.CloudwatchEbDataV2{
 				EventBusArn:   d.Get("event_bus_arn").(string),
 				IssueGrouping: d.Get("group_issues_by").(string),
 			},
