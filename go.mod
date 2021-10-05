@@ -6,7 +6,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/gruntwork-io/terratest v0.37.12
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.1
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.8.0
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/lacework/go-sdk v0.16.1-0.20211001144102-1e93e91beb7a
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
