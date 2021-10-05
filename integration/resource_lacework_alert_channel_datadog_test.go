@@ -11,8 +11,17 @@ import (
 // Uses the go-sdk to verify the created integration
 // Applies an update with new channel name and Terraform destroy
 func TestDatadogAlertChannelCreate(t *testing.T) {
+	apiKey := datadogEnvVarsDefault()
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_datadog",
+		Vars: map[string]interface{}{
+			"channel_name":    "Datadog Alert Channel Example",
+			"datadog_site":    "com",
+			"datadog_service": "Logs Detail",
+		},
+		EnvVars: map[string]string{
+			"TF_VAR_api_key": apiKey,
+		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
