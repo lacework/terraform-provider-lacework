@@ -192,7 +192,7 @@ type DecodeHookFuncType func(reflect.Type, reflect.Type, interface{}) (interface
 // source and target types.
 type DecodeHookFuncKind func(reflect.Kind, reflect.Kind, interface{}) (interface{}, error)
 
-// DecodeHookFuncValue is a DecodeHookFunc which has complete access to both the source and target
+// DecodeHookFuncRaw is a DecodeHookFunc which has complete access to both the source and target
 // values.
 type DecodeHookFuncValue func(from reflect.Value, to reflect.Value) (interface{}, error)
 
@@ -258,11 +258,6 @@ type DecoderConfig struct {
 	// The tag name that mapstructure reads for field names. This
 	// defaults to "mapstructure"
 	TagName string
-
-	// MatchName is the function used to match the map key to the struct
-	// field name or tag. Defaults to `strings.EqualFold`. This can be used
-	// to implement case-sensitive tag values, support snake casing, etc.
-	MatchName func(mapKey, fieldName string) bool
 }
 
 // A Decoder takes a raw interface value and turns it into structured
@@ -379,10 +374,6 @@ func NewDecoder(config *DecoderConfig) (*Decoder, error) {
 
 	if config.TagName == "" {
 		config.TagName = "mapstructure"
-	}
-
-	if config.MatchName == nil {
-		config.MatchName = strings.EqualFold
 	}
 
 	result := &Decoder{
@@ -1349,7 +1340,7 @@ func (d *Decoder) decodeStructFromMap(name string, dataVal, val reflect.Value) e
 					continue
 				}
 
-				if d.config.MatchName(mK, fieldName) {
+				if strings.EqualFold(mK, fieldName) {
 					rawMapKey = dataValKey
 					rawMapVal = dataVal.MapIndex(dataValKey)
 					break
