@@ -29,10 +29,10 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 
 	// Update Datadog Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name": "Datadog Alert Channel Updated",
+		"channel_name":    "Datadog Alert Channel Updated",
 		"datadog_site":    "com",
 		"datadog_service": "Logs Detail",
-		"api_key":      apiKey}
+		"api_key":         apiKey}
 
 	update := terraform.Apply(t, terraformOptions)
 
