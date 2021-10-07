@@ -30,7 +30,7 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 	// Update Datadog Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "Datadog Alert Channel Updated",
-		"api_key":         apiKey}
+		"api_key":      apiKey}
 
 	update := terraform.Apply(t, terraformOptions)
 	assert.Equal(t, "Datadog Alert Channel Updated", GetIntegrationName(update))
