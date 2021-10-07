@@ -183,7 +183,7 @@ func resourceLaceworkAlertChannelWebhookDelete(d *schema.ResourceData, meta inte
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.WebhookAlertChannelType, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
