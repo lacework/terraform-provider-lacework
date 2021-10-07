@@ -114,9 +114,9 @@ func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta inte
 		datadog  = api.NewAlertChannel(d.Get("name").(string),
 			api.DatadogAlertChannelType,
 			api.DatadogDataV2{
-				DatadogSite: string(site),
-				DatadogType: string(service),
-				APIKey:      d.Get("api_key").(string),
+				DatadogSite: site,
+				DatadogType: service,
+				ApiKey:      d.Get("api_key").(string),
 			},
 		)
 	)
@@ -169,7 +169,7 @@ func resourceLaceworkAlertChannelDatadogRead(d *schema.ResourceData, meta interf
 	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
-	d.Set("api_key", response.Data.Data.APIKey)
+	d.Set("api_key", response.Data.Data.ApiKey)
 	d.Set("datadog_site", response.Data.Data.DatadogSite)
 	d.Set("datadog_service", response.Data.Data.DatadogType)
 
@@ -187,9 +187,9 @@ func resourceLaceworkAlertChannelDatadogUpdate(d *schema.ResourceData, meta inte
 		datadog  = api.NewAlertChannel(d.Get("name").(string),
 			api.DatadogAlertChannelType,
 			api.DatadogDataV2{
-				DatadogSite: string(site),
-				DatadogType: string(service),
-				APIKey:      d.Get("api_key").(string),
+				DatadogSite: site,
+				DatadogType: service,
+				ApiKey:      d.Get("api_key").(string),
 			},
 		)
 	)
