@@ -169,7 +169,6 @@ func resourceLaceworkAlertChannelDatadogRead(d *schema.ResourceData, meta interf
 	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
-	d.Set("api_key", response.Data.Data.ApiKey)
 	d.Set("datadog_site", response.Data.Data.DatadogSite)
 	d.Set("datadog_service", response.Data.Data.DatadogType)
 

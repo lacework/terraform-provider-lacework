@@ -40,3 +40,20 @@ resource "lacework_alert_channel_datadog" "example" {
   // turned on ("true") which is the default setting
   test_integration = false
 }
+
+output "api_key" {
+  value = var.api_key
+  sensitive = true
+}
+
+output "datadog_site" {
+  value = var.datadog_site
+}
+
+output "datadog_service" {
+  value = var.datadog_service
+}
+
+output "name" {
+  value = var.channel_name
+}

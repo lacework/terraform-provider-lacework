@@ -153,3 +153,15 @@ func GetLwAccountResourceGroupProps(result string) api.LwAccountResourceGroupPro
 
 	return response.Data.Props
 }
+
+func GetAlertChannelProps(result string) api.AlertChannelResponse {
+	resultSplit := strings.Split(result, "[id=")
+	id := strings.Split(resultSplit[1], "]")[0]
+
+	var data api.AlertChannelResponse
+	err := LwClient.V2.AlertChannels.Get(id, &data)
+	if err != nil {
+		log.Fatalf("Unable to retrieve alert channel with id: %s", id)
+	}
+	return data
+}
