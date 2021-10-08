@@ -111,11 +111,12 @@ func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta inte
 
 	var (
 		lacework = meta.(*api.Client)
-		datadog  = api.NewDatadogAlertChannel(d.Get("name").(string),
-			api.DatadogChannelData{
-				DatadogSite:    site,
-				DatadogService: service,
-				ApiKey:         d.Get("api_key").(string),
+		datadog  = api.NewAlertChannel(d.Get("name").(string),
+			api.DatadogAlertChannelType,
+			api.DatadogDataV2{
+				DatadogSite: site,
+				DatadogType: service,
+				ApiKey:      d.Get("api_key").(string),
 			},
 		)
 	)
@@ -123,68 +124,56 @@ func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta inte
 		datadog.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.DatadogChannelIntegration, datadog)
-	response, err := lacework.Integrations.CreateDatadogAlertChannel(datadog)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.DatadogAlertChannelType, datadog)
+	response, err := lacework.V2.AlertChannels.Create(datadog)
+
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateDatadogAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.DatadogAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.DatadogAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid: %s\n", api.DatadogChannelIntegration, d.Id())
+	log.Printf("[INFO] Created %s integration with guid: %s\n", api.DatadogAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelDatadogRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.DatadogChannelIntegration, d.Id())
-	response, err := lacework.Integrations.GetDatadogAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.DatadogAlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetDatadog(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("datadog_site", integration.Data.DatadogSite)
-			d.Set("datadog_service", integration.Data.DatadogService)
+	d.Set("name", response.Data.Name)
+	d.Set("intg_guid", response.Data.IntgGuid)
+	d.Set("enabled", response.Data.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+	d.Set("type_name", response.Data.Type)
+	d.Set("org_level", response.Data.IsOrg == 1)
+	d.Set("datadog_site", response.Data.Data.DatadogSite)
+	d.Set("datadog_service", response.Data.Data.DatadogType)
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.DatadogChannelIntegration, integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.DatadogAlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
@@ -194,11 +183,12 @@ func resourceLaceworkAlertChannelDatadogUpdate(d *schema.ResourceData, meta inte
 
 	var (
 		lacework = meta.(*api.Client)
-		datadog  = api.NewDatadogAlertChannel(d.Get("name").(string),
-			api.DatadogChannelData{
-				DatadogSite:    site,
-				DatadogService: service,
-				ApiKey:         d.Get("api_key").(string),
+		datadog  = api.NewAlertChannel(d.Get("name").(string),
+			api.DatadogAlertChannelType,
+			api.DatadogDataV2{
+				DatadogSite: site,
+				DatadogType: service,
+				ApiKey:      d.Get("api_key").(string),
 			},
 		)
 	)
@@ -209,75 +199,42 @@ func resourceLaceworkAlertChannelDatadogUpdate(d *schema.ResourceData, meta inte
 
 	datadog.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.DatadogChannelIntegration, datadog)
-	response, err := lacework.Integrations.UpdateDatadogAlertChannel(datadog)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.DatadogAlertChannelType, datadog)
+	response, err := lacework.V2.AlertChannels.UpdateDatadog(datadog)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateDatadogAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.DatadogAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.DatadogChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.DatadogAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.DatadogChannelIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.DatadogAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelDatadogDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.DatadogChannelIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.DatadogAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.DatadogChannelIntegration, d.Id())
-	return nil
-}
-
-func validateDatadogAlertChannelResponse(response *api.DatadogAlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.DatadogAlertChannelType, d.Id())
 	return nil
 }
