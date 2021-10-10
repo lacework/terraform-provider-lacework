@@ -17,7 +17,7 @@ func TestAlertChannelCiscoWebexCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_channel_cisco_webex",
 		Vars: map[string]interface{}{
 			"channel_name": "Cisco Webex Alert Channel Example",
-			"webhook_url": "https://webexapis.com/v1/webhooks/incoming/api-token",
+			"webhook_url":  "https://webexapis.com/v1/webhooks/incoming/api-token",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -29,7 +29,7 @@ func TestAlertChannelCiscoWebexCreate(t *testing.T) {
 	// Update Cisco Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "Cisco Webex Alert Channel Example Updated",
-		"webhook_url": "https://webexapis.com/v1/webhooks/incoming/api-token",
+		"webhook_url":  "https://webexapis.com/v1/webhooks/incoming/api-token",
 	}
 
 	update := terraform.Apply(t, terraformOptions)
