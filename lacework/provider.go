@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -119,7 +120,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		key          = d.Get("api_key").(string)
 		secret       = d.Get("api_secret").(string)
 		userAgent    = fmt.Sprintf("Terraform/%s", version)
-		apiOpts      = []api.Option{api.WithHeader("User-Agent", userAgent)}
+		apiOpts      = []api.Option{
+			api.WithHeader("User-Agent", userAgent),
+			api.WithTimeout(time.Second * 125), // this is our nginx max time
+		}
 	)
 
 	// validate that the log level is supported by the api client, if not,
