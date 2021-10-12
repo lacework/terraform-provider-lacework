@@ -1,7 +1,6 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -98,7 +97,7 @@ func resourceLaceworkAlertChannelVictorOpsCreate(d *schema.ResourceData, meta in
 
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.VictorOpsAlertChannelType, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.VictorOpsAlertChannelType, d.Id())
@@ -192,32 +191,5 @@ func resourceLaceworkAlertChannelVictorOpsDelete(d *schema.ResourceData, meta in
 	}
 
 	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.VictorOpsAlertChannelType, d.Id())
-	return nil
-}
-
-func validateVictorOpsAlertChannelResponse(response *api.VictorOpsAlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
 	return nil
 }

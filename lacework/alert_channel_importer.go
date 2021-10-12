@@ -12,10 +12,11 @@ import (
 
 // VerifyAlertChannelAndRollback will test the integration of an alert channel,
 // if the test is not successful, it will remove the alert channel (rollback)
-func VerifyAlertChannelAndRollback(id string, lacework *api.Client) error {
-	if err := lacework.V2.AlertChannels.Test(id); err != nil {
+func VerifyAlertChannelAndRollback(d *schema.ResourceData, lacework *api.Client) error {
+	if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
+		defer d.SetId("")
 		// rollback terraform create upon error testing integration
-		if deleteErr := lacework.V2.AlertChannels.Delete(id); deleteErr != nil {
+		if deleteErr := lacework.V2.AlertChannels.Delete(d.Id()); deleteErr != nil {
 			return errors.Wrapf(deleteErr, "Unable to rollback changes: %v", err)
 		}
 		return err

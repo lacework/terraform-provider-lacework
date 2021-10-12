@@ -138,7 +138,7 @@ func resourceLaceworkAlertChannelServiceNowCreate(d *schema.ResourceData, meta i
 
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.ServiceNowChannelIntegration, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.ServiceNowChannelIntegration, d.Id())

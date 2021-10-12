@@ -3,7 +3,7 @@ package integration
 import (
 	"log"
 	"os"
-	"strings"
+	"regexp"
 
 	"github.com/lacework/go-sdk/api"
 )
@@ -46,8 +46,7 @@ func lwOrgTestClient() (lw *api.Client) {
 }
 
 func GetIntegrationName(result string) string {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.Integrations.Get(id)
 	if err != nil || len(res.Data) == 0 {
@@ -58,8 +57,7 @@ func GetIntegrationName(result string) string {
 }
 
 func GetEcrWithCrossAccountCreds(result string) api.AwsEcrWithCrossAccountIntegration {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.Integrations.GetAwsEcrWithCrossAccount(id)
 	if err != nil || len(res.Data) == 0 {
@@ -70,8 +68,7 @@ func GetEcrWithCrossAccountCreds(result string) api.AwsEcrWithCrossAccountIntegr
 }
 
 func GetContainerRegistryIntegration(result string) api.ContainerRegIntegration {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.Integrations.GetContainerRegistry(id)
 
@@ -83,8 +80,7 @@ func GetContainerRegistryIntegration(result string) api.ContainerRegIntegration 
 }
 
 func GetResourceGroupDescription(result string) string {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	response, err := LwClient.V2.ResourceGroups.GetAws(id)
 	if err != nil {
@@ -95,8 +91,7 @@ func GetResourceGroupDescription(result string) string {
 }
 
 func GetAzureResourceGroupProps(result string) api.AzureResourceGroupProps {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	response, err := LwClient.V2.ResourceGroups.GetAzure(id)
 	if err != nil {
@@ -107,8 +102,7 @@ func GetAzureResourceGroupProps(result string) api.AzureResourceGroupProps {
 }
 
 func GetGcpResourceGroupProps(result string) api.GcpResourceGroupProps {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	response, err := LwClient.V2.ResourceGroups.GetGcp(id)
 	if err != nil {
@@ -119,8 +113,7 @@ func GetGcpResourceGroupProps(result string) api.GcpResourceGroupProps {
 }
 
 func GetContainerResourceGroupProps(result string) api.ContainerResourceGroupProps {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	response, err := LwClient.V2.ResourceGroups.GetContainer(id)
 	if err != nil {
@@ -131,8 +124,7 @@ func GetContainerResourceGroupProps(result string) api.ContainerResourceGroupPro
 }
 
 func GetMachineResourceGroupProps(result string) api.MachineResourceGroupProps {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	response, err := LwClient.V2.ResourceGroups.GetMachine(id)
 	if err != nil {
@@ -143,8 +135,7 @@ func GetMachineResourceGroupProps(result string) api.MachineResourceGroupProps {
 }
 
 func GetLwAccountResourceGroupProps(result string) api.LwAccountResourceGroupProps {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	response, err := LwOrgClient.V2.ResourceGroups.GetLwAccount(id)
 	if err != nil {
@@ -155,8 +146,7 @@ func GetLwAccountResourceGroupProps(result string) api.LwAccountResourceGroupPro
 }
 
 func GetAlertChannelProps(result string) api.AlertChannelResponse {
-	resultSplit := strings.Split(result, "[id=")
-	id := strings.Split(resultSplit[1], "]")[0]
+	id := GetIDFromTerraResults(result)
 
 	var data api.AlertChannelResponse
 	err := LwClient.V2.AlertChannels.Get(id, &data)
@@ -164,4 +154,13 @@ func GetAlertChannelProps(result string) api.AlertChannelResponse {
 		log.Fatalf("Unable to retrieve alert channel with id: %s", id)
 	}
 	return data
+}
+
+func GetIDFromTerraResults(result string) string {
+	re := regexp.MustCompile("\\[id=(.*?)\\]")
+	match := re.FindStringSubmatch(result)
+	if len(match) >= 2 {
+		return match[1]
+	}
+	return ""
 }
