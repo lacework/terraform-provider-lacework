@@ -18,9 +18,9 @@ resource "lacework_alert_channel_webhook" "example" {
 }
 
 output "channel_name" {
-  value = var.channel_name
+  value = lacework_alert_channel_webhook.example.name
 }
 
 output "webhook_url" {
-  value = var.webhook_url
+  value = lacework_alert_channel_webhook.example.webhook_url
 }

@@ -42,18 +42,18 @@ resource "lacework_alert_channel_datadog" "example" {
 }
 
 output "api_key" {
-  value = var.api_key
+  value = lacework_alert_channel_datadog.example.api_key
   sensitive = true
 }
 
 output "datadog_site" {
-  value = var.datadog_site
+  value = lacework_alert_channel_datadog.example.datadog_site
 }
 
 output "datadog_service" {
-  value = var.datadog_service
+  value = lacework_alert_channel_datadog.example.datadog_service
 }
 
 output "name" {
-  value = var.channel_name
+  value = lacework_alert_channel_datadog.example.name
 }
