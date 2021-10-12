@@ -15,6 +15,7 @@ func TestWebhookAlertChannelCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_channel_webhook",
 		Vars: map[string]interface{}{
 			"channel_name": "Webhook Alert Channel Example",
+			"webhook_url":  "https://hook.com/webhook?api-token=123",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -25,8 +26,15 @@ func TestWebhookAlertChannelCreate(t *testing.T) {
 
 	// Update Webhook Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name": "Webhook Alert Channel Updated"}
+		"channel_name": "Webhook Alert Channel Updated",
+		"webhook_url":  "https://hook.com/webhook?api-token=321",
+	}
 
 	update := terraform.Apply(t, terraformOptions)
+
+	actualName := terraform.Output(t, terraformOptions, "channel_name")
+	actualUrl := terraform.Output(t, terraformOptions, "webhook_url")
 	assert.Equal(t, "Webhook Alert Channel Updated", GetIntegrationName(update))
+	assert.Equal(t, "Webhook Alert Channel Updated", actualName)
+	assert.Equal(t, "https://hook.com/webhook?api-token=321", actualUrl)
 }

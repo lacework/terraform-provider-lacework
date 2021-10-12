@@ -16,3 +16,11 @@ resource "lacework_alert_channel_webhook" "example" {
   // turned on ("true") which is the default setting
   test_integration = false
 }
+
+output "channel_name" {
+  value = var.channel_name
+}
+
+output "webhook_url" {
+  value = var.webhook_url
+}
