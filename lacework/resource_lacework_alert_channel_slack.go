@@ -98,8 +98,7 @@ func resourceLaceworkAlertChannelSlackCreate(d *schema.ResourceData, meta interf
 
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.SlackChannelAlertChannelType, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
-			d.SetId("")
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.SlackChannelAlertChannelType, d.Id())

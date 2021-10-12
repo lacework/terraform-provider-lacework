@@ -165,8 +165,7 @@ func resourceLaceworkAlertChannelGcpPubSubCreate(d *schema.ResourceData, meta in
 
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.GcpPubSubChannelIntegration, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
-			d.SetId("")
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.GcpPubSubChannelIntegration, d.Id())
