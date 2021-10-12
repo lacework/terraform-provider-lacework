@@ -1,13 +1,14 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v0.11.1`.
+Another day, another release. These are the release notes for the version `v0.11.2`.
 
 ## Bug Fixes
-* fix: increase timeout from 60 to 125 seconds (#194) (Salim Afiune)([ff3819e](https://github.com/lacework/terraform-provider-lacework/commit/ff3819e782167d3a7d987b71018124c2ddedf6ec))
-* fix: Migrate Datadog alert channel to API v2 (#189) (vatasha)([fd38f37](https://github.com/lacework/terraform-provider-lacework/commit/fd38f37ca5e3851a08c7d2bd522cdaf5e3d202c5))
-* fix: migrate AWS Cloudwatch alert channel to API v2 (#186) (vatasha)([eeb55a7](https://github.com/lacework/terraform-provider-lacework/commit/eeb55a7000e214374abcb1bf930ee724ba588a84))
+* fix: migrate Webhook alert channel(v2) (#188) (Darren)([a27565c](https://github.com/lacework/terraform-provider-lacework/commit/a27565c7a94a6faac34f1389b56d79a34dbd3a29))
+* fix: migrate VictorOps alert channel(v2) (#192) (Darren)([517e587](https://github.com/lacework/terraform-provider-lacework/commit/517e58742b1371fe6406c24b66431793ab107b99))
+* fix: migrate Microsoft Teams Alert Channels to API v2 (Salim Afiune Maya)([36a78e3](https://github.com/lacework/terraform-provider-lacework/commit/36a78e3473aa3f92a1acc20bc7c00347f87a361b))
+* fix: migrate Cisco webex alert channel to API v2 (#193) (vatasha)([66e8251](https://github.com/lacework/terraform-provider-lacework/commit/66e8251d8fc252ee7313703bb4a6fde030cca912))
+* fix: remove alert channel properly if test fails (#199) (Salim Afiune)([9e13d58](https://github.com/lacework/terraform-provider-lacework/commit/9e13d58b3af1bf1e5fc66575747c86b58142aaca))
 ## Other Changes
-* chore(deps): update lacework/go-sdk from main (Salim Afiune Maya)([37245e8](https://github.com/lacework/terraform-provider-lacework/commit/37245e8e5d0ccc44007f38e69335263887c45f92))
-* build(deps): bump github.com/hashicorp/terraform-plugin-sdk/v2 (#176) (dependabot[bot])([5800a22](https://github.com/lacework/terraform-provider-lacework/commit/5800a228802f076a4dd584e2022d3bf56a874cae))
-* build(deps): bump github.com/gruntwork-io/terratest (#187) (dependabot[bot])([994389b](https://github.com/lacework/terraform-provider-lacework/commit/994389b0cbbdc1032f2322cf3cfb89e7a3b20444))
-* ci: fix downgrading go packages (Salim Afiune Maya)([6eb22dc](https://github.com/lacework/terraform-provider-lacework/commit/6eb22dc1adaf1d2f31f1d2987cd3b0af43f14fed))
-* ci: version bump to v0.11.1-dev (Lacework)([6d86c83](https://github.com/lacework/terraform-provider-lacework/commit/6d86c837086919b3d823993396647055dfd8f50b))
+* chore(deps): update lacework/go-sdk from main (Salim Afiune Maya)([5d277f9](https://github.com/lacework/terraform-provider-lacework/commit/5d277f9c87b727c865feee54c6eedd90f6c99c46))
+* ci: fix release pipeline (#202) (Salim Afiune)([a37168a](https://github.com/lacework/terraform-provider-lacework/commit/a37168a1949c1c0c912ec58696c3d3ad23dd6809))
+* ci: version bump to v0.11.2-dev (Lacework)([7de4f58](https://github.com/lacework/terraform-provider-lacework/commit/7de4f580e8a43900b3b6f5afc2fe51b49e2d6a5a))
+* test: fix tf output values (#198) (Darren)([a4af709](https://github.com/lacework/terraform-provider-lacework/commit/a4af709c3eabe6471bc3f9e0258a30201231ad82))
