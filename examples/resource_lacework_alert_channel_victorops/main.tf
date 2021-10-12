@@ -19,9 +19,9 @@ resource "lacework_alert_channel_victorops" "example" {
 }
 
 output "channel_name" {
-  value = var.channel_name
+  value = lacework_alert_channel_victorops.example.name
 }
 
 output "webhook_url" {
-  value = var.webhook_url
+  value = lacework_alert_channel_victorops.example.webhook_url
 }
