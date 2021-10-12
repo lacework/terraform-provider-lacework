@@ -1,7 +1,6 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -21,21 +20,25 @@ func resourceLaceworkAlertChannelCiscoWebex() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the alert channel",
 			},
 			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The unique identifier of the integration",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"webhook_url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The webhook url for the integration",
 			},
 			"test_integration": {
 				Type:        schema.TypeBool,
@@ -66,9 +69,10 @@ func resourceLaceworkAlertChannelCiscoWebex() *schema.Resource {
 func resourceLaceworkAlertChannelCiscoWebexCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		webex    = api.NewCiscoWebexAlertChannel(d.Get("name").(string),
-			api.CiscoWebexChannelData{
-				WebhookURL: d.Get("webhook_url").(string),
+		webex    = api.NewAlertChannel(d.Get("name").(string),
+			api.CiscoSparkWebhookAlertChannelType,
+			api.CiscoSparkWebhookDataV2{
+				Webhook: d.Get("webhook_url").(string),
 			},
 		)
 	)
@@ -76,76 +80,64 @@ func resourceLaceworkAlertChannelCiscoWebexCreate(d *schema.ResourceData, meta i
 		webex.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.CiscoWebexChannelIntegration, webex)
-	response, err := lacework.Integrations.CreateCiscoWebexAlertChannel(webex)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.CiscoSparkWebhookAlertChannelType, webex)
+	response, err := lacework.V2.AlertChannels.Create(webex)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateCiscoWebexAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CiscoWebexChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CiscoWebexChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.CiscoWebexChannelIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.CiscoSparkWebhookAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelCiscoWebexRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.CiscoWebexChannelIntegration, d.Id())
-	response, err := lacework.Integrations.GetCiscoWebexAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetCiscoSparkWebhook(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("webhook_url", integration.Data.WebhookURL)
+	d.Set("name", response.Data.Name)
+	d.Set("intg_guid", response.Data.IntgGuid)
+	d.Set("enabled", response.Data.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+	d.Set("type_name", response.Data.Type)
+	d.Set("org_level", response.Data.IsOrg == 1)
+	d.Set("webhook_url", response.Data.Data.Webhook)
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.CiscoWebexChannelIntegration, integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.CiscoSparkWebhookAlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelCiscoWebexUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		webex    = api.NewCiscoWebexAlertChannel(d.Get("name").(string),
-			api.CiscoWebexChannelData{
-				WebhookURL: d.Get("webhook_url").(string),
+		webex    = api.NewAlertChannel(d.Get("name").(string),
+			api.CiscoSparkWebhookAlertChannelType,
+			api.CiscoSparkWebhookDataV2{
+				Webhook: d.Get("webhook_url").(string),
 			},
 		)
 	)
@@ -156,75 +148,42 @@ func resourceLaceworkAlertChannelCiscoWebexUpdate(d *schema.ResourceData, meta i
 
 	webex.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.CiscoWebexChannelIntegration, webex)
-	response, err := lacework.Integrations.UpdateCiscoWebexAlertChannel(webex)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.CiscoSparkWebhookAlertChannelType, webex)
+	response, err := lacework.V2.AlertChannels.UpdateCiscoSparkWebhook(webex)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateCiscoWebexAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CiscoWebexChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CiscoWebexChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.CiscoWebexChannelIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelCiscoWebexDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.CiscoWebexChannelIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.CiscoWebexChannelIntegration, d.Id())
-	return nil
-}
-
-func validateCiscoWebexAlertChannelResponse(response *api.CiscoWebexAlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 	return nil
 }
