@@ -30,7 +30,7 @@ func TestAlertChannelRollback(t *testing.T) {
 	// After failing once, try to create it again to verify that we clened up the Terraform state
 	_, err = terraform.ApplyE(t, terraformOptions)
 	if assert.NotNil(t, err) {
-		assertAlertChannelFailure(t, "verify clenup of TF state", err)
+		assertAlertChannelFailure(t, "verify cleanup of TF state", err)
 	}
 }
 
