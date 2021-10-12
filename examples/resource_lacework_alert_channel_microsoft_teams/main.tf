@@ -16,10 +16,15 @@ resource "lacework_alert_channel_microsoft_teams" "example" {
   // purposes, it help us avoid sending a "test" request to the
   // system we are integrating to. In production, this should remain
   // turned on ("true") which is the default setting
-  test_integration = false
+  test_integration = var.test_integration
 }
 
 // Variables and Outputs used in our integration tests (integration/)
+variable "test_integration" {
+  type    = bool
+  default = false
+}
+
 variable "channel_name" {
   type    = string
   default = "Microsoft Teams Alert Channel Example"
