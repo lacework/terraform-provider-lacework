@@ -22,19 +22,23 @@ func resourceLaceworkAlertChannelCiscoWebex() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The name of the alert channel",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Description: "The unique identifier of the integration",
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+				Description: "The state of the external integration",
 			},
 			"webhook_url": {
 				Type:     schema.TypeString,
 				Required: true,
+				Description: "The webhook url for the integration",
 			},
 			"test_integration": {
 				Type:        schema.TypeBool,

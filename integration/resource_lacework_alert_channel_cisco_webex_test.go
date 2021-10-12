@@ -23,7 +23,7 @@ func TestAlertChannelCiscoWebexCreate(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 
 	// Create new Cisco webex Alert Channel
-	create := terraform.InitAndApply(t, terraformOptions)
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	assert.Equal(t, "Cisco Webex Alert Channel Example", GetIntegrationName(create))
 
 	// Update Cisco Alert Channel
