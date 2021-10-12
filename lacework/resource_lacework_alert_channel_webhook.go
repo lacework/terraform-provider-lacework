@@ -1,7 +1,6 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -21,27 +20,30 @@ func resourceLaceworkAlertChannelWebhook() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"webhook_url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The url of the external webhook",
 			},
 			"test_integration": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
 				Description: "Whether to test the integration of an alert channel upon creation and modification",
+			},
+			"intg_guid": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -66,8 +68,9 @@ func resourceLaceworkAlertChannelWebhook() *schema.Resource {
 func resourceLaceworkAlertChannelWebhookCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		webhook  = api.NewWebhookAlertChannel(d.Get("name").(string),
-			api.WebhookChannelData{
+		webhook  = api.NewAlertChannel(d.Get("name").(string),
+			api.WebhookAlertChannelType,
+			api.WebhookDataV2{
 				WebhookUrl: d.Get("webhook_url").(string),
 			},
 		)
@@ -76,65 +79,56 @@ func resourceLaceworkAlertChannelWebhookCreate(d *schema.ResourceData, meta inte
 		webhook.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.WebhookIntegration, webhook)
-	response, err := lacework.Integrations.CreateWebhookAlertChannel(webhook)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.WebhookAlertChannelType, webhook)
+	response, err := lacework.V2.AlertChannels.Create(webhook)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateWebhookAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
+	integration := response.Data
 
-	integration := response.Data[0]
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.WebhookIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.WebhookAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.WebhookIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.WebhookAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.WebhookIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.WebhookAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelWebhookRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.WebhookIntegration, d.Id())
-	response, err := lacework.Integrations.GetWebhookAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.WebhookAlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetWebhook(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("webhook_url", integration.Data.WebhookUrl)
+	d.Set("name", response.Data.Name)
+	d.Set("intg_guid", response.Data.IntgGuid)
+	d.Set("enabled", response.Data.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+	d.Set("type_name", response.Data.Type)
+	d.Set("org_level", response.Data.IsOrg == 1)
+	d.Set("webhook_url", response.Data.Data.WebhookUrl)
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.WebhookIntegration, integration.IntgGuid)
-			return nil
-		}
-	}
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.WebhookAlertChannelType, response.Data.IntgGuid)
+	return nil
 
 	d.SetId("")
 	return nil
@@ -143,8 +137,9 @@ func resourceLaceworkAlertChannelWebhookRead(d *schema.ResourceData, meta interf
 func resourceLaceworkAlertChannelWebhookUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		webhook  = api.NewWebhookAlertChannel(d.Get("name").(string),
-			api.WebhookChannelData{
+		webhook  = api.NewAlertChannel(d.Get("name").(string),
+			api.WebhookAlertChannelType,
+			api.WebhookDataV2{
 				WebhookUrl: d.Get("webhook_url").(string),
 			},
 		)
@@ -156,75 +151,43 @@ func resourceLaceworkAlertChannelWebhookUpdate(d *schema.ResourceData, meta inte
 
 	webhook.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.WebhookIntegration, webhook)
-	response, err := lacework.Integrations.UpdateWebhookAlertChannel(webhook)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.WebhookAlertChannelType, webhook)
+	response, err := lacework.V2.AlertChannels.UpdateWebhook(webhook)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateWebhookAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
+	integration := response.Data
 
-	integration := response.Data[0]
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.WebhookIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.WebhookAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.WebhookIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.WebhookAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.WebhookIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.WebhookAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelWebhookDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.WebhookIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.WebhookAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.WebhookIntegration, d.Id())
-	return nil
-}
-
-func validateWebhookAlertChannelResponse(response *api.WebhookAlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.WebhookAlertChannelType, d.Id())
 	return nil
 }
