@@ -12,13 +12,10 @@ cloud.google.com/go/storage
 github.com/BurntSushi/toml
 github.com/BurntSushi/toml/internal
 # github.com/agext/levenshtein v1.2.3
-## explicit
 github.com/agext/levenshtein
-# github.com/apparentlymart/go-textseg/v12 v12.0.0
-github.com/apparentlymart/go-textseg/v12/textseg
 # github.com/apparentlymart/go-textseg/v13 v13.0.0
 github.com/apparentlymart/go-textseg/v13/textseg
-# github.com/aws/aws-sdk-go v1.38.28
+# github.com/aws/aws-sdk-go v1.40.56
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
 github.com/aws/aws-sdk-go/aws/awserr
@@ -90,11 +87,12 @@ github.com/golang/protobuf/ptypes/timestamp
 github.com/googleapis/gax-go/v2
 github.com/googleapis/gax-go/v2/apierror
 github.com/googleapis/gax-go/v2/apierror/internal/proto
-# github.com/gruntwork-io/terratest v0.37.12
+# github.com/gruntwork-io/terratest v0.38.2
 ## explicit
 github.com/gruntwork-io/terratest/modules/collections
 github.com/gruntwork-io/terratest/modules/files
 github.com/gruntwork-io/terratest/modules/logger
+github.com/gruntwork-io/terratest/modules/opa
 github.com/gruntwork-io/terratest/modules/retry
 github.com/gruntwork-io/terratest/modules/shell
 github.com/gruntwork-io/terratest/modules/ssh
@@ -130,7 +128,7 @@ github.com/hashicorp/go-safetemp
 github.com/hashicorp/go-uuid
 # github.com/hashicorp/go-version v1.3.0
 github.com/hashicorp/go-version
-# github.com/hashicorp/hcl/v2 v2.8.2
+# github.com/hashicorp/hcl/v2 v2.9.1
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
 github.com/hashicorp/hcl/v2/hclparse
@@ -202,6 +200,9 @@ github.com/lacework/go-sdk/lwtime
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.14
 github.com/mattn/go-isatty
+# github.com/mattn/go-zglob v0.0.2-0.20190814121620-e3c945676326
+github.com/mattn/go-zglob
+github.com/mattn/go-zglob/fastwalk
 # github.com/mitchellh/copystructure v1.2.0
 github.com/mitchellh/copystructure
 # github.com/mitchellh/go-homedir v1.1.0
@@ -209,7 +210,7 @@ github.com/mitchellh/go-homedir
 # github.com/mitchellh/go-testing-interface v1.14.1
 ## explicit
 github.com/mitchellh/go-testing-interface
-# github.com/mitchellh/go-wordwrap v1.0.0
+# github.com/mitchellh/go-wordwrap v1.0.1
 github.com/mitchellh/go-wordwrap
 # github.com/mitchellh/mapstructure v1.4.2
 github.com/mitchellh/mapstructure
@@ -227,6 +228,8 @@ github.com/pmezard/go-difflib/difflib
 ## explicit
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
+# github.com/tmccombs/hcl2json v0.3.3
+github.com/tmccombs/hcl2json/convert
 # github.com/ulikunitz/xz v0.5.8
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
@@ -290,7 +293,7 @@ golang.org/x/crypto/poly1305
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/agent
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
-# golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
+# golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/http/httpguts
