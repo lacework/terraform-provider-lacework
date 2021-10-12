@@ -108,6 +108,7 @@ func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interf
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.EmailUserAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+			d.SetId("")
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.EmailUserAlertChannelType, d.Id())

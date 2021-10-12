@@ -99,6 +99,7 @@ func resourceLaceworkAlertChannelCiscoWebexCreate(d *schema.ResourceData, meta i
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+			d.SetId("")
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.CiscoSparkWebhookAlertChannelType, d.Id())

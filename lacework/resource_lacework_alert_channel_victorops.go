@@ -101,6 +101,7 @@ func resourceLaceworkAlertChannelVictorOpsCreate(d *schema.ResourceData, meta in
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.VictorOpsChannelIntegration, d.Id())
 		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+			d.SetId("")
 			return err
 		}
 		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.VictorOpsChannelIntegration, d.Id())

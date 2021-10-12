@@ -134,6 +134,7 @@ func resourceLaceworkAlertChannelQRadarCreate(d *schema.ResourceData, meta inter
 	if d.Get("test_integration").(bool) {
 		log.Printf("[INFO] Testing %s integration for guid %s\n", api.QRadarChannelIntegration, d.Id())
 		err := VerifyAlertChannelAndRollback(d.Id(), lacework)
+		d.SetId("")
 		if err != nil {
 			return err
 		}
