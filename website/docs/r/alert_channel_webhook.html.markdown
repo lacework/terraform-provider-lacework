@@ -17,7 +17,7 @@ To find more information about the alert payload, see the [Lacework support docu
 ## Example Usage
 
 ```hcl
-resource "lacework_alert_channel_" "ops_critical" {
+resource "lacework_alert_channel_webhook" "ops_critical" {
   name      = "OPS Critical Alerts"
   webhook_url = "https://webhook.com?api-token=123"
 }
