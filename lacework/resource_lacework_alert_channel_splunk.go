@@ -173,32 +173,27 @@ func resourceLaceworkAlertChannelSplunkRead(d *schema.ResourceData, meta interfa
 	}
 
 	integration := response.Data
-	if integration.IntgGuid == d.Id() {
-		d.Set("name", integration.Name)
-		d.Set("intg_guid", integration.IntgGuid)
-		d.Set("enabled", integration.Enabled == 1)
-		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("type_name", integration.Type)
-		d.Set("org_level", integration.IsOrg == 1)
-		d.Set("channel", integration.Data.Channel)
-		d.Set("hec_token", integration.Data.HecToken)
-		d.Set("host", integration.Data.Host)
-		d.Set("port", integration.Data.Port)
-		d.Set("ssl", integration.Data.Ssl)
+	d.Set("name", integration.Name)
+	d.Set("intg_guid", integration.IntgGuid)
+	d.Set("enabled", integration.Enabled == 1)
+	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+	d.Set("type_name", integration.Type)
+	d.Set("org_level", integration.IsOrg == 1)
+	d.Set("channel", integration.Data.Channel)
+	d.Set("hec_token", integration.Data.HecToken)
+	d.Set("host", integration.Data.Host)
+	d.Set("port", integration.Data.Port)
+	d.Set("ssl", integration.Data.Ssl)
 
-		eventData := make(map[string]string)
-		eventData["index"] = integration.Data.EventData.Index
-		eventData["source"] = integration.Data.EventData.Source
+	eventData := make(map[string]string)
+	eventData["index"] = integration.Data.EventData.Index
+	eventData["source"] = integration.Data.EventData.Source
 
-		d.Set("event_data", []map[string]string{eventData})
+	d.Set("event_data", []map[string]string{eventData})
 
-		log.Printf("[INFO] Read %s integration with guid %s\n",
-			api.SplunkHecAlertChannelType, integration.IntgGuid)
-		return nil
-	}
-
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.SplunkHecAlertChannelType, integration.IntgGuid)
 	return nil
 }
 

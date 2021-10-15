@@ -8,9 +8,11 @@ terraform {
 
 resource "lacework_alert_channel_splunk" "example" {
   name      = var.channel_name
+  channel   = var.channel
   hec_token = var.hec_token
   host      = var.host
   port      = var.port
+  ssl      = var.ssl
   event_data {
     index  = var.index
     source = var._source
@@ -27,6 +29,11 @@ type    = string
 default = "Splunk Alert Channel"
 }
 
+variable "channel" {
+type    = string
+default = "Splunk Channel"
+}
+
 variable "hec_token" {
 type    = string
 default = "BA696D5E-CA2F-4347-97CB-3C89F834816F"
@@ -40,6 +47,11 @@ default = "host"
 variable "port" {
 type    = number
 default = 80
+}
+
+variable "ssl" {
+type    = bool
+default = true
 }
 
 variable "index" {
@@ -58,4 +70,20 @@ output "channel_name" {
 
 output "hec_token" {
   value = lacework_alert_channel_splunk.example.hec_token
+}
+
+output "channel" {
+  value = lacework_alert_channel_splunk.example.channel
+}
+
+output "host" {
+  value = lacework_alert_channel_splunk.example.host
+}
+
+output "port" {
+  value = lacework_alert_channel_splunk.example.port
+}
+
+output "ssl" {
+  value = lacework_alert_channel_splunk.example.ssl
 }
