@@ -60,6 +60,10 @@ resource "lacework_alert_channel_gcp_pub_sub" "example" {
   test_integration = false
 }
 
+output "name" {
+  value = lacework_alert_channel_gcp_pub_sub.example.name
+}
+
 output "project_id" {
   value = lacework_alert_channel_gcp_pub_sub.example.project_id
 }
@@ -68,7 +72,7 @@ output "topic_id" {
   value = lacework_alert_channel_gcp_pub_sub.example.topic_id
 }
 
-output "issues_grouping" {
+output "issue_grouping" {
   value = lacework_alert_channel_gcp_pub_sub.example.issue_grouping
 }
 
