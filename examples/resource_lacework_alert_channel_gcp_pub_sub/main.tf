@@ -34,7 +34,7 @@ variable "client_email" {
 }
 
 variable "private_key" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -85,7 +85,7 @@ output "client_email" {
 }
 
 output "private_key" {
-  value = lacework_alert_channel_gcp_pub_sub.example.credentials[0].private_key
+  value     = lacework_alert_channel_gcp_pub_sub.example.credentials[0].private_key
   sensitive = true
 }
 

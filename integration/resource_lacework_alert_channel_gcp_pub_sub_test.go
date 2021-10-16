@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -56,7 +55,6 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 		// Verify that the lacework integration was created with the correct information
 		updateProps := GetAlertChannelProps(update)
 		if data, ok := updateProps.Data.Data.(map[string]interface{}); ok {
-			fmt.Printf("updatedProps are as follows: %v", updateProps)
 			assert.True(t, ok)
 			assert.Equal(t, "My GCP Pub Sub Example Updated", updateProps.Data.Name)
 			assert.Equal(t, gcreds.ProjectID, data["projectId"])
