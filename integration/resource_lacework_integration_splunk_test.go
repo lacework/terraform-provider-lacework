@@ -56,7 +56,11 @@ func TestSplunkAlertChannelCreate(t *testing.T) {
 	// Update Splunk Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "Splunk Alert Channel Updated",
-		"hec_token":    "BA696D5E-CA2F-4347-97CB-3C89F834816A",
+		"hec_token":    "BA696D5E-CA2F-4347-97CB-3C89F834815B",
+		"channel":      "Updated Splunk Channel",
+		"host":         "updated-host",
+		"port":         8080,
+		"ssl":          false,
 	}
 
 	update := terraform.Apply(t, terraformOptions)
@@ -72,16 +76,16 @@ func TestSplunkAlertChannelCreate(t *testing.T) {
 	actualSsl = terraform.Output(t, terraformOptions, "ssl")
 
 	assert.Equal(t, "Splunk Alert Channel Updated", updated.Data.Name)
-	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834816A", data["hecToken"])
-	assert.Equal(t, "Splunk Channel", data["channel"])
-	assert.Equal(t, "host", data["host"])
-	assert.Equal(t, float64(80), data["port"])
-	assert.Equal(t, true, data["ssl"])
+	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834815B", data["hecToken"])
+	assert.Equal(t, "Updated Splunk Channel", data["channel"])
+	assert.Equal(t, "updated-host", data["host"])
+	assert.Equal(t, float64(8080), data["port"])
+	assert.Equal(t, false, data["ssl"])
 
 	assert.Equal(t, "Splunk Alert Channel Updated", actualName)
-	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834816A", actualToken)
-	assert.Equal(t, "Splunk Channel", actualChannel)
-	assert.Equal(t, "host", actualHost)
-	assert.Equal(t, "80", actualPort)
-	assert.Equal(t, "true", actualSsl)
+	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834815B", actualToken)
+	assert.Equal(t, "Updated Splunk Channel", actualChannel)
+	assert.Equal(t, "updated-host", actualHost)
+	assert.Equal(t, "8080", actualPort)
+	assert.Equal(t, "false", actualSsl)
 }
