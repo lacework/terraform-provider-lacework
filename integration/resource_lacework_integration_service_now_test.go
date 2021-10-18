@@ -46,7 +46,10 @@ func TestServiceNowRestAlertChannelCreate(t *testing.T) {
 
 	// Update ServiceNowRest Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name": "Service Now Alert Channel Updated"}
+		"channel_name": "Service Now Alert Channel Updated",
+		"instance_url": "https://dev321.service-now.com",
+		"username":     "snow-user-updated",
+	}
 
 	update := terraform.Apply(t, terraformOptions)
 	updated := GetAlertChannelProps(update)
@@ -59,13 +62,13 @@ func TestServiceNowRestAlertChannelCreate(t *testing.T) {
 	actualTemplate = terraform.Output(t, terraformOptions, "custom_template_file")
 
 	assert.Equal(t, "Service Now Alert Channel Updated", updated.Data.Name)
-	assert.Equal(t, "https://dev123.service-now.com", data["instanceUrl"])
+	assert.Equal(t, "https://dev321.service-now.com", data["instanceUrl"])
 	assert.Equal(t, templateEncoded, data["customTemplateFile"])
-	assert.Equal(t, "snow-user", data["userName"])
+	assert.Equal(t, "snow-user-updated", data["userName"])
 
 	assert.Equal(t, "Service Now Alert Channel Updated", actualName)
-	assert.Equal(t, "https://dev123.service-now.com", actualUrl)
-	assert.Equal(t, "snow-user", actualUsername)
+	assert.Equal(t, "https://dev321.service-now.com", actualUrl)
+	assert.Equal(t, "snow-user-updated", actualUsername)
 	assert.Equal(t, customTemplate, actualTemplate)
 }
 
