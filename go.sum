@@ -650,6 +650,8 @@ github.com/lacework/go-sdk v0.17.1-0.20211011205100-61c22df6d4e0 h1:6TNkTPUkPb+x
 github.com/lacework/go-sdk v0.17.1-0.20211011205100-61c22df6d4e0/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
 github.com/lacework/go-sdk v0.17.1-0.20211014122440-692c8e58650e h1:pgkbIfzkeO6bndbzNnC6Ho1AC7eL9GbHvxzIb7r2Ph0=
 github.com/lacework/go-sdk v0.17.1-0.20211014122440-692c8e58650e/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
+github.com/lacework/go-sdk v0.17.1-0.20211019092956-eab94cf33b16 h1:gevnCJT64naxO89lVAyAaJ43mCGEF4xn45UAbxJNsiU=
+github.com/lacework/go-sdk v0.17.1-0.20211019092956-eab94cf33b16/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mailru/easyjson v0.0.0-20190614124828-94de47d64c63/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=

@@ -44,7 +44,7 @@ func TestSplunkAlertChannelCreate(t *testing.T) {
 	assert.Equal(t, "Splunk Channel", data["channel"])
 	assert.Equal(t, "host", data["host"])
 	assert.Equal(t, float64(80), data["port"])
-	assert.Equal(t, true, data["ssl"])
+	assert.True(t, data["ssl"].(bool))
 
 	assert.Equal(t, "Splunk Alert Channel Example", actualName)
 	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834816F", actualToken)
@@ -80,7 +80,7 @@ func TestSplunkAlertChannelCreate(t *testing.T) {
 	assert.Equal(t, "Updated Splunk Channel", data["channel"])
 	assert.Equal(t, "updated-host", data["host"])
 	assert.Equal(t, float64(8080), data["port"])
-	assert.Equal(t, false, data["ssl"])
+	assert.False(t, data["ssl"].(bool))
 
 	assert.Equal(t, "Splunk Alert Channel Updated", actualName)
 	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834815B", actualToken)
