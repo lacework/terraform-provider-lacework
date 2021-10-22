@@ -7,12 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestPagerDutyAlertChannelCreate applies integration terraform '../examples/resource_lacework_alert_channel_qradar'
+// TestPagerDutyAlertChannelCreate applies integration terraform '../examples/resource_lacework_alert_channel_pagerduty'
 // Uses the go-sdk to verify the created integration
 // Applies an update with new channel name and Terraform destroy
 func TestPagerDutyAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_channel_qradar",
+		TerraformDir: "../examples/resource_lacework_alert_channel_pagerduty",
 		Vars: map[string]interface{}{
 			"channel_name":    "PagerDuty Alert Channel Example",
 			"integration_key": "1234abc8901abc567abc123abc78e012",
@@ -27,13 +27,11 @@ func TestPagerDutyAlertChannelCreate(t *testing.T) {
 	assert.True(t, ok)
 
 	actualName := terraform.Output(t, terraformOptions, "channel_name")
-	actualIntKey := terraform.Output(t, terraformOptions, "integration_key")
 
 	assert.Equal(t, "PagerDuty Alert Channel Example", created.Data.Name)
 	assert.Equal(t, "1234abc8901abc567abc123abc78e012", data["apiIntgKey"])
 
 	assert.Equal(t, "PagerDuty Alert Channel Example", actualName)
-	assert.Equal(t, "1234abc8901abc567abc123abc78e012", actualIntKey)
 
 	// Update PagerDuty Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
@@ -47,11 +45,9 @@ func TestPagerDutyAlertChannelCreate(t *testing.T) {
 	assert.True(t, ok)
 
 	actualName = terraform.Output(t, terraformOptions, "channel_name")
-	actualIntKey = terraform.Output(t, terraformOptions, "integration_key")
 
 	assert.Equal(t, "PagerDuty Alert Channel Updated", updated.Data.Name)
 	assert.Equal(t, "1234abc8901abc567abc123abc78e013", data["apiIntgKey"])
 
 	assert.Equal(t, "PagerDuty Alert Channel Updated", actualName)
-	assert.Equal(t, "1234abc8901abc567abc123abc78e013", actualIntKey)
 }

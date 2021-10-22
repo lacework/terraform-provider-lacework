@@ -1,4 +1,10 @@
-provider "lacework" {}
+terraform {
+  required_providers {
+    lacework = {
+      source = "lacework/lacework"
+    }
+  }
+}
 
 resource "lacework_alert_channel_pagerduty" "example" {
   name            = var.channel_name
@@ -22,8 +28,4 @@ variable "integration_key" {
 
 output "channel_name" {
   value = lacework_alert_channel_pagerduty.example.name
-}
-
-output "integration_key" {
-  value = lacework_alert_channel_pagerduty.example.integration_key
 }
