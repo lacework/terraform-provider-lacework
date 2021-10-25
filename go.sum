@@ -652,10 +652,8 @@ github.com/lacework/go-sdk v0.17.1-0.20211014122440-692c8e58650e h1:pgkbIfzkeO6b
 github.com/lacework/go-sdk v0.17.1-0.20211014122440-692c8e58650e/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
 github.com/lacework/go-sdk v0.17.1-0.20211019092956-eab94cf33b16 h1:gevnCJT64naxO89lVAyAaJ43mCGEF4xn45UAbxJNsiU=
 github.com/lacework/go-sdk v0.17.1-0.20211019092956-eab94cf33b16/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
-github.com/lacework/go-sdk v0.18.1-0.20211025141947-b3ae2931f2a2 h1:hMQISneT9djeaLrmY45UKLmn42LQJdEKSbAF0U+WliY=
-github.com/lacework/go-sdk v0.18.1-0.20211025141947-b3ae2931f2a2/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
-github.com/lacework/go-sdk v0.18.1-0.20211026142113-637bcabd9f59 h1:cTl1+tXp54QiGNswOyGh6szEqcwAvr648uTH0anDF68=
-github.com/lacework/go-sdk v0.18.1-0.20211026142113-637bcabd9f59/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
+github.com/lacework/go-sdk v0.18.1-0.20211025211606-15369f35ef47 h1:fLchnO9aXJpSM60KPHE0sm8MMzDn4ClUsxEXt4MYzGU=
+github.com/lacework/go-sdk v0.18.1-0.20211025211606-15369f35ef47/go.mod h1:izb0r7jZ9EA1y4O4P8Cq7b3coQzmry2TizQ0DKXLEOg=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mailru/easyjson v0.0.0-20190614124828-94de47d64c63/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
