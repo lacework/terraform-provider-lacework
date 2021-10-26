@@ -17,10 +17,9 @@ For more information, see the [Alert Rules documentation](https://support.lacewo
 resource "lacework_alert_rule" "example" {
   name             = "My Alert Rule"
   description      = "This is an example alert rule"
-  channels         = ["TECHALLY_AAAAAAA0000000000000000000000000000000000000000"]
+  channels         = ["TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"]
   severities       = ["High", "Medium"]
   event_categories = ["Compliance"]
-  resource_groups  = ["TECHALLY_BBBBBBB0000000000000000000000000000000000000000"]
 }
 ```
 
@@ -30,9 +29,10 @@ The following arguments are supported:
 
 * `name` - (Required) The alert rule name.
 * `channels` - (Required) The list of alert channels for the rule to use.
-* `severities` - (Required) The list of the severities that the rule will apply.
+* `severities` - (Required) The list of the severities that the rule will apply. `Critical`, `High`, `Medium`, `Low`, `Info`.
 * `description` - (Optional) The description of the alert rule.
-* `event_categories` - (Optional) The list of event categories the rule will apply to.
+* `event_categories` - (Optional) The list of event categories the rule will apply to. `Compliance`, `App`, `Cloud`, 
+  `File`, `Machine`, `User`, `Platform`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 

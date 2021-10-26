@@ -2,10 +2,10 @@ package lacework
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
 )
 
@@ -50,14 +50,27 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				},
 			},
 			"severities": {
-				Type:        schema.TypeList,
-				Required:    true,
-				MinItems:    1,
-				Description: "List of severities for the alert rule",
+				Type:     schema.TypeList,
+				Required: true,
+				MinItems: 1,
+				Description: "List of severities for the alert rule. Valid severities are:" +
+					" Critical, High, Medium, Low, Info",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
 						return strings.TrimSpace(val.(string))
+					},
+					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+						switch value.(string) {
+						case "Critical", "High", "Medium", "Low", "Info":
+							return nil, nil
+						default:
+							return nil, []error{
+								fmt.Errorf(
+									"%s: can only be 'Critical', 'High', 'Medium', 'Low', 'Info'", key,
+								),
+							}
+						}
 					},
 				},
 			},
@@ -73,13 +86,26 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				},
 			},
 			"event_categories": {
-				Type:        schema.TypeList,
-				Optional:    true,
-				Description: "List of event categories for the alert rule",
+				Type:     schema.TypeList,
+				Optional: true,
+				Description: "List of event categories for the alert rule. Valid categories are: " +
+					"Compliance, App, Cloud, File, Machine, User, Platform",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
 						return strings.TrimSpace(val.(string))
+					},
+					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+						switch value.(string) {
+						case "Compliance", "App", "Cloud", "File", "Machine", "User", "Platform":
+							return nil, nil
+						default:
+							return nil, []error{
+								fmt.Errorf(
+									"%s: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform'", key,
+								),
+							}
+						}
 					},
 				},
 			},
@@ -124,21 +150,19 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] Creating alert rule with data:\n%+v\n", alertRule)
 	response, err := lacework.V2.AlertRules.Create(alertRule)
-
 	if err != nil {
 		return err
 	}
 
-	integration := response.Data
-	d.SetId(integration.Guid)
-	d.Set("name", integration.Filter.Name)
-	d.Set("guid", integration.Guid)
-	d.Set("enabled", integration.Filter.Enabled == 1)
-	d.Set("created_or_updated_time", integration.Filter.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.Filter.CreatedOrUpdatedBy)
-	d.Set("type", integration.Type)
+	d.SetId(response.Data.Guid)
+	d.Set("name", response.Data.Filter.Name)
+	d.Set("guid", response.Data.Guid)
+	d.Set("enabled", response.Data.Filter.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.Filter.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.Filter.CreatedOrUpdatedBy)
+	d.Set("type", response.Data.Type)
 
-	log.Printf("[INFO] Created alert rule with guid %s\n", integration.Guid)
+	log.Printf("[INFO] Created alert rule with guid %s\n", response.Data.Guid)
 	return nil
 }
 
@@ -154,14 +178,16 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 		return err
 	}
 
+	d.SetId(response.Data.Guid)
 	d.Set("name", response.Data.Filter.Name)
 	d.Set("guid", response.Data.Guid)
+	d.Set("description", response.Data.Filter.Description)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
 	d.Set("created_or_updated_time", response.Data.Filter.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", response.Data.Filter.CreatedOrUpdatedBy)
 	d.Set("type_name", response.Data.Type)
 	d.Set("channels", response.Data.Channels)
-	d.Set("severities", response.Data.Filter.Severity)
+	d.Set("severities", api.NewAlertRuleSeveritiesFromIntSlice(response.Data.Filter.Severity).ToStringSlice())
 	d.Set("resource_groups", response.Data.Filter.ResourceGroups)
 	d.Set("event_categories", response.Data.Filter.EventCategories)
 
@@ -197,16 +223,16 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 		return err
 	}
 
-	integration := response.Data
-	d.SetId(integration.Guid)
-	d.Set("name", integration.Filter.Name)
-	d.Set("guid", integration.Guid)
-	d.Set("enabled", integration.Filter.Enabled == 1)
-	d.Set("created_or_updated_time", integration.Filter.CreatedOrUpdatedTime)
-	d.Set("created_or_updated_by", integration.Filter.CreatedOrUpdatedBy)
-	d.Set("type", integration.Type)
+	d.SetId(response.Data.Guid)
+	d.Set("name", response.Data.Filter.Name)
+	d.Set("description", response.Data.Filter.Description)
+	d.Set("guid", response.Data.Guid)
+	d.Set("enabled", response.Data.Filter.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.Filter.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.Filter.CreatedOrUpdatedBy)
+	d.Set("type", response.Data.Type)
 
-	log.Printf("[INFO] Updated alert rule with guid %s\n", integration.Guid)
+	log.Printf("[INFO] Updated alert rule with guid %s\n", response.Data.Guid)
 	return nil
 }
 
@@ -235,6 +261,6 @@ func importLaceworkAlertRule(d *schema.ResourceData, meta interface{}) ([]*schem
 			d.Id(),
 		)
 	}
-	log.Printf("[INFO] Alert Rule found with guid: %v\n", response.Data.Guid)
+	log.Printf("[INFO] Alert Rule found with guid: %s\n", response.Data.Guid)
 	return []*schema.ResourceData{d}, nil
 }
