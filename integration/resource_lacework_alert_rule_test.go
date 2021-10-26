@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/lacework/go-sdk/api"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -38,16 +39,16 @@ func TestAlertRuleCreate(t *testing.T) {
 
 	assert.Equal(t, "Alert Rule created by Terraform", createProps.Data.Filter.Description)
 	assert.Equal(t, []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"}, createProps.Data.Channels)
-	assert.Equal(t, []string{"Critical"}, createProps.Data.Filter.Severity)
+	assert.Equal(t, []string{"Critical"}, api.NewAlertRuleSeveritiesFromIntSlice(createProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{"TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B"}, createProps.Data.Filter.ResourceGroups)
 	assert.Equal(t, []string{"Compliance"}, createProps.Data.Filter.EventCategories)
 
 	assert.Equal(t, "Alert Rule", actualName)
 	assert.Equal(t, "Alert Rule created by Terraform", actualDescription)
-	assert.Equal(t, []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"}, actualChannels)
-	assert.Equal(t, []string{"Critical"}, actualSeverities)
-	assert.Equal(t, []string{"Compliance]"}, actualEventCategories)
-	assert.Equal(t, []string{"TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B"}, actualResourceGroups)
+	assert.Equal(t, "[TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350]", actualChannels)
+	assert.Equal(t, string("[Critical]"), actualSeverities)
+	assert.Equal(t, "[Compliance]", actualEventCategories)
+	assert.Equal(t, "[TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B]", actualResourceGroups)
 
 	// Update Alert Rule
 	terraformOptions.Vars = map[string]interface{}{
@@ -56,7 +57,7 @@ func TestAlertRuleCreate(t *testing.T) {
 			"TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"},
 		"severities":       []string{"High", "Medium"},
 		"event_categories": []string{"Compliance", "User", "Platform"},
-		"resource_groups":  []string{"TECHALLY_E1300DCD41CE6831AAF04537076CFB295F1ECEE4EE98784"},
+		"resource_groups":  []string{"TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B"},
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -69,16 +70,16 @@ func TestAlertRuleCreate(t *testing.T) {
 	actualResourceGroups = terraform.Output(t, terraformOptions, "resource_groups")
 
 	assert.Equal(t, "Updated Alert Rule created by Terraform", updateProps.Data.Filter.Description)
-	assert.Equal(t, []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"}, updateProps.Data.Channels)
-	assert.Equal(t, []string{"Critical"}, updateProps.Data.Filter.Severity)
+	assert.Equal(t, []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350", "TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"}, updateProps.Data.Channels)
+	assert.Equal(t, []string{"High", "Medium"}, api.NewAlertRuleSeveritiesFromIntSlice(updateProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{"TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B"}, updateProps.Data.Filter.ResourceGroups)
-	assert.Equal(t, []string{"Compliance"}, updateProps.Data.Filter.EventCategories)
+	assert.Equal(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
 
 	assert.Equal(t, "Alert Rule", actualName)
 	assert.Equal(t, "Updated Alert Rule created by Terraform", actualDescription)
-	assert.Equal(t, []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350", "TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"},
+	assert.Equal(t, "[TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350 TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53]",
 		actualChannels)
-	assert.Equal(t, []string{"High", "Medium"}, actualSeverities)
-	assert.Equal(t, []string{"Compliance", "User", "Platform"}, actualEventCategories)
-	assert.Equal(t, []string{"TECHALLY_E1300DCD41CE6831AAF04537076CFB295F1ECEE4EE98784"}, actualResourceGroups)
+	assert.Equal(t, "[High Medium]", actualSeverities)
+	assert.Equal(t, "[Compliance User Platform]", actualEventCategories)
+	assert.Equal(t, "[TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B]", actualResourceGroups)
 }
