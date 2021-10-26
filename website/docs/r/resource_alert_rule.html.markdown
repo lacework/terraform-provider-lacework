@@ -51,7 +51,7 @@ resource "lacework_alert_rule" "example" {
   channels         = [lacework_alert_channel_slack.ops_critical.intg_guid]
   severities       = ["Critical"]
   event_categories = ["Compliance"]
-  resource_groups  = [lacework_alert_channel_slack.all_gcp_projects.id]
+  resource_groups  = [lacework_resource_group_gcp.all_gcp_projects.id]
 }
 ```
 
