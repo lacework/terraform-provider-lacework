@@ -61,8 +61,8 @@ func resourceLaceworkAlertRule() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-						switch value.(string) {
-						case "Critical", "High", "Medium", "Low", "Info":
+						switch strings.ToLower(value.(string)) {
+						case "critical", "high", "medium", "low", "info":
 							return nil, nil
 						default:
 							return nil, []error{
@@ -96,8 +96,8 @@ func resourceLaceworkAlertRule() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-						switch value.(string) {
-						case "Compliance", "App", "Cloud", "File", "Machine", "User", "Platform":
+						switch strings.ToLower(value.(string)) {
+						case "compliance", "app", "cloud", "file", "machine", "user", "platform":
 							return nil, nil
 						default:
 							return nil, []error{
