@@ -14,12 +14,44 @@ For more information, see the [Alert Rules documentation](https://support.lacewo
 ## Example Usage
 
 ```hcl
+## Alert Rule with Slack Alert Channel
+
+resource "lacework_alert_channel_slack" "ops_critical" {
+  name      = "OPS Critical Alerts"
+  slack_url = "https://hooks.slack.com/services/ABCD/12345/abcd1234"
+}
+
 resource "lacework_alert_rule" "example" {
   name             = "My Alert Rule"
   description      = "This is an example alert rule"
-  channels         = ["TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"]
-  severities       = ["High", "Medium"]
+  channels         = [lacework_alert_channel_slack.ops_critical.intg_guid]
+  severities       = ["Critical"]
   event_categories = ["Compliance"]
+}
+```
+
+```hcl
+## Alert Rule with Slack Alert Channel and Gcp Resource Group
+
+resource "lacework_alert_channel_slack" "ops_critical" {
+  name      = "OPS Critical Alerts"
+  slack_url = "https://hooks.slack.com/services/ABCD/12345/abcd1234"
+}
+
+resource "lacework_resource_group_gcp" "all_gcp_projects" {
+  name         = "GCP Resource Group"
+  description  = "All Gcp Projects"
+  organization = "MyGcpOrg"
+  projects     = ["*"]
+}
+
+resource "lacework_alert_rule" "example" {
+  name             = "My Alert Rule"
+  description      = "This is an example alert rule"
+  channels         = [lacework_alert_channel_slack.ops_critical.intg_guid]
+  severities       = ["Critical"]
+  event_categories = ["Compliance"]
+  resource_groups  = [lacework_alert_channel_slack.all_gcp_projects.id]
 }
 ```
 
