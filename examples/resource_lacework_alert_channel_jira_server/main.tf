@@ -26,7 +26,7 @@ resource "lacework_alert_channel_jira_server" "example" {
 
 variable "channel_name" {
   type    = string
-  default = "My Jira Cloud Alert Channel Example"
+  default = "My Jira Server Alert Channel Example"
 }
 
 variable "jira_url" {
