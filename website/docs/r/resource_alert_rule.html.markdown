@@ -24,7 +24,7 @@ resource "lacework_alert_channel_slack" "ops_critical" {
 resource "lacework_alert_rule" "example" {
   name             = "My Alert Rule"
   description      = "This is an example alert rule"
-  channels         = [lacework_alert_channel_slack.ops_critical.intg_guid]
+  channels         = [lacework_alert_channel_slack.ops_critical.id]
   severities       = ["Critical"]
   event_categories = ["Compliance"]
 }
