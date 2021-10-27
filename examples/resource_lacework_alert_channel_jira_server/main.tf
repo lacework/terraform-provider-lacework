@@ -42,7 +42,8 @@ variable "project_key" {
 }
 
 variable "username" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "password" {
@@ -72,7 +73,7 @@ TEMPLATE
 }
 
 variable "test_integration" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -98,4 +99,14 @@ output "group_issues_by" {
 
 output "custom_template_file" {
   value = lacework_alert_channel_jira_server.example.custom_template_file
+}
+
+output "username" {
+  value     = lacework_alert_channel_jira_server.example.username
+  sensitive = true
+}
+
+output "password" {
+  value     = lacework_alert_channel_jira_server.example.password
+  sensitive = true
 }

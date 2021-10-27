@@ -123,6 +123,7 @@ func resourceLaceworkAlertChannelJiraServerCreate(d *schema.ResourceData, meta i
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
 			Password:      d.Get("password").(string),
+			JiraType:      api.JiraServerAlertType,
 		}
 	)
 
@@ -210,6 +211,7 @@ func resourceLaceworkAlertChannelJiraServerUpdate(d *schema.ResourceData, meta i
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
 			Password:      d.Get("password").(string),
+			JiraType:      api.JiraServerAlertType,
 		}
 	)
 

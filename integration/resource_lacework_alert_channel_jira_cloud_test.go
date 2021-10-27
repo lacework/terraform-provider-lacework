@@ -17,7 +17,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_channel_jira_cloud",
 		Vars: map[string]interface{}{
 			"channel_name":     "My Jira Cloud Example",
-			"jira_url":         "fake-jira-url.com",
+			"jira_url":         "test-lacework.atlassian.net",
 			"issue_type":       "Bug",
 			"project_key":      "fake-project-key",
 			"username":         "fake-username-techally",
@@ -35,7 +35,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 	// Update Jira Cloud Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name":     "My Jira Cloud Example Updated",
-		"jira_url":         "fake-jira-url-updated.com",
+		"jira_url":         "test-lacework.atlassian.net",
 		"issue_type":       "Bug",
 		"project_key":      "fake-project-key-updated",
 		"username":         "fake-username-techally-updated",
@@ -44,6 +44,9 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		"test_integration": false,
 	}
 
+	customTemplateFile := "{\n    \"fields\": {\n        \"labels\": [\n            \"myLabel\"\n        ],\n        \"priority\":\n        {\n            \"id\": \"1\"\n        }\n    }\n}\n"
+	customTemplateFileEncoded := "data:application/json;name=i.json;base64,ewogICAgImZpZWxkcyI6IHsKICAgICAgICAibGFiZWxzIjogWwogICAgICAgICAgICAibXlMYWJlbCIKICAgICAgICBdLAogICAgICAgICJwcmlvcml0eSI6CiAgICAgICAgewogICAgICAgICAgICAiaWQiOiAiMSIKICAgICAgICB9CiAgICB9Cn0K"
+
 	update := terraform.Apply(t, terraformOptions)
 
 	// Verify that the lacework integration was created with the correct information
@@ -51,16 +54,15 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 	if data, ok := updateProps.Data.Data.(map[string]interface{}); ok {
 		assert.True(t, ok)
 		assert.Equal(t, "My Jira Cloud Example Updated", updateProps.Data.Name)
-		assert.Equal(t, "fake-jira-url-updated.com", data["jiraUrl"])
+		assert.Equal(t, "test-lacework.atlassian.net", data["jiraUrl"])
 		assert.Equal(t, "Bug", data["issueType"])
-		assert.Equal(t, "fake-project-key-updated", data["projectKey"])
+		assert.Equal(t, "fake-project-key-updated", data["projectId"])
 		assert.Equal(t, "fake-username-techally-updated", data["username"])
-		assert.Equal(t, "fake-api-token", data["apiToken"])
 		assert.Equal(t, "Resources", data["issueGrouping"])
-		assert.Equal(t, "", data["customTemplateFile"])
+		assert.Equal(t, customTemplateFileEncoded, data["customTemplateFile"])
 
 		// Verify that the terraform resource has the correct information as expected
-		actualChannelName := terraform.Output(t, terraformOptions, "name")
+		actualChannelName := terraform.Output(t, terraformOptions, "channel_name")
 		actualJiraUrl := terraform.Output(t, terraformOptions, "jira_url")
 		actualIssueType := terraform.Output(t, terraformOptions, "issue_type")
 		actualProjectKey := terraform.Output(t, terraformOptions, "project_key")
@@ -72,10 +74,10 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		assert.Equal(t, "My Jira Cloud Example Updated", actualChannelName)
 		assert.Equal(t, data["issueType"], actualIssueType)
 		assert.Equal(t, data["jiraUrl"], actualJiraUrl)
-		assert.Equal(t, data["projectKey"], actualProjectKey)
+		assert.Equal(t, data["projectId"], actualProjectKey)
 		assert.Equal(t, data["username"], actualUsername)
-		assert.Equal(t, data["apiToken"], actualApiToken)
 		assert.Equal(t, data["issueGrouping"], actualIssueGrouping)
-		assert.Equal(t, data["customTemplateFile"], actualCustomTemplateFile)
+		assert.Equal(t, customTemplateFile, actualCustomTemplateFile)
+		assert.Equal(t, "fake-api-token", actualApiToken)
 	}
 }

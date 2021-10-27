@@ -2,8 +2,9 @@ package lacework
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -124,6 +125,7 @@ func resourceLaceworkAlertChannelJiraCloudCreate(d *schema.ResourceData, meta in
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
 			ApiToken:      d.Get("api_token").(string),
+			JiraType:      api.JiraCloudAlertType,
 		}
 	)
 
@@ -211,6 +213,7 @@ func resourceLaceworkAlertChannelJiraCloudUpdate(d *schema.ResourceData, meta in
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
 			ApiToken:      d.Get("api_token").(string),
+			JiraType:      api.JiraCloudAlertType,
 		}
 	)
 
