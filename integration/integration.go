@@ -156,6 +156,17 @@ func GetAlertChannelProps(result string) api.AlertChannelResponse {
 	return data
 }
 
+func GetAlertRuleProps(result string) api.AlertRuleResponse {
+	id := GetIDFromTerraResults(result)
+
+	var data api.AlertRuleResponse
+	err := LwClient.V2.AlertRules.Get(id, &data)
+	if err != nil {
+		log.Fatalf("Unable to retrieve alert rule with id: %s", id)
+	}
+	return data
+}
+
 func GetIDFromTerraResults(result string) string {
 	re := regexp.MustCompile("\\[id=(.*?)\\]")
 	match := re.FindStringSubmatch(result)

@@ -20,6 +20,7 @@ package api
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -44,12 +45,90 @@ func (sevs AlertRuleSeverities) toInt() []int {
 	return res
 }
 
+func (sevs AlertRuleSeverities) ToStringSlice() []string {
+	var res []string
+	for _, i := range sevs {
+		switch i {
+		case AlertRuleSeverityCritical:
+			res = append(res, "Critical")
+		case AlertRuleSeverityHigh:
+			res = append(res, "High")
+		case AlertRuleSeverityMedium:
+			res = append(res, "Medium")
+		case AlertRuleSeverityLow:
+			res = append(res, "Low")
+		case AlertRuleSeverityInfo:
+			res = append(res, "Info")
+		default:
+			continue
+		}
+	}
+	return res
+}
+
+func NewAlertRuleSeverities(sevSlice []string) AlertRuleSeverities {
+	var res AlertRuleSeverities
+	for _, i := range sevSlice {
+		sev := convertSeverity(i)
+		if sev != AlertRuleSeverityUnknown {
+			res = append(res, sev)
+		}
+	}
+	return res
+}
+
+func NewAlertRuleSeveritiesFromIntSlice(sevSlice []int) AlertRuleSeverities {
+	var res AlertRuleSeverities
+	for _, i := range sevSlice {
+		sev := convertSeverityInt(i)
+		if sev != AlertRuleSeverityUnknown {
+			res = append(res, sev)
+		}
+	}
+	return res
+}
+
+func convertSeverity(sev string) alertRuleSeverity {
+	switch strings.ToLower(sev) {
+	case "critical":
+		return AlertRuleSeverityCritical
+	case "high":
+		return AlertRuleSeverityHigh
+	case "medium":
+		return AlertRuleSeverityMedium
+	case "low":
+		return AlertRuleSeverityLow
+	case "info":
+		return AlertRuleSeverityInfo
+	default:
+		return AlertRuleSeverityUnknown
+	}
+}
+
+func convertSeverityInt(sev int) alertRuleSeverity {
+	switch sev {
+	case 1:
+		return AlertRuleSeverityCritical
+	case 2:
+		return AlertRuleSeverityHigh
+	case 3:
+		return AlertRuleSeverityMedium
+	case 4:
+		return AlertRuleSeverityLow
+	case 5:
+		return AlertRuleSeverityInfo
+	default:
+		return AlertRuleSeverityUnknown
+	}
+}
+
 const (
 	AlertRuleSeverityCritical alertRuleSeverity = 1
 	AlertRuleSeverityHigh     alertRuleSeverity = 2
 	AlertRuleSeverityMedium   alertRuleSeverity = 3
 	AlertRuleSeverityLow      alertRuleSeverity = 4
 	AlertRuleSeverityInfo     alertRuleSeverity = 5
+	AlertRuleSeverityUnknown  alertRuleSeverity = 0
 )
 
 // NewAlertRule returns an instance of the AlertRule struct
