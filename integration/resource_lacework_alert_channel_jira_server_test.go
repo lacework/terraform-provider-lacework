@@ -16,14 +16,13 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_jira_server",
 		Vars: map[string]interface{}{
-			"channel_name":     "My Jira Server Example",
-			"jira_url":         "test-lacework.atlassian.net",
-			"issue_type":       "Bug",
-			"project_key":      "fake-project-key",
-			"username":         "fake-username-techally",
-			"password":         "fake-password",
-			"group_issues_by":  "Events",
-			"test_integration": false,
+			"channel_name":    "My Jira Server Example",
+			"jira_url":        "test-lacework.atlassian.net",
+			"issue_type":      "Bug",
+			"project_key":     "fake-project-key",
+			"username":        "fake-username-techally",
+			"password":        "fake-password",
+			"group_issues_by": "Events",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -34,14 +33,13 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 
 	// Update Jira Server Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name":     "My Jira Server Example Updated",
-		"jira_url":         "test-lacework.atlassian.net",
-		"issue_type":       "Bug",
-		"project_key":      "fake-project-key-updated",
-		"username":         "fake-username-techally-updated",
-		"password":         "fake-password",
-		"group_issues_by":  "Resources",
-		"test_integration": false,
+		"channel_name":    "My Jira Server Example Updated",
+		"jira_url":        "updatedtest-lacework.atlassian.net",
+		"issue_type":      "Task",
+		"project_key":     "fake-project-key-updated",
+		"username":        "fake-username-techally-updated",
+		"password":        "fake-password-updated",
+		"group_issues_by": "Resources",
 	}
 
 	customTemplateFile := "{\n    \"fields\": {\n        \"labels\": [\n            \"myLabel\"\n        ],\n        \"priority\":\n        {\n            \"id\": \"1\"\n        }\n    }\n}\n"
@@ -54,8 +52,8 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 	if data, ok := updateProps.Data.Data.(map[string]interface{}); ok {
 		assert.True(t, ok)
 		assert.Equal(t, "My Jira Server Example Updated", updateProps.Data.Name)
-		assert.Equal(t, "test-lacework.atlassian.net", data["jiraUrl"])
-		assert.Equal(t, "Bug", data["issueType"])
+		assert.Equal(t, "updatedtest-lacework.atlassian.net", data["jiraUrl"])
+		assert.Equal(t, "Task", data["issueType"])
 		assert.Equal(t, "fake-project-key-updated", data["projectId"])
 		assert.Equal(t, "fake-username-techally-updated", data["username"])
 		assert.Equal(t, "Resources", data["issueGrouping"])
@@ -76,7 +74,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		assert.Equal(t, data["jiraUrl"], actualJiraUrl)
 		assert.Equal(t, data["projectId"], actualProjectKey)
 		assert.Equal(t, data["username"], actualUsername)
-		assert.Equal(t, "fake-password", actualPassword)
+		assert.Equal(t, "fake-password-updated", actualPassword)
 		assert.Equal(t, data["issueGrouping"], actualIssueGrouping)
 		assert.Equal(t, customTemplateFile, actualCustomTemplateFile)
 	}

@@ -42,8 +42,7 @@ variable "project_key" {
 }
 
 variable "username" {
-  type      = string
-  sensitive = true
+  type = string
 }
 
 variable "api_token" {
@@ -102,8 +101,7 @@ output "custom_template_file" {
 }
 
 output "username" {
-  value     = lacework_alert_channel_jira_cloud.example.username
-  sensitive = true
+  value = lacework_alert_channel_jira_cloud.example.username
 }
 
 output "api_token" {
