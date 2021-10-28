@@ -61,10 +61,11 @@ The following arguments are supported:
 
 * `name` - (Required) The alert rule name.
 * `channels` - (Required) The list of alert channels for the rule to use.
-* `severities` - (Required) The list of the severities that the rule will apply. `Critical`, `High`, `Medium`, `Low`, `Info`.
+* `severities` - (Required) The list of the severities that the rule will apply. Valid severities include: 
+  `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
-* `event_categories` - (Optional) The list of event categories the rule will apply to. `Compliance`, `App`, `Cloud`, 
-  `File`, `Machine`, `User`, `Platform`.
+* `event_categories` - (Optional) The list of event categories the rule will apply to. Valid categories include:
+  `Compliance`, `App`, `Cloud`,`File`, `Machine`, `User` and `Platform`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
