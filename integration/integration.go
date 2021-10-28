@@ -157,7 +157,7 @@ func GetAlertChannelProps(result string) api.AlertChannelResponse {
 }
 
 func GetAlertRuleProps(result string) api.AlertRuleResponse {
-	id := GetIDFromTerraResults(result)
+	id := GetSpecificIDFromTerraResults(2, result)
 
 	var data api.AlertRuleResponse
 	err := LwClient.V2.AlertRules.Get(id, &data)
@@ -167,11 +167,17 @@ func GetAlertRuleProps(result string) api.AlertRuleResponse {
 	return data
 }
 
-func GetIDFromTerraResults(result string) string {
+// GetSpecificIDFromTerraResults returns the specific index id found in the Terraform output
+func GetSpecificIDFromTerraResults(i int, result string) string {
 	re := regexp.MustCompile("\\[id=(.*?)\\]")
-	match := re.FindStringSubmatch(result)
-	if len(match) >= 2 {
-		return match[1]
+	match := re.FindAllStringSubmatch(result, -1)
+	if len(match) >= i {
+		return match[i-1][1]
 	}
 	return ""
+}
+
+// GetIDFromTerraResults returns the first id found in the Terraform output
+func GetIDFromTerraResults(result string) string {
+	return GetSpecificIDFromTerraResults(1, result)
 }
