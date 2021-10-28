@@ -13,9 +13,8 @@ For more information, see the [Alert Rules documentation](https://support.lacewo
 
 ## Example Usage
 
+#### Alert Rule with Slack Alert Channel
 ```hcl
-## Alert Rule with Slack Alert Channel
-
 resource "lacework_alert_channel_slack" "ops_critical" {
   name      = "OPS Critical Alerts"
   slack_url = "https://hooks.slack.com/services/ABCD/12345/abcd1234"
@@ -30,9 +29,8 @@ resource "lacework_alert_rule" "example" {
 }
 ```
 
+#### Alert Rule with Slack Alert Channel and Gcp Resource Group
 ```hcl
-## Alert Rule with Slack Alert Channel and Gcp Resource Group
-
 resource "lacework_alert_channel_slack" "ops_critical" {
   name      = "OPS Critical Alerts"
   slack_url = "https://hooks.slack.com/services/ABCD/12345/abcd1234"
