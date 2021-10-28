@@ -84,3 +84,60 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Equal(t, "[Compliance User Platform]", actualEventCategories)
 	assert.Equal(t, "[TECHALLY_528AA69075E54C783DCFAB0B76BE919287639FBAF26101B]", actualResourceGroups)
 }
+
+func TestAlertRuleSeverities(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_rule",
+		Vars: map[string]interface{}{
+			"severities": []string{"Critical", "high", "mEdIuM", "LOW"},
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	createProps := GetAlertRuleProps(create)
+
+	actualSeverities := terraform.Output(t, terraformOptions, "severities")
+
+	assert.Equal(t, []string{"Critical", "High", "Medium", "Low"},
+		api.NewAlertRuleSeveritiesFromIntSlice(createProps.Data.Filter.Severity).ToStringSlice())
+	assert.Equal(t, "[Critical High Medium Low]", actualSeverities)
+
+	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_rule",
+		Vars: map[string]interface{}{
+			"severities": []string{"INVALID"},
+		},
+	})
+
+	_, err := terraform.ValidateE(t, invalidOptions)
+	assert.Error(t, err)
+}
+
+func TestAlertRuleCategories(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_rule",
+		Vars: map[string]interface{}{
+			"event_categories": []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	createProps := GetAlertRuleProps(create)
+
+	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
+
+	assert.Equal(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform"}, createProps.Data.Filter.EventCategories)
+	assert.Equal(t, "[Compliance App Cloud File Machine User Platform]", actualCategories)
+
+	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_rule",
+		Vars: map[string]interface{}{
+			"event_categories": []string{"INVALID"},
+		},
+	})
+
+	_, err := terraform.ValidateE(t, invalidOptions)
+	assert.Error(t, err)
+}
