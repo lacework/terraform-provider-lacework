@@ -55,7 +55,7 @@ func TestAlertRuleCreate(t *testing.T) {
 		"channels": []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350",
 			"TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"},
 		"severities":       []string{"High", "Medium"},
-		"event_categories": []string{"Compliance", "User", "Platform"},
+		"event_categories": []string{"Compliance", "User"},
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -72,14 +72,14 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53")
 	assert.Equal(t, []string{"High", "Medium"}, api.NewAlertRuleSeveritiesFromIntSlice(updateProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{actualResourceGroupID}, createProps.Data.Filter.ResourceGroups)
-	assert.Equal(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
+	assert.Equal(t, []string{"Compliance", "User"}, updateProps.Data.Filter.EventCategories)
 
 	assert.Equal(t, "Alert Rule", actualName)
 	assert.Equal(t, "Updated Alert Rule created by Terraform", actualDescription)
 	assert.Equal(t, "[TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53 TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350]",
 		actualChannels)
 	assert.Equal(t, "[High Medium]", actualSeverities)
-	assert.Equal(t, "[Compliance User Platform]", actualEventCategories)
+	assert.Equal(t, "[Compliance User]", actualEventCategories)
 }
 
 func TestAlertRuleSeverities(t *testing.T) {
@@ -132,8 +132,8 @@ func TestAlertRuleCategories(t *testing.T) {
 
 	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
 
-	assert.Equal(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform"}, createProps.Data.Filter.EventCategories)
-	assert.Equal(t, "[Compliance App Cloud File Machine User Platform]", actualCategories)
+	assert.Equal(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User"}, createProps.Data.Filter.EventCategories)
+	assert.Equal(t, "[Compliance App Cloud File Machine User]", actualCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
