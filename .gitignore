@@ -27,6 +27,7 @@ website/node_modules
 log.txt
 
 website/vendor
+coverage.out
 
 # Test exclusions
 !command/test-fixtures/**/*.tfstate
