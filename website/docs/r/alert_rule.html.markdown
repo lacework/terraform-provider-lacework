@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_alert\_rule
 
-Use this resource to create a Lacework Alert Rule in order to categorize Lacework-identifiable assets.
+Use this resource to create a Lacework Alert Rule in order to route events to the appropriate people or tools.
 For more information, see the [Alert Rules documentation](https://support.lacework.com/hc/en-us/articles/360042236733-Alert-Rules).
 
 ## Example Usage
