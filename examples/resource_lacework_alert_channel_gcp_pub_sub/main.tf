@@ -39,6 +39,7 @@ variable "private_key" {
 }
 
 variable "private_key_id" {
+  sensitive = true
   type = string
 }
 
@@ -91,4 +92,5 @@ output "private_key" {
 
 output "private_key_id" {
   value = lacework_alert_channel_gcp_pub_sub.example.credentials[0].private_key_id
+  sensitive = true
 }
