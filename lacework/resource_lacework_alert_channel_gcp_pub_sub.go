@@ -81,20 +81,25 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 							Sensitive:   true,
 							Description: "The service account private key ID",
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if d.HasChanges(
+								return !d.HasChanges(
 									"name", "project_id", "topic_id", "org_level", "enabled", "issue_grouping",
-									"credentials.0.client_id", "credentials.0.private_key_id",
+									"credentials.0.client_id",
 									"credentials.0.client_email",
-								) {
-									return false
-								}
-								return true
+								)
 							},
 						},
 						"private_key_id": {
 							Type:        schema.TypeString,
+							Sensitive: 	 true,
 							Required:    true,
 							Description: "The service account private key",
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								return !d.HasChanges(
+									"name", "project_id", "topic_id", "org_level", "enabled", "issue_grouping",
+									"credentials.0.client_id",
+									"credentials.0.client_email",
+								)
+							},
 						},
 					},
 				},

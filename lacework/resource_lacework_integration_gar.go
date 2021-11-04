@@ -94,7 +94,14 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 						},
 						"private_key_id": {
 							Type:     schema.TypeString,
+							Sensitive: true,
 							Required: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								return !d.HasChanges(
+									"credentials.0.client_id",
+									"credentials.0.client_email",
+								)
+							},
 						},
 						"client_email": {
 							Type:     schema.TypeString,
@@ -108,14 +115,10 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 								// @afiune we can't compare this element since our API, for security reasons,
 								// does NOT return the private key configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
-								if d.HasChanges(
+								return !d.HasChanges(
 									"credentials.0.client_id",
-									"credentials.0.private_key_id",
 									"credentials.0.client_email",
-								) {
-									return false
-								}
-								return true
+								)
 							},
 						},
 					},
