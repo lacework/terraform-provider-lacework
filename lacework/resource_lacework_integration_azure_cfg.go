@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -63,13 +64,10 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 								// @afiune we can't compare this element since our API, for security reasons,
 								// does NOT return the client secret configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
-								if d.HasChanges(
+								return !d.HasChanges(
 									"name", "tenant_id", "org_level",
 									"enabled", "credentials.0.client_id",
-								) {
-									return false
-								}
-								return true
+								)
 							},
 						},
 					},
@@ -115,7 +113,7 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 		azure.Enabled = 0
 	}
 
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.AzureCfgIntegration.String())
 		response, err := lacework.Integrations.CreateAzure(azure)

@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -106,7 +107,7 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 		aws.Enabled = 0
 	}
 
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.AwsGovCloudCfgIntegration.String())
 		response, err := lacework.Integrations.CreateAws(aws)

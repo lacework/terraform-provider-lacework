@@ -73,15 +73,12 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 								// @afiune we can't compare this element since our API, for security reasons,
 								// does NOT return the private key configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
-								if d.HasChanges(
+								return !d.HasChanges(
 									"name", "limit_by_tag", "limit_by_label", "org_level", "enabled",
 									"credentials.0.client_id", "credentials.0.private_key_id",
 									"credentials.0.client_email", "limit_by_repos", "limit_num_imgs",
 									"limit_by_tags", "limit_by_labels", "limit_by_repositories",
-								) {
-									return false
-								}
-								return true
+								)
 							},
 						},
 					},

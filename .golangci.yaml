@@ -1,0 +1,8 @@
+# Linter Settings
+ linters-settings:
+   errcheck:
+     exclude-functions:
+     - (*schema.ResourceData).Set
+
+
+
