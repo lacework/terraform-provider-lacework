@@ -62,7 +62,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			assert.Equal(t, "Resources", data["issueGrouping"])
 			assert.Equal(t, gcreds.ClientEmail, data["credentials"].(map[string]interface{})["clientEmail"])
 			assert.Equal(t, gcreds.ClientID, data["credentials"].(map[string]interface{})["clientId"])
-			assert.Equal(t, gcreds.PrivateKeyID, "********")
+			assert.Equal(t, "********", data["credentials"].(map[string]interface{})["clientId"])
 
 			// Verify that the terraform resource has the correct information as expected
 			actualChannelName := terraform.Output(t, terraformOptions, "name")
