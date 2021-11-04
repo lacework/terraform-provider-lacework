@@ -93,9 +93,9 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 							Required: true,
 						},
 						"private_key_id": {
-							Type:     schema.TypeString,
+							Type:      schema.TypeString,
 							Sensitive: true,
-							Required: true,
+							Required:  true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 								return !d.HasChanges(
 									"credentials.0.client_id",

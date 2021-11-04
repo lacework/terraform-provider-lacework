@@ -90,7 +90,7 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 						},
 						"private_key_id": {
 							Type:        schema.TypeString,
-							Sensitive: 	 true,
+							Sensitive:   true,
 							Required:    true,
 							Description: "The service account private key",
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
