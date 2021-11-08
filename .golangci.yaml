@@ -1,8 +1,10 @@
 # Linter Settings
- linters-settings:
-   errcheck:
-     exclude-functions:
-     - (*schema.ResourceData).Set
+run:
+  skip-files:
+    - lacework/casting_test.go
 
+issues:
+  exclude:
+    - d.Set
 
 
