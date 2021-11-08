@@ -33,7 +33,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 		defer terraform.Destroy(t, terraformOptions)
 
 		// Create new GCP Pub Sub Alert Channel
-		create := terraform.InitAndApply(t, terraformOptions)
+		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		assert.Equal(t, "My GCP Pub Sub Example", GetIntegrationName(create))
 
 		// Update GCP Pub Sub Alert Channel
@@ -50,7 +50,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			"TF_VAR_private_key": gcreds.PrivateKey,
 		}
 
-		update := terraform.Apply(t, terraformOptions)
+		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 
 		// Verify that the lacework integration was created with the correct information
 		updateProps := GetAlertChannelProps(update)
