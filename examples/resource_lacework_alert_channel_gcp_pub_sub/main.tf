@@ -40,7 +40,7 @@ variable "private_key" {
 
 variable "private_key_id" {
   sensitive = true
-  type = string
+  type      = string
 }
 
 resource "lacework_alert_channel_gcp_pub_sub" "example" {
@@ -83,14 +83,4 @@ output "client_id" {
 
 output "client_email" {
   value = lacework_alert_channel_gcp_pub_sub.example.credentials[0].client_email
-}
-
-output "private_key" {
-  value     = lacework_alert_channel_gcp_pub_sub.example.credentials[0].private_key
-  sensitive = true
-}
-
-output "private_key_id" {
-  value = lacework_alert_channel_gcp_pub_sub.example.credentials[0].private_key_id
-  sensitive = true
 }
