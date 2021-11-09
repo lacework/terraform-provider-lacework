@@ -13,12 +13,27 @@ variable "channel_name" {
   default = "AwsS3 Alert Channel Example"
 }
 
+variable "bucket_arn" {
+  type      = string
+  sensitive = true
+}
+
+variable "external_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "role_arn" {
+  type      = string
+  sensitive = true
+}
+
 resource "lacework_alert_channel_aws_s3" "example" {
   name       = var.channel_name
-  bucket_arn = "arn:aws:s3:::bucket_name/key_name"
+  bucket_arn = var.bucket_arn
   credentials {
-    external_id = "12345"
-    role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
+    external_id = var.external_id
+    role_arn    = var.role_arn
   }
 
   // test_integration input is used in this example only for testing
