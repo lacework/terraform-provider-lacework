@@ -25,7 +25,6 @@ variable "external_id" {
 
 variable "role_arn" {
   type      = string
-  sensitive = true
 }
 
 resource "lacework_alert_channel_aws_s3" "example" {
