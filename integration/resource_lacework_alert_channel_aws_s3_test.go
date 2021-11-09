@@ -12,6 +12,7 @@ import (
 //
 // It uses the go-sdk to verify the created integration,
 // applies an update with new alert channel name and destroys it
+//nolint
 func _TestAlertChannelAwsS3Create(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_aws_s3",

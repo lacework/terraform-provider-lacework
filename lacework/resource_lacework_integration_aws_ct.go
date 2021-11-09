@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -153,7 +154,7 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 		awsCtSqs.Enabled = 0
 	}
 
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.AwsCtSqsCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(awsCtSqs)

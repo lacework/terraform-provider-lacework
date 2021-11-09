@@ -169,7 +169,7 @@ func GetAlertRuleProps(result string) api.AlertRuleResponse {
 
 // GetSpecificIDFromTerraResults returns the specific index id found in the Terraform output
 func GetSpecificIDFromTerraResults(i int, result string) string {
-	re := regexp.MustCompile("\\[id=(.*?)\\]")
+	re := regexp.MustCompile(`\[id=(.*?)\]`)
 	match := re.FindAllStringSubmatch(result, -1)
 	if len(match) >= i {
 		return match[i-1][1]
