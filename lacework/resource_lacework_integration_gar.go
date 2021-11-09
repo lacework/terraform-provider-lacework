@@ -92,13 +92,24 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-						"private_key_id": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
 						"client_email": {
 							Type:     schema.TypeString,
 							Required: true,
+						},
+						"private_key_id": {
+							Type:      schema.TypeString,
+							Sensitive: true,
+							Required:  true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// @afiune we can't compare this element since our API, for security reasons,
+								// does NOT return the private key configured in the Lacework server. So if
+								// any other element changed from the credentials then we trigger a diff
+								return !d.HasChanges(
+									"name", "registry_domain", "enabled", "non_os_package_support",
+									"limit_by_tags", "limit_by_label", "limit_by_repositories",
+									"limit_num_imgs", "credentials.0.client_id", "credentials.0.client_email",
+								)
+							},
 						},
 						"private_key": {
 							Type:      schema.TypeString,
@@ -108,14 +119,11 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 								// @afiune we can't compare this element since our API, for security reasons,
 								// does NOT return the private key configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
-								if d.HasChanges(
-									"credentials.0.client_id",
-									"credentials.0.private_key_id",
-									"credentials.0.client_email",
-								) {
-									return false
-								}
-								return true
+								return !d.HasChanges(
+									"name", "registry_domain", "enabled", "non_os_package_support",
+									"limit_by_tags", "limit_by_label", "limit_by_repositories",
+									"limit_num_imgs", "credentials.0.client_id", "credentials.0.client_email",
+								)
 							},
 						},
 					},
@@ -260,7 +268,6 @@ func resourceLaceworkIntegrationGarRead(d *schema.ResourceData, meta interface{}
 	creds := make(map[string]string)
 	creds["client_id"] = response.Data.Data.Credentials.ClientID
 	creds["client_email"] = response.Data.Data.Credentials.ClientEmail
-	creds["private_key_id"] = response.Data.Data.Credentials.PrivateKeyID
 	d.Set("credentials", []map[string]string{creds})
 	d.Set("registry_domain", response.Data.Data.RegistryDomain)
 	d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)

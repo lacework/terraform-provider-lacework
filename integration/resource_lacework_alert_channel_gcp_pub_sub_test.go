@@ -33,7 +33,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 		defer terraform.Destroy(t, terraformOptions)
 
 		// Create new GCP Pub Sub Alert Channel
-		create := terraform.InitAndApply(t, terraformOptions)
+		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		assert.Equal(t, "My GCP Pub Sub Example", GetIntegrationName(create))
 
 		// Update GCP Pub Sub Alert Channel
@@ -50,7 +50,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			"TF_VAR_private_key": gcreds.PrivateKey,
 		}
 
-		update := terraform.Apply(t, terraformOptions)
+		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 
 		// Verify that the lacework integration was created with the correct information
 		updateProps := GetAlertChannelProps(update)
@@ -62,7 +62,6 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			assert.Equal(t, "Resources", data["issueGrouping"])
 			assert.Equal(t, gcreds.ClientEmail, data["credentials"].(map[string]interface{})["clientEmail"])
 			assert.Equal(t, gcreds.ClientID, data["credentials"].(map[string]interface{})["clientId"])
-			assert.Equal(t, gcreds.PrivateKeyID, data["credentials"].(map[string]interface{})["privateKeyId"])
 
 			// Verify that the terraform resource has the correct information as expected
 			actualChannelName := terraform.Output(t, terraformOptions, "name")
@@ -71,7 +70,6 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			actualIssueGrouping := terraform.Output(t, terraformOptions, "issue_grouping")
 			actualClientId := terraform.Output(t, terraformOptions, "client_id")
 			actualClientEmail := terraform.Output(t, terraformOptions, "client_email")
-			actualPrivateKeyId := terraform.Output(t, terraformOptions, "private_key_id")
 
 			assert.Equal(t, "My GCP Pub Sub Example Updated", actualChannelName)
 			assert.Equal(t, gcreds.ProjectID, actualProjectID)
@@ -79,7 +77,6 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			assert.Equal(t, data["issueGrouping"], actualIssueGrouping)
 			assert.Equal(t, data["credentials"].(map[string]interface{})["clientId"], actualClientId)
 			assert.Equal(t, data["credentials"].(map[string]interface{})["clientEmail"], actualClientEmail)
-			assert.Equal(t, data["credentials"].(map[string]interface{})["privateKeyId"], actualPrivateKeyId)
 		}
 	}
 }

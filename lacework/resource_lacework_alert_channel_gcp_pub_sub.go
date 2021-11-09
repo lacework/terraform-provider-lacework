@@ -81,20 +81,31 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 							Sensitive:   true,
 							Description: "The service account private key ID",
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if d.HasChanges(
-									"name", "project_id", "topic_id", "org_level", "enabled", "issue_grouping",
-									"credentials.0.client_id", "credentials.0.private_key_id",
+								// @afiune we can't compare this element since our API, for security reasons,
+								// does NOT return the private key configured in the Lacework server. So if
+								// any other element changed from the credentials then we trigger a diff
+								return !d.HasChanges(
+									"name", "project_id", "topic_id", "enabled", "issue_grouping",
+									"credentials.0.client_id",
 									"credentials.0.client_email",
-								) {
-									return false
-								}
-								return true
+								)
 							},
 						},
 						"private_key_id": {
 							Type:        schema.TypeString,
+							Sensitive:   true,
 							Required:    true,
 							Description: "The service account private key",
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// @afiune we can't compare this element since our API, for security reasons,
+								// does NOT return the private key configured in the Lacework server. So if
+								// any other element changed from the credentials then we trigger a diff
+								return !d.HasChanges(
+									"name", "project_id", "topic_id", "enabled", "issue_grouping",
+									"credentials.0.client_id",
+									"credentials.0.client_email",
+								)
+							},
 						},
 					},
 				},
@@ -202,8 +213,6 @@ func resourceLaceworkAlertChannelGcpPubSubRead(d *schema.ResourceData, meta inte
 	creds := make(map[string]string)
 	creds["client_id"] = response.Data.Data.Credentials.ClientID
 	creds["client_email"] = response.Data.Data.Credentials.ClientEmail
-	creds["private_key"] = response.Data.Data.Credentials.PrivateKey
-	creds["private_key_id"] = response.Data.Data.Credentials.PrivateKeyID
 
 	d.Set("credentials", []map[string]string{creds})
 
