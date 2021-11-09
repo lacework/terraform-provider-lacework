@@ -29,7 +29,7 @@ func TestAlertChannelAwsS3Create(t *testing.T) {
 		defer terraform.Destroy(t, terraformOptions)
 
 		// Create new AwsS3 Alert Channel
-		create := terraform.InitAndApply(t, terraformOptions)
+		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		assert.Equal(t, "AwsS3 Alert Channel Example", GetIntegrationName(create))
 
 		// Update AwsS3 Alert Channel
@@ -43,7 +43,7 @@ func TestAlertChannelAwsS3Create(t *testing.T) {
 			"TF_VAR_bucket_arn": s3BucketArn,
 		}
 
-		update := terraform.Apply(t, terraformOptions)
+		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		assert.Equal(t, "AwsS3 Alert Channel Updated", GetIntegrationName(update))
 	}
 }
