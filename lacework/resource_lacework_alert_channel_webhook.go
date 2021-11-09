@@ -129,9 +129,6 @@ func resourceLaceworkAlertChannelWebhookRead(d *schema.ResourceData, meta interf
 	log.Printf("[INFO] Read %s integration with guid %s\n",
 		api.WebhookAlertChannelType, response.Data.IntgGuid)
 	return nil
-
-	d.SetId("")
-	return nil
 }
 
 func resourceLaceworkAlertChannelWebhookUpdate(d *schema.ResourceData, meta interface{}) error {
