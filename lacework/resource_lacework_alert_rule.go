@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
+	"github.com/pkg/errors"
 )
 
 func resourceLaceworkAlertRule() *schema.Resource {
@@ -38,10 +39,23 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				Description: "The state of the alert rule",
 			},
 			"channels": {
-				Type:        schema.TypeSet,
-				Required:    true,
-				MinItems:    1,
-				Description: "List of channels for the alert rule",
+				Type:          schema.TypeSet,
+				Optional:      true,
+				Description:   "List of channels for the alert rule",
+				Deprecated:    "This attribute deprecated and has been replaced by `alert_channels`",
+				ConflictsWith: []string{"alert_channels"},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+			},
+			"alert_channels": {
+				Type:          schema.TypeSet,
+				Optional:      true,
+				Description:   "List of alert channels for the alert rule",
+				ConflictsWith: []string{"channels"},
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
@@ -130,15 +144,23 @@ func resourceLaceworkAlertRule() *schema.Resource {
 }
 
 func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) error {
+	var alertChannels []interface{}
+	if _, ok := d.GetOk("alert_channels"); ok {
+		alertChannels = d.Get("alert_channels").(*schema.Set).List()
+	} else if _, ok := d.GetOk("channels"); ok {
+		alertChannels = d.Get("channels").(*schema.Set).List()
+	} else {
+		return errors.New("alert_channels attribute must be set")
+	}
+
 	var (
 		lacework       = meta.(*api.Client)
-		channels       = d.Get("channels").(*schema.Set).List()
 		resourceGroups = d.Get("resource_groups").(*schema.Set).List()
 		severities     = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule      = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
 				Description:     d.Get("description").(string),
-				Channels:        castStringSlice(channels),
+				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
 				EventCategories: castAndTitleCaseStringSlice(d, "event_categories"),
 				ResourceGroups:  castStringSlice(resourceGroups),
@@ -188,25 +210,38 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("created_or_updated_time", response.Data.Filter.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", response.Data.Filter.CreatedOrUpdatedBy)
 	d.Set("type_name", response.Data.Type)
-	d.Set("channels", response.Data.Channels)
 	d.Set("severities", api.NewAlertRuleSeveritiesFromIntSlice(response.Data.Filter.Severity).ToStringSlice())
 	d.Set("resource_groups", response.Data.Filter.ResourceGroups)
 	d.Set("event_categories", response.Data.Filter.EventCategories)
+
+	if _, ok := d.GetOk("channels"); ok {
+		d.Set("channels", response.Data.Channels)
+	} else {
+		d.Set("alert_channels", response.Data.Channels)
+	}
 
 	log.Printf("[INFO] Read alert rule with guid %s\n", response.Data.Guid)
 	return nil
 }
 
 func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) error {
+	var alertChannels []interface{}
+	if _, ok := d.GetOk("alert_channels"); ok {
+		alertChannels = d.Get("alert_channels").(*schema.Set).List()
+	} else if _, ok := d.GetOk("channels"); ok {
+		alertChannels = d.Get("channels").(*schema.Set).List()
+	} else {
+		return errors.New("alert_channels attribute must be set")
+	}
+
 	var (
 		lacework       = meta.(*api.Client)
-		channels       = d.Get("channels").(*schema.Set).List()
 		resourceGroups = d.Get("resource_groups").(*schema.Set).List()
 		severities     = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule      = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
 				Description:     d.Get("description").(string),
-				Channels:        castStringSlice(channels),
+				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
 				EventCategories: castAndTitleCaseStringSlice(d, "event_categories"),
 				ResourceGroups:  castStringSlice(resourceGroups),

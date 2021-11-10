@@ -9,14 +9,14 @@ terraform {
 resource "lacework_alert_rule" "example" {
   name             = var.name
   description      = var.description
-  channels         = var.channels
+  alert_channels   = var.channels
   severities       = var.severities
   event_categories = var.event_categories
   resource_groups  = [lacework_resource_group_aws.example.id]
 }
 
 resource "lacework_resource_group_aws" "example" {
-  name     = "Users for Aler Rules Testing"
+  name     = "Users for Alert Rules Testing"
   accounts = ["*"]
 }
 
@@ -54,7 +54,7 @@ output "description" {
 }
 
 output "channels" {
-  value = lacework_alert_rule.example.channels
+  value = lacework_alert_rule.example.alert_channels
 }
 
 output "severities" {

@@ -23,7 +23,7 @@ resource "lacework_alert_channel_slack" "ops_critical" {
 resource "lacework_alert_rule" "example" {
   name             = "My Alert Rule"
   description      = "This is an example alert rule"
-  channels         = [lacework_alert_channel_slack.ops_critical.id]
+  alert_channels   = [lacework_alert_channel_slack.ops_critical.id]
   severities       = ["Critical"]
   event_categories = ["Compliance"]
 }
@@ -46,7 +46,7 @@ resource "lacework_resource_group_gcp" "all_gcp_projects" {
 resource "lacework_alert_rule" "example" {
   name             = "My Alert Rule"
   description      = "This is an example alert rule"
-  channels         = [lacework_alert_channel_slack.ops_critical.id]
+  alert_channels   = [lacework_alert_channel_slack.ops_critical.id]
   severities       = ["Critical"]
   event_categories = ["Compliance"]
   resource_groups  = [lacework_resource_group_gcp.all_gcp_projects.id]
@@ -58,7 +58,7 @@ resource "lacework_alert_rule" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The alert rule name.
-* `channels` - (Required) The list of alert channels for the rule to use.
+* `alert_channels` - (Required) The list of alert channels for the rule to use.
 * `severities` - (Required) The list of the severities that the rule will apply. Valid severities include: 
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
