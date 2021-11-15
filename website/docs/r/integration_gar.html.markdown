@@ -27,6 +27,22 @@ resource "lacework_integration_gar" "example" {
 }
 ```
 
+## Example GAR Module Usage
+
+Lacework maintains a Terraform module that can be used to create and manage the necessary
+resources required for both, the cloud provider platform as well as the Lacework platform.
+
+Here is a basic usage of this module:
+
+```hcl
+module "gar" {
+  source  = "lacework/gar/gcp"
+  version = "~> 0.1"
+}
+```
+
+To see the list of inputs, outputs and dependencies, visit the [Terraform registry page of this module](https://registry.terraform.io/modules/lacework/gar/gcp/latest).
+
 ## Example Loading Credentials from Local File
 
 Alternatively, this example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys)
@@ -110,7 +126,7 @@ The `limit_by_label` block can be defined multiple times to define multiple labe
 * `private_key_id` - (Required) The service account private key ID.
 * `private_key` - (Required) The service account private key.
 
-~> **Note:** The service account used for this integration requires the `storage.objectViewer` role for access to the Google project that contains the Google Artifact Registry (GAR). The role can be granted at the project level or the bucket level. If granting the role at the bucket level, you must grant the role to the default bucket called `artifacts.[YourProjectID].appspot.com`. In addition, the client must have access to the Google Artifact Registry API, Cloud Resource Manager API, and billing must be enabled.
+~> **Note:** The service account used for this integration requires the `roles/artifactRegistry.reader` role for access to the Google project that contains the Google Artifact Registry (GAR). In addition, the client must have access to the Google Artifact Registry API, Cloud Resource Manager API, and billing must be enabled. Lacework maintains a [Terraform GAR module](https://registry.terraform.io/modules/lacework/gar/gcp/latest) that can be used to create and manage the necessary resources required for both, the cloud provider platform as well as the Lacework platform.
 
 ### Supported Registry Domains
 
