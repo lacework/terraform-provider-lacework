@@ -39,16 +39,11 @@ release: build-cross-platform ## *CI ONLY* Prepares a release of the Terraform p
 	scripts/release.sh prepare
 
 .PHONY: deps
-deps: ## Update a single dependency by providing the UPDATE_DEP environment variable
-ifdef UPDATE_DEP
-	@go get -u "$(UPDATE_DEP)"
-endif
-	@go mod vendor
+deps: go-deps go-vendor ## Update dependencies and run go-vendor
 
 .PHONY: alldeps
-alldeps: ## Update all dependencies
-	@go get -u
-	@go mod vendor
+go-deps: ## Update dependencies, provider UPDATE_DEP env variable to update just a single dependency
+	@go get -u "$(UPDATE_DEP)"
 
 PHONY: go-vendor
 go-vendor: ## Runs go mod tidy, vendor and verify to cleanup, copy and verify dependencies
