@@ -65,13 +65,18 @@ API access secret, respectively.
 provider "lacework" {}
 ```
 
-Terminal:
-
+#### Bash:
 ```
-$ export LW_ACCOUNT="my-account"
-$ export LW_API_KEY="my-api-key"
-$ export LW_API_SECRET="my-api-secret"
-$ terraform plan
+export LW_ACCOUNT="my-account"
+export LW_API_KEY="my-api-key"
+export LW_API_SECRET="my-api-secret"
+```
+
+#### Powershell:
+```
+$Env:LW_ACCOUNT = "my-account"
+$Env:LW_API_KEY = "my-api-key"
+$Env:LW_API_SECRET = "my-api-secret"
 ```
 
 ### Configuration file
