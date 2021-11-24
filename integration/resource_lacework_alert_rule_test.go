@@ -21,11 +21,11 @@ func TestAlertRuleCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"name": name,
-			"description":      "Alert Rule created by Terraform",
-			"channels":         []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"},
-			"severities":       []string{"Critical"},
-			"event_categories": []string{"Compliance"},
+			"name":                name,
+			"description":         "Alert Rule created by Terraform",
+			"channels":            []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"},
+			"severities":          []string{"Critical"},
+			"event_categories":    []string{"Compliance"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -57,12 +57,12 @@ func TestAlertRuleCreate(t *testing.T) {
 
 	// Update Alert Rule
 	terraformOptions.Vars = map[string]interface{}{
-		"name": name,
+		"name":        name,
 		"description": "Updated Alert Rule created by Terraform",
 		"channels": []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350",
 			"TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"},
-		"severities":       []string{"High", "Medium"},
-		"event_categories": []string{"Compliance", "User", "Platform"},
+		"severities":          []string{"High", "Medium"},
+		"event_categories":    []string{"Compliance", "User", "Platform"},
 		"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 	}
 
@@ -93,8 +93,8 @@ func TestAlertRuleSeverities(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"name": name,
-			"severities": []string{"Critical", "high", "mEdIuM", "LOW"},
+			"name":                name,
+			"severities":          []string{"Critical", "high", "mEdIuM", "LOW"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -115,8 +115,8 @@ func TestAlertRuleSeverities(t *testing.T) {
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"name": name,
-			"severities": []string{"INVALID"},
+			"name":                name,
+			"severities":          []string{"INVALID"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -135,8 +135,8 @@ func TestAlertRuleCategories(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"name": name,
-			"event_categories": []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
+			"name":                name,
+			"event_categories":    []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -154,8 +154,8 @@ func TestAlertRuleCategories(t *testing.T) {
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"name": name,
-			"event_categories": []string{"INVALID"},
+			"name":                name,
+			"event_categories":    []string{"INVALID"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
