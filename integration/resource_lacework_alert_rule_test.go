@@ -2,6 +2,7 @@ package integration
 
 import (
 	"testing"
+	"time"
 
 	"github.com/lacework/go-sdk/api"
 
@@ -24,6 +25,8 @@ func TestAlertRuleCreate(t *testing.T) {
 			"event_categories": []string{"Compliance"},
 		},
 	})
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
+
 	defer terraform.Destroy(t, terraformOptions)
 
 	// Create new Alert Rule
@@ -89,6 +92,8 @@ func TestAlertRuleSeverities(t *testing.T) {
 			"severities": []string{"Critical", "high", "mEdIuM", "LOW"},
 		},
 	})
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
+
 	defer terraform.Destroy(t, terraformOptions)
 
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
@@ -125,6 +130,8 @@ func TestAlertRuleCategories(t *testing.T) {
 			"event_categories": []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
 		},
 	})
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
+
 	defer terraform.Destroy(t, terraformOptions)
 
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
