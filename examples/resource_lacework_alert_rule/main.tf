@@ -16,8 +16,13 @@ resource "lacework_alert_rule" "example" {
 }
 
 resource "lacework_resource_group_aws" "example" {
-  name     = "Users for Alert Rules Testing"
+  name     = var.resource_group_name
   accounts = ["*"]
+}
+
+variable "resource_group_name" {
+  type    = string
+  default = "Users for Alert Rules Testing"
 }
 
 variable "name" {
