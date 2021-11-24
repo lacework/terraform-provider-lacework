@@ -25,7 +25,7 @@ func TestAlertRuleCreate(t *testing.T) {
 			"event_categories": []string{"Compliance"},
 		},
 	})
-	terraformOptions.TimeBetweenRetries = 2 * time.Second
+	terraformOptions.TimeBetweenRetries = 5 * time.Second
 
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -92,7 +92,7 @@ func TestAlertRuleSeverities(t *testing.T) {
 			"severities": []string{"Critical", "high", "mEdIuM", "LOW"},
 		},
 	})
-	terraformOptions.TimeBetweenRetries = 2 * time.Second
+	terraformOptions.TimeBetweenRetries = 5 * time.Second
 
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -130,7 +130,7 @@ func TestAlertRuleCategories(t *testing.T) {
 			"event_categories": []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
 		},
 	})
-	terraformOptions.TimeBetweenRetries = 2 * time.Second
+	terraformOptions.TimeBetweenRetries = 5 * time.Second
 
 	defer terraform.Destroy(t, terraformOptions)
 
