@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/lacework/go-sdk/api"
 
@@ -15,17 +17,21 @@ import (
 // It uses the go-sdk to verify the created alert rule,
 // applies an update and destroys it
 func TestAlertRuleCreate(t *testing.T) {
+	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"description":      "Alert Rule created by Terraform",
-			"channels":         []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"},
-			"severities":       []string{"Critical"},
-			"event_categories": []string{"Compliance"},
+			"name":                name,
+			"description":         "Alert Rule created by Terraform",
+			"channels":            []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"},
+			"severities":          []string{"Critical"},
+			"event_categories":    []string{"Compliance"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
 	// Create new Alert Rule
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createProps := GetAlertRuleProps(create)
@@ -43,7 +49,7 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Equal(t, []string{actualResourceGroupID}, createProps.Data.Filter.ResourceGroups)
 	assert.Equal(t, []string{"Compliance"}, createProps.Data.Filter.EventCategories)
 
-	assert.Equal(t, "Alert Rule", actualName)
+	assert.Equal(t, name, actualName)
 	assert.Equal(t, "Alert Rule created by Terraform", actualDescription)
 	assert.Equal(t, "[TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350]", actualChannels)
 	assert.Equal(t, string("[Critical]"), actualSeverities)
@@ -51,16 +57,17 @@ func TestAlertRuleCreate(t *testing.T) {
 
 	// Update Alert Rule
 	terraformOptions.Vars = map[string]interface{}{
+		"name":        name,
 		"description": "Updated Alert Rule created by Terraform",
 		"channels": []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350",
 			"TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"},
-		"severities":       []string{"High", "Medium"},
-		"event_categories": []string{"Compliance", "User", "Platform"},
+		"severities":          []string{"High", "Medium"},
+		"event_categories":    []string{"Compliance", "User", "Platform"},
+		"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	updateProps := GetAlertRuleProps(update)
-	actualName = terraform.Output(t, terraformOptions, "name")
 	actualDescription = terraform.Output(t, terraformOptions, "description")
 	actualChannels = terraform.Output(t, terraformOptions, "channels")
 	actualSeverities = terraform.Output(t, terraformOptions, "severities")
@@ -74,7 +81,6 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Equal(t, []string{actualResourceGroupID}, createProps.Data.Filter.ResourceGroups)
 	assert.Equal(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
 
-	assert.Equal(t, "Alert Rule", actualName)
 	assert.Equal(t, "Updated Alert Rule created by Terraform", actualDescription)
 	assert.Equal(t, "[TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53 TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350]",
 		actualChannels)
@@ -83,14 +89,18 @@ func TestAlertRuleCreate(t *testing.T) {
 }
 
 func TestAlertRuleSeverities(t *testing.T) {
+	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"severities": []string{"Critical", "high", "mEdIuM", "LOW"},
+			"name":                name,
+			"severities":          []string{"Critical", "high", "mEdIuM", "LOW"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createProps := GetAlertRuleProps(create)
 
@@ -105,7 +115,9 @@ func TestAlertRuleSeverities(t *testing.T) {
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"severities": []string{"INVALID"},
+			"name":                name,
+			"severities":          []string{"INVALID"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
 
@@ -119,14 +131,18 @@ func TestAlertRuleSeverities(t *testing.T) {
 }
 
 func TestAlertRuleCategories(t *testing.T) {
+	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"event_categories": []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
+			"name":                name,
+			"event_categories":    []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createProps := GetAlertRuleProps(create)
 
@@ -138,7 +154,9 @@ func TestAlertRuleCategories(t *testing.T) {
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
-			"event_categories": []string{"INVALID"},
+			"name":                name,
+			"event_categories":    []string{"INVALID"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
 
