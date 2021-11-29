@@ -167,6 +167,17 @@ func GetAlertRuleProps(result string) api.AlertRuleResponse {
 	return data
 }
 
+func GetReportRuleProps(result string) api.ReportRuleResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	var data api.ReportRuleResponse
+	err := LwClient.V2.ReportRules.Get(id, &data)
+	if err != nil {
+		log.Fatalf("Unable to retrieve report rule with id: %s", id)
+	}
+	return data
+}
+
 // GetSpecificIDFromTerraResults returns the specific index id found in the Terraform output
 func GetSpecificIDFromTerraResults(i int, result string) string {
 	re := regexp.MustCompile(`\[id=(.*?)\]`)
