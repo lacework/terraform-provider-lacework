@@ -314,18 +314,13 @@ func resourceLaceworkReportRuleCreate(d *schema.ResourceData, meta interface{}) 
 		channels       = d.Get("email_alert_channels").(*schema.Set).List()
 	)
 
-	notifications, err := getReportRuleNotifications(d)
-	if err != nil {
-		return err
-	}
-
 	reportRule, err := api.NewReportRule(d.Get("name").(string),
 		api.ReportRuleConfig{
 			Description:        d.Get("description").(string),
 			Severities:         severities,
 			ResourceGroups:     castStringSlice(resourceGroups),
 			EmailAlertChannels: castStringSlice(channels),
-			NotificationTypes:  notifications,
+			NotificationTypes:  getReportRuleNotifications(d),
 		},
 	)
 
@@ -392,18 +387,13 @@ func resourceLaceworkReportRuleUpdate(d *schema.ResourceData, meta interface{}) 
 		channels       = d.Get("email_alert_channels").(*schema.Set).List()
 	)
 
-	notifications, err := getReportRuleNotifications(d)
-	if err != nil {
-		return err
-	}
-
 	reportRule, err := api.NewReportRule(d.Get("name").(string),
 		api.ReportRuleConfig{
 			Description:        d.Get("description").(string),
 			Severities:         severities,
 			ResourceGroups:     castStringSlice(resourceGroups),
 			EmailAlertChannels: castStringSlice(channels),
-			NotificationTypes:  notifications,
+			NotificationTypes:  getReportRuleNotifications(d),
 		},
 	)
 
@@ -419,7 +409,6 @@ func resourceLaceworkReportRuleUpdate(d *schema.ResourceData, meta interface{}) 
 
 	log.Printf("[INFO] Updating report rule with data:\n%+v\n", reportRule)
 	response, err := lacework.V2.ReportRules.Update(reportRule)
-
 	if err != nil {
 		return err
 	}
@@ -466,7 +455,7 @@ func importLaceworkReportRule(d *schema.ResourceData, meta interface{}) ([]*sche
 	return []*schema.ResourceData{d}, nil
 }
 
-func getReportRuleNotifications(d *schema.ResourceData) (api.ReportRuleNotifications, error) {
+func getReportRuleNotifications(d *schema.ResourceData) api.ReportRuleNotifications {
 	var reports api.ReportRuleNotifications
 
 	if _, ok := d.GetOk("aws_compliance_reports"); ok {
@@ -532,7 +521,7 @@ func getReportRuleNotifications(d *schema.ResourceData) (api.ReportRuleNotificat
 		reports = append(reports, weeklyReport)
 	}
 
-	return reports, nil
+	return reports
 }
 
 func setNotificationTypes(d *schema.ResourceData, notifications api.ReportRuleNotificationTypes) {

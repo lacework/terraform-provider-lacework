@@ -168,7 +168,7 @@ func GetAlertRuleProps(result string) api.AlertRuleResponse {
 }
 
 func GetReportRuleProps(result string) api.ReportRuleResponse {
-	id := GetSpecificIDFromTerraResults(1, result)
+	id := GetSpecificIDFromTerraResults(3, result)
 
 	var data api.ReportRuleResponse
 	err := LwClient.V2.ReportRules.Get(id, &data)

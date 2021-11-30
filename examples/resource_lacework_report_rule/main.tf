@@ -6,13 +6,29 @@ terraform {
   }
 }
 
+resource "lacework_alert_channel_email" "email_alerts" {
+  name       = "Used for Report Rules Testing"
+  recipients = ["foo@example.com"]
+
+  // test_integration input is used in this example only for testing
+  // purposes, it help us avoid sending a "test" request to the
+  // system we are integrating to. In production, this should remain
+  // turned on ("true") which is the default setting
+  test_integration = false
+}
+
+resource "lacework_resource_group_aws" "aws_group" {
+  name     = var.resource_group_name
+  accounts = ["*"]
+}
+
 resource "lacework_report_rule" "example" {
   name             = var.name
   description      = var.description
   enabled         = true
   severities      = var.severities
-  resource_groups = var.resource_groups
-  email_alert_channels = var.channels
+  resource_groups = [lacework_resource_group_aws.aws_group.id]
+  email_alert_channels = [lacework_alert_channel_email.email_alerts.id]
 
   aws_compliance_reports {
     pci = var.aws_pci
@@ -33,7 +49,7 @@ resource "lacework_report_rule" "example" {
 
 variable "name" {
   type    = string
-  default = "Report Rule 1"
+  default = "Terraform Report Rule"
 }
 
 variable "description" {
@@ -74,6 +90,11 @@ variable "daily_cloudtrail" {
 variable "snapshot" {
   type    = bool
   default = true
+}
+
+variable "resource_group_name" {
+  type    = string
+  default = "Used for Report Rules Testing"
 }
 
 output "name" {
