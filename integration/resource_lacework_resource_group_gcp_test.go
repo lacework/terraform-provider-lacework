@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -13,12 +15,14 @@ import (
 // It uses the go-sdk to verify the created resource group,
 // applies an update with new description and destroys it
 func TestResourceGroupGcpCreate(t *testing.T) {
+	name := fmt.Sprintf("Terraform Test LwAccount Resource Group - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_gcp",
 		Vars: map[string]interface{}{
-			"description":  "Terraform Test Gcp Resource Group",
-			"organization": "MyGcpOrg",
-			"projects":     []string{"pro-123", "pro-321"},
+			"resource_group_name": name,
+			"description":         "Terraform Test Gcp Resource Group",
+			"organization":        "MyGcpOrg",
+			"projects":            []string{"pro-123", "pro-321"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
