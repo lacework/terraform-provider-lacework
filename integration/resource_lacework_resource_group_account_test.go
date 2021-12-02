@@ -20,8 +20,8 @@ func TestResourceGroupLwAccountCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_account",
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
-			"description": "Terraform Test LwAccount Resource Group",
-			"lw_accounts": []string{"tech-ally"},
+			"description":         "Terraform Test LwAccount Resource Group",
+			"lw_accounts":         []string{"tech-ally"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)

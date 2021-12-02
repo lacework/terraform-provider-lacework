@@ -20,9 +20,9 @@ func TestResourceGroupGcpCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_gcp",
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
-			"description":  "Terraform Test Gcp Resource Group",
-			"organization": "MyGcpOrg",
-			"projects":     []string{"pro-123", "pro-321"},
+			"description":         "Terraform Test Gcp Resource Group",
+			"organization":        "MyGcpOrg",
+			"projects":            []string{"pro-123", "pro-321"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)

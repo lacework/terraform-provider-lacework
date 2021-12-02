@@ -20,9 +20,9 @@ func TestResourceGroupMachineCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_machine",
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
-			"description":   "Terraform Test Machine Resource Group",
-			"machine_key":   "test-key",
-			"machine_value": "test-value",
+			"description":         "Terraform Test Machine Resource Group",
+			"machine_key":         "test-key",
+			"machine_value":       "test-value",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)

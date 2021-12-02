@@ -20,9 +20,9 @@ func TestResourceGroupAzureCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_azure",
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
-			"description":   "Terraform Test Azure Resource Group",
-			"tenant":        "b21aa1ab-111a-11ab-a000-11aa1111a11a",
-			"subscriptions": []string{"1a1a0b2-abc0-1ab1-1abc-1a000ab0a0a0"},
+			"description":         "Terraform Test Azure Resource Group",
+			"tenant":              "b21aa1ab-111a-11ab-a000-11aa1111a11a",
+			"subscriptions":       []string{"1a1a0b2-abc0-1ab1-1abc-1a000ab0a0a0"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)

@@ -20,7 +20,7 @@ func TestResourceGroupAwsCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_aws",
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
-			"description": "Terraform Test Aws Resource Group",
+			"description":         "Terraform Test Aws Resource Group",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)

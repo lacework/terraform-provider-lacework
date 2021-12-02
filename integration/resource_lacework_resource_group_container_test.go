@@ -20,10 +20,10 @@ func TestResourceGroupContainerCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_resource_group_container",
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
-			"description": "Terraform Test Container Resource Group",
-			"ctr_tags":    []string{"test-tag"},
-			"ctr_key":     "test-key",
-			"ctr_value":   "test-value",
+			"description":         "Terraform Test Container Resource Group",
+			"ctr_tags":            []string{"test-tag"},
+			"ctr_key":             "test-key",
+			"ctr_value":           "test-value",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
