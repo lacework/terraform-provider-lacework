@@ -50,7 +50,7 @@ resource "lacework_resource_group_gcp" "all_gcp_projects" {
 resource "lacework_report_rule" "example" {
   name                 = "My Report Rule"
   description          = "This is an example report rule"
-  email_alert_channels = [lacework_report_channel_slack.ops_critical.id]
+  email_alert_channels = [lacework_report_channel_email.team_email.id]
   resource_groups      = [lacework_resource_group_gcp.all_gcp_projects.id]
   severities           = ["Critical"]
 
