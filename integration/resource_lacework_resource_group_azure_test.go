@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -13,9 +15,11 @@ import (
 // It uses the go-sdk to verify the created resource group,
 // applies an update with new description and destroys it
 func TestResourceGroupAzureCreate(t *testing.T) {
+	name := fmt.Sprintf("Terraform Test Azure Resource Group - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_azure",
 		Vars: map[string]interface{}{
+			"resource_group_name": name,
 			"description":   "Terraform Test Azure Resource Group",
 			"tenant":        "b21aa1ab-111a-11ab-a000-11aa1111a11a",
 			"subscriptions": []string{"1a1a0b2-abc0-1ab1-1abc-1a000ab0a0a0"},
