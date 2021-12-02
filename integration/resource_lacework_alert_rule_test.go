@@ -16,6 +16,7 @@ import (
 //
 // It uses the go-sdk to verify the created alert rule,
 // applies an update and destroys it
+//nolint
 func _TestAlertRuleCreate(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
@@ -88,6 +89,7 @@ func _TestAlertRuleCreate(t *testing.T) {
 	assert.Equal(t, "[Compliance User Platform]", actualEventCategories)
 }
 
+//nolint
 func _TestAlertRuleSeverities(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
@@ -130,6 +132,7 @@ func _TestAlertRuleSeverities(t *testing.T) {
 	}
 }
 
+//nolint
 func _TestAlertRuleCategories(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
