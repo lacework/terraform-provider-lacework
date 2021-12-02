@@ -71,10 +71,10 @@ The following arguments are supported:
 * `description` - (Optional) The description of the report rule.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `aws_compliance_reports` - (Optional) Compliance reports for Aws. See [Aws Compliance Reports](#Aws Compliance Reports) below for details.
-* `azure_compliance_reports` - (Optional) Compliance reports for Azure. See [Azure Compliance Reports](#Azure Compliance Reports) below for details.
-* `gcp_compliance_reports` - (Optional) Compliance reports for Gcp. See [Gcp Compliance Reports](#Gcp Compliance Reports) below for details.
-* `daily_compliance_reports` - (Optional) Daily event summary reports. See [Daily Compliance Reports](#Daily Compliance Reports) below for details.
+* `aws_compliance_reports` - (Optional) Compliance reports for Aws. See [Aws Compliance Reports](#aws-compliance-reports) below for details.
+* `azure_compliance_reports` - (Optional) Compliance reports for Azure. See [Azure Compliance Reports](#azure-compliance-reports) below for details.
+* `gcp_compliance_reports` - (Optional) Compliance reports for Gcp. See [Gcp Compliance Reports](#gcp-compliance-reports) below for details.
+* `daily_compliance_reports` - (Optional) Daily event summary reports. See [Daily Compliance Reports](#faily-compliance-reports) below for details.
 * `weekly_snapshot` - (Optional) A weekly compliance trend report for all monitored resources. Defaults to `false`.
 
 ### Aws Compliance Reports
