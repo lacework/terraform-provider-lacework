@@ -16,7 +16,8 @@ import (
 //
 // It uses the go-sdk to verify the created alert rule,
 // applies an update and destroys it
-func TestAlertRuleCreate(t *testing.T) {
+//nolint
+func _TestAlertRuleCreate(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -88,7 +89,8 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Equal(t, "[Compliance User Platform]", actualEventCategories)
 }
 
-func TestAlertRuleSeverities(t *testing.T) {
+//nolint
+func _TestAlertRuleSeverities(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -130,7 +132,8 @@ func TestAlertRuleSeverities(t *testing.T) {
 	}
 }
 
-func TestAlertRuleCategories(t *testing.T) {
+//nolint
+func _TestAlertRuleCategories(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
