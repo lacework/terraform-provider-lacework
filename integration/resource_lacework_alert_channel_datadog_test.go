@@ -25,7 +25,7 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 
 	// Create new Datadog Alert Channel
 	create := terraform.InitAndApply(t, terraformOptions)
-	assert.Equal(t, "Datadog Alert Channel Example", GetIntegrationName(create))
+	assert.Equal(t, "Datadog Alert Channel Example", GetIntegrationName(create, "DATADOG"))
 
 	// Update Datadog Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
@@ -49,7 +49,7 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 	actualDatadogSite := terraform.Output(t, terraformOptions, "datadog_site")
 	actualDatadogService := terraform.Output(t, terraformOptions, "datadog_service")
 	actualApiKey := terraform.Output(t, terraformOptions, "api_key")
-	assert.Equal(t, "Datadog Alert Channel Updated", GetIntegrationName(update))
+	assert.Equal(t, "Datadog Alert Channel Updated", GetIntegrationName(update, "DATADOG"))
 	assert.Equal(t, "com", actualDatadogSite)
 	assert.Equal(t, "Logs Detail", actualDatadogService)
 	assert.Equal(t, apiKey, actualApiKey)
