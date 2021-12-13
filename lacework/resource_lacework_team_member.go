@@ -2,11 +2,12 @@ package lacework
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
 	"github.com/pkg/errors"
-	"log"
-	"strings"
 )
 
 func resourceLaceworkTeamMember() *schema.Resource {
@@ -59,13 +60,11 @@ func resourceLaceworkTeamMember() *schema.Resource {
 						"administrator": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Default:     false,
 							Description: "Whether the team member is an admin at the org level for the account",
 						},
 						"user": {
 							Type:        schema.TypeBool,
 							Optional:    true,
-							Default:     false,
 							Description: "Whether the team member is an org level user",
 						},
 						"admin_accounts": {
@@ -110,7 +109,61 @@ func resourceLaceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) 
 }
 
 func laceworkTeamMemberCreateOrg(d *schema.ResourceData, meta interface{}) error {
-	//TODO implement me please and thank you :)
+	lacework := meta.(*api.Client)
+
+	tmOrg := api.NewTeamMemberOrg(d.Get("email").(string),
+		api.TeamMemberProps{
+			AccountAdmin: d.Get("administrator").(bool),
+			Company:      d.Get("company").(string),
+			FirstName:    d.Get("first_name").(string),
+			LastName:     d.Get("last_name").(string),
+		})
+
+	var enabled int
+	if d.Get("enabled").(bool) {
+		enabled = 1
+	}
+	tmOrg.UserEnabled = enabled
+
+	// Validate that the user isn't trying to be both an admin and org user
+	orgAdmin := d.Get("organization.0.administrator").(bool)
+	orgUser := d.Get("organization.0.user").(bool)
+	if orgAdmin && orgUser {
+		return errors.New("team member cannot be both an admin or an org and a user of an org")
+	}
+	tmOrg.OrgAdmin = orgAdmin
+	tmOrg.OrgUser = orgUser
+	adminAccounts := castStringSlice(d.Get("organization.0.admin_accounts").([]interface{}))
+	userAccounts := castStringSlice(d.Get("organization.0.user_accounts").([]interface{}))
+
+	var upperAdminAccounts []string
+	if len(adminAccounts) > 0 {
+		for _, adminAccount := range adminAccounts {
+			upperAdminAccounts = append(upperAdminAccounts, strings.ToUpper(adminAccount))
+		}
+	}
+
+	var upperUserAccounts []string
+	if len(userAccounts) > 0 {
+		for _, userAccount := range userAccounts {
+			upperUserAccounts = append(upperUserAccounts, strings.ToUpper(userAccount))
+		}
+	}
+
+	tmOrg.AdminRoleAccounts = upperAdminAccounts
+	tmOrg.UserRoleAccounts = userAccounts
+
+	log.Printf("[Info] Creating org team member with data %v\n", tmOrg)
+	response, err := lacework.V2.TeamMembers.CreateOrg(tmOrg)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(response.Data.UserName)
+	d.Set("email", response.Data.UserName)
+	d.Set("guid", response.Data.UserName)
+
+	log.Printf("[INF0] Created org team member with username %s\n", response.Data.UserName)
 	return nil
 }
 
@@ -146,7 +199,7 @@ func laceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 	d.Set("administrator", response.Data.Props.AccountAdmin)
 	d.Set("guid", response.Data.UserGuid)
 
-	fmt.Printf("[INFP] Created team member with user guid %s\n", response.Data.UserGuid)
+	fmt.Printf("[INF0] Created team member with user guid %s\n", response.Data.UserGuid)
 	return nil
 }
 
@@ -287,4 +340,57 @@ func importLaceworkTeamMember(d *schema.ResourceData, meta interface{}) ([]*sche
 	}
 	log.Printf("[INFO] Team Member with user guid: %s\n found", response.Data.UserGuid)
 	return []*schema.ResourceData{d}, nil
+}
+
+func searchAccountNames(d *schema.ResourceData, meta interface{}, username string) (adminAccountNames, userAccountNames []string, err error) {
+	lacework := meta.(*api.Client)
+
+	// Search for the user by username to get a list of all the account names
+	tmOrgSearch, err := lacework.V2.TeamMembers.SearchUsername(username)
+	if err != nil {
+		return
+	}
+
+	var orgAccountGuids []string
+	var userAccountGuids []string
+
+	for _, tmOrgAccount := range tmOrgSearch.Data {
+		if tmOrgAccount.Props.OrgUser {
+			userAccountGuids = append(userAccountGuids, tmOrgAccount.CustGuid)
+		}
+		if tmOrgAccount.Props.OrgAdmin {
+			orgAccountGuids = append(orgAccountGuids, tmOrgAccount.CustGuid)
+		}
+	}
+
+	for _, adminAccountGuid := range orgAccountGuids {
+		res, err := lacework.V2.UserProfile.Get()
+		if err != nil {
+			return
+		}
+		for _, userProfile := range res.Data {
+			for _, account := range userProfile.Accounts {
+				if account.CustGUID == adminAccountGuid {
+					adminAccountNames = append(adminAccountNames, strings.ToUpper(account.AccountName))
+				}
+			}
+		}
+	}
+
+	for _, userAccountGuid := range userAccountGuids {
+		res, profileErr := lacework.V2.UserProfile.Get()
+		if profileErr != nil {
+			err = profileErr
+			return
+		}
+		for _, userProfile := range res.Data {
+			for _, account := range userProfile.Accounts {
+				if account.CustGUID == userAccountGuid {
+					userAccountNames = append(userAccountNames, strings.ToUpper(account.AccountName))
+				}
+			}
+		}
+	}
+	return
+
 }
