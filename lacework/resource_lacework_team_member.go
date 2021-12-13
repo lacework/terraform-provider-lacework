@@ -96,6 +96,18 @@ func resourceLaceworkTeamMember() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"created_time": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"updated_time": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"updated_by": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -151,17 +163,17 @@ func laceworkTeamMemberCreateOrg(d *schema.ResourceData, meta interface{}) error
 	}
 
 	tmOrg.AdminRoleAccounts = upperAdminAccounts
-	tmOrg.UserRoleAccounts = userAccounts
+	tmOrg.UserRoleAccounts = upperUserAccounts
 
-	log.Printf("[Info] Creating org team member with data %v\n", tmOrg)
+	log.Printf("[Info] Creating org team member with data %+v\n", tmOrg)
 	response, err := lacework.V2.TeamMembers.CreateOrg(tmOrg)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(response.Data.UserName)
+	d.SetId(response.Data.Accounts[0].UserGuid)
 	d.Set("email", response.Data.UserName)
-	d.Set("guid", response.Data.UserName)
+	d.Set("guid", response.Data.Accounts[0].UserGuid)
 
 	log.Printf("[INF0] Created org team member with username %s\n", response.Data.UserName)
 	return nil
@@ -198,6 +210,9 @@ func laceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 	d.Set("enabled", response.Data.UserEnabled == 1)
 	d.Set("administrator", response.Data.Props.AccountAdmin)
 	d.Set("guid", response.Data.UserGuid)
+	d.Set("created_time", response.Data.Props.CreatedTime)
+	d.Set("updated_time", response.Data.Props.UpdatedTime)
+	d.Set("updated_by", response.Data.Props.UpdatedBy)
 
 	fmt.Printf("[INF0] Created team member with user guid %s\n", response.Data.UserGuid)
 	return nil
@@ -214,7 +229,40 @@ func resourceLaceworkTeamMemberRead(d *schema.ResourceData, meta interface{}) er
 }
 
 func laceworkTeamMemberReadOrg(d *schema.ResourceData, meta interface{}) error {
-	// TODO implement me please and thank you :)
+	lacework := meta.(*api.Client)
+
+	log.Printf("[INFO] Reading org team member with user guid %s\n", d.Id())
+
+	var response api.TeamMemberResponse
+	if err := lacework.V2.TeamMembers.Get(d.Id(), &response); err != nil {
+		return err
+	}
+
+	d.SetId(response.Data.UserGuid)
+	d.Set("email", response.Data.UserName)
+	d.Set("first_name", response.Data.Props.FirstName)
+	d.Set("last_name", response.Data.Props.LastName)
+	d.Set("company", response.Data.Props.Company)
+	d.Set("enabled", response.Data.UserEnabled == 1)
+	d.Set("administrator", response.Data.Props.AccountAdmin)
+	d.Set("guid", response.Data.UserGuid)
+	d.Set("created_time", response.Data.Props.CreatedTime)
+	d.Set("updated_time", response.Data.Props.UpdatedTime)
+	d.Set("updated_by", response.Data.Props.UpdatedBy)
+
+	adminAccountNames, userAccountNames, err := searchAccountNames(d, meta, response.Data.UserName)
+	if err != nil {
+		return err
+	}
+	org := make(map[string]interface{})
+	org["administrator"] = response.Data.Props.OrgAdmin
+	org["user"] = response.Data.Props.OrgUser
+	org["admin_accounts"] = adminAccountNames
+	org["user_accounts"] = userAccountNames
+
+	d.Set("organization", []map[string]interface{}{org})
+
+	log.Printf("[INFO] Read org team member with user guid %s\n", response.Data.UserGuid)
 	return nil
 }
 
@@ -236,6 +284,9 @@ func laceworkTeamMemberRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("enabled", response.Data.UserEnabled == 1)
 	d.Set("administrator", response.Data.Props.AccountAdmin)
 	d.Set("guid", response.Data.UserGuid)
+	d.Set("created_time", response.Data.Props.CreatedTime)
+	d.Set("updated_time", response.Data.Props.UpdatedTime)
+	d.Set("updated_by", response.Data.Props.UpdatedBy)
 	// The organization information here should be empty because this is an account level read
 	org := make(map[string]interface{})
 	d.Set("organization", []map[string]interface{}{org})
@@ -255,12 +306,74 @@ func resourceLaceworkTeamMemberUpdate(d *schema.ResourceData, meta interface{}) 
 }
 
 func laceworkTeamMemberUpdateOrg(d *schema.ResourceData, meta interface{}) error {
-	// TODO implement me please and thank you :)
+	lacework := meta.(*api.Client)
+
+	tmOrg := api.NewTeamMemberOrg(d.Get("email").(string),
+		api.TeamMemberProps{
+			AccountAdmin: d.Get("administrator").(bool),
+			Company:      d.Get("company").(string),
+			FirstName:    d.Get("first_name").(string),
+			LastName:     d.Get("last_name").(string),
+		})
+
+	var enabled int
+	if d.Get("enabled").(bool) {
+		enabled = 1
+	}
+	tmOrg.UserEnabled = enabled
+	tmOrg.UserGuid = d.Id()
+
+	// Validate that the user isn't trying to be both an admin and org user
+	orgAdmin := d.Get("organization.0.administrator").(bool)
+	orgUser := d.Get("organization.0.user").(bool)
+	if orgAdmin && orgUser {
+		return errors.New("team member cannot be both an admin or an org and a user of an org")
+	}
+	tmOrg.OrgAdmin = orgAdmin
+	tmOrg.OrgUser = orgUser
+	adminAccounts := castStringSlice(d.Get("organization.0.admin_accounts").([]interface{}))
+	userAccounts := castStringSlice(d.Get("organization.0.user_accounts").([]interface{}))
+
+	var upperAdminAccounts []string
+	if len(adminAccounts) > 0 {
+		for _, adminAccount := range adminAccounts {
+			upperAdminAccounts = append(upperAdminAccounts, strings.ToUpper(adminAccount))
+		}
+	}
+
+	var upperUserAccounts []string
+	if len(userAccounts) > 0 {
+		for _, userAccount := range userAccounts {
+			upperUserAccounts = append(upperUserAccounts, strings.ToUpper(userAccount))
+		}
+	}
+
+	tmOrg.AdminRoleAccounts = upperAdminAccounts
+	tmOrg.UserRoleAccounts = upperUserAccounts
+
+	log.Printf("[INFO] Updating team member with data:\n%+v\n", tmOrg)
+	response, err := lacework.V2.TeamMembers.UpdateOrg(tmOrg)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(response.Data.Accounts[0].UserGuid)
+	d.Set("email", response.Data.UserName)
+	d.Set("guid", response.Data.Accounts[0].UserGuid)
+
+	org := make(map[string]interface{})
+	org["administrator"] = response.Data.OrgAdmin
+	org["user"] = response.Data.OrgUser
+	org["admin_accounts"] = upperAdminAccounts
+	org["user_accounts"] = upperUserAccounts
+
+	d.Set("organization", []map[string]interface{}{org})
+
+	log.Printf("[INFO] Updated team member with user guid %s\n", response.Data.Accounts[0].UserGuid)
 	return nil
 }
 
 func laceworkTeamMemberUpdate(d *schema.ResourceData, meta interface{}) error {
-
 	lacework := meta.(*api.Client)
 
 	tm := api.NewTeamMember(d.Get("email").(string),
@@ -311,7 +424,15 @@ func resourceLaceworkTeamMemberDelete(d *schema.ResourceData, meta interface{}) 
 }
 
 func laceworkTeamMemberDeleteOrg(d *schema.ResourceData, meta interface{}) error {
-	// TODO implement me please and thank you :)
+	lacework := meta.(*api.Client)
+
+	log.Printf("[INFO] Deleting team member with the user guid: %s\n", d.Id())
+	err := lacework.V2.TeamMembers.DeleteOrg(d.Id())
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[INFO] Deleted team member with user guid: %s\n", d.Id())
 	return nil
 }
 
@@ -351,21 +472,27 @@ func searchAccountNames(d *schema.ResourceData, meta interface{}, username strin
 		return
 	}
 
+	log.Printf("tmOrgSearch: %+v", tmOrgSearch)
+
 	var orgAccountGuids []string
 	var userAccountGuids []string
 
 	for _, tmOrgAccount := range tmOrgSearch.Data {
-		if tmOrgAccount.Props.OrgUser {
-			userAccountGuids = append(userAccountGuids, tmOrgAccount.CustGuid)
-		}
-		if tmOrgAccount.Props.OrgAdmin {
+		if tmOrgAccount.Props.AccountAdmin {
 			orgAccountGuids = append(orgAccountGuids, tmOrgAccount.CustGuid)
+
+		} else {
+			userAccountGuids = append(userAccountGuids, tmOrgAccount.CustGuid)
 		}
 	}
 
+	log.Printf("userAccountGuids: %+v", userAccountGuids)
+	log.Printf("orgAccountGuids: %+v", orgAccountGuids)
+
 	for _, adminAccountGuid := range orgAccountGuids {
-		res, err := lacework.V2.UserProfile.Get()
-		if err != nil {
+		res, getErr := lacework.V2.UserProfile.Get()
+		if getErr != nil {
+			err = getErr
 			return
 		}
 		for _, userProfile := range res.Data {
@@ -391,6 +518,7 @@ func searchAccountNames(d *schema.ResourceData, meta interface{}, username strin
 			}
 		}
 	}
+	log.Printf("userAccountNames: %+v", userAccountNames)
+	log.Printf("adminAccountNames: %+v", adminAccountNames)
 	return
-
 }
