@@ -30,7 +30,7 @@ func TestAlertChannelAwsS3Create(t *testing.T) {
 
 		// Create new AwsS3 Alert Channel
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-		assert.Equal(t, "AwsS3 Alert Channel Example", GetIntegrationName(create))
+		assert.Equal(t, "AwsS3 Alert Channel Example", GetIntegrationName(create, "AWS_S3"))
 
 		// Update AwsS3 Alert Channel
 		terraformOptions.Vars = map[string]interface{}{
@@ -44,6 +44,6 @@ func TestAlertChannelAwsS3Create(t *testing.T) {
 		}
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
-		assert.Equal(t, "AwsS3 Alert Channel Updated", GetIntegrationName(update))
+		assert.Equal(t, "AwsS3 Alert Channel Updated", GetIntegrationName(update, "AWS_S3"))
 	}
 }

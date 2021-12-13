@@ -45,15 +45,17 @@ func lwOrgTestClient() (lw *api.Client) {
 	return
 }
 
-func GetIntegrationName(result string) string {
+func GetIntegrationName(result string, integration string) string {
+	var res api.V2CommonIntegration
 	id := GetIDFromTerraResults(result)
 
-	res, err := LwClient.Integrations.Get(id)
-	if err != nil || len(res.Data) == 0 {
+	integrationType, _ := api.FindIntegrationType(integration)
+	err := LwClient.V2.Schemas.GetService(integrationType.Schema()).Get(id, &res)
+	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
 
-	return res.Data[0].Name
+	return res.Data.Name
 }
 
 func GetEcrWithCrossAccountCreds(result string) api.AwsEcrWithCrossAccountIntegration {

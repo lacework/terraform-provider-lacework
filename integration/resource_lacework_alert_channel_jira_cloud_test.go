@@ -29,7 +29,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 
 	// Create new Jira Cloud Alert Channel
 	create := terraform.InitAndApply(t, terraformOptions)
-	assert.Equal(t, "My Jira Cloud Example", GetIntegrationName(create))
+	assert.Equal(t, "My Jira Cloud Example", GetIntegrationName(create, "JIRA"))
 
 	// Update Jira Cloud Alert Channel
 	terraformOptions.Vars = map[string]interface{}{

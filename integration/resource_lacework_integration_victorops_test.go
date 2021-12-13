@@ -22,7 +22,7 @@ func TestVictorOpsAlertChannelCreate(t *testing.T) {
 
 	// Create new VictorOps Alert Channel
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "VictorOps Alert Channel Example", GetIntegrationName(create))
+	assert.Equal(t, "VictorOps Alert Channel Example", GetIntegrationName(create, "VICTOR_OPS"))
 
 	// Update VictorOps Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
@@ -33,7 +33,7 @@ func TestVictorOpsAlertChannelCreate(t *testing.T) {
 
 	actualName := terraform.Output(t, terraformOptions, "channel_name")
 	actualUrl := terraform.Output(t, terraformOptions, "webhook_url")
-	assert.Equal(t, "VictorOps Alert Channel Updated", GetIntegrationName(update))
+	assert.Equal(t, "VictorOps Alert Channel Updated", GetIntegrationName(update, "VICTOR_OPS"))
 	assert.Equal(t, "VictorOps Alert Channel Updated", actualName)
 	assert.Equal(t, "https://alert.victorops.com/integrations/generic/12331114/alert/31e945ee-5cad-44e7-afb0-97c20ea80dd8/database", actualUrl)
 }
