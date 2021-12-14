@@ -29,7 +29,7 @@ func TestPagerDutyAlertChannelCreate(t *testing.T) {
 	actualName := terraform.Output(t, terraformOptions, "channel_name")
 
 	assert.Equal(t, "PagerDuty Alert Channel Example", created.Data.Name)
-	assert.Equal(t, "1234abc8901abc567abc123abc78e012", data["apiIntgKey"])
+	assert.Equal(t, "", data["apiIntgKey"])
 
 	assert.Equal(t, "PagerDuty Alert Channel Example", actualName)
 
@@ -47,7 +47,7 @@ func TestPagerDutyAlertChannelCreate(t *testing.T) {
 	actualName = terraform.Output(t, terraformOptions, "channel_name")
 
 	assert.Equal(t, "PagerDuty Alert Channel Updated", updated.Data.Name)
-	assert.Equal(t, "1234abc8901abc567abc123abc78e013", data["apiIntgKey"])
+	assert.Equal(t, "", data["apiIntgKey"])
 
 	assert.Equal(t, "PagerDuty Alert Channel Updated", actualName)
 }
