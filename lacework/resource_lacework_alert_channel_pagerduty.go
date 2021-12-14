@@ -127,7 +127,6 @@ func resourceLaceworkAlertChannelPagerDutyRead(d *schema.ResourceData, meta inte
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
-	d.Set("integration_key", integration.Data.IntegrationKey)
 
 	log.Printf("[INFO] Read %s integration with guid %s\n",
 		api.PagerDutyApiAlertChannelType, integration.IntgGuid)
