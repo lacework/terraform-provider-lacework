@@ -11,15 +11,13 @@ provider "lacework" {
 }
 
 resource "lacework_team_member" "example" {
-  email         = "vatasha.white+1@lacework.net"
-  first_name    = "Vatasha"
-  last_name     = "White"
-  company       = "Pokemon International Company"
-  enabled       = true
-  administrator = false
+  email      = "vatasha.white+1@lacework.net"
+  first_name = "Vatasha"
+  last_name  = "White"
+  company    = "Pokemon International Company"
+
   organization {
     admin_accounts = ["tech-ally", "xyz"]
-    user_accounts = ["customerdemo"]
-
+    user_accounts  = ["customerdemo"]
   }
 }

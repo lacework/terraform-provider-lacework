@@ -49,6 +49,7 @@ func resourceLaceworkTeamMember() *schema.Resource {
 			},
 			"administrator": {
 				Type:        schema.TypeBool,
+				Default:     false,
 				Optional:    true,
 				Description: "Whether the team member has admin role access into the Lacework account",
 			},
@@ -60,34 +61,34 @@ func resourceLaceworkTeamMember() *schema.Resource {
 						"administrator": {
 							Type:        schema.TypeBool,
 							Optional:    true,
+							Default:     false,
 							Description: "Whether the team member is an admin at the org level for the account",
 						},
-						"user": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Description: "Whether the team member is an org level user",
-						},
 						"admin_accounts": {
-							Type: schema.TypeList,
+							// We are not using Set because we need to use DiffSuppressFunc: https://github.com/hashicorp/terraform-plugin-sdk/issues/160
+							Type:             schema.TypeList,
+							Optional:         true,
+							Description:      "List of accounts the team member is an admin",
+							DiffSuppressFunc: diffCaseInsensitive,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 								StateFunc: func(val interface{}) string {
-									return strings.TrimSpace(val.(string))
+									return strings.ToUpper(strings.TrimSpace(val.(string)))
 								},
 							},
-							Optional:    true,
-							Description: "List of accounts the team member is an admin in",
 						},
 						"user_accounts": {
-							Type: schema.TypeList,
+							// We are not using Set because we need to use DiffSuppressFunc: https://github.com/hashicorp/terraform-plugin-sdk/issues/160
+							Type:             schema.TypeList,
+							Optional:         true,
+							Description:      "List of accounts the team member is a user",
+							DiffSuppressFunc: diffCaseInsensitive,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 								StateFunc: func(val interface{}) string {
-									return strings.TrimSpace(val.(string))
+									return strings.ToUpper(strings.TrimSpace(val.(string)))
 								},
 							},
-							Optional:    true,
-							Description: "List of accounts the team member is a user in",
 						},
 					},
 				},
@@ -131,51 +132,61 @@ func laceworkTeamMemberCreateOrg(d *schema.ResourceData, meta interface{}) error
 			LastName:     d.Get("last_name").(string),
 		})
 
-	var enabled int
-	if d.Get("enabled").(bool) {
-		enabled = 1
-	}
-	tmOrg.UserEnabled = enabled
-
-	// Validate that the user isn't trying to be both an admin and org user
-	orgAdmin := d.Get("organization.0.administrator").(bool)
-	orgUser := d.Get("organization.0.user").(bool)
-	if orgAdmin && orgUser {
-		return errors.New("team member cannot be both an admin or an org and a user of an org")
-	}
-	tmOrg.OrgAdmin = orgAdmin
-	tmOrg.OrgUser = orgUser
-	adminAccounts := castStringSlice(d.Get("organization.0.admin_accounts").([]interface{}))
-	userAccounts := castStringSlice(d.Get("organization.0.user_accounts").([]interface{}))
-
-	var upperAdminAccounts []string
-	if len(adminAccounts) > 0 {
-		for _, adminAccount := range adminAccounts {
-			upperAdminAccounts = append(upperAdminAccounts, strings.ToUpper(adminAccount))
-		}
+	if !d.Get("enabled").(bool) {
+		tmOrg.UserEnabled = 0
 	}
 
-	var upperUserAccounts []string
-	if len(userAccounts) > 0 {
-		for _, userAccount := range userAccounts {
-			upperUserAccounts = append(upperUserAccounts, strings.ToUpper(userAccount))
-		}
+	if d.Get("organization.0.administrator").(bool) {
+		// by default the go-sdk returns an organization user,
+		// if 'administrator=true' we flip both flags
+		tmOrg.OrgAdmin = true
+		tmOrg.OrgUser = false
 	}
 
-	tmOrg.AdminRoleAccounts = upperAdminAccounts
-	tmOrg.UserRoleAccounts = upperUserAccounts
+	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d, "organization.0.admin_accounts")
+	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d, "organization.0.user_accounts")
 
-	log.Printf("[Info] Creating org team member with data %+v\n", tmOrg)
+	if len(tmOrg.AdminRoleAccounts) != 0 || len(tmOrg.UserRoleAccounts) != 0 {
+		// if admin_accounts or user_accounts are set, turn off OrgUser which is turned on by default
+		tmOrg.OrgUser = false
+	}
+
+	if err := validateOrgTeamMember(&tmOrg); err != nil {
+		return err
+	}
+
+	log.Printf("[INFO] Creating org team member with data %+v\n", tmOrg)
 	response, err := lacework.V2.TeamMembers.CreateOrg(tmOrg)
 	if err != nil {
 		return err
 	}
 
 	d.SetId(response.Data.Accounts[0].UserGuid)
-	d.Set("email", response.Data.UserName)
 	d.Set("guid", response.Data.Accounts[0].UserGuid)
 
-	log.Printf("[INF0] Created org team member with username %s\n", response.Data.UserName)
+	log.Printf("[INFO] Created org team member with username %s\n", response.Data.UserName)
+	return nil
+}
+
+func validateOrgTeamMember(m *api.TeamMemberOrg) error {
+	if len(m.AdminRoleAccounts) != 0 || len(m.UserRoleAccounts) != 0 {
+		// the user can't use the administrator argument with either admin_accounts or user_accounts
+		if m.OrgAdmin {
+			return errors.New("organization.0.admin_accounts and organization.0.user_accounts can't be used with the organization.0.administrator argument.")
+		}
+
+		// verify that an account doesn't exist in both lists
+		for _, account := range m.AdminRoleAccounts {
+			if ContainsStr(m.UserRoleAccounts, account) {
+				return errors.Errorf("the same account can't be specified in both arguments, organization.0.admin_accounts and organization.0.user_accounts")
+			}
+		}
+	}
+
+	// org team members can't use AdminUser in props API field
+	if m.Props.AccountAdmin {
+		return errors.New("administrator argument can't be used when creating an organizational team member, use organization.0.administrator instead")
+	}
 	return nil
 }
 
@@ -214,7 +225,7 @@ func laceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 	d.Set("updated_time", response.Data.Props.UpdatedTime)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
 
-	fmt.Printf("[INF0] Created team member with user guid %s\n", response.Data.UserGuid)
+	fmt.Printf("[INFO] Created team member with user guid %s\n", response.Data.UserGuid)
 	return nil
 }
 
