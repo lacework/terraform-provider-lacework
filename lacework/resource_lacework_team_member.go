@@ -164,10 +164,21 @@ func laceworkTeamMemberCreateOrg(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 
+	if len(response.Data.Accounts) == 0 {
+		msg := `
+Unable to read sever response data. (empty 'accounts' field)
+
+This was an unexpected behavior, verify that your team member has been
+created successfully and report this issue to support@lacework.net
+`
+		return errors.New(msg)
+	}
+
 	d.SetId(response.Data.Accounts[0].UserGuid)
 	d.Set("guid", response.Data.Accounts[0].UserGuid)
 
-	log.Printf("[INFO] Created org team member with username %s\n", response.Data.UserName)
+	log.Printf("[INFO] Created org team member with username %s and guid %s\n",
+		response.Data.UserName, d.Id())
 	return nil
 }
 
@@ -319,60 +330,57 @@ func laceworkTeamMemberUpdateOrg(d *schema.ResourceData, meta interface{}) error
 			LastName:     d.Get("last_name").(string),
 		})
 
-	var enabled int
-	if d.Get("enabled").(bool) {
-		enabled = 1
+	if !d.Get("enabled").(bool) {
+		tmOrg.UserEnabled = 0
 	}
-	tmOrg.UserEnabled = enabled
+
 	tmOrg.UserGuid = d.Id()
 
-	// Validate that the user isn't trying to be both an admin and org user
-	orgAdmin := d.Get("organization.0.administrator").(bool)
-	orgUser := d.Get("organization.0.user").(bool)
-	if orgAdmin && orgUser {
-		return errors.New("team member cannot be both an admin or an org and a user of an org")
-	}
-	tmOrg.OrgAdmin = orgAdmin
-	tmOrg.OrgUser = orgUser
-	adminAccounts := castStringSlice(d.Get("organization.0.admin_accounts").([]interface{}))
-	userAccounts := castStringSlice(d.Get("organization.0.user_accounts").([]interface{}))
-
-	var upperAdminAccounts []string
-	if len(adminAccounts) > 0 {
-		for _, adminAccount := range adminAccounts {
-			upperAdminAccounts = append(upperAdminAccounts, strings.ToUpper(adminAccount))
-		}
+	if d.Get("organization.0.administrator").(bool) {
+		// by default the go-sdk returns an organization user,
+		// if 'administrator=true' we flip both flags
+		tmOrg.OrgAdmin = true
+		tmOrg.OrgUser = false
 	}
 
-	var upperUserAccounts []string
-	if len(userAccounts) > 0 {
-		for _, userAccount := range userAccounts {
-			upperUserAccounts = append(upperUserAccounts, strings.ToUpper(userAccount))
-		}
+	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d, "organization.0.admin_accounts")
+	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d, "organization.0.user_accounts")
+
+	if len(tmOrg.AdminRoleAccounts) != 0 || len(tmOrg.UserRoleAccounts) != 0 {
+		// if admin_accounts or user_accounts are set, turn off OrgUser which is turned on by default
+		tmOrg.OrgUser = false
 	}
 
-	tmOrg.AdminRoleAccounts = upperAdminAccounts
-	tmOrg.UserRoleAccounts = upperUserAccounts
+	if err := validateOrgTeamMember(&tmOrg); err != nil {
+		return err
+	}
 
-	log.Printf("[INFO] Updating team member with data:\n%+v\n", tmOrg)
+	log.Printf("[INFO] Updating org team member with data:\n%+v\n", tmOrg)
 	response, err := lacework.V2.TeamMembers.UpdateOrg(tmOrg)
 	if err != nil {
 		return err
 	}
 
+	if len(response.Data.Accounts) == 0 {
+		msg := `
+Unable to read sever response data. (empty 'accounts' field)
+
+This was an unexpected behavior, verify that your team member has been
+updated successfully and report this issue to support@lacework.net
+`
+		return errors.New(msg)
+	}
+
+	// we should never override the Id() of the Terraform resource but,
+	// our APIs does not have a way to track an org team member, so for
+	// now we are allowing this until we change our APIs with:
+	//
+	// => https://lacework.atlassian.net/browse/RAIN-23992
 	d.SetId(response.Data.Accounts[0].UserGuid)
-	d.Set("email", response.Data.UserName)
 	d.Set("guid", response.Data.Accounts[0].UserGuid)
 
-	org := make(map[string]interface{})
-	org["administrator"] = response.Data.OrgAdmin
-	org["user"] = response.Data.OrgUser
-	org["admin_accounts"] = upperAdminAccounts
-	org["user_accounts"] = upperUserAccounts
-
-	d.Set("organization", []map[string]interface{}{org})
-
-	log.Printf("[INFO] Updated team member with user guid %s\n", response.Data.Accounts[0].UserGuid)
+	log.Printf("[INFO] Updated org team member with username %s and guid %s\n",
+		response.Data.UserName, d.Id())
 	return nil
 }
 
@@ -387,11 +395,10 @@ func laceworkTeamMemberUpdate(d *schema.ResourceData, meta interface{}) error {
 			LastName:     d.Get("last_name").(string),
 		})
 
-	var enabled int
-	if d.Get("enabled").(bool) {
-		enabled = 1
+	if !d.Get("enabled").(bool) {
+		tm.UserEnabled = 0
 	}
-	tm.UserEnabled = enabled
+
 	tm.UserGuid = d.Id()
 
 	log.Printf("[INFO] Updating team member with data:\n%+v\n", tm)
@@ -400,21 +407,12 @@ func laceworkTeamMemberUpdate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	d.SetId(response.Data.UserGuid)
-	d.Set("email", response.Data.UserName)
-	d.Set("first_name", response.Data.Props.FirstName)
-	d.Set("last_name", response.Data.Props.LastName)
-	d.Set("company", response.Data.Props.Company)
-	d.Set("enabled", response.Data.UserEnabled == 1)
-	d.Set("administrator", response.Data.Props.AccountAdmin)
-	d.Set("guid", response.Data.UserGuid)
-	// The organization information here should be empty because this is an account level read
-	org := make(map[string]interface{})
-	d.Set("organization", []map[string]interface{}{org})
+	d.Set("created_time", response.Data.Props.CreatedTime)
+	d.Set("updated_time", response.Data.Props.UpdatedTime)
+	d.Set("updated_by", response.Data.Props.UpdatedBy)
 
 	log.Printf("[INFO] Updated team member with user guid %s\n", response.Data.UserGuid)
 	return nil
-
 }
 
 func resourceLaceworkTeamMemberDelete(d *schema.ResourceData, meta interface{}) error {
@@ -423,19 +421,25 @@ func resourceLaceworkTeamMemberDelete(d *schema.ResourceData, meta interface{}) 
 	if lacework.OrgAccess() {
 		return laceworkTeamMemberDeleteOrg(d, meta)
 	}
+
 	return laceworkTeamMemberDelete(d, meta)
 }
 
 func laceworkTeamMemberDeleteOrg(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting team member with the user guid: %s\n", d.Id())
+	log.Printf("[INFO] Deleting org team member with the user guid: %s\n", d.Id())
 	err := lacework.V2.TeamMembers.DeleteOrg(d.Id())
 	if err != nil {
+		// TODO(afiune): if we were unable to delete the org team member by ID, try by username
+		//
+		//   lacework.V2.TeamMembers.DeleteOrgByUsername(d.Get("email").(string))
+		//
+		// This needs to be added to the go-sdk/api
 		return err
 	}
 
-	log.Printf("[INFO] Deleted team member with user guid: %s\n", d.Id())
+	log.Printf("[INFO] Deleted org team member with user guid: %s\n", d.Id())
 	return nil
 }
 
@@ -453,11 +457,15 @@ func laceworkTeamMemberDelete(d *schema.ResourceData, meta interface{}) error {
 }
 
 func importLaceworkTeamMember(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	var response api.TeamMemberResponse
 	lacework := meta.(*api.Client)
 
+	// we need two ways to import a team member, this one is for standalone.
+	// TODO(afiune): add an org team member import
+	//
+	//   terraform import lacework_team_member.example foo@example.com
+	//
 	log.Printf("[INFO] Importing Lacework Team Member with user guid: %s\n", d.Id())
-
+	var response api.TeamMemberResponse
 	if err := lacework.V2.TeamMembers.Get(d.Id(), &response); err != nil {
 		return nil,
 			errors.Wrapf(err, "unable to import Lacework resource. Team member with user guid '%s' was not found", d.Id())
