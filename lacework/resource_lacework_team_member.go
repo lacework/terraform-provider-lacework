@@ -262,38 +262,82 @@ func resourceLaceworkTeamMemberRead(d *schema.ResourceData, meta interface{}) er
 func laceworkTeamMemberReadOrg(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading org team member with user guid %s\n", d.Id())
+	var (
+		response api.TeamMemberResponse
+		email    = d.Get("email").(string)
+	)
+	if email == "" {
+		// if the email is empty it means that the user imported the team member
+		// resource using a guid, so we need to figure out the email before
+		// processing the read read org operation
+		log.Printf("[INFO] Retrieving email from org team member with guid %s\n", d.Id())
+		if err := lacework.V2.TeamMembers.Get(d.Id(), &response); err != nil {
+			return err
+		}
+		d.Set("email", response.Data.UserName)
+		email = response.Data.UserName
+	}
 
-	var response api.TeamMemberResponse
-	if err := lacework.V2.TeamMembers.Get(d.Id(), &response); err != nil {
+	log.Printf("[INFO] Reading org team member with email %s\n", email)
+	tms, err := lacework.V2.TeamMembers.SearchUsername(email)
+	if err != nil || len(tms.Data) == 0 {
+		return errors.Wrapf(err, "unable to find team member with email %s", email)
+	}
+
+	org := make(map[string]interface{})
+	if tms.Data[0].Props.OrgUser || tms.Data[0].Props.OrgAdmin {
+		org["user"] = tms.Data[0].Props.OrgUser
+		org["administrator"] = tms.Data[0].Props.OrgAdmin
+	} else {
+
+		resProfile, err := lacework.V2.UserProfile.Get()
+		if err != nil || len(resProfile.Data) == 0 {
+			// TODO better error
+			return err
+		}
+
+		var (
+			accountsInfo  = resProfile.Data[0]
+			adminAccounts = []string{}
+			userAccounts  = []string{}
+		)
+
+		for _, account := range tms.Data {
+			accInfo, found := SearchAccountByGUID(&accountsInfo, account.CustGuid)
+			if found {
+				if account.Props.AccountAdmin {
+					adminAccounts = append(adminAccounts, accInfo.AccountName)
+				} else {
+					userAccounts = append(userAccounts, accInfo.AccountName)
+				}
+			}
+		}
+		org["admin_accounts"] = adminAccounts
+		org["user_accounts"] = userAccounts
+	}
+
+	d.Set("organization", []map[string]interface{}{org})
+
+	if err := lacework.V2.TeamMembers.Get(tms.Data[0].UserGuid, &response); err != nil {
 		return err
 	}
 
+	// Org team members are tough, we can't trust the user guid since it could change,
+	// so for read operations we get one valid guid and set it as the Id to use it to
+	// get more information about the team member
 	d.SetId(response.Data.UserGuid)
 	d.Set("email", response.Data.UserName)
 	d.Set("first_name", response.Data.Props.FirstName)
 	d.Set("last_name", response.Data.Props.LastName)
 	d.Set("company", response.Data.Props.Company)
 	d.Set("enabled", response.Data.UserEnabled == 1)
-	d.Set("administrator", response.Data.Props.AccountAdmin)
 	d.Set("guid", response.Data.UserGuid)
 	d.Set("created_time", response.Data.Props.CreatedTime)
 	d.Set("updated_time", response.Data.Props.UpdatedTime)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
+	// @afiune we should NOT set the administrator argument for org team members
 
-	adminAccountNames, userAccountNames, err := searchAccountNames(d, meta, response.Data.UserName)
-	if err != nil {
-		return err
-	}
-	org := make(map[string]interface{})
-	org["administrator"] = response.Data.Props.OrgAdmin
-	org["user"] = response.Data.Props.OrgUser
-	org["admin_accounts"] = adminAccountNames
-	org["user_accounts"] = userAccountNames
-
-	d.Set("organization", []map[string]interface{}{org})
-
-	log.Printf("[INFO] Read org team member with user guid %s\n", response.Data.UserGuid)
+	log.Printf("[INFO] Read org team member with email %s and guid %s\n", response.Data.UserName, d.Id())
 	return nil
 }
 
@@ -308,13 +352,13 @@ func laceworkTeamMemberRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(response.Data.UserGuid)
+	d.Set("guid", response.Data.UserGuid)
 	d.Set("email", response.Data.UserName)
 	d.Set("first_name", response.Data.Props.FirstName)
 	d.Set("last_name", response.Data.Props.LastName)
 	d.Set("company", response.Data.Props.Company)
 	d.Set("enabled", response.Data.UserEnabled == 1)
 	d.Set("administrator", response.Data.Props.AccountAdmin)
-	d.Set("guid", response.Data.UserGuid)
 	d.Set("created_time", response.Data.Props.CreatedTime)
 	d.Set("updated_time", response.Data.Props.UpdatedTime)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
@@ -393,7 +437,7 @@ updated successfully and report this issue to support@lacework.net
 	d.SetId(response.Data.Accounts[0].UserGuid)
 	d.Set("guid", response.Data.Accounts[0].UserGuid)
 
-	log.Printf("[INFO] Updated org team member with username %s and guid %s\n",
+	log.Printf("[INFO] Updated org team member with email %s and guid %s\n",
 		response.Data.UserName, d.Id())
 	return nil
 }
@@ -500,4 +544,14 @@ func importLaceworkTeamMember(d *schema.ResourceData, meta interface{}) ([]*sche
 	}
 	log.Printf("[INFO] Team member found with user guid: %s\n", response.Data.UserGuid)
 	return []*schema.ResourceData{d}, nil
+}
+
+// TODO(afiune): move to the go-sdk/api client
+func SearchAccountByGUID(p *api.UserProfile, guid string) (*api.Account, bool) {
+	for _, acc := range p.Accounts {
+		if acc.CustGUID == guid {
+			return &acc, true
+		}
+	}
+	return nil, false
 }
