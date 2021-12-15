@@ -3,6 +3,7 @@ package lacework
 import (
 	"fmt"
 	"log"
+	"net/mail"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -472,77 +473,31 @@ func laceworkTeamMemberDelete(d *schema.ResourceData, meta interface{}) error {
 func importLaceworkTeamMember(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
 
-	// we need two ways to import a team member, this one is for standalone.
-	// TODO(afiune): add an org team member import
+	// we have two ways to import a team member, the first one is mostly for
+	// org team members where the user provides an email
 	//
 	//   terraform import lacework_team_member.example foo@example.com
 	//
-	log.Printf("[INFO] Importing Lacework Team Member with user guid: %s\n", d.Id())
+	if _, err := mail.ParseAddress(d.Id()); err == nil {
+		// if the Id() is an email address, search for the team member
+		log.Printf("[INFO] Importing Lacework team member with email: %s\n", d.Id())
+		tms, err := lacework.V2.TeamMembers.SearchUsername(d.Id())
+		if err != nil || len(tms.Data) == 0 {
+			return nil, errors.Wrap(err, "unable to find team member with specified email")
+		}
+		d.Set("email", d.Id())
+		d.SetId(tms.Data[0].UserGuid)
+		return []*schema.ResourceData{d}, nil
+	}
+
+	// the second one is for standalone team members where the guid is provided
+	log.Printf("[INFO] Importing Lacework team member with user guid: %s\n", d.Id())
 	var response api.TeamMemberResponse
 	if err := lacework.V2.TeamMembers.Get(d.Id(), &response); err != nil {
-		return nil,
-			errors.Wrapf(err, "unable to import Lacework resource. Team member with user guid '%s' was not found", d.Id())
+		// TODO(afiune): if the user is trying to import an org team member help them
+		// pointing them to the first import by email
+		return nil, errors.Wrap(err, "unable to import Lacework resource")
 	}
-	log.Printf("[INFO] Team Member with user guid: %s\n found", response.Data.UserGuid)
+	log.Printf("[INFO] Team member found with user guid: %s\n", response.Data.UserGuid)
 	return []*schema.ResourceData{d}, nil
-}
-
-func searchAccountNames(d *schema.ResourceData, meta interface{}, username string) (adminAccountNames, userAccountNames []string, err error) {
-	lacework := meta.(*api.Client)
-
-	// Search for the user by username to get a list of all the account names
-	tmOrgSearch, err := lacework.V2.TeamMembers.SearchUsername(username)
-	if err != nil {
-		return
-	}
-
-	log.Printf("tmOrgSearch: %+v", tmOrgSearch)
-
-	var orgAccountGuids []string
-	var userAccountGuids []string
-
-	for _, tmOrgAccount := range tmOrgSearch.Data {
-		if tmOrgAccount.Props.AccountAdmin {
-			orgAccountGuids = append(orgAccountGuids, tmOrgAccount.CustGuid)
-
-		} else {
-			userAccountGuids = append(userAccountGuids, tmOrgAccount.CustGuid)
-		}
-	}
-
-	log.Printf("userAccountGuids: %+v", userAccountGuids)
-	log.Printf("orgAccountGuids: %+v", orgAccountGuids)
-
-	for _, adminAccountGuid := range orgAccountGuids {
-		res, getErr := lacework.V2.UserProfile.Get()
-		if getErr != nil {
-			err = getErr
-			return
-		}
-		for _, userProfile := range res.Data {
-			for _, account := range userProfile.Accounts {
-				if account.CustGUID == adminAccountGuid {
-					adminAccountNames = append(adminAccountNames, strings.ToUpper(account.AccountName))
-				}
-			}
-		}
-	}
-
-	for _, userAccountGuid := range userAccountGuids {
-		res, profileErr := lacework.V2.UserProfile.Get()
-		if profileErr != nil {
-			err = profileErr
-			return
-		}
-		for _, userProfile := range res.Data {
-			for _, account := range userProfile.Accounts {
-				if account.CustGUID == userAccountGuid {
-					userAccountNames = append(userAccountNames, strings.ToUpper(account.AccountName))
-				}
-			}
-		}
-	}
-	log.Printf("userAccountNames: %+v", userAccountNames)
-	log.Printf("adminAccountNames: %+v", adminAccountNames)
-	return
 }
