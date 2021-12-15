@@ -56,6 +56,7 @@ func resourceLaceworkTeamMember() *schema.Resource {
 			"organization": {
 				Type:     schema.TypeList,
 				Optional: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"administrator": {
@@ -115,9 +116,11 @@ func resourceLaceworkTeamMember() *schema.Resource {
 
 func resourceLaceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
+
 	if lacework.OrgAccess() {
 		return laceworkTeamMemberCreateOrg(d, meta)
 	}
+
 	return laceworkTeamMemberCreate(d, meta)
 }
 
@@ -201,11 +204,9 @@ func laceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 			LastName:     d.Get("last_name").(string),
 		})
 
-	var enabled int
-	if d.Get("enabled").(bool) {
-		enabled = 1
+	if !d.Get("enabled").(bool) {
+		tm.UserEnabled = 0
 	}
-	tm.UserEnabled = enabled
 
 	fmt.Printf("[INFO] Creating team member with data %v\n", tm)
 	response, err := lacework.V2.TeamMembers.Create(tm)
@@ -214,12 +215,6 @@ func laceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(response.Data.UserGuid)
-	d.Set("email", response.Data.UserName)
-	d.Set("first_name", response.Data.Props.FirstName)
-	d.Set("last_name", response.Data.Props.LastName)
-	d.Set("company", response.Data.Props.Company)
-	d.Set("enabled", response.Data.UserEnabled == 1)
-	d.Set("administrator", response.Data.Props.AccountAdmin)
 	d.Set("guid", response.Data.UserGuid)
 	d.Set("created_time", response.Data.Props.CreatedTime)
 	d.Set("updated_time", response.Data.Props.UpdatedTime)
@@ -298,9 +293,6 @@ func laceworkTeamMemberRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("created_time", response.Data.Props.CreatedTime)
 	d.Set("updated_time", response.Data.Props.UpdatedTime)
 	d.Set("updated_by", response.Data.Props.UpdatedBy)
-	// The organization information here should be empty because this is an account level read
-	org := make(map[string]interface{})
-	d.Set("organization", []map[string]interface{}{org})
 
 	log.Printf("[INFO] Read team member with user guid %s\n", response.Data.UserGuid)
 	return nil
