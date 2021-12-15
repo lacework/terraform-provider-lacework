@@ -48,10 +48,11 @@ func resourceLaceworkTeamMember() *schema.Resource {
 				Description: "The state of the team member, whether they are enabled or not",
 			},
 			"administrator": {
-				Type:        schema.TypeBool,
-				Default:     false,
-				Optional:    true,
-				Description: "Whether the team member has admin role access into the Lacework account",
+				Type:          schema.TypeBool,
+				Default:       false,
+				Optional:      true,
+				ConflictsWith: []string{"organization"},
+				Description:   "Whether the team member has admin role access into the Lacework account",
 			},
 			"organization": {
 				Type:     schema.TypeList,
@@ -60,16 +61,25 @@ func resourceLaceworkTeamMember() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"administrator": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Default:     false,
-							Description: "Whether the team member is an admin at the org level for the account",
+							Type:          schema.TypeBool,
+							Optional:      true,
+							Default:       false,
+							ConflictsWith: []string{"organization.0.user"},
+							Description:   "Whether the team member is an org level administrator",
+						},
+						"user": {
+							Type:          schema.TypeBool,
+							Optional:      true,
+							Default:       false,
+							ConflictsWith: []string{"organization.0.administrator"},
+							Description:   "Whether the team member is an org level user",
 						},
 						"admin_accounts": {
 							// We are not using Set because we need to use DiffSuppressFunc: https://github.com/hashicorp/terraform-plugin-sdk/issues/160
 							Type:             schema.TypeList,
 							Optional:         true,
 							Description:      "List of accounts the team member is an admin",
+							ConflictsWith:    []string{"organization.0.user", "organization.0.administrator"},
 							DiffSuppressFunc: diffCaseInsensitive,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -83,6 +93,7 @@ func resourceLaceworkTeamMember() *schema.Resource {
 							Type:             schema.TypeList,
 							Optional:         true,
 							Description:      "List of accounts the team member is a user",
+							ConflictsWith:    []string{"organization.0.user", "organization.0.administrator"},
 							DiffSuppressFunc: diffCaseInsensitive,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -139,13 +150,8 @@ func laceworkTeamMemberCreateOrg(d *schema.ResourceData, meta interface{}) error
 		tmOrg.UserEnabled = 0
 	}
 
-	if d.Get("organization.0.administrator").(bool) {
-		// by default the go-sdk returns an organization user,
-		// if 'administrator=true' we flip both flags
-		tmOrg.OrgAdmin = true
-		tmOrg.OrgUser = false
-	}
-
+	tmOrg.OrgAdmin = d.Get("organization.0.administrator").(bool)
+	tmOrg.OrgUser = d.Get("organization.0.user").(bool)
 	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d, "organization.0.admin_accounts")
 	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d, "organization.0.user_accounts")
 
@@ -177,7 +183,14 @@ created successfully and report this issue to support@lacework.net
 	d.SetId(response.Data.Accounts[0].UserGuid)
 	d.Set("guid", response.Data.Accounts[0].UserGuid)
 
-	log.Printf("[INFO] Created org team member with username %s and guid %s\n",
+	org := make(map[string]interface{})
+	org["admin_accounts"] = tmOrg.AdminRoleAccounts
+	org["user_accounts"] = tmOrg.UserRoleAccounts
+	org["user"] = tmOrg.OrgUser
+	org["administrator"] = tmOrg.OrgAdmin
+	d.Set("organization", []map[string]interface{}{org})
+
+	log.Printf("[INFO] Created org team member with email %s and guid %s\n",
 		response.Data.UserName, d.Id())
 	return nil
 }
