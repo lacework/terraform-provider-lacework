@@ -76,6 +76,12 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 					}
 				},
 			},
+			"non_os_package_support": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable program language scanning",
+			},
 			"credentials": {
 				Type:     schema.TypeList,
 				MaxItems: 1,
@@ -86,13 +92,24 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-						"private_key_id": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
 						"client_email": {
 							Type:     schema.TypeString,
 							Required: true,
+						},
+						"private_key_id": {
+							Type:      schema.TypeString,
+							Sensitive: true,
+							Required:  true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// @afiune we can't compare this element since our API, for security reasons,
+								// does NOT return the private key configured in the Lacework server. So if
+								// any other element changed from the credentials then we trigger a diff
+								return !d.HasChanges(
+									"name", "registry_domain", "enabled", "non_os_package_support",
+									"limit_by_tags", "limit_by_label", "limit_by_repositories",
+									"limit_num_imgs", "credentials.0.client_id", "credentials.0.client_email",
+								)
+							},
 						},
 						"private_key": {
 							Type:      schema.TypeString,
@@ -102,14 +119,11 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 								// @afiune we can't compare this element since our API, for security reasons,
 								// does NOT return the private key configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
-								if d.HasChanges(
-									"credentials.0.client_id",
-									"credentials.0.private_key_id",
-									"credentials.0.client_email",
-								) {
-									return false
-								}
-								return true
+								return !d.HasChanges(
+									"name", "registry_domain", "enabled", "non_os_package_support",
+									"limit_by_tags", "limit_by_label", "limit_by_repositories",
+									"limit_num_imgs", "credentials.0.client_id", "credentials.0.client_email",
+								)
 							},
 						},
 					},
@@ -192,11 +206,12 @@ func resourceLaceworkIntegrationGarCreate(d *schema.ResourceData, meta interface
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.GcpGarContainerRegistry,
 		api.GcpGarData{
-			LimitByTag:     castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:   castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
-			LimitByRep:     castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.GcpCredentialsV2{
 				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
@@ -248,11 +263,11 @@ func resourceLaceworkIntegrationGarRead(d *schema.ResourceData, meta interface{}
 	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
 	d.Set("type_name", response.Data.Type)
 	d.Set("org_level", response.Data.IsOrg == 1)
+	d.Set("non_os_package_support", response.Data.Data.NonOSPackageEval)
 
 	creds := make(map[string]string)
 	creds["client_id"] = response.Data.Data.Credentials.ClientID
 	creds["client_email"] = response.Data.Data.Credentials.ClientEmail
-	creds["private_key_id"] = response.Data.Data.Credentials.PrivateKeyID
 	d.Set("credentials", []map[string]string{creds})
 	d.Set("registry_domain", response.Data.Data.RegistryDomain)
 	d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
@@ -271,11 +286,12 @@ func resourceLaceworkIntegrationGarUpdate(d *schema.ResourceData, meta interface
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.GcpGarContainerRegistry,
 		api.GcpGarData{
-			LimitByTag:     castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:   castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
-			LimitByRep:     castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitNumImg:    d.Get("limit_num_imgs").(int),
-			RegistryDomain: d.Get("registry_domain").(string),
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.GcpCredentialsV2{
 				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),

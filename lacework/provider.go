@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -77,6 +78,7 @@ func Provider() *schema.Provider {
 			"lacework_alert_channel_service_now":     resourceLaceworkAlertChannelServiceNow(),
 			"lacework_alert_channel_victorops":       resourceLaceworkAlertChannelVictorOps(),
 			"lacework_alert_channel_webhook":         resourceLaceworkAlertChannelWebhook(),
+			"lacework_alert_rule":                    resourceLaceworkAlertRule(),
 			"lacework_integration_aws_cfg":           resourceLaceworkIntegrationAwsCfg(),
 			"lacework_integration_aws_ct":            resourceLaceworkIntegrationAwsCloudTrail(),
 			"lacework_integration_aws_govcloud_cfg":  resourceLaceworkIntegrationAwsGovCloudCfg(),
@@ -91,6 +93,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_gar":               resourceLaceworkIntegrationGar(),
 			"lacework_integration_gcr":               resourceLaceworkIntegrationGcr(),
 			"lacework_integration_ghcr":              resourceLaceworkIntegrationGhcr(),
+			"lacework_report_rule":                   resourceLaceworkReportRule(),
 			"lacework_resource_group_account":        resourceLaceworkResourceGroupLwAccount(),
 			"lacework_resource_group_aws":            resourceLaceworkResourceGroupAws(),
 			"lacework_resource_group_azure":          resourceLaceworkResourceGroupAzure(),
@@ -119,7 +122,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		key          = d.Get("api_key").(string)
 		secret       = d.Get("api_secret").(string)
 		userAgent    = fmt.Sprintf("Terraform/%s", version)
-		apiOpts      = []api.Option{api.WithHeader("User-Agent", userAgent)}
+		apiOpts      = []api.Option{
+			api.WithHeader("User-Agent", userAgent),
+			api.WithTimeout(time.Second * 125), // this is our nginx max time
+		}
 	)
 
 	// validate that the log level is supported by the api client, if not,
@@ -149,10 +155,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 
 	if account != "" && key != "" && secret != "" {
 		apiOpts = append(apiOpts, api.WithApiKeys(key, secret))
+		apiOpts = append(apiOpts, api.WithApiV2()) // default to APIv2
 
 		if subaccount != "" {
 			apiOpts = append(apiOpts, api.WithSubaccount(subaccount))
-			apiOpts = append(apiOpts, api.WithApiV2()) // only APIv2 understands sub-accounts
 		}
 
 		if organization {

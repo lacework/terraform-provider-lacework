@@ -29,9 +29,11 @@ type integrationSchema int
 const (
 	None integrationSchema = iota
 	AlertChannels
+	AlertRules
 	ContainerRegistries
 	CloudAccounts
 	ResourceGroups
+	ReportRules
 )
 
 func (svc *SchemasService) GetService(schemaName integrationSchema) V2Service {

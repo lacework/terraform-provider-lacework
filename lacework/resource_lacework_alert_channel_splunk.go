@@ -16,34 +16,35 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelSplunkDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkAlertChannel,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"channel": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The Splunk channel name",
 			},
 			"hec_token": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The token you generate when you create a new HEC input",
 			},
 			"host": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The hostname of the client from which you're sending data",
 			},
 			"port": {
 				Type:     schema.TypeInt,
@@ -55,11 +56,13 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 					}
 					return
 				},
+				Description: "The destination port for forwarding events",
 			},
 			"ssl": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable or Disable SSL",
 			},
 			"event_data": {
 				Type:     schema.TypeList,
@@ -68,12 +71,14 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"index": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Index to store generated events",
 						},
 						"source": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The Splunk source",
 						},
 					},
 				},
@@ -83,6 +88,10 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 				Description: "Whether to test the integration of an alert channel upon creation and modification",
+			},
+			"intg_guid": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -107,14 +116,15 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 func resourceLaceworkAlertChannelSplunkCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		splunk   = api.NewSplunkAlertChannel(d.Get("name").(string),
-			api.SplunkChannelData{
+		splunk   = api.NewAlertChannel(d.Get("name").(string),
+			api.SplunkHecAlertChannelType,
+			api.SplunkHecDataV2{
 				Channel:  d.Get("channel").(string),
 				HecToken: d.Get("hec_token").(string),
 				Host:     d.Get("host").(string),
 				Port:     d.Get("port").(int),
 				Ssl:      d.Get("ssl").(bool),
-				EventData: api.SplunkEventData{
+				EventData: api.SplunkHecEventDataV2{
 					Index:  d.Get("event_data.0.index").(string),
 					Source: d.Get("event_data.0.source").(string),
 				},
@@ -125,91 +135,80 @@ func resourceLaceworkAlertChannelSplunkCreate(d *schema.ResourceData, meta inter
 		splunk.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.SplunkIntegration, splunk)
-	response, err := lacework.Integrations.CreateSplunkAlertChannel(splunk)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.SplunkHecAlertChannelType, splunk)
+	response, err := lacework.V2.AlertChannels.Create(splunk)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateSplunkAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.SplunkIntegration, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.SplunkHecAlertChannelType, d.Id())
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.SplunkIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.SplunkHecAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.SplunkIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.SplunkHecAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelSplunkRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.SplunkIntegration, d.Id())
-	response, err := lacework.Integrations.GetSplunkAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.SplunkHecAlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetSplunkHec(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("channel", integration.Data.Channel)
-			d.Set("hec_token", integration.Data.HecToken)
-			d.Set("host", integration.Data.Host)
-			d.Set("port", integration.Data.Port)
-			d.Set("ssl", integration.Data.Ssl)
+	integration := response.Data
+	d.Set("name", integration.Name)
+	d.Set("intg_guid", integration.IntgGuid)
+	d.Set("enabled", integration.Enabled == 1)
+	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+	d.Set("type_name", integration.Type)
+	d.Set("org_level", integration.IsOrg == 1)
+	d.Set("channel", integration.Data.Channel)
+	d.Set("hec_token", integration.Data.HecToken)
+	d.Set("host", integration.Data.Host)
+	d.Set("port", integration.Data.Port)
+	d.Set("ssl", integration.Data.Ssl)
 
-			eventData := make(map[string]string)
-			eventData["index"] = integration.Data.EventData.Index
-			eventData["source"] = integration.Data.EventData.Source
+	eventData := make(map[string]string)
+	eventData["index"] = integration.Data.EventData.Index
+	eventData["source"] = integration.Data.EventData.Source
 
-			d.Set("event_data", []map[string]string{eventData})
+	d.Set("event_data", []map[string]string{eventData})
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.SplunkIntegration, integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.SplunkHecAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelSplunkUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		splunk   = api.NewSplunkAlertChannel(d.Get("name").(string),
-			api.SplunkChannelData{
+		splunk   = api.NewAlertChannel(d.Get("name").(string),
+			api.SplunkHecAlertChannelType,
+			api.SplunkHecDataV2{
 				Channel:  d.Get("channel").(string),
 				HecToken: d.Get("hec_token").(string),
 				Host:     d.Get("host").(string),
 				Port:     d.Get("port").(int),
 				Ssl:      d.Get("ssl").(bool),
-				EventData: api.SplunkEventData{
+				EventData: api.SplunkHecEventDataV2{
 					Index:  d.Get("event_data.0.index").(string),
 					Source: d.Get("event_data.0.source").(string),
 				},
@@ -223,75 +222,42 @@ func resourceLaceworkAlertChannelSplunkUpdate(d *schema.ResourceData, meta inter
 
 	splunk.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.SplunkIntegration, splunk)
-	response, err := lacework.Integrations.UpdateSplunkAlertChannel(splunk)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.SplunkHecAlertChannelType, splunk)
+	response, err := lacework.V2.AlertChannels.UpdateSplunkHec(splunk)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateSplunkAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.SplunkIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.SplunkHecAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.SplunkIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.SplunkHecAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.SplunkIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.SplunkHecAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelSplunkDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.SplunkIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.SplunkHecAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.SplunkIntegration, d.Id())
-	return nil
-}
-
-func validateSplunkAlertChannelResponse(response *api.SplunkAlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.SplunkHecAlertChannelType, d.Id())
 	return nil
 }

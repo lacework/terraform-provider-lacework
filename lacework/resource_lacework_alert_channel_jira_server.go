@@ -17,48 +17,52 @@ func resourceLaceworkAlertChannelJiraServer() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelJiraServerDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkAlertChannel,
 		},
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The alert channel integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"jira_url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The URL of your Jira implementation without https protocol",
 			},
 			"issue_type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The Jira issue type (such as a Bug) to create when a new Jira issue is created",
 			},
 			"project_key": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The project key for the Jira project where the new Jira issues should be created",
 			},
 			"username": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The Jira user name. Lacework recommends a dedicated Jira user.",
 			},
 			"password": {
-				Type:      schema.TypeString,
-				Required:  true,
-				Sensitive: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Sensitive:   true,
+				Description: "The password to the Jira user",
 			},
 			"custom_template_file": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringIsJSON,
+				Description:  "A Custom Template JSON file to populate fields in the new Jira issues",
 			},
 			"group_issues_by": {
 				Type:     schema.TypeString,
@@ -76,12 +80,17 @@ func resourceLaceworkAlertChannelJiraServer() *schema.Resource {
 						}
 					}
 				},
+				Description: "Defines how Lacework compliance events get grouped. Must be one of Events or Resources. Defaults to Events",
 			},
 			"test_integration": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
 				Description: "Whether to test the integration of an alert channel upon creation and modification",
+			},
+			"intg_guid": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -107,13 +116,14 @@ func resourceLaceworkAlertChannelJiraServerCreate(d *schema.ResourceData, meta i
 	var (
 		lacework           = meta.(*api.Client)
 		customTemplateJSON = d.Get("custom_template_file").(string)
-		jiraData           = api.JiraAlertChannelData{
+		jiraData           = api.JiraDataV2{
 			JiraUrl:       d.Get("jira_url").(string),
 			IssueType:     d.Get("issue_type").(string),
 			IssueGrouping: d.Get("group_issues_by").(string),
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
 			Password:      d.Get("password").(string),
+			JiraType:      api.JiraServerAlertType,
 		}
 	)
 
@@ -121,86 +131,72 @@ func resourceLaceworkAlertChannelJiraServerCreate(d *schema.ResourceData, meta i
 		jiraData.EncodeCustomTemplateFile(customTemplateJSON)
 	}
 
-	jira := api.NewJiraServerAlertChannel(d.Get("name").(string), jiraData)
+	jira := api.NewAlertChannel(d.Get("name").(string), api.JiraAlertChannelType, jiraData)
 	if !d.Get("enabled").(bool) {
 		jira.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.JiraIntegration, jira)
-	response, err := lacework.Integrations.CreateJiraAlertChannel(jira)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.JiraAlertChannelType, jira)
+	response, err := lacework.V2.AlertChannels.Create(jira)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateJiraAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.JiraIntegration, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.JiraAlertChannelType, d.Id())
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.JiraIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.JiraAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.JiraIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.JiraAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelJiraServerRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.JiraIntegration, d.Id())
-	response, err := lacework.Integrations.GetJiraAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.JiraAlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetJira(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	d.Set("name", response.Data.Name)
+	d.Set("intg_guid", response.Data.IntgGuid)
+	d.Set("enabled", response.Data.Enabled == 1)
+	d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+	d.Set("type_name", response.Data.Type)
+	d.Set("org_level", response.Data.IsOrg == 1)
 
-			d.Set("jira_url", integration.Data.JiraUrl)
-			d.Set("issue_type", integration.Data.IssueType)
-			d.Set("group_issues_by", integration.Data.IssueGrouping)
-			d.Set("project_key", integration.Data.ProjectID)
-			d.Set("username", integration.Data.Username)
+	d.Set("jira_url", response.Data.Data.JiraUrl)
+	d.Set("issue_type", response.Data.Data.IssueType)
+	d.Set("group_issues_by", response.Data.Data.IssueGrouping)
+	d.Set("project_key", response.Data.Data.ProjectID)
+	d.Set("username", response.Data.Data.Username)
 
-			customTemplateString, err := integration.Data.DecodeCustomTemplateFile()
-			if err != nil {
-				log.Printf("[ERROR] Unable to decode CustomTemplateFile: %v\n", integration.Data.CustomTemplateFile)
-				d.Set("custom_template_file", integration.Data.CustomTemplateFile)
-			} else {
-				d.Set("custom_template_file", customTemplateString)
-			}
-
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.JiraIntegration, integration.IntgGuid)
-			return nil
-		}
+	customTemplateString, err := response.Data.Data.DecodeCustomTemplateFile()
+	if err != nil {
+		log.Printf("[ERROR] Unable to decode CustomTemplateFile: %v\n", response.Data.Data.CustomTemplateFile)
+		d.Set("custom_template_file", response.Data.Data.CustomTemplateFile)
+	} else {
+		d.Set("custom_template_file", customTemplateString)
 	}
 
-	d.SetId("")
+	log.Printf("[INFO] Read %s integration with guid %s\n",
+		api.JiraAlertChannelType, response.Data.IntgGuid)
 	return nil
 }
 
@@ -208,13 +204,14 @@ func resourceLaceworkAlertChannelJiraServerUpdate(d *schema.ResourceData, meta i
 	var (
 		lacework           = meta.(*api.Client)
 		customTemplateJSON = d.Get("custom_template_file").(string)
-		jiraData           = api.JiraAlertChannelData{
+		jiraData           = api.JiraDataV2{
 			JiraUrl:       d.Get("jira_url").(string),
 			IssueType:     d.Get("issue_type").(string),
 			IssueGrouping: d.Get("group_issues_by").(string),
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
 			Password:      d.Get("password").(string),
+			JiraType:      api.JiraServerAlertType,
 		}
 	)
 
@@ -222,56 +219,49 @@ func resourceLaceworkAlertChannelJiraServerUpdate(d *schema.ResourceData, meta i
 		jiraData.EncodeCustomTemplateFile(customTemplateJSON)
 	}
 
-	jira := api.NewJiraServerAlertChannel(d.Get("name").(string), jiraData)
+	jira := api.NewAlertChannel(d.Get("name").(string), api.JiraAlertChannelType, jiraData)
 	if !d.Get("enabled").(bool) {
 		jira.Enabled = 0
 	}
 
 	jira.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.JiraIntegration, jira)
-	response, err := lacework.Integrations.UpdateJiraAlertChannel(jira)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.JiraAlertChannelType, jira)
+	response, err := lacework.V2.AlertChannels.UpdateJira(jira)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateJiraAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.JiraIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.JiraAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.JiraIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.JiraAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.JiraIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.JiraAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelJiraServerDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.JiraIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.JiraAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.JiraIntegration, d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.JiraAlertChannelType, d.Id())
 	return nil
 }

@@ -2,6 +2,7 @@
 GOLANGCILINTVERSION?=1.23.8
 GOIMPORTSVERSION?=v0.1.2
 GOXVERSION?=v1.0.1
+GOTESTSUMVERSION?=v1.6.4
 
 TEST?=$$(go list ./... |grep -v 'vendor' | grep -v 'integration')
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
@@ -38,16 +39,11 @@ release: build-cross-platform ## *CI ONLY* Prepares a release of the Terraform p
 	scripts/release.sh prepare
 
 .PHONY: deps
-deps: ## Update a single dependency by providing the UPDATE_DEP environment variable
-ifdef UPDATE_DEP
-	@go get -u "$(UPDATE_DEP)"
-endif
-	@go mod vendor
+deps: go-deps go-vendor ## Update dependencies and run go-vendor
 
 .PHONY: alldeps
-alldeps: ## Update all dependencies
-	@go get -u
-	@go mod vendor
+go-deps: ## Update dependencies, provider UPDATE_DEP env variable to update just a single dependency
+	@go get -u "$(UPDATE_DEP)"
 
 PHONY: go-vendor
 go-vendor: ## Runs go mod tidy, vendor and verify to cleanup, copy and verify dependencies
@@ -78,13 +74,11 @@ uninstall: ## Removes installed provider package from BINARY_PATH
 
 .PHONY: integration-test
 integration-test: clean-test install ## Runs clean-test and install, then runs all integration tests
-	go test ./integration -v
+	gotestsum -f testname -- -v ./integration
 
 .PHONY: test
 test: fmtcheck ## Runs fmtcheck then runs all unit tests
-	go test $(TEST) || exit 1
-	echo $(TEST) | \
-		xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+	gotestsum -f testname -- -v -cover -coverprofile=$(COVERAGEOUT) $(TEST)
 
 .PHONY: lint
 lint: ## Runs go linter
@@ -147,10 +141,13 @@ ifeq (, $(shell which golangci-lint))
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v$(GOLANGCILINTVERSION)
 endif
 ifeq (, $(shell which goimports))
-	go get golang.org/x/tools/cmd/goimports@$(GOIMPORTSVERSION)
+	GOFLAGS=-mod=readonly go install golang.org/x/tools/cmd/goimports@$(GOIMPORTSVERSION)
 endif
 ifeq (, $(shell which gox))
-	go get github.com/mitchellh/gox@$(GOXVERSION)
+	GOFLAGS=-mod=readonly go install github.com/mitchellh/gox@$(GOXVERSION)
+endif
+ifeq (, $(shell which gotestsum))
+	GOFLAGS=-mod=readonly go install gotest.tools/gotestsum@$(GOTESTSUMVERSION)
 endif
 
 .PHONY: write-terraform-rc

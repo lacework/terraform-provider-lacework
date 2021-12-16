@@ -3,7 +3,7 @@ subcategory: "Container Registry Integrations"
 layout: "lacework"
 page_title: "Lacework: lacework_integration_gcr"
 description: |-
-  Create and manage GCR integrations
+  Create and manage Google Container Registry (GCR) integrations
 ---
 
 # lacework\_integration\_gcr
@@ -27,36 +27,21 @@ resource "lacework_integration_gcr" "example" {
 }
 ```
 
-## Example Creating a Service Account
+## Example GCR Module Usage
 
-This example shows how to create a new service account using the [Lacework service-account module](https://registry.terraform.io/modules/lacework/service-account/gcp/latest)
-and use it to create a new GCR integration:
+Lacework maintains a Terraform module that can be used to create and manage the necessary
+resources required for both, the cloud provider platform as well as the Lacework platform.
+
+Here is a basic usage of this module:
 
 ```hcl
-locals {
-  gcr_credentials = jsondecode(base64decode(module.lacework_gcr_svc_account.private_key))
-}
-
-module "lacework_gcr_svc_account" {
-  source         = "lacework/service-account/gcp"
-  version        = "~> 0.1.4"
-  for_gcr        = true
-  for_compliance = false
-
-  # Optionally, a project ID  can be specified with the input 'project_id'
-}
-
-resource "lacework_integration_gcr" "example" {
-  name            = "GRC Integration with Module"
-  registry_domain = "gcr.io"
-  credentials {
-    client_id      = local.gcr_credentials.client_id
-    client_email   = local.gcr_credentials.client_email
-    private_key_id = local.gcr_credentials.private_key_id
-    private_key    = local.gcr_credentials.private_key
-  }
+module "gcr" {
+  source  = "lacework/gcr/gcp"
+  version = "~> 1.0"
 }
 ```
+
+To see the list of inputs, outputs and dependencies, visit the [Terraform registry page of this module](https://registry.terraform.io/modules/lacework/gcr/gcp/latest).
 
 ## Example Loading Credentials from Local File
 
@@ -106,7 +91,7 @@ The following arguments are supported:
 * `private_key_id` - (Required) The service account private key ID.
 * `private_key` - (Required) The service account private key.
 
-~> **Note:** The service account used for this integration requires the `storage.objectViewer` role for access to the Google project that contains the Google Container Registry (GCR). The role can be granted at the project level or the bucket level. If granting the role at the bucket level, you must grant the role to the default bucket called `artifacts.[YourProjectID].appspot.com`. In addition, the client must have access to the Google Container Registry API and billing must be enabled.
+~> **Note:** The service account used for this integration requires the `storage.objectViewer` role for access to the Google project that contains the Google Container Registry (GCR). The role can be granted at the project level or the bucket level. If granting the role at the bucket level, you must grant the role to the default bucket called `artifacts.[YourProjectID].appspot.com`. In addition, the client must have access to the Google Container Registry API and billing must be enabled. Lacework maintains a [Terraform GCR module](https://registry.terraform.io/modules/lacework/gcr/gcp/latest) that can be used to create and manage the necessary resources required for both, the cloud provider platform as well as the Lacework platform.
 
 ## Import
 

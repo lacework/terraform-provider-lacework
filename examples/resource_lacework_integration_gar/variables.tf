@@ -18,3 +18,7 @@ variable "private_key" {
   type      = string
   sensitive = true
 }
+variable "non_os_package_support" {
+  type    = bool
+  default = false
+}

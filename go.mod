@@ -3,12 +3,11 @@ module github.com/lacework/terraform-provider-lacework
 go 1.16
 
 require (
-	github.com/agext/levenshtein v1.2.3 // indirect
-	github.com/gruntwork-io/terratest v0.37.8
+	github.com/gruntwork-io/terratest v0.38.2
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
-	github.com/hashicorp/terraform-plugin-sdk/v2 v2.7.1
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.8.0
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
-	github.com/lacework/go-sdk v0.14.1-0.20210909114732-13fb1675fdc3
+	github.com/lacework/go-sdk v0.22.1-0.20211129140431-f37b91349c03
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1

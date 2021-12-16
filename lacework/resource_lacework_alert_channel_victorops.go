@@ -1,7 +1,6 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -21,27 +20,30 @@ func resourceLaceworkAlertChannelVictorOps() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name",
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration",
 			},
 			"webhook_url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The url of the external webhook",
 			},
 			"test_integration": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
 				Description: "Whether to test the integration of an alert channel upon creation and modification",
+			},
+			"intg_guid": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -66,9 +68,10 @@ func resourceLaceworkAlertChannelVictorOps() *schema.Resource {
 func resourceLaceworkAlertChannelVictorOpsCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		victor   = api.NewVictorOpsAlertChannel(d.Get("name").(string),
-			api.VictorOpsChannelData{
-				WebhookURL: d.Get("webhook_url").(string),
+		victor   = api.NewAlertChannel(d.Get("name").(string),
+			api.VictorOpsAlertChannelType,
+			api.VictorOpsDataV2{
+				Url: d.Get("webhook_url").(string),
 			},
 		)
 	)
@@ -76,64 +79,58 @@ func resourceLaceworkAlertChannelVictorOpsCreate(d *schema.ResourceData, meta in
 		victor.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.VictorOpsChannelIntegration, victor)
-	response, err := lacework.Integrations.CreateVictorOpsAlertChannel(victor)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.VictorOpsAlertChannelType, victor)
+	response, err := lacework.V2.AlertChannels.Create(victor)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateVictorOpsAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.VictorOpsChannelIntegration, d.Id())
-		if err := VerifyAlertChannelAndRollback(d.Id(), lacework); err != nil {
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.VictorOpsAlertChannelType, d.Id())
+		if err := VerifyAlertChannelAndRollback(d, lacework); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.VictorOpsChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.VictorOpsAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Created %s integration with guid %s\n", api.VictorOpsChannelIntegration, integration.IntgGuid)
+	log.Printf("[INFO] Created %s integration with guid %s\n", api.VictorOpsAlertChannelType, integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkAlertChannelVictorOpsRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid %s\n", api.VictorOpsChannelIntegration, d.Id())
-	response, err := lacework.Integrations.GetVictorOpsAlertChannel(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid %s\n", api.VictorOpsAlertChannelType, d.Id())
+	response, err := lacework.V2.AlertChannels.GetVictorOps(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("webhook_url", integration.Data.WebhookURL)
+	integration := response.Data
 
-			log.Printf("[INFO] Read %s integration with guid %s\n",
-				api.VictorOpsChannelIntegration, integration.IntgGuid)
-			return nil
-		}
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
+		d.Set("webhook_url", integration.Data.Url)
+
+		log.Printf("[INFO] Read %s integration with guid %s\n",
+			api.VictorOpsAlertChannelType, integration.IntgGuid)
+		return nil
 	}
 
 	d.SetId("")
@@ -143,9 +140,10 @@ func resourceLaceworkAlertChannelVictorOpsRead(d *schema.ResourceData, meta inte
 func resourceLaceworkAlertChannelVictorOpsUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		victor   = api.NewVictorOpsAlertChannel(d.Get("name").(string),
-			api.VictorOpsChannelData{
-				WebhookURL: d.Get("webhook_url").(string),
+		victor   = api.NewAlertChannel(d.Get("name").(string),
+			api.VictorOpsAlertChannelType,
+			api.VictorOpsDataV2{
+				Url: d.Get("webhook_url").(string),
 			},
 		)
 	)
@@ -156,75 +154,42 @@ func resourceLaceworkAlertChannelVictorOpsUpdate(d *schema.ResourceData, meta in
 
 	victor.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.VictorOpsChannelIntegration, victor)
-	response, err := lacework.Integrations.UpdateVictorOpsAlertChannel(victor)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.VictorOpsAlertChannelType, victor)
+	response, err := lacework.V2.AlertChannels.UpdateVictorOps(victor)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateVictorOpsAlertChannelResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	if d.Get("test_integration").(bool) {
-		log.Printf("[INFO] Testing %s integration for guid %s\n", api.VictorOpsChannelIntegration, d.Id())
+		log.Printf("[INFO] Testing %s integration for guid %s\n", api.VictorOpsAlertChannelType, d.Id())
 		if err := lacework.V2.AlertChannels.Test(d.Id()); err != nil {
 			return err
 		}
-		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.VictorOpsChannelIntegration, d.Id())
+		log.Printf("[INFO] Tested %s integration with guid %s successfully\n", api.VictorOpsAlertChannelType, d.Id())
 	}
 
-	log.Printf("[INFO] Updated %s integration with guid %s\n", api.VictorOpsChannelIntegration, d.Id())
+	log.Printf("[INFO] Updated %s integration with guid %s\n", api.VictorOpsAlertChannelType, d.Id())
 	return nil
 }
 
 func resourceLaceworkAlertChannelVictorOpsDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.VictorOpsChannelIntegration, d.Id())
-	_, err := lacework.Integrations.Delete(d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid %s\n", api.VictorOpsAlertChannelType, d.Id())
+	err := lacework.V2.AlertChannels.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.VictorOpsChannelIntegration, d.Id())
-	return nil
-}
-
-func validateVictorOpsAlertChannelResponse(response *api.VictorOpsAlertChannelResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+	log.Printf("[INFO] Deleted %s integration with guid %s\n", api.VictorOpsAlertChannelType, d.Id())
 	return nil
 }

@@ -11,6 +11,10 @@ func castAttributeToStringSlice(d *schema.ResourceData, attr string) []string {
 	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return s })
 }
 
+func castAndTitleCaseStringSlice(d *schema.ResourceData, attr string) []string {
+	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return strings.Title(strings.ToLower(s)) })
+}
+
 // turn an interface slice into a string slice
 func castStringSlice(iArray []interface{}) []string {
 	return castAndTransformStringSlice(iArray, func(s string) string { return s })
@@ -82,7 +86,6 @@ func castAttributeToArrayOfKeyValueMap(d *schema.ResourceData, attr string) []ma
 	for i, v := range list {
 		val := v.(map[string]interface{})
 		aMap[i] = map[string]string{val["key"].(string): val["value"].(string)}
-		i += 1
 	}
 
 	return aMap

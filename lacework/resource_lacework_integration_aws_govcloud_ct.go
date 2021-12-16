@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -112,7 +113,7 @@ func resourceLaceworkIntegrationAwsGovCloudCTCreate(d *schema.ResourceData, meta
 		aws.Enabled = 0
 	}
 
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.AwsGovCloudCTIntegration.String())
 		response, err := lacework.Integrations.CreateAws(aws)
@@ -255,32 +256,5 @@ func resourceLaceworkIntegrationAwsGovCloudCTDelete(d *schema.ResourceData, meta
 
 	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
 		api.AwsGovCloudCTIntegration.String(), d.Id())
-	return nil
-}
-
-func validateAwsGovCloudIntegrationResponse(response *api.AwsGovCloudIntegrationsResponse) error {
-	if len(response.Data) == 0 {
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
 	return nil
 }

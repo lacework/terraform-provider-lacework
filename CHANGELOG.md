@@ -1,3 +1,110 @@
+## v0.13.0 (December 06, 2021)
+
+## Features
+* feat(resource): New lacework_report_rule (#237) (Darren)([c2928b6](https://github.com/lacework/terraform-provider-lacework/commit/c2928b612dc7e1db2c676bbd9abcf4f2dce7348e))
+## Documentation Updates
+* docs: mention new GAR and GCR Modules (#229) (Salim Afiune)([30d1c0a](https://github.com/lacework/terraform-provider-lacework/commit/30d1c0a8b5e305ccf27ffc8e31f9b541ad78033a))
+* docs: Add environment variables for Windows (#228) (Salim Afiune)([bd4ee0c](https://github.com/lacework/terraform-provider-lacework/commit/bd4ee0cdd86da76582fd870aa3fc2346c22b30d4))
+## Other Changes
+* chore: run make go-vendor (#241) (Darren)([3dd3649](https://github.com/lacework/terraform-provider-lacework/commit/3dd364912e64c9fc44242ccbf97030ff382535a4))
+* ci: run vendor commands after dep update (#227) (Salim Afiune)([8b18fb8](https://github.com/lacework/terraform-provider-lacework/commit/8b18fb8837345234bd074579592c5c64741fe771))
+* ci: version bump to v0.12.3-dev (Lacework)([528641b](https://github.com/lacework/terraform-provider-lacework/commit/528641ba9dbd7dd23a1c506bb427c829ec0deff1))
+* test: disable failing alert rule tests (#240) (Darren)([4247ec9](https://github.com/lacework/terraform-provider-lacework/commit/4247ec97aead69d5ac4fe5e2f2ece61c1dfa6f67))
+* test: create unique names for resource groups integration tests (#239) (Darren)([ed382b1](https://github.com/lacework/terraform-provider-lacework/commit/ed382b1e3ad1a394c7349e043a5c694012540657))
+* test: fix alert-rule tests (#236) (Darren)([c92b8da](https://github.com/lacework/terraform-provider-lacework/commit/c92b8da3cf0b0b5f80a8c46859f76ebd71c65394))
+* test: fix s3 alert channel integration test (#224) (vatasha)([5f2cad5](https://github.com/lacework/terraform-provider-lacework/commit/5f2cad56af47926305085846c8c5fabf0b5b7405))
+
+## v0.12.2 (November 10, 2021)
+
+## Bug Fixes
+* fix: Deprecate channels attribute in favor of alert_channels (#225) (Darren)([ba30502](https://github.com/lacework/terraform-provider-lacework/commit/ba305020a31cf486a4baa1bf7079b65b446822b4))
+* fix: Suppress diff on sensitive values (#221) (Darren)([4a569cd](https://github.com/lacework/terraform-provider-lacework/commit/4a569cd485534d54ce4938e283ad267e9252fe4e))
+## Other Changes
+* style: fix linting and run it in CI(#222) (Darren)([725649a](https://github.com/lacework/terraform-provider-lacework/commit/725649ac626f52bfc1036475a37d8616c864808f))
+* ci: version bump to v0.12.2-dev (Lacework)([cc7609b](https://github.com/lacework/terraform-provider-lacework/commit/cc7609bcc7aece7f4e28f4192c54206ba72132a8))
+
+## v0.12.1 (October 29, 2021)
+
+## Documentation Updates
+* docs: Fix alert rule doc summary (#218) (Darren)([e662841](https://github.com/lacework/terraform-provider-lacework/commit/e662841024f340ae4b8d3ee4e607dcd8ad104834))
+* docs: Fix alert rule page name (#216) (Darren)([d6f1c3b](https://github.com/lacework/terraform-provider-lacework/commit/d6f1c3bc03e425a6a1565758e73df92667a8c948))
+## Other Changes
+* ci: improve unit and integration test output (#217) (Salim Afiune)([518b106](https://github.com/lacework/terraform-provider-lacework/commit/518b106f558ebf725e8a5297889d07ae0cd98cab))
+* ci: version bump to v0.12.1-dev (Lacework)([4eefa67](https://github.com/lacework/terraform-provider-lacework/commit/4eefa67191d958448e31016bc7bacbb106662876))
+
+## v0.12.0 (October 29, 2021)
+
+## Features
+* feat(resource): New lacework_alert_rule (#211) (Darren)([c62e1e1](https://github.com/lacework/terraform-provider-lacework/commit/c62e1e17d684222333ea9c986cb71f7f1ee6c586))
+## Bug Fixes
+* fix: Migrate Jira Cloud and Jira Server to API v2 (#212) (vatasha)([2382376](https://github.com/lacework/terraform-provider-lacework/commit/2382376940504453576ab1298f21c3e45021289c))
+* fix: Migrate IbmQRadar alert channel(v2) (#208) (Darren)([2699390](https://github.com/lacework/terraform-provider-lacework/commit/2699390cfd2eb11b7e638edc1d69ac7982698f7f))
+* fix: Migrate PagerDuty alert channel(v2) (#209) (Darren)([29057fc](https://github.com/lacework/terraform-provider-lacework/commit/29057fc71c9eb90af223c6fea740978c5feed318))
+* fix: Migrate NewRelic Insights alert channel(v2) (#210) (Darren)([553d395](https://github.com/lacework/terraform-provider-lacework/commit/553d395863f8171d6da23add44993984da305e02))
+* fix: Migrate ServiceNow alert channel(v2) (#206) (Darren)([09a413e](https://github.com/lacework/terraform-provider-lacework/commit/09a413ea6757f07662d26af8262d2290858df28e))
+* fix: Migrate Splunk alert channel(v2) (#205) (Darren)([7cc2d5e](https://github.com/lacework/terraform-provider-lacework/commit/7cc2d5e59d17bc1381ed8c227b48ce776ab4c474))
+* fix: Migrate GCP Pub Sub alert channel to API v2 (#207) (vatasha)([cd3da9a](https://github.com/lacework/terraform-provider-lacework/commit/cd3da9a31c58f247d35382288af50bb35d86ab6c))
+## Documentation Updates
+* docs: fix webhook alert channel example (#204) (Salim Afiune)([fba343b](https://github.com/lacework/terraform-provider-lacework/commit/fba343bb8d8d62f2b2e6abf4655bda69855c8d83))
+## Other Changes
+* build(deps): bump github.com/gruntwork-io/terratest (#196) (dependabot[bot])([6b94df3](https://github.com/lacework/terraform-provider-lacework/commit/6b94df3d8bdb9eb79a41d10f85ef4911c14a4e71))
+* ci: fix release pipeline (#214) (Salim Afiune)([bde019d](https://github.com/lacework/terraform-provider-lacework/commit/bde019d4dfa7cb98717d7179487080cb4a576cee))
+* ci: version bump to v0.11.3-dev (Lacework)([7551e99](https://github.com/lacework/terraform-provider-lacework/commit/7551e99525ca9395ebedb53dc5e1a6a67625ba02))
+* test: fix tests for alert_rule resource (#213) (Salim Afiune)([0f7aa5b](https://github.com/lacework/terraform-provider-lacework/commit/0f7aa5b513e95081e9e875fc5871440462e8ab1c))
+
+## v0.11.2 (October 12, 2021)
+
+## Bug Fixes
+* fix: migrate Webhook alert channel(v2) (#188) (Darren)([a27565c](https://github.com/lacework/terraform-provider-lacework/commit/a27565c7a94a6faac34f1389b56d79a34dbd3a29))
+* fix: migrate VictorOps alert channel(v2) (#192) (Darren)([517e587](https://github.com/lacework/terraform-provider-lacework/commit/517e58742b1371fe6406c24b66431793ab107b99))
+* fix: migrate Microsoft Teams Alert Channels to API v2 (Salim Afiune Maya)([36a78e3](https://github.com/lacework/terraform-provider-lacework/commit/36a78e3473aa3f92a1acc20bc7c00347f87a361b))
+* fix: migrate Cisco webex alert channel to API v2 (#193) (vatasha)([66e8251](https://github.com/lacework/terraform-provider-lacework/commit/66e8251d8fc252ee7313703bb4a6fde030cca912))
+* fix: remove alert channel properly if test fails (#199) (Salim Afiune)([9e13d58](https://github.com/lacework/terraform-provider-lacework/commit/9e13d58b3af1bf1e5fc66575747c86b58142aaca))
+## Other Changes
+* chore(deps): update lacework/go-sdk from main (Salim Afiune Maya)([5d277f9](https://github.com/lacework/terraform-provider-lacework/commit/5d277f9c87b727c865feee54c6eedd90f6c99c46))
+* ci: fix release pipeline (#202) (Salim Afiune)([a37168a](https://github.com/lacework/terraform-provider-lacework/commit/a37168a1949c1c0c912ec58696c3d3ad23dd6809))
+* ci: version bump to v0.11.2-dev (Lacework)([7de4f58](https://github.com/lacework/terraform-provider-lacework/commit/7de4f580e8a43900b3b6f5afc2fe51b49e2d6a5a))
+* test: fix tf output values (#198) (Darren)([a4af709](https://github.com/lacework/terraform-provider-lacework/commit/a4af709c3eabe6471bc3f9e0258a30201231ad82))
+
+## v0.11.1 (October 11, 2021)
+
+## Bug Fixes
+* fix: increase timeout from 60 to 125 seconds (#194) (Salim Afiune)([ff3819e](https://github.com/lacework/terraform-provider-lacework/commit/ff3819e782167d3a7d987b71018124c2ddedf6ec))
+* fix: Migrate Datadog alert channel to API v2 (#189) (vatasha)([fd38f37](https://github.com/lacework/terraform-provider-lacework/commit/fd38f37ca5e3851a08c7d2bd522cdaf5e3d202c5))
+* fix: migrate AWS Cloudwatch alert channel to API v2 (#186) (vatasha)([eeb55a7](https://github.com/lacework/terraform-provider-lacework/commit/eeb55a7000e214374abcb1bf930ee724ba588a84))
+## Other Changes
+* chore(deps): update lacework/go-sdk from main (Salim Afiune Maya)([37245e8](https://github.com/lacework/terraform-provider-lacework/commit/37245e8e5d0ccc44007f38e69335263887c45f92))
+* build(deps): bump github.com/hashicorp/terraform-plugin-sdk/v2 (#176) (dependabot[bot])([5800a22](https://github.com/lacework/terraform-provider-lacework/commit/5800a228802f076a4dd584e2022d3bf56a874cae))
+* build(deps): bump github.com/gruntwork-io/terratest (#187) (dependabot[bot])([994389b](https://github.com/lacework/terraform-provider-lacework/commit/994389b0cbbdc1032f2322cf3cfb89e7a3b20444))
+* ci: fix downgrading go packages (Salim Afiune Maya)([6eb22dc](https://github.com/lacework/terraform-provider-lacework/commit/6eb22dc1adaf1d2f31f1d2987cd3b0af43f14fed))
+* ci: version bump to v0.11.1-dev (Lacework)([6d86c83](https://github.com/lacework/terraform-provider-lacework/commit/6d86c837086919b3d823993396647055dfd8f50b))
+
+## v0.11.0 (October 01, 2021)
+
+## Features
+* feat: Add new field non_os_package_support to ECR resource (#175) (Darren)([f150be8](https://github.com/lacework/terraform-provider-lacework/commit/f150be8ad4163ace9acefa3244145aaed22f7c75))
+* feat: Add new field non_os_package_support to GHCR resource (#178) (Darren)([e72b5eb](https://github.com/lacework/terraform-provider-lacework/commit/e72b5eb702385103a9384dc10ec37255a9d98168))
+* feat: Add new field non_os_package_support to GAR resource (#179) (Darren)([27b6c70](https://github.com/lacework/terraform-provider-lacework/commit/27b6c70bdddf154f8171e5bf71d929bcea015ca4))
+## Documentation Updates
+* docs: update multiple aliases for sub-accounts (#172) (robewedd)([0763028](https://github.com/lacework/terraform-provider-lacework/commit/0763028b8b4d4a5df29ab339003ba8ba5a680d91))
+## Other Changes
+* ci: fix release pipeline by running make prepare (#183) (Salim Afiune)([fb4d3db](https://github.com/lacework/terraform-provider-lacework/commit/fb4d3db24cab8a94e8e8ccaf8086dd44bae3667d))
+* ci: version bump to v0.10.1-dev (Lacework)([9645ee1](https://github.com/lacework/terraform-provider-lacework/commit/9645ee118106c2358658c955bc50f892cabb0153))
+* test: fix integration tests (#180) (Darren)([1eb35e9](https://github.com/lacework/terraform-provider-lacework/commit/1eb35e9fee926dab0caa25e9a55bae95a3a47076))
+
+## v0.10.0 (September 27, 2021)
+
+## Features
+* feat: New Lw Account Resource Group Terraform Resource (#171) (Darren)([8425534](https://github.com/lacework/terraform-provider-lacework/commit/84255348e6e68986ccdf773ce73219990032dac5))
+* feat: New Container Resource Group Terraform Resource (#170) (Darren)([ffc35cf](https://github.com/lacework/terraform-provider-lacework/commit/ffc35cf73537b0968619831e873d92d0ca6df4da))
+* feat: New Machine Resource Group Terraform Resource (#169) (Darren)([4433d9a](https://github.com/lacework/terraform-provider-lacework/commit/4433d9a10367c49b412a399d5358f96bb95b51f5))
+## Refactor
+* refactor: switch over to use APIv2 by default (#173) (Salim Afiune)([6ebd5fc](https://github.com/lacework/terraform-provider-lacework/commit/6ebd5fc0b3ebcc75fa00986633dfab66a35da1e4))
+## Documentation Updates
+* docs: Add contributing documentation (#165) (Darren)([55a4408](https://github.com/lacework/terraform-provider-lacework/commit/55a44080a0f2901500f5d791be357a7b163019b6))
+## Other Changes
+* ci: version bump to v0.9.3-dev (Lacework)([f619f25](https://github.com/lacework/terraform-provider-lacework/commit/f619f2572e3812b6db6257ffafebe8d4c7f4ec5f))
+
 ## v0.9.2 (September 23, 2021)
 
 ## Bug Fixes

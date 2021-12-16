@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
@@ -68,14 +69,11 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 								// @afiune we can't compare this element since our API, for security reasons,
 								// does NOT return the private key configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
-								if d.HasChanges(
+								return !d.HasChanges(
 									"name", "resource_level", "resource_id", "org_level", "enabled",
 									"credentials.0.client_id", "credentials.0.private_key_id",
 									"credentials.0.client_email",
-								) {
-									return false
-								}
-								return true
+								)
 							},
 						},
 					},
@@ -157,7 +155,7 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		data.Enabled = 0
 	}
 
-	return resource.Retry(d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.GcpCfgIntegration.String())
 		response, err := lacework.Integrations.CreateGcp(data)
