@@ -15,8 +15,8 @@ func castAndTitleCaseStringSlice(d *schema.ResourceData, attr string) []string {
 	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return strings.Title(strings.ToLower(s)) })
 }
 
-func castAndUpperStringSlice(d *schema.ResourceData, attr string) []string {
-	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return strings.Title(strings.ToUpper(s)) })
+func castAndUpperStringSlice(iArray []interface{}) []string {
+	return castAndTransformStringSlice(iArray, func(s string) string { return strings.Title(strings.ToUpper(s)) })
 }
 
 // turn an interface slice into a string slice
@@ -146,8 +146,4 @@ func ContainsStr(array []string, expected string) bool {
 		}
 	}
 	return false
-}
-
-func diffCaseInsensitive(k, old, new string, d *schema.ResourceData) bool {
-	return strings.EqualFold(old, new)
 }

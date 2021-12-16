@@ -68,7 +68,7 @@ func TestTeamMemberOrg(t *testing.T) {
 
 	// Create new Org Team Member
 	create := terraform.InitAndApply(t, terraformOptions)
-	tm := GetTeamMember(create)
+	tm := GetOrgTeamMember(create)
 	assert.Equal(t, email, tm.UserName)
 	assert.Equal(t, "Pokemon International Company", tm.Props.Company)
 	assert.Equal(t, "Vatasha", tm.Props.FirstName)
@@ -84,7 +84,7 @@ func TestTeamMemberOrg(t *testing.T) {
 	terraformOptions.Vars["admin_accounts"] = []string{os.Getenv("LW_ACCOUNT")}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
-	tmUpdate := GetTeamMember(update)
+	tmUpdate := GetOrgTeamMember(update)
 	assert.Equal(t, email, tmUpdate.UserName)
 	assert.Equal(t, "Pokemon International Company", tm.Props.Company)
 	assert.Equal(t, "Shuri", tmUpdate.Props.FirstName)

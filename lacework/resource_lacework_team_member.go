@@ -69,15 +69,13 @@ func resourceLaceworkTeamMember() *schema.Resource {
 							Description:   "Whether the team member is an org level administrator",
 						},
 						"user": {
-							Type:          schema.TypeBool,
-							Optional:      true,
-							Default:       false,
-							ConflictsWith: []string{"organization.0.administrator"},
-							Description:   "Whether the team member is an org level user",
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Default:     false,
+							Description: "Whether the team member is an org level user",
 						},
 						"admin_accounts": {
-							// We are not using Set because we need to use DiffSuppressFunc: https://github.com/hashicorp/terraform-plugin-sdk/issues/160
-							Type:             schema.TypeList,
+							Type:             schema.TypeSet,
 							Optional:         true,
 							Description:      "List of accounts the team member is an admin",
 							ConflictsWith:    []string{"organization.0.user", "organization.0.administrator"},
@@ -90,8 +88,7 @@ func resourceLaceworkTeamMember() *schema.Resource {
 							},
 						},
 						"user_accounts": {
-							// We are not using Set because we need to use DiffSuppressFunc: https://github.com/hashicorp/terraform-plugin-sdk/issues/160
-							Type:             schema.TypeList,
+							Type:             schema.TypeSet,
 							Optional:         true,
 							Description:      "List of accounts the team member is a user",
 							ConflictsWith:    []string{"organization.0.user", "organization.0.administrator"},
@@ -153,8 +150,8 @@ func laceworkTeamMemberCreateOrg(d *schema.ResourceData, meta interface{}) error
 
 	tmOrg.OrgAdmin = d.Get("organization.0.administrator").(bool)
 	tmOrg.OrgUser = d.Get("organization.0.user").(bool)
-	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d, "organization.0.admin_accounts")
-	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d, "organization.0.user_accounts")
+	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d.Get("organization.0.admin_accounts").(*schema.Set).List())
+	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d.Get("organization.0.user_accounts").(*schema.Set).List())
 
 	if len(tmOrg.AdminRoleAccounts) != 0 || len(tmOrg.UserRoleAccounts) != 0 {
 		// if admin_accounts or user_accounts are set, turn off OrgUser which is turned on by default
@@ -189,6 +186,7 @@ created successfully and report this issue to support@lacework.net
 	org["user_accounts"] = tmOrg.UserRoleAccounts
 	org["user"] = tmOrg.OrgUser
 	org["administrator"] = tmOrg.OrgAdmin
+	log.Printf("[INFO] (Create) Setting up organization state: %v\n", org)
 	d.Set("organization", []map[string]interface{}{org})
 
 	log.Printf("[INFO] Created org team member with email %s and guid %s\n",
@@ -312,10 +310,12 @@ func laceworkTeamMemberReadOrg(d *schema.ResourceData, meta interface{}) error {
 				}
 			}
 		}
+
 		org["admin_accounts"] = adminAccounts
 		org["user_accounts"] = userAccounts
 	}
 
+	log.Printf("[INFO] (Read) Setting up organization state: %v\n", org)
 	d.Set("organization", []map[string]interface{}{org})
 
 	if err := lacework.V2.TeamMembers.Get(tms.Data[0].UserGuid, &response); err != nil {
@@ -401,8 +401,8 @@ func laceworkTeamMemberUpdateOrg(d *schema.ResourceData, meta interface{}) error
 		tmOrg.OrgUser = false
 	}
 
-	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d, "organization.0.admin_accounts")
-	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d, "organization.0.user_accounts")
+	tmOrg.AdminRoleAccounts = castAndUpperStringSlice(d.Get("organization.0.admin_accounts").(*schema.Set).List())
+	tmOrg.UserRoleAccounts = castAndUpperStringSlice(d.Get("organization.0.user_accounts").(*schema.Set).List())
 
 	if len(tmOrg.AdminRoleAccounts) != 0 || len(tmOrg.UserRoleAccounts) != 0 {
 		// if admin_accounts or user_accounts are set, turn off OrgUser which is turned on by default
@@ -494,6 +494,7 @@ func laceworkTeamMemberDeleteOrg(d *schema.ResourceData, meta interface{}) error
 		//   lacework.V2.TeamMembers.DeleteOrgByUsername(d.Get("email").(string))
 		//
 		// This needs to be added to the go-sdk/api
+		// => https://lacework.atlassian.net/browse/ALLY-798
 		return err
 	}
 
@@ -538,15 +539,25 @@ func importLaceworkTeamMember(d *schema.ResourceData, meta interface{}) ([]*sche
 	log.Printf("[INFO] Importing Lacework team member with user guid: %s\n", d.Id())
 	var response api.TeamMemberResponse
 	if err := lacework.V2.TeamMembers.Get(d.Id(), &response); err != nil {
-		// TODO(afiune): if the user is trying to import an org team member help them
-		// pointing them to the first import by email
-		return nil, errors.Wrap(err, "unable to import Lacework resource")
+		// maybe the user is trying to import an org team member,
+		// help and point them to the first import by email
+		msg := `
+unable to import Lacework team member with user guid.
+
+When trying to import an organizational team member, you could use the email
+instead of the id of the user:
+
+    terraform import lacework_team_member.<name> user@example.com
+`
+
+		return nil, errors.Wrap(err, msg)
 	}
 	log.Printf("[INFO] Team member found with user guid: %s\n", response.Data.UserGuid)
 	return []*schema.ResourceData{d}, nil
 }
 
 // TODO(afiune): move to the go-sdk/api client
+// => https://lacework.atlassian.net/browse/ALLY-798
 func SearchAccountByGUID(p *api.UserProfile, guid string) (*api.Account, bool) {
 	for _, acc := range p.Accounts {
 		if acc.CustGUID == guid {
