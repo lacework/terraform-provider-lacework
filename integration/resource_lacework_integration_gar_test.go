@@ -21,7 +21,7 @@ func TestIntegrationGARCreate(t *testing.T) {
 				"client_id":              gcreds.ClientID,
 				"client_email":           gcreds.ClientEmail,
 				"private_key_id":         gcreds.PrivateKeyID,
-				"non_os_package_support": false,
+				"non_os_package_support": true,
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_private_key": gcreds.PrivateKey, // @afiune this will avoid printing secrets in our pipeline

@@ -22,7 +22,7 @@ func TestIntegrationECRCreate(t *testing.T) {
 				"role_arn":               awsCreds.RoleArn,
 				"external_id":            awsCreds.ExternalID,
 				"registry_domain":        awsCreds.RegistryDomain,
-				"non_os_package_support": false,
+				"non_os_package_support": true,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)

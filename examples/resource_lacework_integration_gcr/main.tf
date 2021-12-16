@@ -11,6 +11,7 @@ provider "lacework" {}
 resource "lacework_integration_gcr" "example" {
   name            = "GRC Example"
   registry_domain = "gcr.io"
+  non_os_package_support = true
   credentials {
     client_id      = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     private_key_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

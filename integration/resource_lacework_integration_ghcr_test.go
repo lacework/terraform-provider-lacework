@@ -20,7 +20,7 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 			Vars: map[string]interface{}{
 				"username":               creds.Username,
 				"ssl":                    true,
-				"non_os_package_support": false,
+				"non_os_package_support": true,
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_password": creds.Token,

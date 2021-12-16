@@ -25,7 +25,7 @@ This resource has two authentication methods:
 !> **Warning:** It is possible to switch authentication methods but the resource
 will be destroyed and recreated. This will generate a new `INT_GUID`.
 
-For more information, see [Integrate Amazon Container Registry documentation](https://support.lacework.com/hc/en-us/articles/360048500133-Integrate-Amazon-Container-Registry)
+For more information, see [Integrate Amazon Container Registry documentation](https://docs.lacework.com/integrate-amazon-container-registry)
 
 ## Example Usage
 
@@ -33,6 +33,7 @@ For more information, see [Integrate Amazon Container Registry documentation](ht
 ```hcl
 resource "lacework_integration_ecr" "access_key" {
   name            = "ECR using Access Keys"
+  non_os_package_support = true
   registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
   credentials {
     access_key_id     = "AWS123abcAccessKeyID"
@@ -68,6 +69,7 @@ provider "aws" {
 module "lacework_ecr" {
   source  = "lacework/ecr/aws"
   version = "~> 0.1"
+  non_os_package_support = true
 }
 ```
 
@@ -86,7 +88,7 @@ The following arguments are supported:
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
-* `non_os_package_support` - (Optional) Enable [program language scanning](https://support.lacework.com/hc/en-us/articles/360035472393-Container-Vulnerability-Assessment-Overview#programming-language-support). Defaults to `false`.
+* `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
 
 ### Credentials
 

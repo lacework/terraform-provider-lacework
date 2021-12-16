@@ -10,6 +10,7 @@ provider "lacework" {}
 
 resource "lacework_integration_ecr" "access_key" {
   name            = "ECR using Access Keys"
+  non_os_package_support = true
   registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
   credentials {
     access_key_id     = "AWS123abcAccessKeyID"
