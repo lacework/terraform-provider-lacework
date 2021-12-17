@@ -15,10 +15,10 @@ resource "lacework_team_member" "example" {
   first_name = var.first_name
   last_name  = var.last_name
   company    = "Pokemon International Company"
+  enabled    = false
 
   organization {
-    admin_accounts = var.admin_accounts
-    user_accounts  = var.user_accounts
+    administrator = true
   }
 }
 
@@ -39,10 +39,10 @@ variable "last_name" {
 
 variable "admin_accounts" {
   type    = list(string)
-  default = []
+  default = ["CUSTOMERDEMO"]
 }
 
 variable "user_accounts" {
   type    = list(string)
-  default = ["MY-ACCOUNT"]
+  default = []
 }

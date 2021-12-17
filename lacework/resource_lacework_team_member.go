@@ -53,7 +53,7 @@ func resourceLaceworkTeamMember() *schema.Resource {
 				Default:       false,
 				Optional:      true,
 				ConflictsWith: []string{"organization"},
-				Description:   "Whether the team member has admin role access into the Lacework account",
+				Description:   "Set to true to make the team member an administrator, otherwise the member will be a regular user",
 			},
 			"organization": {
 				Type:     schema.TypeList,

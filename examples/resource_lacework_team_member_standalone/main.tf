@@ -33,5 +33,5 @@ variable "last_name" {
 
 variable "administrator" {
   type    = bool
-  default = false
+  default = true
 }

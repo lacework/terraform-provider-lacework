@@ -48,7 +48,7 @@ provider "lacework" {
 }
 
 resource "lacework_integration_aws_ct" "consolidated" {
-  alias     = lacework.organization
+  provider  = lacework.organization
   name      = "Consolidated CloudTrail"
   queue_url = "https://sqs.us-west-2.amazonaws.com/123456789012/my_queue"
   credentials {
@@ -117,7 +117,7 @@ provider "lacework" {
 }
 
 resource "lacework_integration_aws_ct" "account_abc" {
-  alias     = lacework.primary
+  provider  = lacework.primary
   name      = "Organization Trail"
   queue_url = "https://sqs.us-west-2.amazonaws.com/123456789012/my_queue"
   credentials {
