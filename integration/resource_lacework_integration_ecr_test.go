@@ -34,7 +34,7 @@ func TestIntegrationECRCreate(t *testing.T) {
 		assert.Equal(t, awsCreds.RoleArn, createData.Data.Credentials.RoleArn)
 		assert.Equal(t, awsCreds.ExternalID, createData.Data.Credentials.ExternalID)
 		assert.Equal(t, awsCreds.RegistryDomain, createData.Data.RegistryDomain)
-		assert.Equal(t, false, createData.Data.AwsEcrCommonData.NonOSPackageEval)
+		assert.Equal(t, true, createData.Data.AwsEcrCommonData.NonOSPackageEval)
 
 		// Update Google Artifact Registry
 		terraformOptions.Vars["integration_name"] = "Amazon Elastic Container Registry Updated"
