@@ -32,7 +32,7 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		createData := GetContainerRegistryIntegration(create)
 		assert.Equal(t, "Github Container Registry Example", createData.Name)
-		assert.Equal(t, false, createData.Data.NonOSPackageEval)
+		assert.Equal(t, true, createData.Data.NonOSPackageEval)
 
 		// Update Github Container Registry
 		terraformOptions.Vars["integration_name"] = "Github Container Registry Updated"
