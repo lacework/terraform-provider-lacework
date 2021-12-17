@@ -17,7 +17,6 @@ For more information, see the [Integrate Github Container Registry documentation
 ```hcl
 resource "lacework_integration_ghcr" "example" {
   name     = "My Github registry Registry"
-  non_os_package_support = true
   username = "my-user"
   password = "a-secret-password"
   ssl      = true

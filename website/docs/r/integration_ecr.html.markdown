@@ -33,7 +33,6 @@ For more information, see [Integrate Amazon Container Registry documentation](ht
 ```hcl
 resource "lacework_integration_ecr" "access_key" {
   name            = "ECR using Access Keys"
-  non_os_package_support = true
   registry_domain = "YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com"
   credentials {
     access_key_id     = "AWS123abcAccessKeyID"
@@ -69,7 +68,6 @@ provider "aws" {
 module "lacework_ecr" {
   source  = "lacework/ecr/aws"
   version = "~> 0.1"
-  non_os_package_support = true
 }
 ```
 

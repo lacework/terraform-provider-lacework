@@ -57,7 +57,6 @@ locals {
 
 resource "lacework_integration_gcr" "example" {
   name            = "GRC Example"
-  non_os_package_support = true
   registry_domain = "gcr.io"
   credentials {
     client_id      = local.gcr_credentials.client_id

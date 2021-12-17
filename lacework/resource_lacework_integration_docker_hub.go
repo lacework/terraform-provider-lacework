@@ -115,7 +115,7 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 			},
 			"non_os_package_support": {
 				Type:        schema.TypeBool,
-				Optional:    false,
+				Optional:    true,
 				Default:     true,
 				Description: "Enable program language scanning",
 			},

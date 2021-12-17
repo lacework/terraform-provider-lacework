@@ -17,7 +17,6 @@ image.
 ```hcl
 resource "lacework_integration_gar" "example" {
   name            = "GAR Example"
-  non_os_package_support = true
   registry_domain = "us-west1-docker.pkg.dev"
   credentials {
     client_id      = "123456789012345678900"
@@ -39,7 +38,6 @@ Here is a basic usage of this module:
 module "gar" {
   source  = "lacework/gar/gcp"
   version = "~> 0.1"
-  non_os_package_support = true
 }
 ```
 
@@ -57,7 +55,6 @@ locals {
 
 resource "lacework_integration_gar" "example" {
   name            = "GAR Example"
-  non_os_package_support = true
   registry_domain = "us-west1-docker.pkg.dev"
   credentials {
     client_id      = local.gar.client_id
@@ -73,7 +70,6 @@ resource "lacework_integration_gar" "example" {
 ```hcl
 resource "lacework_integration_gar" "example" {
   name            = "GAR Example"
-  non_os_package_support = true
   registry_domain = "us-west1-docker.pkg.dev"
   credentials {
     client_id      = "123456789012345678900"

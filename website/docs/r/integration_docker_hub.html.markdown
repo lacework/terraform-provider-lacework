@@ -17,7 +17,6 @@ image.
 ```hcl
 resource "lacework_integration_docker_hub" "example" {
   name = "My Docker Hub Registry Example"
-  non_os_package_support = true
   username = "my-user"
   password = "a-secret-password"
 }
