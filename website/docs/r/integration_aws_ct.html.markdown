@@ -48,7 +48,7 @@ provider "lacework" {
 }
 
 resource "lacework_integration_aws_ct" "consolidated" {
-  alias     = lacework.organization
+  provider  = lacework.organization
   name      = "Consolidated CloudTrail"
   queue_url = "https://sqs.us-west-2.amazonaws.com/123456789012/my_queue"
   credentials {
@@ -117,7 +117,7 @@ provider "lacework" {
 }
 
 resource "lacework_integration_aws_ct" "account_abc" {
-  alias     = lacework.primary
+  provider  = lacework.primary
   name      = "Organization Trail"
   queue_url = "https://sqs.us-west-2.amazonaws.com/123456789012/my_queue"
   credentials {
@@ -173,4 +173,4 @@ $ terraform import lacework_integration_aws_ct.account_abc EXAMPLE_1234BAE1E4218
 ```
 -> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
-	[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
+	[this documentation](https://docs.lacework.com/cli/).

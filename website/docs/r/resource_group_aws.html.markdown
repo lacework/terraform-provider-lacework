@@ -39,4 +39,4 @@ $ terraform import lacework_resource_group_aws.example EXAMPLE_1234BAE1E42182964
 ```
 -> **Note:** To retreive the `RESOURCE_GUID` from existing resource groups in your account, use the
 Lacework CLI command `lacework resource-group list`. To install this tool follow
-[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
+[this documentation](https://docs.lacework.com/cli/).

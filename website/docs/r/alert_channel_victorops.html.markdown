@@ -38,4 +38,4 @@ $ terraform import lacework_alert_channel_victorops.example EXAMPLE_1234BAE1E421
 ```
 -> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
-	[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
+	[this documentation](https://docs.lacework.com/cli/).

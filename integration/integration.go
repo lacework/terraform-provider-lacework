@@ -125,6 +125,30 @@ func GetContainerResourceGroupProps(result string) api.ContainerResourceGroupPro
 	return response.Data.Props
 }
 
+func GetTeamMember(result string) api.TeamMember {
+	id := GetIDFromTerraResults(result)
+
+	var res api.TeamMemberResponse
+	err := LwClient.V2.TeamMembers.Get(id, &res)
+	if err != nil {
+		log.Fatalf("Unable to find team member id: %s\n Response: %v", id, res)
+	}
+
+	return res.Data
+}
+
+func GetOrgTeamMember(result string) api.TeamMember {
+	id := GetIDFromTerraResults(result)
+
+	var res api.TeamMemberResponse
+	err := LwOrgClient.V2.TeamMembers.Get(id, &res)
+	if err != nil {
+		log.Fatalf("Unable to find team member id: %s\n Response: %v", id, res)
+	}
+
+	return res.Data
+}
+
 func GetMachineResourceGroupProps(result string) api.MachineResourceGroupProps {
 	id := GetIDFromTerraResults(result)
 

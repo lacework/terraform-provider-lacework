@@ -15,6 +15,10 @@ func castAndTitleCaseStringSlice(d *schema.ResourceData, attr string) []string {
 	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return strings.Title(strings.ToLower(s)) })
 }
 
+func castAndUpperStringSlice(iArray []interface{}) []string {
+	return castAndTransformStringSlice(iArray, func(s string) string { return strings.Title(strings.ToUpper(s)) })
+}
+
 // turn an interface slice into a string slice
 func castStringSlice(iArray []interface{}) []string {
 	return castAndTransformStringSlice(iArray, func(s string) string { return s })

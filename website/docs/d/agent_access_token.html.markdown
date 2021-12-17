@@ -12,7 +12,7 @@ Retrieve Lacework agent access tokens.
 
 -> **Note:** To list all agent access tokens in your Lacework account, use the
 	Lacework CLI command `lacework agent token list`. To install this tool follow
-	[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
+	[this documentation](https://docs.lacework.com/cli/).
 
 ## Example Usage
 
