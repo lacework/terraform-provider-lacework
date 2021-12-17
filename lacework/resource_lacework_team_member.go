@@ -219,6 +219,22 @@ func validateOrgTeamMember(m *api.TeamMemberOrg) error {
 func laceworkTeamMemberCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
+	if _, ok := d.GetOk("organization.0"); ok {
+		msg := `
+
+To manage team members at the organization-level you need to define a Lacework
+provider with the 'organization' argument set to 'true'.
+
+    provider "lacework" {
+      organization = true
+    }
+
+Refer to the resource documentation for more information:
+
+    https://registry.terraform.io/providers/lacework/lacework/latest/docs/resources/team_member`
+		return errors.New(msg)
+	}
+
 	tm := api.NewTeamMember(d.Get("email").(string),
 		api.TeamMemberProps{
 			AccountAdmin: d.Get("administrator").(bool),
@@ -444,6 +460,22 @@ updated successfully and report this issue to support@lacework.net
 
 func laceworkTeamMemberUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
+
+	if _, ok := d.GetOk("organization.0"); ok {
+		msg := `
+
+To manage team members at the organization-level you need to define a Lacework
+provider with the 'organization' argument set to 'true'.
+
+    provider "lacework" {
+      organization = true
+    }
+
+Refer to the resource documentation for more information:
+
+    https://registry.terraform.io/providers/lacework/lacework/latest/docs/resources/team_member`
+		return errors.New(msg)
+	}
 
 	tm := api.NewTeamMember(d.Get("email").(string),
 		api.TeamMemberProps{
