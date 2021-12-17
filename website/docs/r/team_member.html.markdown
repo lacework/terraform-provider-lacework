@@ -141,4 +141,4 @@ $ terraform import lacework_team_member.albus albus@hogwarts.io
 
 -> **Note:** To retreive the `USER_GUID` or `EMAIL` from existing team members in your account,
 use the Lacework CLI command `lacework team-member list`. To install this tool follow
-[this documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#installation).
+[this documentation](https://docs.lacework.com/cli/).
