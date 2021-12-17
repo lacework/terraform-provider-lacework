@@ -111,7 +111,7 @@ The following arguments are supported:
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_label` limits, they function as an `AND`.
 * `limit_by_label` - (Optional) A list of key/value labels to limit the assessment of images. If you specify `limit_by_tags` and `limit_by_label` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
-* `non_os_package_support` - (Optional) Enable [program language scanning](https://support.lacework.com/hc/en-us/articles/360035472393-Container-Vulnerability-Assessment-Overview#programming-language-support). Defaults to `false`.
+* `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
 
 The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
 * `key` - (Required) The key of the label.

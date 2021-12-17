@@ -17,6 +17,7 @@ image.
 ```hcl
 resource "lacework_integration_gcr" "example" {
   name            = "GRC Example"
+  non_os_package_support = true
   registry_domain = "gcr.io"
   credentials {
     client_id      = "123456789012345678900"
@@ -38,6 +39,7 @@ Here is a basic usage of this module:
 module "gcr" {
   source  = "lacework/gcr/gcp"
   version = "~> 1.0"
+  non_os_package_support = true
 }
 ```
 
@@ -80,7 +82,7 @@ The following arguments are supported:
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
-* `non_os_package_support` - (Optional) Enable [program language scanning](https://support.lacework.com/hc/en-us/articles/360035472393-Container-Vulnerability-Assessment-Overview#programming-language-support). Defaults to `false`.
+* `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
 
 ### Credentials
 

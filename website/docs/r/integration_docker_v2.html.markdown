@@ -23,7 +23,7 @@ Supported Docker V2 registries:
 * JFrog Artifactory (On prem 7.2.1 and cloud)
 * JFrog Platform (On prem 7.2.1 and cloud)
 
-~> **Note:** You must whitelist the Lacework outbound IPs to allow the vulnerability scanner to communicate with your private registries. See [Lacework Outbound IPs](https://support.lacework.com/hc/en-us/articles/360052140433)
+~> **Note:** You must whitelist the Lacework outbound IPs to allow the vulnerability scanner to communicate with your private registries. See [Lacework Outbound IPs](https://docs.lacework.com/lacework-outbound-ips)
 
 ## Example Usage
 
@@ -53,7 +53,7 @@ The following arguments are supported:
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
-* `non_os_package_support` - (Optional) Enable [program language scanning](https://support.lacework.com/hc/en-us/articles/360035472393-Container-Vulnerability-Assessment-Overview#programming-language-support). Defaults to `false`.
+* `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
 
 ## Import
 

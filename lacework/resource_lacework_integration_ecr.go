@@ -109,7 +109,7 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 			"non_os_package_support": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Default:     false,
+				Default:     true,
 				Description: "Enable program language scanning",
 			},
 
