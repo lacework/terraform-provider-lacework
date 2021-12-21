@@ -1,8 +1,7 @@
 Terraform Provider
-
-[![IaC](https://app.soluble.cloud/api/v1/public/badges/a1f83ada-bf2f-4029-a0bf-2cba01c2f548.svg)](https://app.soluble.cloud/repos/details/github.com/lacework/terraform-provider-lacework)  
 ==================
 
+[![IaC](https://app.soluble.cloud/api/v1/public/badges/a1f83ada-bf2f-4029-a0bf-2cba01c2f548.svg)](https://app.soluble.cloud/repos/details/github.com/lacework/terraform-provider-lacework)  
 [![Codefresh build status]( https://g.codefresh.io/api/badges/pipeline/lacework/terraform-provider-lacework%2Ftest-build?type=cf-1&key=eyJhbGciOiJIUzI1NiJ9.NWVmNTAxOGU4Y2FjOGQzYTkxYjg3ZDEx.RJ3DEzWmBXrJX7m38iExJ_ntGv4_Ip8VTa-an8gBwBo)]( https://g.codefresh.io/pipelines/edit/new/builds?id=609b056f1e9a4249a520b52e&pipeline=test-build&projects=terraform-provider-lacework&projectId=609b049ae23d572127fccaff)
 
 - Website: https://www.terraform.io
