@@ -42,12 +42,18 @@ func IsExistingDir(path string) bool {
 // CopyTerraformFolderToTemp creates a copy of the given folder and all its contents in a temp folder with a unique name and the given prefix.
 // This is useful when running multiple tests in parallel against the same set of Terraform files to ensure the
 // tests don't overwrite each other's .terraform working directory and terraform.tfstate files. This method returns
-// the path to the temp folder with the copied contents. Hidden files and folders, Terraform state files, and
-// terraform.tfvars files are not copied to this temp folder, as you typically don't want them interfering with your
-// tests.
+// the path to the temp folder with the copied contents. Hidden files and folders (with the exception of the `.terraform-version` files used
+// by the [tfenv tool](https://github.com/tfutils/tfenv)), Terraform state files, and terraform.tfvars files are not copied to this temp folder,
+// as you typically don't want them interfering with your tests.
 func CopyTerraformFolderToTemp(folderPath string, tempFolderPrefix string) (string, error) {
 	filter := func(path string) bool {
-		return !PathContainsHiddenFileOrFolder(path) && !PathContainsTerraformStateOrVars(path)
+		if PathIsTerraformVersionFile(path) {
+			return true
+		}
+		if PathContainsHiddenFileOrFolder(path) || PathContainsTerraformStateOrVars(path) {
+			return false
+		}
+		return true
 	}
 
 	destFolder, err := CopyFolderToTemp(folderPath, tempFolderPrefix, filter)
@@ -174,6 +180,11 @@ func PathContainsHiddenFileOrFolder(path string) bool {
 		}
 	}
 	return false
+}
+
+// PathIsTerraformVersionFile returns true if the given path is the special '.terraform-version' file used by the [tfenv](https://github.com/tfutils/tfenv) tool.
+func PathIsTerraformVersionFile(path string) bool {
+	return filepath.Base(path) == ".terraform-version"
 }
 
 // CopyFile copies a file from source to destination.
