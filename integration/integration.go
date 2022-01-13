@@ -204,6 +204,17 @@ func GetReportRuleProps(result string) api.ReportRuleResponse {
 	return data
 }
 
+func GetVulnerabilityExceptionProps(result string) api.VulnerabilityExceptionResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	var data api.VulnerabilityExceptionResponse
+	err := LwClient.V2.VulnerabilityExceptions.Get(id, &data)
+	if err != nil {
+		log.Fatalf("Unable to retrieve vulnerability exception with id: %s", id)
+	}
+	return data
+}
+
 // GetSpecificIDFromTerraResults returns the specific index id found in the Terraform output
 func GetSpecificIDFromTerraResults(i int, result string) string {
 	re := regexp.MustCompile(`\[id=(.*?)\]`)

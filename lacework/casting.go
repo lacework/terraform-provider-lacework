@@ -95,6 +95,17 @@ func castAttributeToArrayOfKeyValueMap(d *schema.ResourceData, attr string) []ma
 	return aMap
 }
 
+func castAttributeToArrayOfCustomKeyValueMap(d *schema.ResourceData, attr string, key string, value string) []map[string]string {
+	list := d.Get(attr).(*schema.Set).List()
+	aMap := make([]map[string]string, len(list))
+	for i, v := range list {
+		val := v.(map[string]interface{})
+		aMap[i] = map[string]string{val[key].(string): val[value].(string)}
+	}
+
+	return aMap
+}
+
 // convert an array of map of strings with string keys to a key/value TypeSet
 // needed for API v2 ContainerRegistry Limits
 //
