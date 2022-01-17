@@ -182,6 +182,17 @@ func GetAlertChannelProps(result string) api.AlertChannelResponse {
 	return data
 }
 
+func GetVulnerabilityExceptionProps(result string) api.VulnerabilityExceptionResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	var data api.VulnerabilityExceptionResponse
+	err := LwClient.V2.VulnerabilityExceptions.Get(id, &data)
+	if err != nil {
+		log.Fatalf("Unable to retrieve vulnerability exception with id: %s", id)
+	}
+	return data
+}
+
 func GetAlertRuleProps(result string) api.AlertRuleResponse {
 	id := GetSpecificIDFromTerraResults(2, result)
 
@@ -200,17 +211,6 @@ func GetReportRuleProps(result string) api.ReportRuleResponse {
 	err := LwClient.V2.ReportRules.Get(id, &data)
 	if err != nil {
 		log.Fatalf("Unable to retrieve report rule with id: %s", id)
-	}
-	return data
-}
-
-func GetVulnerabilityExceptionProps(result string) api.VulnerabilityExceptionResponse {
-	id := GetSpecificIDFromTerraResults(1, result)
-
-	var data api.VulnerabilityExceptionResponse
-	err := LwClient.V2.VulnerabilityExceptions.Get(id, &data)
-	if err != nil {
-		log.Fatalf("Unable to retrieve vulnerability exception with id: %s", id)
 	}
 	return data
 }
