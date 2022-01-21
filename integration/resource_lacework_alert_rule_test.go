@@ -1,3 +1,4 @@
+//go:build alert_rule
 package integration
 
 import (

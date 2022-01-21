@@ -1,3 +1,4 @@
+//go:build alert_channel
 package integration
 
 import (

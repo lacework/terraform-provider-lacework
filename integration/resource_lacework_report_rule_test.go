@@ -1,3 +1,4 @@
+//go:build report_rule
 package integration
 
 import (

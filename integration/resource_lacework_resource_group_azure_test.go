@@ -1,3 +1,4 @@
+//go:build resource_group
 package integration
 
 import (

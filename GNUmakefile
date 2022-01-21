@@ -76,6 +76,10 @@ uninstall: ## Removes installed provider package from BINARY_PATH
 integration-test: clean-test install ## Runs clean-test and install, then runs all integration tests
 	gotestsum -f testname -- -v ./integration
 
+.PHONY: integration-team-member-only
+integration-team-member-only: clean-test install ## Runs only team members test
+	gotestsum -f testname -- -v ./integration -tags="team_member"
+
 .PHONY: test
 test: fmtcheck ## Runs fmtcheck then runs all unit tests
 	gotestsum -f testname -- -v -cover -coverprofile=$(COVERAGEOUT) $(TEST)
