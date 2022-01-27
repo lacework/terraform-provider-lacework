@@ -3,7 +3,7 @@ subcategory: "Alert Channels"
 layout: "lacework"
 page_title: "Lacework: lacework_alert_channel_aws_s3"
 description: |-
-  Create and manage AWS S3 Alert Channel integrations
+  Create and manage Amazon S3 Alert Channel integrations
 ---
 
 # lacework\_alert\_channel\_aws\_s3
@@ -53,7 +53,7 @@ The following arguments are supported:
 
 ## Import
 
-A Lacework AWS S3 Alert Channel integration can be imported using a `INT_GUID`, e.g.
+A Lacework Amazon S3 Alert Channel integration can be imported using a `INT_GUID`, e.g.
 
 ```
 $ terraform import lacework_alert_channel_aws_s3.data_export EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5

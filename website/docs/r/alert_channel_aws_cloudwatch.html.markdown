@@ -3,12 +3,12 @@ subcategory: "Alert Channels"
 layout: "lacework"
 page_title: "Lacework: lacework_alert_channel_aws_cloudwatch"
 description: |-
-  Create and manage AWS CloudWatch Alert Channel integrations
+  Create and manage Amazon CloudWatch Alert Channel integrations
 ---
 
 # lacework\_alert\_channel\_aws\_cloudwatch
 
-Configure Lacework to forward alerts to an AWS CloudWatch event bus.
+Configure Lacework to forward alerts to an Amazon CloudWatch event bus.
 
 -> **Note:** For more information about sending and receiving events between AWS accounts, refer to the Amazon [CloudWatch Events User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html).
 
@@ -36,7 +36,7 @@ The following arguments are supported:
 
 ## Import
 
-A Lacework AWS CloudWatch Alert Channel integration can be imported using a `INT_GUID`, e.g.
+A Lacework Amazon CloudWatch Alert Channel integration can be imported using a `INT_GUID`, e.g.
 
 ```
 $ terraform import lacework_alert_channel_aws_cloudwatch.all_events EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
