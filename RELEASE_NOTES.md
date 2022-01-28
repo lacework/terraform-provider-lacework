@@ -1,12 +1,15 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v0.14.0`.
+Another day, another release. These are the release notes for the version `v0.15.0`.
 
 ## Features
-* feat: new lacework_team_member resource (#245) (vatasha)([cb4e69a](https://github.com/lacework/terraform-provider-lacework/commit/cb4e69a4ceb3138d9874589b934d502ecfd3f776))
+* feat(resource): New lacework_vulnerability_exception_container (#253) (Darren)([6903c79](https://github.com/lacework/terraform-provider-lacework/commit/6903c79e6270f5b1dc1e5a06499f4804a3f49ba3))
+* feat(resource): New lacework_vulnerability_exception_host (#248) (Darren)([afa657a](https://github.com/lacework/terraform-provider-lacework/commit/afa657aaea7bc17e75d2da61920bf39935fda616))
 ## Refactor
-* refactor: enable non-OS Package Support by default (#249) (robewedd)([7c85cbb](https://github.com/lacework/terraform-provider-lacework/commit/7c85cbbd029ac7e88b3cc6184b9a60d6b252372d))
-## Bug Fixes
-* fix: remove apiIntgKey from resourceLaceworkAlertChannelPagerDutyRead (#247) (Darren)([ad170ef](https://github.com/lacework/terraform-provider-lacework/commit/ad170efcd17995b8c9957631ae947913dc259ffb))
+* refactor: remove expiration time (#254) (Darren)([6bbc742](https://github.com/lacework/terraform-provider-lacework/commit/6bbc7427cee5946a2288369d129250d5f9088abf))
+## Documentation Updates
+* docs: fix PR template document (#255) (Darren)([bfad072](https://github.com/lacework/terraform-provider-lacework/commit/bfad0729b364ec49fae8b3dc916f4998e52bae24))
+* docs: update 'aws' s3/cloudwatch to 'amazon' in documentation (#256) (Darren)([1a3bece](https://github.com/lacework/terraform-provider-lacework/commit/1a3bece85234560450e382ba4f2a5e01492959ef))
 ## Other Changes
-* ci: version bump to v0.13.1-dev (Salim Afiune Maya)([e5800e0](https://github.com/lacework/terraform-provider-lacework/commit/e5800e0bac24598319d95945321d7e424a7adfff))
-* test: Use v2 endpoints in tests (#244) (Darren)([ba89973](https://github.com/lacework/terraform-provider-lacework/commit/ba899737c17d37ce180b24799836caf21c8c362d))
+* build(deps): bump github.com/gruntwork-io/terratest (#246) (dependabot[bot])([94ff17f](https://github.com/lacework/terraform-provider-lacework/commit/94ff17f1292c4e4348a70340985b118d9f4888da))
+* build(deps): bump github.com/hashicorp/terraform-plugin-sdk/v2 (#251) (dependabot[bot])([8a9dbca](https://github.com/lacework/terraform-provider-lacework/commit/8a9dbcacfe38e26395d915f2f75220e7e8ffda92))
+* ci: version bump to v0.14.1-dev (Lacework)([9e9b210](https://github.com/lacework/terraform-provider-lacework/commit/9e9b2109371bb95c508823ec907910c596cf918d))
