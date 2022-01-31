@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -15,6 +16,9 @@ import (
 // It uses the go-sdk to verify the created resource group,
 // applies an update with new description and destroys it
 func TestResourceGroupLwAccountCreate(t *testing.T) {
+	if os.Getenv("CI_STANDALONE_ACCOUNT") != "" {
+		t.Skip("skipping organizational account test")
+	}
 	name := fmt.Sprintf("Terraform Test LwAccount Resource Group - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_account",
