@@ -117,8 +117,13 @@ const (
 	apiV2TeamMembersFromGUID = "v2/TeamMembers/%s"
 	apiV2TeamMembersSearch   = "v2/TeamMembers/search"
 
+	apiV2VulnerabilitiesContainersSearch = "v2/Vulnerabilities/Containers/search"
+	apiV2VulnerabilitiesHostsSearch      = "v2/Vulnerabilities/Hosts/search"
+
 	apiV2VulnerabilityExceptions        = "v2/VulnerabilityExceptions"
 	apiV2VulnerabilityExceptionFromGUID = "v2/VulnerabilityExceptions/%s"
+
+	apiV2EntitiesSearch = "v2/Entities/%s/search"
 )
 
 // WithApiV2 configures the client to use the API version 2 (/api/v2)
@@ -138,6 +143,10 @@ func (c *Client) ApiVersion() string {
 
 // apiPath builds a path by using the current API version
 func (c *Client) apiPath(p string) string {
+	if strings.HasPrefix(p, "/api/v") {
+		return p
+	}
+
 	if strings.HasPrefix(p, "v1") || strings.HasPrefix(p, "v2") {
 		return fmt.Sprintf("/api/%s", p)
 	}
