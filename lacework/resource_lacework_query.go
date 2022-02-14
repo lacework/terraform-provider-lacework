@@ -73,8 +73,6 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	d.SetId(response.Data.QueryID)
-	d.Set("query", response.Data.QueryText)
-	d.Set("evaluator_id", response.Data.EvaluatorID)
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
@@ -112,21 +110,17 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 		lacework = meta.(*api.Client)
 	)
 
-	query := api.NewQuery{
-		QueryID:     d.Get("id").(string),
-		QueryText:   d.Get("query").(string),
-		EvaluatorID: d.Get("evaluator_id").(string),
+	query := api.UpdateQuery{
+		QueryText: d.Get("query").(string),
 	}
 
 	log.Printf("[INFO] Updating Query with data:\n%+v\n", query)
-	response, err := lacework.V2.Query.Create(query)
+	response, err := lacework.V2.Query.Update(d.Id(), query)
 	if err != nil {
 		return err
 	}
 
 	d.SetId(response.Data.QueryID)
-	d.Set("query", response.Data.QueryText)
-	d.Set("evaluator_id", response.Data.EvaluatorID)
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
