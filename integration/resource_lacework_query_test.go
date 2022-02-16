@@ -17,8 +17,8 @@ func TestQueryCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
-			"query_id": "lql-terraform-query",
-		},
+			"query_id": "Lql_Terraform_Query",
+			"query":    queryString},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -27,22 +27,70 @@ func TestQueryCreate(t *testing.T) {
 	createProps := GetQueryProps(create)
 
 	actualQueryID := terraform.Output(t, terraformOptions, "query_id")
+	actualQuery := terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "lql-terraform-query", createProps.Data.QueryID)
+	assert.Equal(t, "Lql_Terraform_Query", createProps.Data.QueryID)
+	assert.Equal(t, queryString, createProps.Data.QueryText)
 
-	assert.Equal(t, "lql-terraform-query", actualQueryID)
+	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryString, actualQuery)
 
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
-		"query_id": "lql-terraform-query-updated",
+		"query_id": "Lql_Terraform_Query",
+		"query":    updatedQueryString,
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	updateProps := GetQueryProps(update)
 
 	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
+	actualQuery = terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "lql-terraform-query-updated", updateProps.Data.QueryID)
+	assert.Equal(t, "Lql_Terraform_Query", updateProps.Data.QueryID)
+	assert.Equal(t, updatedQueryString, updateProps.Data.QueryText)
 
-	assert.Equal(t, "lql-terraform-query-updated", actualQueryID)
+	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, updatedQueryString, actualQuery)
 }
+
+var (
+	queryString = `Lql_Terraform_Query {
+    source {
+        CloudTrailRawEvents
+    }
+    filter {
+        EVENT_SOURCE = 'signin.amazonaws.com'
+        and EVENT_NAME in ('ConsoleLogin')
+        and EVENT:additionalEventData.MFAUsed::String = 'No'
+        and EVENT:responseElements.ConsoleLogin::String = 'Success'
+        and ERROR_CODE is null
+    }
+    return distinct {
+        INSERT_ID,
+        INSERT_TIME,
+        EVENT_TIME,
+        EVENT
+    }
+}`
+
+	updatedQueryString = `Lql_Terraform_Query {
+    source {
+        CloudTrailRawEvents
+    }
+    filter {
+        EVENT_SOURCE = 'signin.amazonaws.com'
+        and EVENT_NAME in ('ConsoleLogin')
+        and EVENT:additionalEventData.MFAUsed::String = 'No'
+        and EVENT:responseElements.ConsoleLogin::String = 'Success'
+        and EVENT:userIdentity."type"::String not in ('IAMUser')
+        and ERROR_CODE is null
+    }
+    return distinct {
+        INSERT_ID,
+        INSERT_TIME,
+        EVENT_TIME,
+        EVENT
+    }        
+}`
+)
