@@ -20,7 +20,7 @@ func resourceLaceworkQuery() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"id": {
+			"query_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The id of the query",
@@ -61,7 +61,7 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 	)
 
 	query := api.NewQuery{
-		QueryID:     d.Get("id").(string),
+		QueryID:     d.Get("query_id").(string),
 		QueryText:   d.Get("query").(string),
 		EvaluatorID: d.Get("evaluator_id").(string),
 	}

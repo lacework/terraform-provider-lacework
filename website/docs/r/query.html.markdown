@@ -20,7 +20,7 @@ For more information, see the [LQL Overview Documentation](https://docs.lacework
 resource "lacework_query" "MyLQL" {
   id    = "MyLQL"
   query = <<EOT
-    {
+    MyLQL {
       source {
           CloudTrailRawEvents
       }
@@ -40,7 +40,7 @@ EOT
 
 The following arguments are supported:
 
-* `id` - (Required) The query id.
+* `query_id` - (Required) The query id.
 * `query` - (Required) The query string.
 * `evauator_id` - (Optional) The query evaluator id.
 
@@ -51,3 +51,7 @@ A Lacework query can be imported using a `QUERY_ID`, e.g.
 ```
 $ terraform import lacework_query.example MyLQLQueryID
 ```
+
+-> **Note:** To retreive the `QUERY_ID` from existing queries in your account, use the
+Lacework CLI command `lacework query list`. To install this tool follow
+[this documentation](https://docs.lacework.com/cli/).

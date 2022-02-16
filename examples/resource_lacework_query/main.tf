@@ -9,7 +9,7 @@ terraform {
   resource "lacework_query" "example" {
     id    = var.query_id
     query = <<EOT
-    {
+    MyLQL {
       source {
           CloudTrailRawEvents
       }
