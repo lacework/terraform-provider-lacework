@@ -8,13 +8,18 @@ terraform {
 
   resource "lacework_query" "example" {
     query_id       = var.query_id
-    evaluator_id   = "Cloudtrail"
+    evaluator_id   = var.eval_id
     query          = var.query
   }
 
 variable "query_id" {
   type = string
   default = "Lql_Terraform_Query"
+}
+
+variable "eval_id" {
+  type = string
+  default = "Cloudtrail"
 }
 
 variable "query" {

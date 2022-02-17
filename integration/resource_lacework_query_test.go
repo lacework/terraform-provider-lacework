@@ -18,6 +18,7 @@ func TestQueryCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
 			"query_id": "Lql_Terraform_Query",
+			"eval_id":  "Cloudtrail",
 			"query":    queryString},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -38,6 +39,7 @@ func TestQueryCreate(t *testing.T) {
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
 		"query_id": "Lql_Terraform_Query",
+		"eval_id":  "Cloudtrail",
 		"query":    updatedQueryString,
 	}
 
@@ -52,6 +54,63 @@ func TestQueryCreate(t *testing.T) {
 
 	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
 	assert.Equal(t, updatedQueryString, actualQuery)
+}
+
+func TestQueryCreateWithEmptyEvaluatorID(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_query",
+		Vars: map[string]interface{}{
+			"query_id": "Lql_Terraform_Query",
+			"eval_id":  "",
+			"query":    queryStringK8},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	// Create new Query
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	createProps := GetQueryProps(create)
+
+	actualQueryID := terraform.Output(t, terraformOptions, "query_id")
+	actualQuery := terraform.Output(t, terraformOptions, "query")
+
+	assert.Equal(t, "Lql_Terraform_Query", createProps.Data.QueryID)
+	assert.Equal(t, queryStringK8, createProps.Data.QueryText)
+
+	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryStringK8, actualQuery)
+
+	// Update Query
+	terraformOptions.Vars = map[string]interface{}{
+		"query_id": "Lql_Terraform_Query",
+		"eval_id":  "",
+		"query":    queryStringK8,
+	}
+
+	update := terraform.ApplyAndIdempotent(t, terraformOptions)
+	updateProps := GetQueryProps(update)
+
+	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
+	actualQuery = terraform.Output(t, terraformOptions, "query")
+
+	assert.Equal(t, "Lql_Terraform_Query", updateProps.Data.QueryID)
+	assert.Equal(t, queryStringK8, updateProps.Data.QueryText)
+
+	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryStringK8, actualQuery)
+
+	// Run apply again
+	thirdApply := terraform.ApplyAndIdempotent(t, terraformOptions)
+
+	thirdApplyProps := GetQueryProps(thirdApply)
+
+	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
+	actualQuery = terraform.Output(t, terraformOptions, "query")
+
+	assert.Equal(t, "Lql_Terraform_Query", thirdApplyProps.Data.QueryID)
+	assert.Equal(t, queryStringK8, thirdApplyProps.Data.QueryText)
+
+	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryStringK8, actualQuery)
 }
 
 var (
@@ -73,6 +132,23 @@ var (
         EVENT
     }
 }`
+	queryStringK8 = `Lql_Terraform_Query {
+      source {
+          LW_ACT_K8S_AUDIT
+      }
+      filter {
+          (EVENT_JSON:requestURI = '/api/v1/namespaces'
+              or EVENT_JSON:requestURI like '/api/v1/namespaces?%')
+          and EVENT_JSON:verb = 'create'
+          and EVENT_JSON:responseStatus.code between 200 and 299
+      }
+      return distinct {
+          EVENT_NAME,
+          EVENT_OBJECT,
+          CLUSTER_TYPE,
+          CLUSTER_ID
+      }
+  }`
 
 	updatedQueryString = `Lql_Terraform_Query {
     source {
