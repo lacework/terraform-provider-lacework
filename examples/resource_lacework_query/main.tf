@@ -6,11 +6,11 @@ terraform {
   }
 }
 
-  resource "lacework_query" "example" {
-    query_id       = var.query_id
-    evaluator_id   = var.eval_id
-    query          = var.query
-  }
+resource "lacework_query" "example" {
+  query_id       = var.query_id
+  evaluator_id   = var.eval_id
+  query          = var.query
+}
 
 variable "query_id" {
   type = string
