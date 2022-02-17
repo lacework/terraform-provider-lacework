@@ -35,7 +35,7 @@ func resourceLaceworkQuery() *schema.Resource {
 				Optional:    true,
 				Description: "The query evaluator id",
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					return old == "" || old == "<<IMPLICIT>>"
+					return old == "<<IMPLICIT>>" || new == "<<IMPLICIT>>"
 				},
 			},
 			"updated_time": {
@@ -99,6 +99,7 @@ func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(response.Data.QueryID)
 	d.Set("query", response.Data.QueryText)
 	d.Set("owner", response.Data.Owner)
+	d.Set("evaluator_id", response.Data.EvaluatorID)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
 	d.Set("result_schema", response.Data.ResultSchema)
