@@ -54,6 +54,18 @@ func TestQueryCreate(t *testing.T) {
 
 	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
 	assert.Equal(t, updatedQueryString, actualQuery)
+
+	// Attempt to update query_id should return error
+	terraformOptions.Vars = map[string]interface{}{
+		"query_id": "Lql_Terraform_Query_Changed",
+		"eval_id":  "Cloudtrail",
+		"query":    updatedQueryString,
+	}
+
+	msg, err := terraform.ApplyE(t, terraformOptions)
+
+	assert.Error(t, err)
+	assert.Contains(t, msg, "unable to change ID of an existing query")
 }
 
 func TestQueryCreateWithEmptyEvaluatorID(t *testing.T) {

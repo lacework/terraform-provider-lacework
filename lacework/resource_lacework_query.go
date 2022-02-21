@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
+	"github.com/pkg/errors"
 )
 
 func resourceLaceworkQuery() *schema.Resource {
@@ -111,6 +112,10 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 	var (
 		lacework = meta.(*api.Client)
 	)
+
+	if d.HasChange("query_id") {
+		return errors.New("unable to change ID of an existing query")
+	}
 
 	query := api.UpdateQuery{
 		QueryText: d.Get("query").(string),
