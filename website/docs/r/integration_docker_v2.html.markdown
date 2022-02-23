@@ -48,6 +48,7 @@ The following arguments are supported:
 * `username` - (Required) The user that has at permissions to pull from the container registry the images to be assessed.
 * `password` - (Required) The password for the specified user.
 * `ssl` - (Optional) Enable or disable SSL communication. Defaults to `false`.
+* `notifications` - (Optional) Subscribe to registry notifications. Defaults to `false`.
 * `limit_by_tag` - (Optional, **Deprecated**) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`. This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider.
 * `limit_by_label` - (Optional, **Deprecated**) An image label to limit the assessment of images with matching label. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`. This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.

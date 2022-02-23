@@ -48,6 +48,12 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"notifications": {
+				Type:        schema.TypeBool,
+				Description: "Subscribe to registry notifications",
+				Optional:    true,
+				Default:     false,
+			},
 
 			// TODO @afiune remove these resources when we release v1.0
 			"limit_by_tag": {
@@ -135,12 +141,14 @@ func resourceLaceworkIntegrationDockerV2Create(d *schema.ResourceData, meta inte
 		limitByLabels = joinMapStrings(labels, ",")
 	}
 
+	notifications := d.Get("notifications").(bool)
 	data := api.NewDockerV2RegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:       limitByTags,
-			LimitByLabel:     limitByLabels,
-			RegistryDomain:   d.Get("registry_domain").(string),
-			NonOSPackageEval: d.Get("non_os_package_support").(bool),
+			LimitByTag:            limitByTags,
+			LimitByLabel:          limitByLabels,
+			RegistryDomain:        d.Get("registry_domain").(string),
+			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
+			RegistryNotifications: &notifications,
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),
@@ -204,6 +212,7 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 			d.Set("password", integration.Data.Credentials.Password)
 			d.Set("ssl", integration.Data.Credentials.SSL)
 			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
+			d.Set("notifications", integration.Data.RegistryNotifications)
 
 			if _, ok := d.GetOk("limit_by_tags"); ok {
 				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
@@ -240,12 +249,14 @@ func resourceLaceworkIntegrationDockerV2Update(d *schema.ResourceData, meta inte
 		limitByLabels = joinMapStrings(labels, ",")
 	}
 
+	notifications := d.Get("notifications").(bool)
 	data := api.NewDockerV2RegistryIntegration(d.Get("name").(string),
 		api.ContainerRegData{
-			LimitByTag:       limitByTags,
-			LimitByLabel:     limitByLabels,
-			RegistryDomain:   d.Get("registry_domain").(string),
-			NonOSPackageEval: d.Get("non_os_package_support").(bool),
+			LimitByTag:            limitByTags,
+			LimitByLabel:          limitByLabels,
+			RegistryDomain:        d.Get("registry_domain").(string),
+			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
+			RegistryNotifications: &notifications,
 			Credentials: api.ContainerRegCreds{
 				Username: d.Get("username").(string),
 				Password: d.Get("password").(string),

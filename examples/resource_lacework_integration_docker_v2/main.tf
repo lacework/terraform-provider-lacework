@@ -7,6 +7,7 @@ resource "lacework_integration_docker_v2" "example" {
   username        = "my-user"
   password        = "a-secret-password"
   ssl             = true
+  notifications   = true
   limit_by_tags   = ["dev*", "*test"]
 
   limit_by_labels = {
