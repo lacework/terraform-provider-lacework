@@ -230,6 +230,16 @@ func GetIDFromTerraResults(result string) string {
 	return GetSpecificIDFromTerraResults(1, result)
 }
 
+func GetQueryProps(result string) api.QueryResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	resp, err := LwClient.V2.Query.Get(id)
+	if err != nil {
+		log.Fatalf("Unable to retrieve vulnerability exception with id: %s", id)
+	}
+	return resp
+}
+
 func GetPolicyProps(result string) api.PolicyResponse {
 	id := GetSpecificIDFromTerraResults(1, result)
 
