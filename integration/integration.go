@@ -236,7 +236,7 @@ func GetQueryProps(result string) api.QueryResponse {
 	resp, err := LwClient.V2.Query.Get(id)
 	if err != nil {
 		log.Fatalf("Unable to retrieve vulnerability exception with id: %s", id)
-    	}
+	}
 	return resp
 }
 
