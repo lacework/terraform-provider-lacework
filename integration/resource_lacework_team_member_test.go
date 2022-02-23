@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/lacework/go-sdk/lwdomain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,13 +56,17 @@ func TestTeamMemberOrg(t *testing.T) {
 	if os.Getenv("CI_STANDALONE_ACCOUNT") != "" {
 		t.Skip("skipping organizational account test")
 	}
-
+	account := os.Getenv("LW_ACCOUNT")
 	email := fmt.Sprintf("vatasha.white+%d@lacework.net", time.Now().Unix())
+
+	if domain, err := lwdomain.New(account); err == nil {
+		account = domain.Account
+	}
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_team_member_organization",
 		Vars: map[string]interface{}{
 			"email":         email,
-			"user_accounts": []string{os.Getenv("LW_ACCOUNT")},
+			"user_accounts": []string{account},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -81,7 +86,7 @@ func TestTeamMemberOrg(t *testing.T) {
 	// Update Org Team Member
 	terraformOptions.Vars["first_name"] = "Shuri"
 	terraformOptions.Vars["user_accounts"] = []string{}
-	terraformOptions.Vars["admin_accounts"] = []string{os.Getenv("LW_ACCOUNT")}
+	terraformOptions.Vars["admin_accounts"] = []string{account}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	tmUpdate := GetOrgTeamMember(update)
