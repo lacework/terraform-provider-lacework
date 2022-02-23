@@ -229,3 +229,13 @@ func GetSpecificIDFromTerraResults(i int, result string) string {
 func GetIDFromTerraResults(result string) string {
 	return GetSpecificIDFromTerraResults(1, result)
 }
+
+func GetPolicyProps(result string) api.PolicyResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	resp, err := LwClient.V2.Policy.Get(id)
+	if err != nil {
+		log.Fatalf("Unable to retrieve policy with id: %s", id)
+	}
+	return resp
+}
