@@ -36,7 +36,8 @@ func resourceLaceworkQuery() *schema.Resource {
 				Optional:    true,
 				Description: "The query evaluator id",
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					return old == "<<IMPLICIT>>" || new == "<<IMPLICIT>>"
+					// Suppress diff, if computed value has been set or new is also computed
+					return (old == "<<IMPLICIT>>" || old == "") || new == old
 				},
 			},
 			"updated_time": {
@@ -75,6 +76,14 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 	if err != nil {
 		return err
 	}
+
+	// if the response of eval_id returns implicit instead of submitted value it is the incorrect eval_id
+	//evalID := d.Get("evaluator_id").(string)
+	//if evalID != "" && evalID != "<<IMPLICIT>>" {
+	//	if evalID != response.Data.EvaluatorID {
+	//		return errors.New("incorrect evaluator id for this query")
+	//	}
+	//}
 
 	d.SetId(response.Data.QueryID)
 	d.Set("owner", response.Data.Owner)
@@ -127,7 +136,16 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 
+	// if the response of eval_id returns implicit instead of submitted value it is the incorrect eval_id
+	//evalID := d.Get("evaluator_id").(string)
+	//if evalID != "" && evalID != "<<IMPLICIT>>" {
+	//	if evalID != response.Data.EvaluatorID {
+	//		return errors.New("incorrect evaluator id for this query")
+	//	}
+	//}
+
 	d.Set("owner", response.Data.Owner)
+	d.Set("evaluator_id", response.Data.EvaluatorID)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
 	d.Set("result_schema", response.Data.ResultSchema)
