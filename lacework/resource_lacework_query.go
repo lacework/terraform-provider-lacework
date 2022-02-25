@@ -77,14 +77,6 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 
-	// if the response of eval_id returns implicit instead of submitted value it is the incorrect eval_id
-	//evalID := d.Get("evaluator_id").(string)
-	//if evalID != "" && evalID != "<<IMPLICIT>>" {
-	//	if evalID != response.Data.EvaluatorID {
-	//		return errors.New("incorrect evaluator id for this query")
-	//	}
-	//}
-
 	d.SetId(response.Data.QueryID)
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
@@ -135,14 +127,6 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 	if err != nil {
 		return err
 	}
-
-	// if the response of eval_id returns implicit instead of submitted value it is the incorrect eval_id
-	//evalID := d.Get("evaluator_id").(string)
-	//if evalID != "" && evalID != "<<IMPLICIT>>" {
-	//	if evalID != response.Data.EvaluatorID {
-	//		return errors.New("incorrect evaluator id for this query")
-	//	}
-	//}
 
 	d.Set("owner", response.Data.Owner)
 	d.Set("evaluator_id", response.Data.EvaluatorID)
