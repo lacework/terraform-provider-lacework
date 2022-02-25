@@ -16,9 +16,34 @@ For more information, see the [Policy Overview Documentation](https://docs.lacew
 ## Example Usage
 
 ```hcl
+   resource "lacework_query" "example" {
+  query_id       = "Lql_Terraform_Query"
+  evaluator_id   = "Cloudtrail"
+  query          = <<EOT
+    Lql_Terraform_Query {
+    source {
+        CloudTrailRawEvents
+    }
+    filter {
+        EVENT_SOURCE = 'signin.amazonaws.com'
+        and EVENT_NAME in ('ConsoleLogin')
+        and EVENT:additionalEventData.MFAUsed::String = 'No'
+        and EVENT:responseElements.ConsoleLogin::String = 'Success'
+        and ERROR_CODE is null
+    }
+    return distinct {
+        INSERT_ID,
+        INSERT_TIME,
+        EVENT_TIME,
+        EVENT
+    }
+}
+   EOT
+}
+ 
   resource "lacework_policy" "example" {
   title        = "My Policy"
-  query_id     = "LW_Global_AWS_CTA_CloudTrailChange"
+  query_id     = lacework_query.example.id
   severity     = "high"
   type         = "Violation"
   description  = "Policy Created via Terraform"
