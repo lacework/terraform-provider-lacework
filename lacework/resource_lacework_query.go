@@ -117,6 +117,11 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 		return errors.New("unable to change ID of an existing query")
 	}
 
+	// evaluator id cannot be updated
+	if d.HasChange("evaluator_id") && d.Get("evaluator_id").(string) != "<<IMPLICIT>>" {
+		return errors.New("unable to change the evaluator_id of an existing query")
+	}
+
 	query := api.UpdateQuery{
 		QueryText: d.Get("query").(string),
 	}
