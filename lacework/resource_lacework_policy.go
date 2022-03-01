@@ -88,12 +88,6 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Optional:    true,
 				Description: "The string appended to the end of the policy id",
 			},
-			"evaluator_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "",
-				Description: "The policy evaluator id.",
-			},
 			"limit": {
 				Type:         schema.TypeInt,
 				Optional:     true,
@@ -159,7 +153,6 @@ func resourceLaceworkPolicyCreate(d *schema.ResourceData, meta interface{}) erro
 	)
 
 	policy := api.NewPolicy{
-		EvaluatorID:   d.Get("evaluator_id").(string),
 		PolicyType:    d.Get("type").(string),
 		QueryID:       d.Get("query_id").(string),
 		Title:         d.Get("title").(string),
@@ -203,7 +196,6 @@ func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error 
 	d.SetId(response.Data.PolicyID)
 	d.Set("title", response.Data.Title)
 	d.Set("query_id", response.Data.QueryID)
-	d.Set("evaluator_id", response.Data.EvaluatorID)
 	d.Set("enabled", response.Data.Enabled)
 	d.Set("description", response.Data.Description)
 	d.Set("evaluation", response.Data.EvalFrequency)
@@ -238,7 +230,6 @@ func resourceLaceworkPolicyUpdate(d *schema.ResourceData, meta interface{}) erro
 	policyLimit := d.Get("limit").(int)
 
 	policy := api.UpdatePolicy{
-		EvaluatorID:   d.Get("evaluator_id").(string),
 		PolicyType:    d.Get("type").(string),
 		QueryID:       d.Get("query_id").(string),
 		Title:         d.Get("title").(string),

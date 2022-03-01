@@ -31,14 +31,6 @@ func resourceLaceworkQuery() *schema.Resource {
 				Required:    true,
 				Description: "The query string",
 			},
-			"evaluator_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "The query evaluator id",
-				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-					return old == "<<IMPLICIT>>" || new == "<<IMPLICIT>>"
-				},
-			},
 			"updated_time": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -65,9 +57,8 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 	)
 
 	query := api.NewQuery{
-		QueryID:     d.Get("query_id").(string),
-		QueryText:   d.Get("query").(string),
-		EvaluatorID: d.Get("evaluator_id").(string),
+		QueryID:   d.Get("query_id").(string),
+		QueryText: d.Get("query").(string),
 	}
 
 	log.Printf("[INFO] Creating Query with data:\n%+v\n", query)
@@ -99,7 +90,6 @@ func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.Set("query", response.Data.QueryText)
 	d.Set("owner", response.Data.Owner)
-	d.Set("evaluator_id", response.Data.EvaluatorID)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
 	d.Set("result_schema", response.Data.ResultSchema)
@@ -115,11 +105,6 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 
 	if d.HasChange("query_id") {
 		return errors.New("unable to change ID of an existing query")
-	}
-
-	// evaluator id cannot be updated
-	if d.HasChange("evaluator_id") && d.Get("evaluator_id").(string) != "<<IMPLICIT>>" {
-		return errors.New("unable to change the evaluator_id of an existing query")
 	}
 
 	query := api.UpdateQuery{
