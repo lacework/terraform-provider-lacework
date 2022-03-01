@@ -3,7 +3,7 @@ subcategory: "Query"
 layout: "lacework"
 page_title: "Lacework: lacework_query"
 description: |-
-  Create and manage Queries
+  Create and manage Lacework Queries
 ---
 
 # lacework\_query
@@ -16,57 +16,59 @@ For more information, see the [LQL Overview Documentation](https://docs.lacework
 
 ## Example Usage
 
+Query all EC2 instances with public IP addresses.
+
 ```hcl
-  resource "lacework_query" "example" {
-  query_id       = "Lql_Terraform_Query"
-  query          = <<EOT
-  Lql_Terraform_Query {
+resource "lacework_query" "example" {
+  query_id = "TF_AWS_Config_EC2InstanceWithPublicIPAddress"
+  query    = <<EOT
+  TF_AWS_Config_EC2InstanceWithPublicIPAddress {
       source {
-          LW_ACT_K8S_AUDIT
+          LW_CFG_AWS_EC2_INSTANCES
       }
       filter {
-          EVENT_JSON:requestURI like '/api/v1/namespaces/%'
-          and EVENT_JSON:objectRef.resource = 'namespaces'
-          and EVENT_JSON:verb = 'delete'
-          and EVENT_JSON:responseStatus.code between 200 and 299
+          value_exists(RESOURCE_CONFIG:PublicIpAddress)
       }
       return distinct {
-          EVENT_NAME,
-          EVENT_OBJECT,
-          CLUSTER_TYPE,
-          CLUSTER_ID
+          ACCOUNT_ALIAS,
+          ACCOUNT_ID,
+          ARN as RESOURCE_KEY,
+          RESOURCE_REGION,
+          RESOURCE_TYPE,
+          SERVICE,
+          case when RESOURCE_TYPE = 'ec2:instance' then 'HasPublicIp'
+          end as COMPLIANCE_FAILURE_REASON
       }
   }
-   EOT
+EOT
 }
 ```
 
-The evaluator_id field is set to `Cloudtrail` for CloudTrail queries.
+Query CloutTrail events and filter only S3 buckets with ACL 'public-read', 'public-read-write' or 'authenticated-read'.
 
 ```hcl
-  resource "lacework_query" "example" {
-  query_id       = "Lql_Terraform_Query"
-  evaluator_id   = "Cloudtrail"
+resource "lacework_query" "example" {
+  query_id       = "TF_AWS_CTA_S3PublicACLCreated"
   query          = <<EOT
-    Lql_Terraform_Query {
-    source {
-        CloudTrailRawEvents
-    }
-    filter {
-        EVENT_SOURCE = 'signin.amazonaws.com'
-        and EVENT_NAME in ('ConsoleLogin')
-        and EVENT:additionalEventData.MFAUsed::String = 'No'
-        and EVENT:responseElements.ConsoleLogin::String = 'Success'
-        and ERROR_CODE is null
-    }
-    return distinct {
-        INSERT_ID,
-        INSERT_TIME,
-        EVENT_TIME,
-        EVENT
-    }
-}
-   EOT
+  TF_AWS_CTA_S3PublicACLCreated {
+      source {
+          CloudTrailRawEvents
+      }
+      filter {
+          EVENT_SOURCE = 's3.amazonaws.com'
+          and EVENT_NAME = 'CreateBucket'
+          and EVENT:requestParameters."x-amz-acl"
+          in ('public-read', 'public-read-write', 'authenticated-read')
+          and ERROR_CODE is null
+      }
+      return distinct {
+          INSERT_ID,
+          INSERT_TIME,
+          EVENT_TIME,
+          EVENT
+      }
+  }
+EOT
 }
 ```
 
@@ -77,14 +79,13 @@ The following arguments are supported:
 
 * `query_id` - (Required) The query id.
 * `query` - (Required) The query string.
-* `evauator_id` - (Optional) The evaluator id. `Cloudtrail` must be set for all CloudTrail queries.
 
 ## Import
 
 A Lacework query can be imported using a `QUERY_ID`, e.g.
 
 ```
-$ terraform import lacework_query.example MyLQLQueryID
+$ terraform import lacework_query.example YourLQLQueryID
 ```
 
 -> **Note:** To retreive the `QUERY_ID` from existing queries in your account, use the

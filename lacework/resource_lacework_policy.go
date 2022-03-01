@@ -48,27 +48,10 @@ func resourceLaceworkPolicy() *schema.Resource {
 				},
 				ValidateDiagFunc: ValidSeverity(),
 			},
-			"evaluation": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "The evaluation frequency must be either 'Hourly' or 'Daily'. Defaults to 'Hourly'.",
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					switch value.(string) {
-					case "Hourly", "Daily":
-						return nil, nil
-					default:
-						return nil, []error{
-							fmt.Errorf(
-								"%s: can only be 'Hourly' or 'Daily'", key,
-							),
-						}
-					}
-				},
-			},
 			"type": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The policy type must be either 'Violation' or 'Summary'. Defaults to 'Violation'.",
+				Description: "The policy type must be either 'Violation' or 'Summary'",
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
 					case "Violation", "Summary":
@@ -77,6 +60,24 @@ func resourceLaceworkPolicy() *schema.Resource {
 						return nil, []error{
 							fmt.Errorf(
 								"%s: can only be 'Violation' or 'Summary'", key,
+							),
+						}
+					}
+				},
+			},
+			"evaluation": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "Hourly",
+				Description: "The evaluation frequency must be either 'Hourly' or 'Daily'",
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch value.(string) {
+					case "Hourly", "Daily":
+						return nil, nil
+					default:
+						return nil, []error{
+							fmt.Errorf(
+								"%s: can only be 'Hourly' or 'Daily'", key,
 							),
 						}
 					}
@@ -97,8 +98,8 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Type:         schema.TypeInt,
 				Optional:     true,
 				Default:      1000,
-				ValidateFunc: validation.IntAtMost(1000),
-				Description:  "Set the maximum number of records returned by the policy. Maximum value is '1000'",
+				ValidateFunc: validation.IntAtMost(5000),
+				Description:  "Set the number of records returned by the policy. Maximum value is 5000",
 			},
 			"remediation": {
 				Type:        schema.TypeString,
@@ -120,14 +121,14 @@ func resourceLaceworkPolicy() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"profile": {
 							Type:        schema.TypeString,
-							Description: "The alerting profile",
+							Description: "The alerting profile id",
 							Required:    true,
 						},
 						"enabled": {
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Default:     true,
-							Description: "Whether alerting is enabled/disabled",
+							Description: "Whether alerting is enabled or disabled",
 						},
 					},
 				},

@@ -3,7 +3,7 @@ subcategory: "Policy"
 layout: "lacework"
 page_title: "Lacework: lacework_policy"
 description: |-
-  Create and manage Policies
+  Create and manage Lacework Policies
 ---
 
 # lacework\_policy
@@ -15,65 +15,71 @@ For more information, see the [Policy Overview Documentation](https://docs.lacew
 
 ## Example Usage
 
+Create a Lacework Policy to check for a change of password from an RDS cluster.
+
 ```hcl
-   resource "lacework_query" "example" {
-  query_id       = "Lql_Terraform_Query"
-  evaluator_id   = "Cloudtrail"
-  query          = <<EOT
-    Lql_Terraform_Query {
-    source {
-        CloudTrailRawEvents
-    }
-    filter {
-        EVENT_SOURCE = 'signin.amazonaws.com'
-        and EVENT_NAME in ('ConsoleLogin')
-        and EVENT:additionalEventData.MFAUsed::String = 'No'
-        and EVENT:responseElements.ConsoleLogin::String = 'Success'
-        and ERROR_CODE is null
-    }
-    return distinct {
-        INSERT_ID,
-        INSERT_TIME,
-        EVENT_TIME,
-        EVENT
-    }
-}
-   EOT
+resource "lacework_query" "AWS_CTA_AuroraPasswordChange" {
+  query_id = "TF_AWS_CTA_AuroraPasswordChange"
+  query    = <<EOT
+  TF_AWS_CTA_AuroraPasswordChange {
+      source {
+          CloudTrailRawEvents
+      }
+      filter {
+          EVENT_SOURCE = 'rds.amazonaws.com'
+          and EVENT_NAME = 'ModifyDBCluster'
+          and value_exists(EVENT:requestParameters.masterUserPassword)
+          and EVENT:requestParameters.applyImmediately = true
+          and ERROR_CODE is null
+      }
+      return distinct {
+          INSERT_ID,
+          INSERT_TIME,
+          EVENT_TIME,
+          EVENT
+      }
+  }
+EOT
 }
  
-  resource "lacework_policy" "example" {
-  title        = "My Policy"
-  query_id     = lacework_query.example.id
-  severity     = "high"
-  type         = "Violation"
-  description  = "Policy Created via Terraform"
-  remediation  = "Please investigate"
-  evaluation   = "Hourly"
-  evaluator_id = "Cloudtrail"
-  enabled      = true
+resource "lacework_policy" "example" {
+  title       = "Aurora Password Change"
+  description = "Password for an Aurora RDS cluster was changed"
+  remediation = "Check that the password change was expected and ensure only specified users can modify the RDS cluster"
+  query_id    = lacework_query.AWS_CTA_AuroraPasswordChange.id
+  severity    = "High"
+  type        = "Violation"
+  evaluation  = "Hourly"
+  enabled     = false
 
   alerting {
     enabled = false
-    profile = "LW_CloudTrail_Alerts"
+    profile = "LW_CloudTrail_Alerts.CloudTrailDefaultAlert_AwsResource"
   }
 }
 ```
+
+-> **Note:** Lacework automatically generates a policy id when you create a policy, which is the recommended workflow.
+Optionally, you can define your own policy id using the `policy_id_suffix`, this suffix must be all lowercase letters,
+optionally followed by `-` and numbers, for example, `abcd-1234`. When you define your own policy id, Lacework prepends
+the account name. The final policy id would then be `lwaccountname-abcd-1234`.
 
 ## Argument Reference
 
 The following arguments are supported:
 
 * `title` - (Required) The policy title.
+* `description` - (Required) The description of the policy.
 * `query_id` - (Required) The query id.
 * `severity` - (Required) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `type` - (Required) The policy type must be either `Violation` or `Summary`.
-* `description` - (Required) The description of the policy.
-* `evaluation` - (Required) Set the evaluation frequency `Hourly` or `Daily`.
-* `evaluator_id` - (Optional) The evaluator id. `Cloudtrail` must be set for all CloudTrail queries.
+* `evaluation` - (Optional) The evaluation frequency at which the policy will be evaluated. Valid values are
+  `Hourly` or `Daily`. Defaults to `Hourly`.
 * `remediation` - (Optional) The remediation message to display.
-* `limit` - (Optional) Set the maximum number of records returned by the policy. Maximum value is `1000`.
-* `enabled` - (Optional) Whether the policy is enabled or disabled.
+* `limit` - (Optional) Set the maximum number of records returned by the policy.
+   Maximum value is `5000`. Defaults to `1000`
+* `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
 * `policy_id_suffix` - (Optional) The string appended to the end of the policy id.
 * `alerting` - (Optional) Alerting. See [Alerting](#alerting) below for details.
 
@@ -82,14 +88,14 @@ The following arguments are supported:
 `alerting` supports the following arguments:
 
 * `profile` - (Required) The alerting profile.
-* `enabled` - (Optional) Whether the alerting profile is enabled or disabled.
+* `enabled` - (Optional) Whether the alerting profile is enabled or disabled. Defaults to `true`.
 
 ## Import
 
 A Lacework policy can be imported using a `POLICY_ID`, e.g.
 
 ```
-$ terraform import lacework_policy.example MyLQLPolicyID
+$ terraform import lacework_policy.example YourLQLPolicyID
 ```
 
 -> **Note:** To retreive the `POLICY_ID` from existing policies in your account, use the
