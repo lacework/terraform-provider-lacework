@@ -14,7 +14,6 @@ resource "lacework_policy" "example" {
   description      = var.description
   remediation      = var.remediation
   evaluation       = var.evaluation
-  evaluator_id     = "Cloudtrail"
   enabled          = true
   policy_id_suffix = var.policy_id_suffix
 

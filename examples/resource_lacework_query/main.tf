@@ -7,9 +7,8 @@ terraform {
 }
 
 resource "lacework_query" "example" {
-  query_id     = var.query_id
-  evaluator_id = var.eval_id
-  query        = var.query
+  query_id = var.query_id
+  query    = var.query
 }
 
 variable "query_id" {
@@ -17,23 +16,24 @@ variable "query_id" {
   default = "Lql_Terraform_Query"
 }
 
-variable "eval_id" {
-  type    = string
-  default = "Cloudtrail"
-}
-
 variable "query" {
   type    = string
   default = <<EOT
-    Lql_Terraform_Query {
-      source {CloudTrailRawEvents}
-      filter {EVENT_SOURCE = 'signin.amazonaws.com'
-      and EVENT:userIdentity."type"::String = 'AWSService'
-      and EVENT:sourceIPAddress not in ('1.1.1.1', '2.2.2.2')
-      and ERROR_CODE is null}
-    return distinct {INSERT_ID, INSERT_TIME, EVENT_TIME, EVENT}
-    }
-   EOT
+  Lql_Terraform_Query {
+      source {
+          CloudTrailRawEvents
+      }
+      filter {
+          EVENT_SOURCE = 'signin.amazonaws.com'
+          and EVENT:userIdentity."type"::String = 'AWSService'
+          and EVENT:sourceIPAddress not in ('1.1.1.1', '2.2.2.2')
+          and ERROR_CODE is null
+      }
+      return distinct {
+          INSERT_ID, INSERT_TIME, EVENT_TIME, EVENT
+      }
+  }
+EOT
 }
 
 output "query_id" {

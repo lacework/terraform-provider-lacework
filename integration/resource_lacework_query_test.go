@@ -13,12 +13,11 @@ import (
 // It uses the go-sdk to verify the created query,
 // applies an update and destroys it
 //nolint
-func TestQueryCreate(t *testing.T) {
+func TestQueryCreateCloudtrail(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
 			"query_id": "Lql_Terraform_Query",
-			"eval_id":  "Cloudtrail",
 			"query":    queryString},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -39,7 +38,6 @@ func TestQueryCreate(t *testing.T) {
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
 		"query_id": "Lql_Terraform_Query",
-		"eval_id":  "Cloudtrail",
 		"query":    updatedQueryString,
 	}
 
@@ -58,7 +56,6 @@ func TestQueryCreate(t *testing.T) {
 	// Attempt to update query_id should return error
 	terraformOptions.Vars = map[string]interface{}{
 		"query_id": "Lql_Terraform_Query_Changed",
-		"eval_id":  "Cloudtrail",
 		"query":    updatedQueryString,
 	}
 
@@ -68,12 +65,11 @@ func TestQueryCreate(t *testing.T) {
 	assert.Contains(t, msg, "unable to change ID of an existing query")
 }
 
-func TestQueryCreateWithEmptyEvaluatorID(t *testing.T) {
+func TestQueryCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
 			"query_id": "Lql_Terraform_Query",
-			"eval_id":  "",
 			"query":    queryStringK8},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -94,7 +90,6 @@ func TestQueryCreateWithEmptyEvaluatorID(t *testing.T) {
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
 		"query_id": "Lql_Terraform_Query",
-		"eval_id":  "",
 		"query":    queryStringK8,
 	}
 
