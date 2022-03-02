@@ -20,7 +20,6 @@ Query all EC2 instances with public IP addresses.
 
 ```hcl
 resource "lacework_query" "example" {
-  query_id = "TF_AWS_Config_EC2InstanceWithPublicIPAddress"
   query    = <<EOT
   TF_AWS_Config_EC2InstanceWithPublicIPAddress {
       source {
@@ -48,7 +47,6 @@ Query CloutTrail events and filter only S3 buckets with ACL 'public-read', 'publ
 
 ```hcl
 resource "lacework_query" "example" {
-  query_id       = "TF_AWS_CTA_S3PublicACLCreated"
   query          = <<EOT
   TF_AWS_CTA_S3PublicACLCreated {
       source {
@@ -77,7 +75,6 @@ EOT
 
 The following arguments are supported:
 
-* `query_id` - (Required) The query id.
 * `query` - (Required) The query string.
 
 ## Import

@@ -7,13 +7,7 @@ terraform {
 }
 
 resource "lacework_query" "example" {
-  query_id = var.query_id
-  query    = var.query
-}
-
-variable "query_id" {
-  type    = string
-  default = "Lql_Terraform_Query"
+  query = var.query
 }
 
 variable "query" {

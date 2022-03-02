@@ -16,10 +16,7 @@ import (
 func TestQueryCreateCloudtrail(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
-		Vars: map[string]interface{}{
-			"query_id": "Lql_Terraform_Query",
-			"query":    queryString},
-	})
+		Vars:         map[string]interface{}{"query": queryString}})
 	defer terraform.Destroy(t, terraformOptions)
 
 	// Create new Query
@@ -37,8 +34,7 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
-		"query_id": "Lql_Terraform_Query",
-		"query":    updatedQueryString,
+		"query": updatedQueryString,
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -53,24 +49,23 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
 	assert.Equal(t, updatedQueryString, actualQuery)
 
-	// Attempt to update query_id should return error
+	// Attempt to update query id should return error
 	terraformOptions.Vars = map[string]interface{}{
-		"query_id": "Lql_Terraform_Query_Changed",
-		"query":    updatedQueryString,
+		"query": updatedQueryID,
 	}
 
 	msg, err := terraform.ApplyE(t, terraformOptions)
-
-	assert.Error(t, err)
-	assert.Contains(t, msg, "unable to change ID of an existing query")
+	if assert.Error(t, err) {
+		assert.Contains(t, msg, "unable to change id of an existing query.")
+		assert.Contains(t, msg, "Old ID: Lql_Terraform_Query")
+		assert.Contains(t, msg, "New ID: Lql_Terraform_Query_Changed")
+	}
 }
 
 func TestQueryCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
-		Vars: map[string]interface{}{
-			"query_id": "Lql_Terraform_Query",
-			"query":    queryStringK8},
+		Vars:         map[string]interface{}{"query": queryStringK8},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -89,8 +84,7 @@ func TestQueryCreate(t *testing.T) {
 
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
-		"query_id": "Lql_Terraform_Query",
-		"query":    queryStringK8,
+		"query": queryStringK8,
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -118,6 +112,23 @@ func TestQueryCreate(t *testing.T) {
 
 	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
 	assert.Equal(t, queryStringK8, actualQuery)
+}
+
+func TestQueryMalformed(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_query",
+		Vars:         map[string]interface{}{"query": malformedQuery},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	msg, err := terraform.ApplyE(t, terraformOptions)
+	if assert.Error(t, err) {
+		assert.Contains(t, msg, "query id not found. (malformed)")
+		assert.Contains(t, msg, "> Your query:")
+		assert.Contains(t, msg, malformedQuery)
+		assert.Contains(t, msg, "> Compare provided query to the example at:")
+		assert.Contains(t, msg, "https://docs.lacework.com/lql-overview")
+	}
 }
 
 var (
@@ -174,6 +185,33 @@ var (
         INSERT_TIME,
         EVENT_TIME,
         EVENT
-    }        
+    }
+}`
+
+	updatedQueryID = `Lql_Terraform_Query_Changed {
+    source {
+        CloudTrailRawEvents
+    }
+    filter {
+        EVENT_SOURCE = 'signin.amazonaws.com'
+        and EVENT_NAME in ('ConsoleLogin')
+        and EVENT:additionalEventData.MFAUsed::String = 'No'
+        and EVENT:responseElements.ConsoleLogin::String = 'Success'
+        and EVENT:userIdentity."type"::String not in ('IAMUser')
+        and ERROR_CODE is null
+    }
+    return distinct {
+        INSERT_ID,
+        INSERT_TIME,
+        EVENT_TIME,
+        EVENT
+    }
+}`
+
+	// query doesn' have ID
+	malformedQuery = `{
+    source { CloudTrailRawEvents }
+    filter { ERROR_CODE is null }
+    return distinct { EVENT }
 }`
 )

@@ -1,8 +1,9 @@
 package lacework
 
 import (
-	"fmt"
 	"log"
+	"regexp"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
@@ -21,11 +22,6 @@ func resourceLaceworkQuery() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"query_id": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "The id of the query",
-			},
 			"query": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -51,13 +47,38 @@ func resourceLaceworkQuery() *schema.Resource {
 	}
 }
 
+func getIDFromLQLQuery(query string) (string, error) {
+	if strings.Contains(query, "{") {
+		rexQueryID := regexp.MustCompile(`^([^{]*)`)
+		if id := rexQueryID.FindStringSubmatch(query); id != nil {
+			queryID := strings.TrimSpace(id[0])
+			if queryID != "" && !strings.Contains(queryID, " ") {
+				return queryID, nil
+			}
+		}
+	}
+
+	return "", errors.New(`query id not found. (malformed)
+
+> Your query:
+` + query + `
+
+> Compare provided query to the example at:
+
+    https://docs.lacework.com/lql-overview
+`)
+}
+
 func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	var lacework = meta.(*api.Client)
+
+	queryID, err := getIDFromLQLQuery(d.Get("query").(string))
+	if err != nil {
+		return err
+	}
 
 	query := api.NewQuery{
-		QueryID:   d.Get("query_id").(string),
+		QueryID:   queryID,
 		QueryText: d.Get("query").(string),
 	}
 
@@ -103,8 +124,16 @@ func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error
 		lacework = meta.(*api.Client)
 	)
 
-	if d.HasChange("query_id") {
-		return errors.New("unable to change ID of an existing query")
+	queryID, err := getIDFromLQLQuery(d.Get("query").(string))
+	if err != nil {
+		return err
+	}
+
+	if d.Id() != queryID {
+		return errors.Errorf(
+			"unable to change id of an existing query.\n\nOld ID: %s\n\n New ID: %s",
+			d.Id(), queryID,
+		)
 	}
 
 	query := api.UpdateQuery{
@@ -146,7 +175,7 @@ func importLaceworkQuery(d *schema.ResourceData, meta interface{}) ([]*schema.Re
 
 	response, err := lacework.V2.Query.Get(d.Id())
 	if err != nil {
-		return nil, fmt.Errorf(
+		return nil, errors.Errorf(
 			"unable to import Lacework resource. Query with guid '%s' was not found",
 			d.Id(),
 		)
