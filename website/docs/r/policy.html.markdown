@@ -21,7 +21,7 @@ Create a Lacework Policy to check for a change of password from an RDS cluster.
 resource "lacework_query" "AWS_CTA_AuroraPasswordChange" {
   query_id = "TF_AWS_CTA_AuroraPasswordChange"
   query    = <<EOT
-  TF_AWS_CTA_AuroraPasswordChange {
+  {
       source {
           CloudTrailRawEvents
       }

@@ -22,7 +22,7 @@ Query all EC2 instances with public IP addresses.
 resource "lacework_query" "example" {
   query_id = "TF_AWS_Config_EC2InstanceWithPublicIPAddress"
   query    = <<EOT
-  TF_AWS_Config_EC2InstanceWithPublicIPAddress {
+  {
       source {
           LW_CFG_AWS_EC2_INSTANCES
       }
@@ -50,7 +50,7 @@ Query CloutTrail events and filter only S3 buckets with ACL 'public-read', 'publ
 resource "lacework_query" "example" {
   query_id       = "TF_AWS_CTA_S3PublicACLCreated"
   query          = <<EOT
-  TF_AWS_CTA_S3PublicACLCreated {
+  {
       source {
           CloudTrailRawEvents
       }

@@ -19,7 +19,7 @@ variable "query_id" {
 variable "query" {
   type    = string
   default = <<EOT
-  Lql_Terraform_Query {
+  {
       source {
           CloudTrailRawEvents
       }
