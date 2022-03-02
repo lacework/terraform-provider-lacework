@@ -119,13 +119,16 @@ func TestQueryMalformed(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars:         map[string]interface{}{"query": malformedQuery},
 	})
-	defer terraform.Destroy(t, terraformOptions)
 
 	msg, err := terraform.ApplyE(t, terraformOptions)
 	if assert.Error(t, err) {
 		assert.Contains(t, msg, "query id not found. (malformed)")
 		assert.Contains(t, msg, "> Your query:")
-		assert.Contains(t, msg, malformedQuery)
+		assert.Contains(t, msg, "{")
+		assert.Contains(t, msg, "source { CloudTrailRawEvents }")
+		assert.Contains(t, msg, "filter { ERROR_CODE is null }")
+		assert.Contains(t, msg, "return distinct { EVENT }")
+		assert.Contains(t, msg, "}")
 		assert.Contains(t, msg, "> Compare provided query to the example at:")
 		assert.Contains(t, msg, "https://docs.lacework.com/lql-overview")
 	}
