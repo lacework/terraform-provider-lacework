@@ -44,7 +44,7 @@ EOT
 }
 ```
 
-Query CloutTrail events and filter only S3 buckets with ACL 'public-read', 'public-read-write' or 'authenticated-read'.
+Query CloudTrail events and filter only S3 buckets with ACL 'public-read', 'public-read-write' or 'authenticated-read'.
 
 ```hcl
 resource "lacework_query" "example" {
