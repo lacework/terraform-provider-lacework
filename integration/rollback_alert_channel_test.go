@@ -41,9 +41,13 @@ func assertAlertChannelFailure(t *testing.T, msg string, err error) {
 		assert.Regexp(t,
 			"\\[POST\\] https://(.*?).lacework.net/api/v2/AlertChannels/(.*?)/test",
 			err.Error())
-		assert.Contains(t,
-			err.Error(),
-			"The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable")
+		// @afiune: This test in intermitent since our APIs sometimes return the full /test payload
+		// and some other times they only return a 500 Internal Server Error
+		// TODO: Investigate https://lacework.atlassian.net/browse/RAIN-28525
+		//
+		// assert.Contains(t,
+		// err.Error(),
+		// "The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable")
 
 		// Verify that we rollback the alert channel, that is, we removed it from the Lacework account
 		re := regexp.MustCompile("lacework.net/api/v2/AlertChannels/(.*?)/test")
