@@ -20,4 +20,8 @@ variable "non_os_package_support" {
   type      = bool
   default   = true
 }
+variable "num_images" {
+  type      = number
+  default   = 10
+}
 

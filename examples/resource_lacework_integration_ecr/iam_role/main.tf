@@ -16,4 +16,5 @@ resource "lacework_integration_ecr" "iam_role" {
     external_id = var.external_id
   }
   non_os_package_support = var.non_os_package_support
+  limit_num_imgs         = var.num_images
 }

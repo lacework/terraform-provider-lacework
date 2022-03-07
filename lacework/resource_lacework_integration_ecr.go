@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/pkg/errors"
 
 	"github.com/lacework/go-sdk/api"
@@ -177,10 +178,11 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 				ConflictsWith: []string{"limit_by_repos"},
 			},
 			"limit_num_imgs": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Default:     5,
-				Description: "The maximum number of newest container images to assess per repository",
+				Type:         schema.TypeInt,
+				Optional:     true,
+				Default:      5,
+				ValidateFunc: validation.IntInSlice([]int{5, 10, 15}),
+				Description:  "The maximum number of newest container images to assess per repository",
 			},
 			"aws_auth_type": {
 				Type:        schema.TypeString,
