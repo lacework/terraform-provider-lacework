@@ -1,7 +1,9 @@
 package integration
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
@@ -14,10 +16,11 @@ import (
 // applies an update and destroys it
 //nolint
 func TestQueryCreateCloudtrail(t *testing.T) {
+	queryID := fmt.Sprintf("Lql_Terraform_Query_%d", time.Now().UnixMilli())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
-			"query_id": "Lql_Terraform_Query",
+			"query_id": queryID,
 			"query":    queryString},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -29,15 +32,15 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 	actualQueryID := terraform.Output(t, terraformOptions, "query_id")
 	actualQuery := terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "Lql_Terraform_Query", createProps.Data.QueryID)
+	assert.Equal(t, queryID, createProps.Data.QueryID)
 	assert.Equal(t, queryString, createProps.Data.QueryText)
 
-	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryID, actualQueryID)
 	assert.Equal(t, queryString, actualQuery)
 
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
-		"query_id": "Lql_Terraform_Query",
+		"query_id": queryID,
 		"query":    updatedQueryString,
 	}
 
@@ -47,10 +50,10 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
 	actualQuery = terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "Lql_Terraform_Query", updateProps.Data.QueryID)
+	assert.Equal(t, queryID, updateProps.Data.QueryID)
 	assert.Equal(t, updatedQueryString, updateProps.Data.QueryText)
 
-	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryID, actualQueryID)
 	assert.Equal(t, updatedQueryString, actualQuery)
 
 	// Attempt to update query_id should return error
@@ -66,10 +69,11 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 }
 
 func TestQueryCreate(t *testing.T) {
+	queryID := fmt.Sprintf("Lql_Terraform_Query_%d", time.Now().UnixMilli())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
-			"query_id": "Lql_Terraform_Query",
+			"query_id": queryID,
 			"query":    queryStringK8},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -81,15 +85,15 @@ func TestQueryCreate(t *testing.T) {
 	actualQueryID := terraform.Output(t, terraformOptions, "query_id")
 	actualQuery := terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "Lql_Terraform_Query", createProps.Data.QueryID)
+	assert.Equal(t, queryID, createProps.Data.QueryID)
 	assert.Equal(t, queryStringK8, createProps.Data.QueryText)
 
-	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryID, actualQueryID)
 	assert.Equal(t, queryStringK8, actualQuery)
 
 	// Update Query
 	terraformOptions.Vars = map[string]interface{}{
-		"query_id": "Lql_Terraform_Query",
+		"query_id": queryID,
 		"query":    queryStringK8,
 	}
 
@@ -99,10 +103,10 @@ func TestQueryCreate(t *testing.T) {
 	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
 	actualQuery = terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "Lql_Terraform_Query", updateProps.Data.QueryID)
+	assert.Equal(t, queryID, updateProps.Data.QueryID)
 	assert.Equal(t, queryStringK8, updateProps.Data.QueryText)
 
-	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryID, actualQueryID)
 	assert.Equal(t, queryStringK8, actualQuery)
 
 	// Run apply again
@@ -113,10 +117,10 @@ func TestQueryCreate(t *testing.T) {
 	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
 	actualQuery = terraform.Output(t, terraformOptions, "query")
 
-	assert.Equal(t, "Lql_Terraform_Query", thirdApplyProps.Data.QueryID)
+	assert.Equal(t, queryID, thirdApplyProps.Data.QueryID)
 	assert.Equal(t, queryStringK8, thirdApplyProps.Data.QueryText)
 
-	assert.Equal(t, "Lql_Terraform_Query", actualQueryID)
+	assert.Equal(t, queryID, actualQueryID)
 	assert.Equal(t, queryStringK8, actualQuery)
 }
 
