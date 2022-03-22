@@ -30,7 +30,7 @@ func dataSourceLaceworkAgentAccessTokenRead(d *schema.ResourceData, meta interfa
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Lookup agent access token.")
-	response, err := lacework.Agents.ListTokens()
+	response, err := lacework.V2.AgentAccessTokens.List()
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func dataSourceLaceworkAgentAccessTokenRead(d *schema.ResourceData, meta interfa
 	for _, token := range response.Data {
 		if token.TokenAlias == lookupName {
 			log.Printf("[INFO] agent access token found. name=%s, description=%s, enabled=%t",
-				token.TokenAlias, token.Props.Description, token.Status())
+				token.TokenAlias, token.Props.Description, token.State())
 
 			d.Set("token", token.AccessToken)
 			d.SetId(token.TokenAlias)
