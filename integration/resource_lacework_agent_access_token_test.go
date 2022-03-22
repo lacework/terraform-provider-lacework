@@ -17,7 +17,7 @@ func TestAgentAccessTokenCreate(t *testing.T) {
 	tokenName := fmt.Sprintf("Agent Token Terraform - %s", time.Now())
 	// Create new Agent Access Token
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_channel_aws_s3",
+		TerraformDir: "../examples/resource_lacework_agent_access_token",
 		Vars: map[string]interface{}{
 			"token_name": tokenName,
 		},
