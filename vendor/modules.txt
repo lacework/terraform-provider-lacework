@@ -234,7 +234,7 @@ github.com/hashicorp/terraform-registry-address
 # github.com/hashicorp/terraform-svchost v0.0.0-20200729002733-f050f53b9734
 ## explicit; go 1.12
 github.com/hashicorp/terraform-svchost
-# github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce
+# github.com/hashicorp/yamux v0.0.0-20181012175058-2f1d1f20f75d
 ## explicit
 github.com/hashicorp/yamux
 # github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
@@ -293,8 +293,8 @@ github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
-# github.com/oklog/run v1.1.0
-## explicit; go 1.13
+# github.com/oklog/run v1.0.0
+## explicit
 github.com/oklog/run
 # github.com/pkg/errors v0.9.1
 ## explicit
