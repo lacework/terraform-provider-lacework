@@ -15,7 +15,7 @@ image.
 ~> **Note:** Assessing a retagged ECR image is not supported because ECR does not consider it a new
 image and does not create a new entry. To assess a retagged image, use on-demand assessment through
 the Lacework CLI. For more information, see the [container vulnerability section in the Lacework CLI
-documentation](https://github.com/lacework/go-sdk/wiki/CLI-Documentation#container-vulnerability-assessments).
+documentation](https://docs.lacework.com/cli/container-vulnerability).
 
 This resource has two authentication methods:
 

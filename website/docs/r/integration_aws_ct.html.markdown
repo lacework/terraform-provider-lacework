@@ -106,8 +106,8 @@ resource "lacework_integration_aws_ct" "account_abc" {
 }
 ```
 
-You could use the [Lacework CLI](https://github.com/lacework/go-sdk/wiki/CLI-Documentation) command `lacework integration delete <INT_GUID>` or, log in to the
-Lacework Console and navigate to Settings > Integrations > Cloud Accounts, to delete the existing
+You could use the [Lacework CLI](https://docs.lacework.com/cli) command `lacework integration delete <INT_GUID>` or,
+log in to the Lacework Console and navigate to Settings > Integrations > Cloud Accounts, to delete the existing
 AWS CloudTrail integration. Then update your Terraform plan to access the organization level data set:
 
 ```hcl

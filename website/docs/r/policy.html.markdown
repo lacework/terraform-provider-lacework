@@ -1,5 +1,5 @@
 ---
-subcategory: "Policy"
+subcategory: "Policies"
 layout: "lacework"
 page_title: "Lacework: lacework_policy"
 description: |-
