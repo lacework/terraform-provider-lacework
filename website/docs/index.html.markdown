@@ -82,7 +82,7 @@ $Env:LW_API_SECRET = "my-api-secret"
 ### Configuration file
 It is possible to use credentials from the Lacework configuration file. The default location on Linux and OS X
 is `$HOME/.lacework.toml`, and for Windows users is `"%USERPROFILE%\.lacework.toml"`. This configuration file
-can be easily managed using the [Lacework CLI](https://github.com/lacework/go-sdk/wiki/CLI-Documentation). This
+can be easily managed using the [Lacework CLI](https://docs.lacework.com/cli). This
 method also supports a `profile` configuration and matching `LW_PROFILE` environment variable.
 
 ```hcl
@@ -187,7 +187,7 @@ run `terraform apply` to create a new resource at the organization level.
 The following arguments are supported in the `provider` block:
 
 * `profile` - (Optional) This is the Lacework profile name to use, profiles are configured
-  at `$HOME/.lacework.toml` via the [Lacework CLI](https://github.com/lacework/go-sdk/wiki/CLI-Documentation).
+  at `$HOME/.lacework.toml` via the [Lacework CLI](https://docs.lacework.com/cli).
   It can also be sourced from the `LW_PROFILE` environment variable.
 
 * `account` - (Optional) This is the Lacework account subdomain of URL (i.e. `<ACCOUNT>`

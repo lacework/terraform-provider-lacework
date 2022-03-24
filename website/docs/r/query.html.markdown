@@ -1,5 +1,5 @@
 ---
-subcategory: "Query"
+subcategory: "Queries"
 layout: "lacework"
 page_title: "Lacework: lacework_query"
 description: |-
