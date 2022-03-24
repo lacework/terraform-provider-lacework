@@ -7,6 +7,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func resourceLaceworkReportRule() *schema.Resource {
@@ -247,7 +249,7 @@ func resourceLaceworkReportRule() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(strings.Title(strings.ToLower(val.(string))))
+						return strings.TrimSpace(cases.Title(language.English).String(strings.ToLower(val.(string))))
 					},
 					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 						switch strings.ToLower(value.(string)) {
