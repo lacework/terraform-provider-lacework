@@ -81,6 +81,7 @@ func Provider() *schema.Provider {
 			"lacework_alert_rule":                        resourceLaceworkAlertRule(),
 			"lacework_integration_aws_cfg":               resourceLaceworkIntegrationAwsCfg(),
 			"lacework_integration_aws_ct":                resourceLaceworkIntegrationAwsCloudTrail(),
+			"lacework_integration_aws_eks_audit_log":     resourceLaceworkIntegrationAwsEksAudit(),
 			"lacework_integration_aws_govcloud_cfg":      resourceLaceworkIntegrationAwsGovCloudCfg(),
 			"lacework_integration_aws_govcloud_ct":       resourceLaceworkIntegrationAwsGovCloudCT(),
 			"lacework_integration_azure_cfg":             resourceLaceworkIntegrationAzureCfg(),
