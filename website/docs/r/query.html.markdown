@@ -88,6 +88,6 @@ A Lacework query can be imported using a `QUERY_ID`, e.g.
 $ terraform import lacework_query.example YourLQLQueryID
 ```
 
--> **Note:** To retreive the `QUERY_ID` from existing queries in your account, use the
+-> **Note:** To retrieve the `QUERY_ID` from existing queries in your account, use the
 Lacework CLI command `lacework query list`. To install this tool follow
 [this documentation](https://docs.lacework.com/cli/).

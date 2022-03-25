@@ -38,6 +38,6 @@ A Lacework Webhook Alert Channel integration can be imported using a `INT_GUID`,
 ```
 $ terraform import lacework_alert_channel_webhook.ops_critical EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
--> **Note:** To retreive the `INT_GUID` from existing integrations in your account, use the
+-> **Note:** To retrieve the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow
 	[this documentation](https://docs.lacework.com/cli/).

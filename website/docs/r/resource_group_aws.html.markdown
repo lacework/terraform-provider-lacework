@@ -37,6 +37,6 @@ A Lacework AWS Resource Group can be imported using a `RESOURCE_GUID`, e.g.
 ```
 $ terraform import lacework_resource_group_aws.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
--> **Note:** To retreive the `RESOURCE_GUID` from existing resource groups in your account, use the
+-> **Note:** To retrieve the `RESOURCE_GUID` from existing resource groups in your account, use the
 Lacework CLI command `lacework resource-group list`. To install this tool follow
 [this documentation](https://docs.lacework.com/cli/).
