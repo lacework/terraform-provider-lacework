@@ -11,18 +11,18 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-func resourceLaceworkIntegrationAwsEksAudit() *schema.Resource {
+func resourceLaceworkIntegrationAwsEksAuditLog() *schema.Resource {
 	return &schema.Resource{
-		Create:   resourceLaceworkIntegrationAwsEksAuditCreate,
-		Read:     resourceLaceworkIntegrationAwsEksAuditRead,
-		Update:   resourceLaceworkIntegrationAwsEksAuditUpdate,
-		Delete:   resourceLaceworkIntegrationAwsEksAuditDelete,
-		Schema:   awsEksAuditIntegrationSchema,
+		Create:   resourceLaceworkIntegrationAwsEksAuditLogCreate,
+		Read:     resourceLaceworkIntegrationAwsEksAuditLogRead,
+		Update:   resourceLaceworkIntegrationAwsEksAuditLogUpdate,
+		Delete:   resourceLaceworkIntegrationAwsEksAuditLogDelete,
+		Schema:   awsEksAuditLogIntegrationSchema,
 		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
 	}
 }
 
-var awsEksAuditIntegrationSchema = map[string]*schema.Schema{
+var awsEksAuditLogIntegrationSchema = map[string]*schema.Schema{
 	"name": {
 		Type:        schema.TypeString,
 		Required:    true,
@@ -85,11 +85,11 @@ var awsEksAuditIntegrationSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceLaceworkIntegrationAwsEksAuditCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationAwsEksAuditLogCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework        = meta.(*api.Client)
-		retries         = d.Get("retries").(int)
-		awsEksAuditData = api.AwsEksAuditData{
+		lacework           = meta.(*api.Client)
+		retries            = d.Get("retries").(int)
+		awsEksAuditLogData = api.AwsEksAuditData{
 			SnsArn: d.Get("snsArn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
@@ -98,19 +98,19 @@ func resourceLaceworkIntegrationAwsEksAuditCreate(d *schema.ResourceData, meta i
 		}
 	)
 
-	awsEksAudit := api.NewCloudAccount(d.Get("name").(string),
+	awsEksAuditLog := api.NewCloudAccount(d.Get("name").(string),
 		api.AwsEksAuditCloudAccount,
-		awsEksAuditData,
+		awsEksAuditLogData,
 	)
 
 	if !d.Get("enabled").(bool) {
-		awsEksAudit.Enabled = 0
+		awsEksAuditLog.Enabled = 0
 	}
 
 	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.AwsEksAuditCloudAccount.String())
-		response, err := lacework.V2.CloudAccounts.Create(awsEksAudit)
+		response, err := lacework.V2.CloudAccounts.Create(awsEksAuditLog)
 		if err != nil {
 			if retries <= 0 {
 				return resource.NonRetryableError(
@@ -145,7 +145,7 @@ func resourceLaceworkIntegrationAwsEksAuditCreate(d *schema.ResourceData, meta i
 	})
 }
 
-func resourceLaceworkIntegrationAwsEksAuditRead(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationAwsEksAuditLogRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading %s cloud account integration with guid: %v\n", api.AwsEksAuditCloudAccount.String(), d.Id())
@@ -181,10 +181,10 @@ func resourceLaceworkIntegrationAwsEksAuditRead(d *schema.ResourceData, meta int
 	return nil
 }
 
-func resourceLaceworkIntegrationAwsEksAuditUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationAwsEksAuditLogUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework        = meta.(*api.Client)
-		awsEksAuditData = api.AwsEksAuditData{
+		lacework           = meta.(*api.Client)
+		awsEksAuditLogData = api.AwsEksAuditData{
 			SnsArn: d.Get("snsArn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
@@ -193,19 +193,19 @@ func resourceLaceworkIntegrationAwsEksAuditUpdate(d *schema.ResourceData, meta i
 		}
 	)
 
-	awsEksAudit := api.NewCloudAccount(d.Get("name").(string),
+	awsEksAuditLog := api.NewCloudAccount(d.Get("name").(string),
 		api.AwsEksAuditCloudAccount,
-		awsEksAuditData,
+		awsEksAuditLogData,
 	)
 
 	if !d.Get("enabled").(bool) {
-		awsEksAudit.Enabled = 0
+		awsEksAuditLog.Enabled = 0
 	}
 
-	awsEksAudit.IntgGuid = d.Id()
+	awsEksAuditLog.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsEksAuditCloudAccount.String(), awsEksAudit.IntgGuid)
-	response, err := lacework.V2.CloudAccounts.UpdateAwsEksAudit(awsEksAudit)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AwsEksAuditCloudAccount.String(), awsEksAuditLog.IntgGuid)
+	response, err := lacework.V2.CloudAccounts.UpdateAwsEksAudit(awsEksAuditLog)
 	if err != nil {
 		return err
 	}
@@ -223,7 +223,7 @@ func resourceLaceworkIntegrationAwsEksAuditUpdate(d *schema.ResourceData, meta i
 	return nil
 }
 
-func resourceLaceworkIntegrationAwsEksAuditDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkIntegrationAwsEksAuditLogDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s cloud account integration with guid: %v\n", api.AwsEksAuditCloudAccount.String(), d.Id())
