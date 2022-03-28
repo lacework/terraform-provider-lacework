@@ -28,10 +28,6 @@ var awsEksAuditLogIntegrationSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "The integration name.",
 	},
-	"type_name": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
 	"enabled": {
 		Type:        schema.TypeBool,
 		Optional:    true,
@@ -43,10 +39,6 @@ var awsEksAuditLogIntegrationSchema = map[string]*schema.Schema{
 		Optional:    true,
 		Default:     5,
 		Description: "The number of attempts to create the external integration.",
-	},
-	"intg_guid": {
-		Type:     schema.TypeString,
-		Computed: true,
 	},
 	"sns_arn": {
 		Type:        schema.TypeString,
@@ -71,6 +63,14 @@ var awsEksAuditLogIntegrationSchema = map[string]*schema.Schema{
 			},
 		},
 	},
+	"type_name": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"intg_guid": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
 	"is_org": {
 		Type:     schema.TypeBool,
 		Computed: true,
@@ -90,7 +90,7 @@ func resourceLaceworkIntegrationAwsEksAuditLogCreate(d *schema.ResourceData, met
 		lacework           = meta.(*api.Client)
 		retries            = d.Get("retries").(int)
 		awsEksAuditLogData = api.AwsEksAuditData{
-			SnsArn: d.Get("snsArn").(string),
+			SnsArn: d.Get("sns_arn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),
@@ -185,7 +185,7 @@ func resourceLaceworkIntegrationAwsEksAuditLogUpdate(d *schema.ResourceData, met
 	var (
 		lacework           = meta.(*api.Client)
 		awsEksAuditLogData = api.AwsEksAuditData{
-			SnsArn: d.Get("snsArn").(string),
+			SnsArn: d.Get("sns_arn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),
