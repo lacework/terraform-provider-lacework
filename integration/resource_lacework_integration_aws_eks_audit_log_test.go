@@ -18,7 +18,7 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 		Vars: map[string]interface{}{
 			"role_arn":    "arn:aws:iam::249446771485:role/lacework-iam-example-role",
 			"external_id": "12345",
-			"sns_arn":     "arn:aws:iam::249446771485:role/lacework-iam-example-role",
+			"sns_arn":     "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -32,7 +32,7 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 		"name":        "AwsEksAudit log integration updated",
 		"role_arn":    "arn:aws:iam::249446771485:role/lacework-iam-example-role",
 		"external_id": "12345",
-		"sns_arn":     "arn:aws:iam::249446771485:role/lacework-iam-example-role",
+		"sns_arn":     "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks",
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
