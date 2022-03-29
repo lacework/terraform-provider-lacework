@@ -45,6 +45,18 @@ func lwOrgTestClient() (lw *api.Client) {
 	return
 }
 
+func GetCloudAccountIntegrationName(result string) string {
+	var res api.CloudAccountResponse
+	id := GetIDFromTerraResults(result)
+
+	err := LwClient.V2.CloudAccounts.Get(id, &res)
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res.Data.Name
+}
+
 func GetIntegrationName(result string, integration string) string {
 	var res api.V2CommonIntegration
 	id := GetIDFromTerraResults(result)

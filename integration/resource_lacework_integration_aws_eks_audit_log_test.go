@@ -25,7 +25,11 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 
 	// Create new AwsEksAudit Integration
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "AWS EKS audit log integration example", GetIntegrationName(create, "AwsEksAudit"))
+	assert.Equal(
+		t,
+		"AWS EKS audit log integration example",
+		GetCloudAccountIntegrationName(create),
+	)
 
 	// Update AwsEksAudit Integration
 	terraformOptions.Vars = map[string]interface{}{
@@ -36,5 +40,9 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "AwsEksAudit log integration updated", GetIntegrationName(update, "AwsEksAudit"))
+	assert.Equal(
+		t,
+		"AwsEksAudit log integration updated",
+		GetCloudAccountIntegrationName(update),
+	)
 }
