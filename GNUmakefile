@@ -10,7 +10,7 @@ WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=lacework
 DIR=~/.terraform.d/plugins
 CIARTIFACTS?=ci-artifacts
-GOJUNITOUT?=go-junit.xml
+GOJUNITOUT?=tf-provider-go-junit.xml
 GO_CLIENT_VERSION=master
 COVERAGEOUT?=coverage.out
 GOFLAGS=-mod=vendor
