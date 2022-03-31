@@ -25,11 +25,21 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 
 	// Create new AwsEksAudit Integration
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	createData := GetCloudAccountEksAuditLogData(create)
+	actualRoleArn := terraform.Output(t, terraformOptions, "role_arn")
+	actualExternalId := terraform.Output(t, terraformOptions, "external_id")
+	actualSnsArn := terraform.Output(t, terraformOptions, "sns_arn")
 	assert.Equal(
 		t,
 		"AWS EKS audit log integration example",
 		GetCloudAccountIntegrationName(create),
 	)
+	assert.Equal(t, "arn:aws:iam::249446771485:role/lacework-iam-example-role", createData.Credentials.RoleArn)
+	assert.Equal(t, "12345", createData.Credentials.ExternalID)
+	assert.Equal(t, "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks", createData.SnsArn)
+	assert.Equal(t, "arn:aws:iam::249446771485:role/lacework-iam-example-role", actualRoleArn)
+	assert.Equal(t, "12345", actualExternalId)
+	assert.Equal(t, "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks", actualSnsArn)
 
 	// Update AwsEksAudit Integration
 	terraformOptions.Vars = map[string]interface{}{
@@ -40,9 +50,19 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
+	updateData := GetCloudAccountEksAuditLogData(update)
+	actualRoleArn = terraform.Output(t, terraformOptions, "role_arn")
+	actualExternalId = terraform.Output(t, terraformOptions, "external_id")
+	actualSnsArn = terraform.Output(t, terraformOptions, "sns_arn")
 	assert.Equal(
 		t,
 		"AwsEksAudit log integration updated",
 		GetCloudAccountIntegrationName(update),
 	)
+	assert.Equal(t, "arn:aws:iam::249446771485:role/lacework-iam-example-role", updateData.Credentials.RoleArn)
+	assert.Equal(t, "12345", updateData.Credentials.ExternalID)
+	assert.Equal(t, "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks", updateData.SnsArn)
+	assert.Equal(t, "arn:aws:iam::249446771485:role/lacework-iam-example-role", actualRoleArn)
+	assert.Equal(t, "12345", actualExternalId)
+	assert.Equal(t, "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks", actualSnsArn)
 }

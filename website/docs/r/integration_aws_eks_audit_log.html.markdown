@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_cloud\_account\_aws\_eks\_audit\_log
 
-Use this resource to configure an AWS EKS Audit Log integration to analyze EKS audit logs.
+Use this resource to configure an [AWS EKS Audit Log integration](https://docs.lacework.com/category/eks-audit-log-integrations) to analyze EKS audit logs.
 
 ## Example Usage
 
@@ -28,10 +28,10 @@ resource "lacework_cloud_account_aws_eks_audit_log" "account_abc" {
 The following arguments are supported:
 
 * `name` - (Required) The AWS CloudTrail integration name.
-* `sns_arn` - (Required) The SNS ARN.
+* `sns_arn` - (Required) The SNS topic ARN to share with Lacework.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
+* `retries` - (Optional) The number of attempts to create the cloud account integration. Defaults to `5`.
 
 ### Credentials
 
@@ -42,10 +42,10 @@ The following arguments are supported:
 
 ## Import
 
-A Lacework AWS Config integration can be imported using a `INT_GUID`, e.g.
+A Lacework AWS EKS Audit Log integration can be imported using a `INT_GUID`, e.g.
 
 ```
-$ terraform import lacework_integration_aws_ct.account_abc EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
+$ terraform import lacework_integration_aws_eks_audit_log.account_abc EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retrieve the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework integration list`. To install this tool follow

@@ -57,6 +57,17 @@ func GetCloudAccountIntegrationName(result string) string {
 	return res.Data.Name
 }
 
+func GetCloudAccountEksAuditLogData(result string) api.AwsEksAuditData {
+	id := GetIDFromTerraResults(result)
+
+	response, err := LwClient.V2.CloudAccounts.GetAwsEksAudit(id)
+	if err != nil {
+		log.Fatalf("Unable to find eks audit log id: %s\n Response: %v", id, response)
+	}
+
+	return response.Data.Data
+}
+
 func GetIntegrationName(result string, integration string) string {
 	var res api.V2CommonIntegration
 	id := GetIDFromTerraResults(result)
