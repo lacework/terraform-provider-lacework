@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gruntwork-io/terratest v0.40.6
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.10.1
-	github.com/lacework/go-sdk v0.29.1-0.20220324113107-fc74684e5143
+	github.com/lacework/go-sdk v0.30.1-0.20220331102524-253cc38420ec
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/text v0.3.7
