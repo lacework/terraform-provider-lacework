@@ -256,7 +256,7 @@ github.com/klauspost/compress/huff0
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v0.29.1-0.20220324113107-fc74684e5143
+# github.com/lacework/go-sdk v0.30.1-0.20220331102524-253cc38420ec
 ## explicit; go 1.18
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
@@ -303,7 +303,7 @@ github.com/pkg/errors
 ## explicit
 github.com/pmezard/go-difflib/difflib
 # github.com/stretchr/testify v1.7.1
-## explicit
+## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
 # github.com/tmccombs/hcl2json v0.3.3
