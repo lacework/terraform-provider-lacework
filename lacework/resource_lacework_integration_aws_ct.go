@@ -12,6 +12,17 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
+func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
+	return &schema.Resource{
+		Create:   resourceLaceworkIntegrationAwsCloudTrailCreate,
+		Read:     resourceLaceworkIntegrationAwsCloudTrailRead,
+		Update:   resourceLaceworkIntegrationAwsCloudTrailUpdate,
+		Delete:   resourceLaceworkIntegrationAwsCloudTrailDelete,
+		Schema:   awsCloudTrailIntegrationSchema,
+		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
+	}
+}
+
 var awsCloudTrailIntegrationSchema = map[string]*schema.Schema{
 	"name": {
 		Type:        schema.TypeString,
@@ -109,17 +120,6 @@ var awsCloudTrailIntegrationSchema = map[string]*schema.Schema{
 		Type:     schema.TypeBool,
 		Computed: true,
 	},
-}
-
-func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
-	return &schema.Resource{
-		Create:   resourceLaceworkIntegrationAwsCloudTrailCreate,
-		Read:     resourceLaceworkIntegrationAwsCloudTrailRead,
-		Update:   resourceLaceworkIntegrationAwsCloudTrailUpdate,
-		Delete:   resourceLaceworkIntegrationAwsCloudTrailDelete,
-		Schema:   awsCloudTrailIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
-	}
 }
 
 func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta interface{}) error {

@@ -98,6 +98,6 @@ A Lacework policy can be imported using a `POLICY_ID`, e.g.
 $ terraform import lacework_policy.example YourLQLPolicyID
 ```
 
--> **Note:** To retreive the `POLICY_ID` from existing policies in your account, use the
+-> **Note:** To retrieve the `POLICY_ID` from existing policies in your account, use the
 Lacework CLI command `lacework policy list`. To install this tool follow
 [this documentation](https://docs.lacework.com/cli/).
