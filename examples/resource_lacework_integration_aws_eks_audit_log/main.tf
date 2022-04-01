@@ -13,13 +13,11 @@ variable "name" {
 
 variable "sns_arn" {
   type      = string
-  sensitive = true
   default   = "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks"
 }
 
 variable "external_id" {
   type      = string
-  sensitive = true
   default   = "12345"
 }
 
