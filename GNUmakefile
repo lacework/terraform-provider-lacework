@@ -9,6 +9,8 @@ GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 WEBSITE_REPO=github.com/hashicorp/terraform-website
 PKG_NAME=lacework
 DIR=~/.terraform.d/plugins
+CIARTIFACTS?=ci-artifacts
+GOJUNITOUT?=tf-provider-go-junit.xml
 GO_CLIENT_VERSION=master
 COVERAGEOUT?=coverage.out
 GOFLAGS=-mod=vendor
@@ -75,6 +77,11 @@ uninstall: ## Removes installed provider package from BINARY_PATH
 .PHONY: integration-test
 integration-test: clean-test install ## Runs clean-test and install, then runs all integration tests
 	gotestsum -f testname -- -v ./integration
+
+.PHONY: test-go-junit-ci
+test-go-junit-ci: clean-test install ## Runs clean-test and install, then runs all integration tests and output as junit xml format
+	mkdir -p $(CIARTIFACTS)
+	go test -v ./integration 2>&1 | go-junit-report > "$(CIARTIFACTS)/$(GOJUNITOUT)"
 
 .PHONY: test
 test: fmtcheck ## Runs fmtcheck then runs all unit tests
