@@ -1,19 +1,19 @@
 ---
 subcategory: "Cloud Account Integrations"
 layout: "lacework"
-page_title: "Lacework: lacework_cloud_account_aws_eks_audit_log"
+page_title: "Lacework: lacework_integration_aws_eks_audit_log"
 description: |-
   Create and manage AWS EKS Audit Log integrations
 ---
 
-# lacework\_cloud\_account\_aws\_eks\_audit\_log
+# lacework\_integration\_aws\_eks\_audit\_log
 
 Use this resource to configure an [AWS EKS Audit Log integration](https://docs.lacework.com/category/eks-audit-log-integrations) to analyze EKS audit logs.
 
 ## Example Usage
 
 ```hcl
-resource "lacework_cloud_account_aws_eks_audit_log" "account_abc" {
+resource "lacework_integration_aws_eks_audit_log" "account_abc" {
   name      = "account ABC"
   sns_arn   = "arn:aws:sns:us-west-2:123456789:foo-lacework-eks:00777777-ab77-1234-a123-a12ab1d12c1d"
   credentials {
