@@ -227,6 +227,17 @@ func GetAlertRuleProps(result string) api.AlertRuleResponse {
 	return data
 }
 
+func GetAlertProfileProps(result string) api.AlertProfileResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	var data api.AlertProfileResponse
+	err := LwClient.V2.Alert.Profiles.Get(id, &data)
+	if err != nil {
+		log.Fatalf("Unable to retrieve alert profile with id: %s", id)
+	}
+	return data
+}
+
 func GetReportRuleProps(result string) api.ReportRuleResponse {
 	id := GetSpecificIDFromTerraResults(3, result)
 

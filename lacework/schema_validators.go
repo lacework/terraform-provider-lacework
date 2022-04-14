@@ -22,3 +22,22 @@ func ValidSeverity() schema.SchemaValidateDiagFunc {
 		}
 	})
 }
+
+// StringDoesNotHavePrefix returns a SchemaValidateFunc which validates that the
+// provided value does not start with any of the chars.
+func StringDoesNotHavePrefix(chars string) schema.SchemaValidateDiagFunc {
+	return validation.ToDiagFunc(func(i interface{}, k string) (warnings []string, errors []error) {
+		v, ok := i.(string)
+		if !ok {
+			errors = append(errors, fmt.Errorf("expected type of %s to be string", k))
+			return warnings, errors
+		}
+
+		if strings.HasPrefix(v, chars) {
+			errors = append(errors, fmt.Errorf("expected value of %s to not start with any of %q, got %v", k, chars, i))
+			return warnings, errors
+		}
+
+		return warnings, errors
+	})
+}
