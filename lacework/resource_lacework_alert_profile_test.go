@@ -13,10 +13,10 @@ func TestAlertProfileTemplateToArrayOfType(t *testing.T) {
 		d            = resourceLaceworkAlertProfile()
 		testResource = d.TestResourceData()
 		alerts       []api.AlertTemplate
-		actual       = []api.AlertTemplate{{"alertName", "alertEventName", "alertDescription", "alertSubject"}}
+		actual       = []api.AlertTemplate{{Name: "alertName", EventName: "alertEventName", Description: "alertDescription", Subject: "alertSubject"}}
 	)
 
-	testResource.Set("alert", input)
+	_ = testResource.Set("alert", input)
 
 	err := castSchemaSetToArrayOfAlertTemplate(testResource, "alert", &alerts)
 	assert.NoError(t, err)
