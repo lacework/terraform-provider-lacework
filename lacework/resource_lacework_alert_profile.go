@@ -96,7 +96,7 @@ func resourceLaceworkAlertProfileCreate(d *schema.ResourceData, meta interface{}
 
 	d.SetId(response.Data.Guid)
 	d.Set("fields", setAlertProfileFields(response.Data.Fields))
-	log.Printf("[INFO] Created alert profile with id %s\n", response.Data.Guid)
+	log.Printf("[INFO] Created alert profile with id: %s\n", response.Data.Guid)
 	return nil
 }
 
