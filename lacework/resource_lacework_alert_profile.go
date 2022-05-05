@@ -67,7 +67,7 @@ func resourceLaceworkAlertProfile() *schema.Resource {
 			"fields": {
 				Type:        schema.TypeSet,
 				Computed:    true,
-				Description: "A field is a declaration of a field to be mapped in from an LQL query.",
+				Description: "A field is a declaration of a field to be mapped in from an LQL query",
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 		},
