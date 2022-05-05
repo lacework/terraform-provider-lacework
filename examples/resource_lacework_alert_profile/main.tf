@@ -30,7 +30,7 @@ variable "extends" {
 
 variable "alert_description" {
   type    = string
-  default = "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} of organization {{ORGANIZATION}} region {{RESOURCE_REGION}}"
+  default = "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}}"
 }
 
 output "name" {
