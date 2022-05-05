@@ -61,3 +61,18 @@ func TestAlertProfileCreate(t *testing.T) {
 	assert.Equal(t, "LW_CFG_GCP_DEFAULT_PROFILE", actualExtends)
 	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} of organization {{ORGANIZATION}} region {{RESOURCE_REGION}} Updated", actualDescription)
 }
+
+func TestAlertProfileValidate(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_profile",
+		Vars: map[string]interface{}{
+			"name":    "LW_PROFILE_TERRAFORM_TEST",
+			"extends": "LW_CFG_GCP_DEFAULT_PROFILE",
+		},
+	})
+
+	msg, err := terraform.PlanE(t, terraformOptions)
+
+	assert.Error(t, err)
+	assert.Contains(t, msg, "expected value of name to not start with any of \"LW_\"")
+}
