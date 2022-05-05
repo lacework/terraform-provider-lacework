@@ -106,7 +106,7 @@ func resourceLaceworkAlertProfileRead(d *schema.ResourceData, meta interface{}) 
 		response api.AlertProfileResponse
 	)
 
-	log.Printf("[INFO] Reading alert profile with id %s\n", d.Id())
+	log.Printf("[INFO] Reading alert profile with id: %s\n", d.Id())
 	err := lacework.V2.Alert.Profiles.Get(d.Id(), &response)
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func resourceLaceworkAlertProfileRead(d *schema.ResourceData, meta interface{}) 
 	d.Set("alerts", response.Data.Alerts)
 	d.Set("fields", setAlertProfileFields(response.Data.Fields))
 
-	log.Printf("[INFO] Read alert profile with id %s\n", response.Data.Guid)
+	log.Printf("[INFO] Read alert profile with id: %s\n", response.Data.Guid)
 	return nil
 }
 
@@ -142,20 +142,20 @@ func resourceLaceworkAlertProfileUpdate(d *schema.ResourceData, meta interface{}
 
 	d.SetId(response.Data.Guid)
 	d.Set("fields", setAlertProfileFields(response.Data.Fields))
-	log.Printf("[INFO] Updated alert profile with id %s\n", response.Data.Guid)
+	log.Printf("[INFO] Updated alert profile with id: %s\n", response.Data.Guid)
 	return nil
 }
 
 func resourceLaceworkAlertProfileDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting alert profile with id %s\n", d.Id())
+	log.Printf("[INFO] Deleting alert profile with id: %s\n", d.Id())
 	err := lacework.V2.Alert.Profiles.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted alert profile with id %s\n", d.Id())
+	log.Printf("[INFO] Deleted alert profile with id: %s\n", d.Id())
 	return nil
 }
 
