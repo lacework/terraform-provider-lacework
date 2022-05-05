@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_alert\_profile
 
-Use this resource to create a Lacework Alert Profile in order map query results to events and form event descriptions.
+Use this resource to create a Lacework Alert Profile in order to map query results to events and form event descriptions.
 
 ## Example Usage
 
