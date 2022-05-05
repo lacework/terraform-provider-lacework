@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gruntwork-io/terratest v0.40.6
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.13.0
-	github.com/lacework/go-sdk v0.30.1-0.20220331102524-253cc38420ec
+	github.com/lacework/go-sdk v0.31.1-0.20220419130734-683ceca0c999
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/text v0.3.7
@@ -14,7 +14,7 @@ require (
 require (
 	cloud.google.com/go v0.83.0 // indirect
 	cloud.google.com/go/storage v1.10.0 // indirect
-	github.com/BurntSushi/toml v0.4.1 // indirect
+	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.40.56 // indirect

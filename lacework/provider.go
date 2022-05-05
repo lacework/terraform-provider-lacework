@@ -78,6 +78,7 @@ func Provider() *schema.Provider {
 			"lacework_alert_channel_service_now":         resourceLaceworkAlertChannelServiceNow(),
 			"lacework_alert_channel_victorops":           resourceLaceworkAlertChannelVictorOps(),
 			"lacework_alert_channel_webhook":             resourceLaceworkAlertChannelWebhook(),
+			"lacework_alert_profile":                     resourceLaceworkAlertProfile(),
 			"lacework_alert_rule":                        resourceLaceworkAlertRule(),
 			"lacework_integration_aws_cfg":               resourceLaceworkIntegrationAwsCfg(),
 			"lacework_integration_aws_ct":                resourceLaceworkIntegrationAwsCloudTrail(),
