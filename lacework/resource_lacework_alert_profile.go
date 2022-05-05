@@ -38,7 +38,7 @@ func resourceLaceworkAlertProfile() *schema.Resource {
 				Type:        schema.TypeSet,
 				MinItems:    1,
 				Required:    true,
-				Description: "Alert",
+				Description: "The list of alert templates",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
@@ -187,7 +187,12 @@ func castSchemaSetToArrayOfAlertTemplate(d *schema.ResourceData, attr string, te
 
 	list = d.Get(attr).(*schema.Set).List()
 	for _, item := range list {
-		val := sanitizeAlertTemplateKeys(item.(map[string]interface{}))
+		iMap, ok := item.(map[string]interface{})
+		if !ok {
+			log.Printf("[WARN] unable to cast alert template %v", item)
+			continue
+		}
+		val := sanitizeAlertTemplateKeys(iMap)
 		v, err := json.Marshal(val)
 		if err != nil {
 			return errors.New("failed to marshall alert template attribute")
