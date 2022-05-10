@@ -114,7 +114,7 @@ func resourceLaceworkAlertChannelCiscoWebexRead(d *schema.ResourceData, meta int
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.CiscoSparkWebhookAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetCiscoSparkWebhook(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	d.Set("name", response.Data.Name)

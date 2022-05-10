@@ -123,7 +123,7 @@ func resourceLaceworkAlertChannelEmailRead(d *schema.ResourceData, meta interfac
 	log.Printf("[INFO] Reading %s integration with guid: %s\n", api.EmailUserAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetEmailUser(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	d.Set("name", response.Data.Name)

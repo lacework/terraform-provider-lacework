@@ -150,7 +150,7 @@ func resourceLaceworkIntegrationAwsCfgRead(d *schema.ResourceData, meta interfac
 		api.AwsCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAws(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	for _, integration := range response.Data {

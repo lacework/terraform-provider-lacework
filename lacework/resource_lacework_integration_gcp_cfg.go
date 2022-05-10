@@ -208,7 +208,7 @@ func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interfac
 		api.GcpCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetGcp(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	for _, integration := range response.Data {

@@ -1,10 +1,11 @@
 package lacework
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/lacework/go-sdk/api"
 	"log"
 	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/lacework/go-sdk/api"
 )
 
 func resourceLaceworkResourceGroupContainer() *schema.Resource {
@@ -141,7 +142,7 @@ func resourceLaceworkResourceGroupContainerRead(d *schema.ResourceData, meta int
 		api.ContainerResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetContainer(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	d.SetId(response.Data.ResourceGuid)

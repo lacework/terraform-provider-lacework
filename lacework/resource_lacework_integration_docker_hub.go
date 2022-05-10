@@ -212,7 +212,7 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 	response, err := lacework.Integrations.GetContainerRegistry(d.Id())
 
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	for _, integration := range response.Data {

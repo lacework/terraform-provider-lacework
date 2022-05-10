@@ -151,7 +151,7 @@ func resourceLaceworkIntegrationAwsEksAuditLogRead(d *schema.ResourceData, meta 
 	log.Printf("[INFO] Reading %s cloud account integration with guid: %v\n", api.AwsEksAuditCloudAccount.String(), d.Id())
 	response, err := lacework.V2.CloudAccounts.GetAwsEksAudit(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	cloudAccount := response.Data

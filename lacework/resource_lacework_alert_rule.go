@@ -201,7 +201,7 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 	log.Printf("[INFO] Reading alert rule with guid %s\n", d.Id())
 	err := lacework.V2.AlertRules.Get(d.Id(), &response)
 	if err != nil {
-		return err
+		return resourceNotFound(d, err, d.Id())
 	}
 
 	d.SetId(response.Data.Guid)
