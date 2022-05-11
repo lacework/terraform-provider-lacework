@@ -187,7 +187,7 @@ func resourceLaceworkIntegrationGhcrRead(d *schema.ResourceData, meta interface{
 		api.GhcrContainerRegistry.String(), d.Id())
 	response, err := lacework.V2.ContainerRegistries.GetGhcr(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

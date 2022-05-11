@@ -149,7 +149,7 @@ func resourceLaceworkAlertChannelServiceNowRead(d *schema.ResourceData, meta int
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.ServiceNowRestAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetServiceNowRest(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 	integration := response.Data
 	d.Set("name", integration.Name)

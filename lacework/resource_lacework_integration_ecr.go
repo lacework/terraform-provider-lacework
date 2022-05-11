@@ -263,7 +263,7 @@ func resourceLaceworkIntegrationEcrReadWithIAMRole(d *schema.ResourceData, lacew
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
 	response, err := lacework.Integrations.GetAwsEcrWithCrossAccount(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	for _, integration := range response.Data {
@@ -320,7 +320,7 @@ func resourceLaceworkIntegrationEcrReadWithAccessKey(d *schema.ResourceData, lac
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
 	response, err := lacework.Integrations.GetAwsEcrWithAccessKey(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	for _, integration := range response.Data {

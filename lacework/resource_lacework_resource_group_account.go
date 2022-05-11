@@ -123,7 +123,7 @@ func resourceLaceworkResourceGroupLwAccountRead(d *schema.ResourceData, meta int
 		api.LwAccountResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetLwAccount(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

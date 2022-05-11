@@ -129,7 +129,7 @@ func resourceLaceworkResourceGroupMachineRead(d *schema.ResourceData, meta inter
 		api.MachineResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetMachine(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

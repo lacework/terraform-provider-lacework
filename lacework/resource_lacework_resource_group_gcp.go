@@ -130,7 +130,7 @@ func resourceLaceworkResourceGroupGcpRead(d *schema.ResourceData, meta interface
 		api.GcpResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetGcp(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

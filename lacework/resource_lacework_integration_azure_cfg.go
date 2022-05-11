@@ -164,7 +164,7 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 		api.AzureCfgIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAzure(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	for _, integration := range response.Data {

@@ -114,7 +114,7 @@ func resourceLaceworkAlertChannelMicrosoftTeamsRead(d *schema.ResourceData, meta
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.MicrosoftTeamsAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetMicrosoftTeams(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

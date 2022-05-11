@@ -196,7 +196,7 @@ func resourceLaceworkAlertChannelGcpPubSubRead(d *schema.ResourceData, meta inte
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.GcpPubSubAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetGcpPubSub(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

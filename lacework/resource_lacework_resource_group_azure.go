@@ -130,7 +130,7 @@ func resourceLaceworkResourceGroupAzureRead(d *schema.ResourceData, meta interfa
 		api.AzureResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetAzure(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

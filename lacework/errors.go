@@ -13,9 +13,9 @@ func notFound(err error) bool {
 	return errors.As(err, &e)
 }
 
-func resourceNotFound(d *schema.ResourceData, err error, id string) error {
+func resourceNotFound(d *schema.ResourceData, err error) error {
 	if notFound(err) && !d.IsNewResource() {
-		log.Printf("[WARN] resource with guid: %s\n not found, removing from state", id)
+		log.Printf("[WARN] resource with guid: %s\n not found, removing from state", d.Id())
 		d.SetId("")
 		return nil
 	}

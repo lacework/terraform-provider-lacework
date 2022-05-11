@@ -124,7 +124,7 @@ func resourceLaceworkResourceGroupAwsRead(d *schema.ResourceData, meta interface
 		api.AwsResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetAws(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

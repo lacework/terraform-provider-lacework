@@ -253,7 +253,7 @@ func resourceLaceworkIntegrationGarRead(d *schema.ResourceData, meta interface{}
 		api.GcpGarContainerRegistry.String(), d.Id())
 	response, err := lacework.V2.ContainerRegistries.GetGcpGar(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

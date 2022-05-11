@@ -255,7 +255,7 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 	response, err := lacework.Integrations.GetContainerRegistry(d.Id())
 
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	for _, integration := range response.Data {

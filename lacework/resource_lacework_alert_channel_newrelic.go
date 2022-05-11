@@ -119,7 +119,7 @@ func resourceLaceworkAlertChannelNewRelicRead(d *schema.ResourceData, meta inter
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.NewRelicInsightsAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetNewRelicInsights(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	integration := response.Data

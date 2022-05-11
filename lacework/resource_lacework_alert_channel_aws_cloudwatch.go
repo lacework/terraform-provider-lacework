@@ -135,7 +135,7 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.CloudwatchEbAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetCloudwatchEb(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, response.Data.IntgGuid)
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

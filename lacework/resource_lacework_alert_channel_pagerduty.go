@@ -116,7 +116,7 @@ func resourceLaceworkAlertChannelPagerDutyRead(d *schema.ResourceData, meta inte
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.PagerDutyApiAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetPagerDutyApi(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	integration := response.Data

@@ -150,7 +150,7 @@ func resourceLaceworkAlertChannelQRadarRead(d *schema.ResourceData, meta interfa
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.IbmQRadarAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetIbmQRadar(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	integration := response.Data

@@ -190,7 +190,7 @@ func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error 
 	log.Printf("[INFO] Reading Policy with guid %s\n", d.Id())
 	response, err := lacework.V2.Policy.Get(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.PolicyID)

@@ -114,7 +114,7 @@ func resourceLaceworkAlertChannelWebhookRead(d *schema.ResourceData, meta interf
 	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.WebhookAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetWebhook(d.Id())
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

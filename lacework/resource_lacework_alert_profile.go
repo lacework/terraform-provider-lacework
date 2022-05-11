@@ -109,7 +109,7 @@ func resourceLaceworkAlertProfileRead(d *schema.ResourceData, meta interface{}) 
 	log.Printf("[INFO] Reading alert profile with id: %s\n", d.Id())
 	err := lacework.V2.Alert.Profiles.Get(d.Id(), &response)
 	if err != nil {
-		return resourceNotFound(d, err, d.Id())
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.Guid)
