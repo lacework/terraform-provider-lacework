@@ -164,7 +164,7 @@ func resourceLaceworkIntegrationAwsGovCloudCTRead(d *schema.ResourceData, meta i
 		api.AwsGovCloudCTIntegration.String(), d.Id())
 	response, err := lacework.Integrations.GetAws(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	for _, integration := range response.Data {

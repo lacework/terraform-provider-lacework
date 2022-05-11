@@ -137,7 +137,7 @@ func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interfac
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.AwsS3AlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetAwsS3(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

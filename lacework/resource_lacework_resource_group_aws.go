@@ -1,9 +1,10 @@
 package lacework
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
 )
@@ -123,7 +124,7 @@ func resourceLaceworkResourceGroupAwsRead(d *schema.ResourceData, meta interface
 		api.AwsResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetAws(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

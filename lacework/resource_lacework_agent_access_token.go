@@ -113,7 +113,7 @@ func resourceLaceworkAgentAccessTokenRead(d *schema.ResourceData, meta interface
 	log.Printf("[INFO] Reading agent access token.")
 	response, err := lacework.Agents.GetToken(d.Get("token").(string))
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	for _, token := range response.Data {

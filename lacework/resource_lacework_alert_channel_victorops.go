@@ -113,7 +113,7 @@ func resourceLaceworkAlertChannelVictorOpsRead(d *schema.ResourceData, meta inte
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.VictorOpsAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetVictorOps(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	integration := response.Data

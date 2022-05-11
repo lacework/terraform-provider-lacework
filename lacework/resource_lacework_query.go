@@ -85,7 +85,7 @@ func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[INFO] Reading Query with guid %s\n", d.Id())
 	response, err := lacework.V2.Query.Get(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("query", response.Data.QueryText)

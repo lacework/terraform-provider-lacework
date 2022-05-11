@@ -1,9 +1,10 @@
 package lacework
 
 import (
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
-	"log"
 )
 
 func resourceLaceworkResourceGroupMachine() *schema.Resource {
@@ -128,7 +129,7 @@ func resourceLaceworkResourceGroupMachineRead(d *schema.ResourceData, meta inter
 		api.MachineResourceGroup.String(), d.Id())
 	response, err := lacework.V2.ResourceGroups.GetMachine(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.ResourceGuid)

@@ -114,7 +114,7 @@ func resourceLaceworkAlertChannelSlackRead(d *schema.ResourceData, meta interfac
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.SlackChannelAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetSlackChannel(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

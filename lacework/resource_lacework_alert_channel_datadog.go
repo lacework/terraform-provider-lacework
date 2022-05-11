@@ -159,7 +159,7 @@ func resourceLaceworkAlertChannelDatadogRead(d *schema.ResourceData, meta interf
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.DatadogAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetDatadog(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

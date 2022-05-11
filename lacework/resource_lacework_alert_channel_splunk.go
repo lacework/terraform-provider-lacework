@@ -169,7 +169,7 @@ func resourceLaceworkAlertChannelSplunkRead(d *schema.ResourceData, meta interfa
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.SplunkHecAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetSplunkHec(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	integration := response.Data

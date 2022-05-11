@@ -198,7 +198,7 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 	log.Printf("[INFO] Reading %s cloud account integration with guid: %v\n", api.AwsCtSqsCloudAccount.String(), d.Id())
 	response, err := lacework.V2.CloudAccounts.GetAwsCtSqs(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	cloudAccount := response.Data

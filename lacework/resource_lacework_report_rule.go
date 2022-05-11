@@ -361,7 +361,7 @@ func resourceLaceworkReportRuleRead(d *schema.ResourceData, meta interface{}) er
 	log.Printf("[INFO] Reading report rule with guid %s\n", d.Id())
 	err := lacework.V2.ReportRules.Get(d.Id(), &response)
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.SetId(response.Data.Guid)

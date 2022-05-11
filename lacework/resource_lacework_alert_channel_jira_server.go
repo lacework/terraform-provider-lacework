@@ -170,7 +170,7 @@ func resourceLaceworkAlertChannelJiraServerRead(d *schema.ResourceData, meta int
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.JiraAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetJira(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)

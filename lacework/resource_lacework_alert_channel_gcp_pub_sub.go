@@ -196,7 +196,7 @@ func resourceLaceworkAlertChannelGcpPubSubRead(d *schema.ResourceData, meta inte
 	log.Printf("[INFO] Reading %s integration with guid %s\n", api.GcpPubSubAlertChannelType, d.Id())
 	response, err := lacework.V2.AlertChannels.GetGcpPubSub(d.Id())
 	if err != nil {
-		return err
+		return resourceNotFound(d, err)
 	}
 
 	d.Set("name", response.Data.Name)
@@ -208,7 +208,7 @@ func resourceLaceworkAlertChannelGcpPubSubRead(d *schema.ResourceData, meta inte
 	d.Set("org_level", response.Data.IsOrg == 1)
 	d.Set("project_id", response.Data.Data.ProjectID)
 	d.Set("topic_id", response.Data.Data.TopicID)
-	d.Set("issue_grouoing", response.Data.Data.IssueGrouping)
+	d.Set("issue_grouping", response.Data.Data.IssueGrouping)
 
 	creds := make(map[string]string)
 	creds["client_id"] = response.Data.Data.Credentials.ClientID
