@@ -16,6 +16,7 @@ resource "lacework_policy" "example" {
   evaluation       = var.evaluation
   enabled          = true
   policy_id_suffix = var.policy_id_suffix
+  tags = var.tags
 
   alerting {
     enabled = false
@@ -58,6 +59,11 @@ variable "policy_id_suffix" {
   default = ""
 }
 
+variable "tags" {
+  type = list(string)
+  default = ["domain:AWS", "custom"]
+}
+
 output "title" {
   value = lacework_policy.example.title
 }
@@ -86,3 +92,6 @@ output "policy_id_suffix" {
   value = lacework_policy.example.policy_id_suffix
 }
 
+output "tags" {
+  value = lacework_policy.example.tags
+}

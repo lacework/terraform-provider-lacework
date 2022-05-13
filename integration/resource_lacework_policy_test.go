@@ -26,6 +26,7 @@ func TestPolicyCreate(t *testing.T) {
 			"description": "Policy Created via Terraform",
 			"remediation": "Please Investigate",
 			"evaluation":  "Hourly",
+			"tags":        []string{"domain:AWS", "subdomain:Cloudtrail"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -40,6 +41,7 @@ func TestPolicyCreate(t *testing.T) {
 	actualDescription := terraform.Output(t, terraformOptions, "description")
 	actualRemediation := terraform.Output(t, terraformOptions, "remediation")
 	actualEvaluation := terraform.Output(t, terraformOptions, "evaluation")
+	actualTags := terraform.Output(t, terraformOptions, "tags")
 
 	assert.Contains(t, "lql-terraform-policy", createProps.Data.Title)
 	assert.Contains(t, "high", createProps.Data.Severity)
@@ -47,6 +49,7 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Contains(t, "Policy Created via Terraform", createProps.Data.Description)
 	assert.Contains(t, "Please Investigate", createProps.Data.Remediation)
 	assert.Contains(t, "Hourly", createProps.Data.EvalFrequency)
+	assert.Equal(t, []string{"domain:AWS", "subdomain:Cloudtrail"}, createProps.Data.Tags)
 
 	assert.Equal(t, "lql-terraform-policy", actualTitle)
 	assert.Equal(t, "high", actualSeverity)
@@ -54,6 +57,7 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Equal(t, "Policy Created via Terraform", actualDescription)
 	assert.Equal(t, "Please Investigate", actualRemediation)
 	assert.Equal(t, "Hourly", actualEvaluation)
+	assert.Equal(t, "[domain:AWS subdomain:Cloudtrail]", actualTags)
 
 	// Update Policy
 	terraformOptions.Vars = map[string]interface{}{
@@ -63,6 +67,7 @@ func TestPolicyCreate(t *testing.T) {
 		"description": "Policy Created via Terraform Updated",
 		"remediation": "Please Ignore",
 		"evaluation":  "Daily",
+		"tags":        []string{"domain:AWS", "subdomain:Cloudtrail", "custom"},
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -74,6 +79,7 @@ func TestPolicyCreate(t *testing.T) {
 	actualDescription = terraform.Output(t, terraformOptions, "description")
 	actualRemediation = terraform.Output(t, terraformOptions, "remediation")
 	actualEvaluation = terraform.Output(t, terraformOptions, "evaluation")
+	actualTags = terraform.Output(t, terraformOptions, "tags")
 
 	assert.Contains(t, "lql-terraform-policy-updated", updateProps.Data.Title)
 	assert.Contains(t, "low", updateProps.Data.Severity)
@@ -81,6 +87,7 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Contains(t, "Policy Created via Terraform Updated", updateProps.Data.Description)
 	assert.Contains(t, "Please Ignore", updateProps.Data.Remediation)
 	assert.Contains(t, "Daily", updateProps.Data.EvalFrequency)
+	assert.Equal(t, []string{"custom", "domain:AWS", "subdomain:Cloudtrail"}, updateProps.Data.Tags)
 
 	assert.Equal(t, "lql-terraform-policy-updated", actualTitle)
 	assert.Equal(t, "low", actualSeverity)
@@ -88,6 +95,7 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Equal(t, "Policy Created via Terraform Updated", actualDescription)
 	assert.Equal(t, "Please Ignore", actualRemediation)
 	assert.Equal(t, "Daily", actualEvaluation)
+	assert.Equal(t, "[custom domain:AWS subdomain:Cloudtrail]", actualTags)
 }
 
 func TestPolicyCreateWithPolicyIDSuffix(t *testing.T) {
@@ -149,5 +157,4 @@ func TestPolicyCreateWithPolicyIDSuffix(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Contains(t, msg, "unable to change ID of an existing policy")
-
 }

@@ -50,6 +50,7 @@ resource "lacework_policy" "example" {
   severity    = "High"
   type        = "Violation"
   evaluation  = "Hourly"
+  tags        = ["domain:AWS", "custom"]
   enabled     = false
 
   alerting {
@@ -81,6 +82,7 @@ The following arguments are supported:
    Maximum value is `5000`. Defaults to `1000`
 * `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
 * `policy_id_suffix` - (Optional) The string appended to the end of the policy id.
+* `tags` - (Optional) A list of policy tags.
 * `alerting` - (Optional) Alerting. See [Alerting](#alerting) below for details.
 
 ### Alerting
