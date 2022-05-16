@@ -16,7 +16,7 @@ resource "lacework_policy" "example" {
   evaluation       = var.evaluation
   enabled          = true
   policy_id_suffix = var.policy_id_suffix
-  tags = var.tags
+  tags             = var.tags
 
   alerting {
     enabled = false

@@ -106,6 +106,14 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Default:     true,
 				Description: "The state of the policy",
 			},
+			"tags": {
+				Type:        schema.TypeSet,
+				Description: "A list of user specified policy tags",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"alerting": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -143,13 +151,10 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"tags": {
-				Type:        schema.TypeSet,
-				Description: "A list of policy tags",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"generated_tags": {
+				Type:        schema.TypeString,
+				Description: "All policy tags, including server generated tags",
+				Computed:    true,
 			},
 		},
 	}
@@ -186,7 +191,7 @@ func resourceLaceworkPolicyCreate(d *schema.ResourceData, meta interface{}) erro
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("tags", response.Data.Tags)
+	d.Set("generated_tags", strings.Join(response.Data.Tags, ","))
 
 	log.Printf("[INFO] Created Policy with guid %s\n", response.Data.PolicyID)
 	return nil
@@ -216,7 +221,7 @@ func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("tags", response.Data.Tags)
+	d.Set("generated_tags", strings.Join(response.Data.Tags, ","))
 
 	alerting := make(map[string]interface{})
 	alerting["enabled"] = response.Data.AlertEnabled
@@ -266,6 +271,7 @@ func resourceLaceworkPolicyUpdate(d *schema.ResourceData, meta interface{}) erro
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
+	d.Set("generated_tags", strings.Join(response.Data.Tags, ","))
 
 	log.Printf("[INFO] Updated Policy with guid %s\n", response.Data.PolicyID)
 	return nil
