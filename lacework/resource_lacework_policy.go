@@ -151,9 +151,9 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"generated_tags": {
+			"computed_tags": {
 				Type:        schema.TypeString,
-				Description: "All policy tags, including server generated tags",
+				Description: "All policy tags, server generated and user specified tags",
 				Computed:    true,
 			},
 		},
@@ -191,7 +191,7 @@ func resourceLaceworkPolicyCreate(d *schema.ResourceData, meta interface{}) erro
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("generated_tags", strings.Join(response.Data.Tags, ","))
+	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
 	log.Printf("[INFO] Created Policy with guid %s\n", response.Data.PolicyID)
 	return nil
@@ -221,7 +221,7 @@ func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("generated_tags", strings.Join(response.Data.Tags, ","))
+	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
 	alerting := make(map[string]interface{})
 	alerting["enabled"] = response.Data.AlertEnabled
@@ -271,7 +271,7 @@ func resourceLaceworkPolicyUpdate(d *schema.ResourceData, meta interface{}) erro
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("generated_tags", strings.Join(response.Data.Tags, ","))
+	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
 	log.Printf("[INFO] Updated Policy with guid %s\n", response.Data.PolicyID)
 	return nil
