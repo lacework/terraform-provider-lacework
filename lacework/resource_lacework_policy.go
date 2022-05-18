@@ -106,6 +106,14 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Default:     true,
 				Description: "The state of the policy",
 			},
+			"tags": {
+				Type:        schema.TypeSet,
+				Description: "A list of user specified policy tags",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"alerting": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -143,6 +151,11 @@ func resourceLaceworkPolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"computed_tags": {
+				Type:        schema.TypeString,
+				Description: "All policy tags, server generated and user specified tags",
+				Computed:    true,
+			},
 		},
 	}
 }
@@ -165,6 +178,7 @@ func resourceLaceworkPolicyCreate(d *schema.ResourceData, meta interface{}) erro
 		AlertEnabled:  d.Get("alerting.0.enabled").(bool),
 		AlertProfile:  d.Get("alerting.0.profile").(string),
 		PolicyID:      d.Get("policy_id_suffix").(string),
+		Tags:          castStringSlice(d.Get("tags").(*schema.Set).List()),
 	}
 
 	log.Printf("[INFO] Creating Policy with data:\n%+v\n", policy)
@@ -177,6 +191,7 @@ func resourceLaceworkPolicyCreate(d *schema.ResourceData, meta interface{}) erro
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
+	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
 	log.Printf("[INFO] Created Policy with guid %s\n", response.Data.PolicyID)
 	return nil
@@ -206,6 +221,7 @@ func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
+	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
 	alerting := make(map[string]interface{})
 	alerting["enabled"] = response.Data.AlertEnabled
@@ -242,6 +258,7 @@ func resourceLaceworkPolicyUpdate(d *schema.ResourceData, meta interface{}) erro
 		AlertEnabled:  &alertingEnabled,
 		AlertProfile:  d.Get("alerting.0.profile").(string),
 		PolicyID:      d.Id(),
+		Tags:          castStringSlice(d.Get("tags").(*schema.Set).List()),
 	}
 
 	log.Printf("[INFO] Updating Policy with data:\n%+v\n", policy)
@@ -254,6 +271,7 @@ func resourceLaceworkPolicyUpdate(d *schema.ResourceData, meta interface{}) erro
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
+	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
 	log.Printf("[INFO] Updated Policy with guid %s\n", response.Data.PolicyID)
 	return nil
