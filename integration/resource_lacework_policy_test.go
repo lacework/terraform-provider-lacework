@@ -49,7 +49,7 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Contains(t, "Policy Created via Terraform", createProps.Data.Description)
 	assert.Contains(t, "Please Investigate", createProps.Data.Remediation)
 	assert.Contains(t, "Hourly", createProps.Data.EvalFrequency)
-	assert.Equal(t, []string{"domain:AWS", "subdomain:Cloudtrail"}, createProps.Data.Tags)
+	assert.ElementsMatch(t, []string{"domain:AWS", "subdomain:Cloudtrail"}, createProps.Data.Tags)
 
 	assert.Equal(t, "lql-terraform-policy", actualTitle)
 	assert.Equal(t, "high", actualSeverity)
