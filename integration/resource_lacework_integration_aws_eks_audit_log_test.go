@@ -12,7 +12,8 @@ import (
 //
 // It uses the go-sdk to verify the created integration,
 // applies an update with new integration name and destroys it
-func TestIntegrationAwsEksAuditLog(t *testing.T) {
+//nolint
+func _TestIntegrationAwsEksAuditLog(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_aws_eks_audit_log",
 		Vars: map[string]interface{}{
