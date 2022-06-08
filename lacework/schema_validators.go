@@ -50,14 +50,14 @@ func ValidateTimeFormat(timeFormat string) schema.SchemaValidateDiagFunc {
 		v, ok := i.(string)
 		if !ok {
 			errors = append(errors, fmt.Errorf("expected type of %s to be string", k))
-			return warnings, errors
+			return
 		}
 
 		if _, err := time.Parse(timeFormat, v); err != nil {
 			errors = append(errors, fmt.Errorf("%s is not in format %s", v, timeFormat))
-			return warnings, errors
+			return
 		}
 
-		return warnings, errors
+		return
 	})
 }
