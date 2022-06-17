@@ -63,7 +63,6 @@ func TestPolicyCreate(t *testing.T) {
 	terraformOptions.Vars = map[string]interface{}{
 		"title":       "lql-terraform-policy-updated",
 		"severity":    "Low",
-		"type":        "Compliance",
 		"description": "Policy Created via Terraform Updated",
 		"remediation": "Please Ignore",
 		"evaluation":  "Daily",
@@ -83,7 +82,6 @@ func TestPolicyCreate(t *testing.T) {
 
 	assert.Contains(t, "lql-terraform-policy-updated", updateProps.Data.Title)
 	assert.Contains(t, "low", updateProps.Data.Severity)
-	assert.Contains(t, "Compliance", updateProps.Data.PolicyType)
 	assert.Contains(t, "Policy Created via Terraform Updated", updateProps.Data.Description)
 	assert.Contains(t, "Please Ignore", updateProps.Data.Remediation)
 	assert.Contains(t, "Daily", updateProps.Data.EvalFrequency)
@@ -91,7 +89,7 @@ func TestPolicyCreate(t *testing.T) {
 
 	assert.Equal(t, "lql-terraform-policy-updated", actualTitle)
 	assert.Equal(t, "low", actualSeverity)
-	assert.Equal(t, "Compliance", actualType)
+	assert.Equal(t, "Violation", actualType)
 	assert.Equal(t, "Policy Created via Terraform Updated", actualDescription)
 	assert.Equal(t, "Please Ignore", actualRemediation)
 	assert.Equal(t, "Daily", actualEvaluation)
@@ -107,7 +105,6 @@ func TestPolicyCreateWithPolicyIDSuffix(t *testing.T) {
 			"title":            "lql-terraform-policy",
 			"policy_id_suffix": suffix,
 			"severity":         "High",
-			"type":             "Compliance",
 			"description":      "Policy Created via Terraform",
 			"remediation":      "Please Investigate",
 			"evaluation":       "Hourly",
@@ -147,7 +144,6 @@ func TestPolicyCreateWithPolicyIDSuffix(t *testing.T) {
 		"title":            "lql-terraform-policy-updated",
 		"policy_id_suffix": "modified-id-suffix",
 		"severity":         "Low",
-		"type":             "Compliance",
 		"description":      "Policy Created via Terraform Updated",
 		"remediation":      "Please Ignore",
 		"evaluation":       "Daily",
