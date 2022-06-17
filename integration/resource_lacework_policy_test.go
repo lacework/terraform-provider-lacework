@@ -105,6 +105,7 @@ func TestPolicyCreateWithPolicyIDSuffix(t *testing.T) {
 			"title":            "lql-terraform-policy",
 			"policy_id_suffix": suffix,
 			"severity":         "High",
+			"type":             "Violation",
 			"description":      "Policy Created via Terraform",
 			"remediation":      "Please Investigate",
 			"evaluation":       "Hourly",
