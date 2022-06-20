@@ -77,7 +77,8 @@ output "private_key_id" {
 }
 
 output "private_key" {
-  value = lacework_integration_gcp_gke_audit_log.example.credentials[0].private_key
+  value     = lacework_integration_gcp_gke_audit_log.example.credentials[0].private_key
+  sensitive = true
 }
 
 output "integration_type" {
