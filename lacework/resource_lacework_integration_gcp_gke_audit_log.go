@@ -132,23 +132,17 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 }
 
 func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, meta interface{}) error {
-	if strings.ToUpper(
-		d.Get("integration_type").(string),
-	) == api.GcpOrganizationIntegration.String() {
-		integrationType = api.GcpOrganizationIntegration
-	}
-
 	var (
 		lacework           = meta.(*api.Client)
 		retries            = d.Get("retries").(int)
 		gcpGkeAuditLogData = api.GcpGkeAuditData{
 			Credentials: api.GcpGkeAuditCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
+				ClientId:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
 				PrivateKey:   d.Get("credentials.0.private_key").(string),
 			},
-			IntegrationType:  integrationType.String(),
+			IntegrationType:  strings.ToUpper(d.Get("integration_type").(string)),
 			OrganizationId:   d.Get("organization_id").(string),
 			ProjectId:        d.Get("project_id").(string),
 			SubscriptionName: d.Get("subscription").(string),
@@ -190,10 +184,6 @@ func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, met
 		d.Set("name", cloudAccount.Name)
 		d.Set("intg_guid", cloudAccount.IntgGuid)
 		d.Set("enabled", cloudAccount.Enabled == 1)
-		d.Set("integration_type", integration.Data.IntegrationType)
-		d.Set("organization_id", integration.Data.OrganizationId)
-		d.Set("project_id", integration.Data.ProjectId)
-		d.Set("subscription", integration.Data.SubscriptionName)
 
 		d.Set("created_or_updated_time", cloudAccount.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", cloudAccount.CreatedOrUpdatedBy)
@@ -227,10 +217,10 @@ func resourceLaceworkIntegrationGcpGkeAuditLogRead(d *schema.ResourceData, meta 
 
 		creds := make(map[string]string)
 		d.Set("credentials", []map[string]string{creds})
-		d.Set("integration_type", integration.Data.IntegrationType)
-		d.Set("organization_id", integration.Data.OrganizationId)
-		d.Set("project_id", integration.Data.ProjectId)
-		d.Set("subscription", integration.Data.SubscriptionName)
+		d.Set("integration_type", cloudAccount.Data.IntegrationType)
+		d.Set("organization_id", cloudAccount.Data.OrganizationId)
+		d.Set("project_id", cloudAccount.Data.ProjectId)
+		d.Set("subscription", cloudAccount.Data.SubscriptionName)
 
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.GcpGkeAuditCloudAccount.String(), cloudAccount.IntgGuid,
@@ -243,20 +233,16 @@ func resourceLaceworkIntegrationGcpGkeAuditLogRead(d *schema.ResourceData, meta 
 }
 
 func resourceLaceworkIntegrationGcpGkeAuditLogUpdate(d *schema.ResourceData, meta interface{}) error {
-	if strings.ToUpper(d.Get("integration_type").(string)) == api.GcpOrganizationIntegration.String() {
-		integrationType = api.GcpOrganizationIntegration
-	}
-
 	var (
 		lacework           = meta.(*api.Client)
 		gcpGkeAuditLogData = api.GcpGkeAuditData{
 			Credentials: api.GcpGkeAuditCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
+				ClientId:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+				PrivateKeyId: d.Get("credentials.0.private_key_id").(string),
 				PrivateKey:   d.Get("credentials.0.private_key").(string),
 			},
-			IntegrationType:  integrationType.String(),
+			IntegrationType:  strings.ToUpper(d.Get("integration_type").(string)),
 			OrganizationId:   d.Get("organization_id").(string),
 			ProjectId:        d.Get("project_id").(string),
 			SubscriptionName: d.Get("subscription").(string),
