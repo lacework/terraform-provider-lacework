@@ -85,26 +85,24 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 	},
 	"integration_type": {
 		Type:     schema.TypeString,
-		Optional: true,
-		Default:  api.GcpProjectIntegration.String(),
+		Required: true,
 		StateFunc: func(val interface{}) string {
 			return strings.ToUpper(val.(string))
 		},
 		ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 			switch strings.ToUpper(value.(string)) {
-			case api.GcpProjectIntegration.String(), api.GcpOrganizationIntegration.String():
+			case "PROJECT", "ORGANIZATION":
 				return nil, nil
 			default:
 				return nil, []error{
-					fmt.Errorf("%s: can only be either '%s' or '%s'",
-						key, api.GcpProjectIntegration.String(), api.GcpOrganizationIntegration.String()),
+					fmt.Errorf("%s: can only be either 'PROJECT' or 'ORGANIZATION'", key),
 				}
 			}
 		},
 	},
 	"organization_id": {
 		Type:        schema.TypeString,
-		Required:    true,
+		Optional:    true,
 		Description: "The GCP Organization ID (required when integration_type is organization).",
 	},
 	"project_id": {
