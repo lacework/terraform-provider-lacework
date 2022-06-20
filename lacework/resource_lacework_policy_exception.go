@@ -1,13 +1,14 @@
 package lacework
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
+	"github.com/pkg/errors"
 )
 
 func resourceLaceworkPolicyException() *schema.Resource {
@@ -22,20 +23,41 @@ func resourceLaceworkPolicyException() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"policyID": {
+			"policy_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The id of the policy the exception is associated with",
+				Description: "The id of the policy the exception is associated",
 			},
 			"description": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The description of the query",
+				Description: "The description of the policy exception",
 			},
-			"constraints": {
-				Type:        schema.TypeString,
+			"constraint": {
+				Type:        schema.TypeSet,
+				MinItems:    1,
 				Required:    true,
-				Description: "The description of the query",
+				Description: "The list of constraints",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"field_key": {
+							Type:        schema.TypeString,
+							Description: "The field key",
+							Required:    true,
+						},
+						"field_values": {
+							Type:        schema.TypeList,
+							Description: "The field values",
+							Required:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+								StateFunc: func(val interface{}) string {
+									return strings.TrimSpace(val.(string))
+								},
+							},
+						},
+					},
+				},
 			},
 			"id": {
 				Type:     schema.TypeString,
@@ -55,146 +77,142 @@ func resourceLaceworkPolicyException() *schema.Resource {
 
 func resourceLaceworkPolicyExceptionCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
+		lacework   = meta.(*api.Client)
+		policyID   = d.Get("policy_id").(string)
+		contraints []api.PolicyExceptionConstraint
 	)
 
-	policy := api.NewPolicy{
-		PolicyType:    d.Get("type").(string),
-		QueryID:       d.Get("query_id").(string),
-		Title:         d.Get("title").(string),
-		Enabled:       d.Get("enabled").(bool),
-		Description:   d.Get("description").(string),
-		Remediation:   d.Get("remediation").(string),
-		Severity:      d.Get("severity").(string),
-		Limit:         d.Get("limit").(int),
-		EvalFrequency: d.Get("evaluation").(string),
-		AlertEnabled:  d.Get("alerting.0.enabled").(bool),
-		AlertProfile:  d.Get("alerting.0.profile").(string),
-		PolicyID:      d.Get("policy_id_suffix").(string),
-		Tags:          castStringSlice(d.Get("tags").(*schema.Set).List()),
+	err := castSchemaSetToConstraintArray(d, "constraint", &contraints)
+
+	exception := api.PolicyException{
+		Description: d.Get("description").(string),
+		Constraints: contraints,
 	}
 
-	log.Printf("[INFO] Creating Policy with data:\n%+v\n", policy)
-	response, err := lacework.V2.Policy.Create(policy)
+	log.Printf("[INFO] Creating Policy Exception with data:\n%+v\n", exception)
+	response, err := lacework.V2.PolicyExceptions.Create(policyID, exception)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(response.Data.PolicyID)
-	d.Set("owner", response.Data.Owner)
+	d.SetId(response.Data.ExceptionID)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
-	log.Printf("[INFO] Created Policy with guid %s\n", response.Data.PolicyID)
+	log.Printf("[INFO] Created Policy Exception with guid %s\n", response.Data.ExceptionID)
 	return nil
 }
 
-func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkPolicyExceptionRead(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
+		response api.PolicyExceptionResponse
 	)
 
 	log.Printf("[INFO] Reading Policy with guid %s\n", d.Id())
-	response, err := lacework.V2.Policy.Get(d.Id())
+	err := lacework.V2.PolicyExceptions.Get(d.Get("policy_id").(string), d.Id(), &response)
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
 
-	d.SetId(response.Data.PolicyID)
-	d.Set("title", response.Data.Title)
-	d.Set("query_id", response.Data.QueryID)
-	d.Set("enabled", response.Data.Enabled)
+	d.SetId(response.Data.ExceptionID)
 	d.Set("description", response.Data.Description)
-	d.Set("evaluation", response.Data.EvalFrequency)
-	d.Set("severity", response.Data.Severity)
-	d.Set("remediation", response.Data.Remediation)
-	d.Set("limit", response.Data.Limit)
-	d.Set("type", response.Data.PolicyType)
-	d.Set("owner", response.Data.Owner)
+	d.Set("constraint", response.Data.Constraints)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
-	alerting := make(map[string]interface{})
-	alerting["enabled"] = response.Data.AlertEnabled
-	alerting["profile"] = response.Data.AlertProfile
-	d.Set("alerting", alerting)
-
-	log.Printf("[INFO] Read Policy with guid %s\n", response.Data.PolicyID)
+	log.Printf("[INFO] Read Policy Exception with guid %s\n", response.Data.ExceptionID)
 	return nil
 }
 
-func resourceLaceworkPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkPolicyExceptionUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
+		lacework    = meta.(*api.Client)
+		constraints []api.PolicyExceptionConstraint
+		policyID    = d.Get("policy_id").(string)
 	)
 
-	if d.HasChange("policy_id_suffix") {
-		return errors.New("unable to change ID of an existing policy")
-	}
-
-	policyEnabled := d.Get("enabled").(bool)
-	alertingEnabled := d.Get("alerting.0.enabled").(bool)
-	policyLimit := d.Get("limit").(int)
-
-	policy := api.UpdatePolicy{
-		PolicyType:    d.Get("type").(string),
-		QueryID:       d.Get("query_id").(string),
-		Title:         d.Get("title").(string),
-		Enabled:       &policyEnabled,
-		Description:   d.Get("description").(string),
-		Remediation:   d.Get("remediation").(string),
-		Severity:      d.Get("severity").(string),
-		Limit:         &policyLimit,
-		EvalFrequency: d.Get("evaluation").(string),
-		AlertEnabled:  &alertingEnabled,
-		AlertProfile:  d.Get("alerting.0.profile").(string),
-		PolicyID:      d.Id(),
-		Tags:          castStringSlice(d.Get("tags").(*schema.Set).List()),
-	}
-
-	log.Printf("[INFO] Updating Policy with data:\n%+v\n", policy)
-	response, err := lacework.V2.Policy.Update(policy)
+	err := castSchemaSetToConstraintArray(d, "constraint", &constraints)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(response.Data.PolicyID)
-	d.Set("owner", response.Data.Owner)
+	exception := api.PolicyException{
+		Description: d.Get("description").(string),
+		Constraints: constraints,
+	}
+
+	log.Printf("[INFO] Updating Policy Exception with data:\n%+v\n", exception)
+	response, err := lacework.V2.PolicyExceptions.Update(policyID, exception)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(response.Data.ExceptionID)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
-	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
 
-	log.Printf("[INFO] Updated Policy with guid %s\n", response.Data.PolicyID)
+	log.Printf("[INFO] Updated Policy Exception with guid %s\n", response.Data.ExceptionID)
 	return nil
 }
 
-func resourceLaceworkPolicyDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkPolicyExceptionDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting Policy with guid %s\n", d.Id())
-	_, err := lacework.V2.Policy.Delete(d.Id())
+	err := lacework.V2.PolicyExceptions.Delete(d.Get("policy_id").(string), d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted Policy with guid %s\n", d.Id())
+	log.Printf("[INFO] Deleted Policy Exception with guid %s\n", d.Id())
 	return nil
 }
 
-func importLaceworkPolicy(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkPolicyException(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	var response api.PolicyExceptionResponse
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Importing Lacework Policy with guid: %s\n", d.Id())
+	log.Printf("[INFO] Importing Lacework Policy Exception with guid: %s\n", d.Id())
 
-	response, err := lacework.V2.Policy.Get(d.Id())
+	err := lacework.V2.PolicyExceptions.Get(d.Get("policy_id").(string), d.Id(), &response)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"unable to import Lacework resource. Policy with guid '%s' was not found",
+			"unable to import Lacework resource. Policy Exception with guid '%s' was not found",
 			d.Id(),
 		)
 	}
-	log.Printf("[INFO] Policy found with guid: %s\n", response.Data.PolicyID)
+	log.Printf("[INFO] Policy Exception found with guid: %s\n", response.Data.ExceptionID)
 	return []*schema.ResourceData{d}, nil
+}
+
+func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string, templateList *[]api.PolicyExceptionConstraint) (err error) {
+	var (
+		t    api.PolicyExceptionConstraint
+		list []any
+	)
+
+	if d.Get(attr) == nil {
+		return errors.Errorf("attribute %s not found", attr)
+	}
+
+	list = d.Get(attr).(*schema.Set).List()
+	for _, item := range list {
+		iMap, ok := item.(map[string]interface{})
+		if !ok {
+			log.Printf("[WARN] unable to cast alert template %v", item)
+			continue
+		}
+		val := sanitizeAlertTemplateKeys(iMap)
+		v, err := json.Marshal(val)
+		if err != nil {
+			return errors.New("failed to marshall constraint attribute")
+		}
+		err = json.Unmarshal(v, &t)
+		if err != nil {
+			return errors.New("failed to unmarshall constraint attribute")
+		}
+		*templateList = append(*templateList, t)
+	}
+	return
 }
