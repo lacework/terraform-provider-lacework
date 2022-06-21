@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -270,6 +271,16 @@ func GetSpecificIDFromTerraResults(i int, result string) string {
 	return ""
 }
 
+// GetSpecificFieldFromTerraResults returns the specific index field found in the Terraform output
+func GetSpecificFieldFromTerraResults(i int, result string, field string) string {
+	re := regexp.MustCompile(fmt.Sprintf(`\[%s=(.*?)\]`, field))
+	match := re.FindAllStringSubmatch(result, -1)
+	if len(match) >= i {
+		return match[i-1][1]
+	}
+	return ""
+}
+
 // GetIDFromTerraResults returns the first id found in the Terraform output
 func GetIDFromTerraResults(result string) string {
 	return GetSpecificIDFromTerraResults(1, result)
@@ -293,4 +304,15 @@ func GetPolicyProps(result string) api.PolicyResponse {
 		log.Fatalf("Unable to retrieve policy with id: %s", id)
 	}
 	return resp
+}
+
+func GetPolicyExceptionProps(result string) (resp api.PolicyExceptionResponse) {
+	id := GetSpecificIDFromTerraResults(1, result)
+	policyID := GetSpecificFieldFromTerraResults(1, result, "policy_id")
+
+	err := LwClient.V2.PolicyExceptions.Get(policyID, id, &resp)
+	if err != nil {
+		log.Fatalf("Unable to retrieve policy exception with id: %s", id)
+	}
+	return
 }

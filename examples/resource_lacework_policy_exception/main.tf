@@ -25,6 +25,6 @@ variable "description" {
   default = "Policy Exception Created via Terraform"
 }
 
-output "lacework_policy_exception" {
+output "description" {
   value = lacework_policy_exception.example.description
 }
