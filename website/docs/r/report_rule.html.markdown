@@ -35,7 +35,7 @@ resource "lacework_report_rule" "example" {
 
 #### Report Rule with Gcp Compliance Reports and Gcp Resource Group
 ```hcl
-resource "lacework_report_channel_email" "team_email" {
+resource "lacework_alert_channel_email" "team_email" {
   name       = "Team Emails"
   recipients = ["foo@example.com", "bar@example.com"]
 }
