@@ -8,7 +8,7 @@ import (
 )
 
 func notFound(err error) bool {
-	return strings.Contains(err.Error(), "404")
+	return strings.Contains(err.Error(), "[404]")
 }
 
 func resourceNotFound(d *schema.ResourceData, err error) error {
