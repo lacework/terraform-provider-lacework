@@ -19,7 +19,7 @@ func resourceLaceworkPolicyException() *schema.Resource {
 		Delete: resourceLaceworkPolicyExceptionDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkPolicy,
+			State: importLaceworkPolicyException,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -200,7 +200,7 @@ func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string, templat
 	for _, item := range list {
 		iMap, ok := item.(map[string]interface{})
 		if !ok {
-			log.Printf("[WARN] unable to cast alert template %v", item)
+			log.Printf("[WARN] unable to cast constraint %v", item)
 			continue
 		}
 		val := sanitizeAlertTemplateKeys(iMap)

@@ -10,7 +10,7 @@ resource "lacework_policy_exception" "example" {
   policy_id   = var.policyID
   description = var.description
   constraint {
-    field_key   = "accountIds"
+    field_key    = "accountIds"
     field_values = ["*"]
   }
 }
