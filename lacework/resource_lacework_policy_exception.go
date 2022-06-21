@@ -77,16 +77,16 @@ func resourceLaceworkPolicyException() *schema.Resource {
 
 func resourceLaceworkPolicyExceptionCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework   = meta.(*api.Client)
-		policyID   = d.Get("policy_id").(string)
-		contraints []api.PolicyExceptionConstraint
+		lacework    = meta.(*api.Client)
+		policyID    = d.Get("policy_id").(string)
+		constraints []api.PolicyExceptionConstraint
 	)
 
-	err := castSchemaSetToConstraintArray(d, "constraint", &contraints)
+	err := castSchemaSetToConstraintArray(d, "constraint", &constraints)
 
 	exception := api.PolicyException{
 		Description: d.Get("description").(string),
-		Constraints: contraints,
+		Constraints: constraints,
 	}
 
 	log.Printf("[INFO] Creating Policy Exception with data:\n%+v\n", exception)
