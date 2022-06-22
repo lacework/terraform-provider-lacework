@@ -74,7 +74,7 @@ The following arguments are supported:
 * `query_id` - (Required) The query id.
 * `severity` - (Required) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
-* `type` - (Required) The policy type must be either `Violation` or `Summary`.
+* `type` - (Required) The policy type must be `Violation`.
 * `evaluation` - (Optional) The evaluation frequency at which the policy will be evaluated. Valid values are
   `Hourly` or `Daily`. Defaults to `Hourly`.
 * `remediation` - (Optional) The remediation message to display.
