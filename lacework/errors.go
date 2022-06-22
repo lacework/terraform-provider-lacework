@@ -1,16 +1,14 @@
 package lacework
 
 import (
-	"errors"
 	"log"
+	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func notFound(err error) bool {
-	var e *resource.NotFoundError
-	return errors.As(err, &e)
+	return strings.Contains(err.Error(), "[404]")
 }
 
 func resourceNotFound(d *schema.ResourceData, err error) error {
