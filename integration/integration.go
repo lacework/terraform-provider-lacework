@@ -310,7 +310,7 @@ func GetPolicyExceptionProps(result string) (resp api.PolicyExceptionResponse) {
 	id := GetSpecificIDFromTerraResults(1, result)
 	policyID := GetSpecificFieldFromTerraResults(1, result, "policy_id")
 
-	err := LwClient.V2.PolicyExceptions.Get(policyID, id, &resp)
+	err := LwClient.V2.Policy.Exceptions.Get(policyID, id, &resp)
 	if err != nil {
 		log.Fatalf("Unable to retrieve policy exception with id: %s", id)
 	}

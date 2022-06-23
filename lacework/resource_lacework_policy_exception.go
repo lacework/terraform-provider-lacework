@@ -90,7 +90,7 @@ func resourceLaceworkPolicyExceptionCreate(d *schema.ResourceData, meta interfac
 	}
 
 	log.Printf("[INFO] Creating Policy Exception with data:\n%+v\n", exception)
-	response, err := lacework.V2.PolicyExceptions.Create(policyID, exception)
+	response, err := lacework.V2.Policy.Exceptions.Create(policyID, exception)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func resourceLaceworkPolicyExceptionRead(d *schema.ResourceData, meta interface{
 	)
 
 	log.Printf("[INFO] Reading Policy with guid %s\n", d.Id())
-	err := lacework.V2.PolicyExceptions.Get(d.Get("policy_id").(string), d.Id(), &response)
+	err := lacework.V2.Policy.Exceptions.Get(d.Get("policy_id").(string), d.Id(), &response)
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
@@ -143,7 +143,7 @@ func resourceLaceworkPolicyExceptionUpdate(d *schema.ResourceData, meta interfac
 	}
 
 	log.Printf("[INFO] Updating Policy Exception with data:\n%+v\n", exception)
-	response, err := lacework.V2.PolicyExceptions.Update(policyID, exception)
+	response, err := lacework.V2.Policy.Exceptions.Update(policyID, exception)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func resourceLaceworkPolicyExceptionDelete(d *schema.ResourceData, meta interfac
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting Policy with guid %s\n", d.Id())
-	err := lacework.V2.PolicyExceptions.Delete(d.Get("policy_id").(string), d.Id())
+	err := lacework.V2.Policy.Exceptions.Delete(d.Get("policy_id").(string), d.Id())
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func importLaceworkPolicyException(d *schema.ResourceData, meta interface{}) ([]
 
 	log.Printf("[INFO] Importing Lacework Policy Exception with guid: %s\n", d.Id())
 
-	err := lacework.V2.PolicyExceptions.Get(d.Get("policy_id").(string), d.Id(), &response)
+	err := lacework.V2.Policy.Exceptions.Get(d.Get("policy_id").(string), d.Id(), &response)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"unable to import Lacework resource. Policy Exception with guid '%s' was not found",
