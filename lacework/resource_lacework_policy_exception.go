@@ -83,7 +83,9 @@ func resourceLaceworkPolicyExceptionCreate(d *schema.ResourceData, meta interfac
 	)
 
 	err := castSchemaSetToConstraintArray(d, "constraint", &constraints)
-
+	if err != nil {
+		return err
+	}
 	exception := api.PolicyException{
 		Description: d.Get("description").(string),
 		Constraints: constraints,
