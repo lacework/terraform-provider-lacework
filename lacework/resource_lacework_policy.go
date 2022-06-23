@@ -51,15 +51,15 @@ func resourceLaceworkPolicy() *schema.Resource {
 			"type": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "The policy type must be either 'Violation' or 'Summary'",
+				Description: "The policy type must be 'Violation'",
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch value.(string) {
-					case "Violation", "Summary":
+					case "Violation":
 						return nil, nil
 					default:
 						return nil, []error{
 							fmt.Errorf(
-								"%s: can only be 'Violation' or 'Summary'", key,
+								"%s: can only be 'Violation'", key,
 							),
 						}
 					}
