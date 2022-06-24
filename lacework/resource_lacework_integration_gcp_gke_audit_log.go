@@ -72,8 +72,8 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 						// does NOT return the private key configured in the Lacework server. So if
 						// any other element changed from the credentials then we trigger a diff
 						return !d.HasChanges(
-							"name", "integration_id", "project_id", "organization_id",
-							"subscription", "org_level", "enabled",
+							"name", "integration_type", "project_id", "organization_id",
+							"subscription", "enabled",
 							"credentials.0.client_id",
 							"credentials.0.private_key_id",
 							"credentials.0.client_email",
