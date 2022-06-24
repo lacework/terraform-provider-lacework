@@ -23,8 +23,8 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 				"private_key_id":   gcreds.PrivateKeyID,
 				"private_key":      gcreds.PrivateKey,
 				"integration_type": "PROJECT",
-				"project_id":       "example_project_id",
-				"subscription":     "projects/example-project-id/subscriptions/example-subscription",
+				"project_id":       gcreds.ProjectID,
+				"subscription":     "projects/techally-hipstershop-275821/topics/gcp-gke-audit-log-subscription",
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
@@ -48,8 +48,8 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		assert.Equal(t, "", actualPrivateKey)
 		assert.Equal(t, gcreds.PrivateKeyID, actualPrivateKeyId)
 		assert.Equal(t, "PROJECT", actualIntegrationType)
-		assert.Equal(t, "example_project_id", actualProjectId)
-		assert.Equal(t, "projects/example-project-id/subscriptions/example-subscription", actualSubscription)
+		assert.Equal(t, gcreds.ProjectID, actualProjectId)
+		assert.Equal(t, "projects/techally-hipstershop-275821/topics/gcp-gke-audit-log-subscription", actualSubscription)
 
 		// Update GcpGkeAudit Integration
 		terraformOptions.Vars = map[string]interface{}{
@@ -59,8 +59,8 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 			"private_key_id":   gcreds.PrivateKeyID,
 			"private_key":      gcreds.PrivateKey,
 			"integration_type": "PROJECT",
-			"project_id":       "example_project_id",
-			"subscription":     "projects/example-project-id/subscriptions/example-subscription",
+			"project_id":       gcreds.ProjectID,
+			"subscription":     "projects/techally-hipstershop-275821/topics/gcp-gke-audit-log-subscription",
 		}
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -83,7 +83,7 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		assert.Equal(t, "", actualPrivateKey)
 		assert.Equal(t, "", actualPrivateKeyId)
 		assert.Equal(t, "PROJECT", actualIntegrationType)
-		assert.Equal(t, "example_project_id", actualProjectId)
-		assert.Equal(t, "projects/example-project-id/subscriptions/example-subscription", actualSubscription)
+		assert.Equal(t, gcreds.ProjectID, actualProjectId)
+		assert.Equal(t, "projects/techally-hipstershop-275821/topics/gcp-gke-audit-log-subscription", actualSubscription)
 	}
 }
