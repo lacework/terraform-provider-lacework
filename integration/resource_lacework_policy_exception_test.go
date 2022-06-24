@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/lacework/go-sdk/api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,9 +16,10 @@ func TestPolicyExceptionCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_policy_exception",
 		Vars: map[string]interface{}{
-			"policy_id":   "lacework-global-46",
-			"description": "Policy Exception Created via Terraform",
-			"constraints": []api.PolicyExceptionConstraint{{FieldKey: "accountIds", FieldValues: []string{"*"}}},
+			"policy_id":    "lacework-global-46",
+			"description":  "Policy Exception Created via Terraform",
+			"field_key":    "accountIds",
+			"field_values": []string{"*"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -36,9 +36,10 @@ func TestPolicyExceptionCreate(t *testing.T) {
 
 	// Update Policy Exception
 	terraformOptions.Vars = map[string]interface{}{
-		"policy_id":   "lacework-global-46",
-		"description": "Policy Exception Created via Terraform Updated",
-		"constraints": []api.PolicyExceptionConstraint{{FieldKey: "accountIds", FieldValues: []string{"*"}}},
+		"policy_id":    "lacework-global-46",
+		"description":  "Policy Exception Created via Terraform Updated",
+		"field_key":    "accountIds",
+		"field_values": []string{"*"},
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
