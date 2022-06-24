@@ -142,6 +142,7 @@ func resourceLaceworkPolicyExceptionUpdate(d *schema.ResourceData, meta interfac
 	exception := api.PolicyException{
 		Description: d.Get("description").(string),
 		Constraints: constraints,
+		ExceptionID: d.Id(),
 	}
 
 	log.Printf("[INFO] Updating Policy Exception with data:\n%+v\n", exception)

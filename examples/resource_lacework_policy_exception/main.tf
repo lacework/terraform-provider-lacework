@@ -36,3 +36,7 @@ variable "description" {
 output "description" {
   value = lacework_policy_exception.example.description
 }
+
+output "policy_id" {
+  value = lacework_policy_exception.example.policy_id
+}

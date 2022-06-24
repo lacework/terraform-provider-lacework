@@ -26,9 +26,9 @@ func TestPolicyExceptionCreate(t *testing.T) {
 
 	// Create new Policy Exception
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	createProps := GetPolicyExceptionProps(create)
-
 	actualDescription := terraform.Output(t, terraformOptions, "description")
+	actualPolicyID := terraform.Output(t, terraformOptions, "policy_id")
+	createProps := GetPolicyExceptionProps(create, actualPolicyID)
 
 	assert.Contains(t, "Policy Exception Created via Terraform", createProps.Data.Description)
 
@@ -43,7 +43,7 @@ func TestPolicyExceptionCreate(t *testing.T) {
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
-	updateProps := GetPolicyExceptionProps(update)
+	updateProps := GetPolicyExceptionProps(update, actualPolicyID)
 
 	actualDescription = terraform.Output(t, terraformOptions, "description")
 
