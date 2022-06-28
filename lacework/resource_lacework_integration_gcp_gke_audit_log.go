@@ -124,7 +124,7 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 	"subscription": {
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The PubSub Subscription ARN.",
+		Description: "The PubSub Subscription.",
 	},
 	"is_org": {
 		Type:     schema.TypeBool,
