@@ -18,6 +18,7 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_gcp_gke_audit_log",
 			Vars: map[string]interface{}{
+				"name":             "GCP GKE audit log integration example",
 				"client_id":        gcreds.ClientID,
 				"client_email":     gcreds.ClientEmail,
 				"private_key_id":   gcreds.PrivateKeyID,
@@ -33,8 +34,6 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		actualClientId := terraform.Output(t, terraformOptions, "client_id")
 		actualClientEmail := terraform.Output(t, terraformOptions, "client_email")
-		actualPrivateKey := terraform.Output(t, terraformOptions, "private_key")
-		actualPrivateKeyId := terraform.Output(t, terraformOptions, "private_key_id")
 		actualIntegrationType := terraform.Output(t, terraformOptions, "integration_type")
 		actualProjectId := terraform.Output(t, terraformOptions, "project_id")
 		actualSubscription := terraform.Output(t, terraformOptions, "subscription")
@@ -45,8 +44,6 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		)
 		assert.Equal(t, gcreds.ClientID, actualClientId)
 		assert.Equal(t, gcreds.ClientEmail, actualClientEmail)
-		assert.Equal(t, "", actualPrivateKey)
-		assert.Equal(t, gcreds.PrivateKeyID, actualPrivateKeyId)
 		assert.Equal(t, "PROJECT", actualIntegrationType)
 		assert.Equal(t, gcreds.ProjectID, actualProjectId)
 		assert.Equal(t, "projects/techally-hipstershop-275821/subscriptions/gcp-gke-audit-log-subscription", actualSubscription)
@@ -66,8 +63,6 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		actualClientId = terraform.Output(t, terraformOptions, "client_id")
 		actualClientEmail = terraform.Output(t, terraformOptions, "client_email")
-		actualPrivateKey = terraform.Output(t, terraformOptions, "private_key")
-		actualPrivateKeyId = terraform.Output(t, terraformOptions, "private_key_id")
 		actualIntegrationType = terraform.Output(t, terraformOptions, "integration_type")
 		actualProjectId = terraform.Output(t, terraformOptions, "project_id")
 		actualSubscription = terraform.Output(t, terraformOptions, "subscription")
@@ -78,10 +73,6 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		)
 		assert.Equal(t, gcreds.ClientID, actualClientId)
 		assert.Equal(t, gcreds.ClientEmail, actualClientEmail)
-		assert.Equal(t, "", actualPrivateKey)
-		assert.Equal(t, gcreds.PrivateKeyID, actualPrivateKeyId)
-		assert.Equal(t, "", actualPrivateKey)
-		assert.Equal(t, "", actualPrivateKeyId)
 		assert.Equal(t, "PROJECT", actualIntegrationType)
 		assert.Equal(t, gcreds.ProjectID, actualProjectId)
 		assert.Equal(t, "projects/techally-hipstershop-275821/subscriptions/gcp-gke-audit-log-subscription", actualSubscription)

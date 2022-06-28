@@ -56,8 +56,20 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 					Required: true,
 				},
 				"private_key_id": {
-					Type:     schema.TypeString,
-					Required: true,
+					Type:      schema.TypeString,
+					Required:  true,
+					Sensitive: true,
+					DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+						// @afiune we can't compare this element since our API, for security reasons,
+						// does NOT return the private key configured in the Lacework server. So if
+						// any other element changed from the credentials then we trigger a diff
+						return !d.HasChanges(
+							"name", "integration_type", "project_id", "organization_id",
+							"subscription", "enabled",
+							"credentials.0.client_id",
+							"credentials.0.client_email",
+						)
+					},
 				},
 				"client_email": {
 					Type:     schema.TypeString,
@@ -75,7 +87,6 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 							"name", "integration_type", "project_id", "organization_id",
 							"subscription", "enabled",
 							"credentials.0.client_id",
-							"credentials.0.private_key_id",
 							"credentials.0.client_email",
 						)
 					},
@@ -113,7 +124,7 @@ var gcpGkeAuditLogIntegrationSchema = map[string]*schema.Schema{
 	"subscription": {
 		Type:        schema.TypeString,
 		Required:    true,
-		Description: "The SNS ARN.",
+		Description: "The PubSub Subscription ARN.",
 	},
 	"is_org": {
 		Type:     schema.TypeBool,
@@ -214,6 +225,9 @@ func resourceLaceworkIntegrationGcpGkeAuditLogRead(d *schema.ResourceData, meta 
 		d.Set("org_level", cloudAccount.IsOrg == 1)
 
 		creds := make(map[string]string)
+		creds["client_id"] = response.Data.Data.Credentials.ClientId
+		creds["client_email"] = response.Data.Data.Credentials.ClientEmail
+
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("integration_type", cloudAccount.Data.IntegrationType)
 		d.Set("organization_id", cloudAccount.Data.OrganizationId)

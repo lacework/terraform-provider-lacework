@@ -72,15 +72,6 @@ output "client_email" {
   value = lacework_integration_gcp_gke_audit_log.example.credentials[0].client_email
 }
 
-output "private_key_id" {
-  value = lacework_integration_gcp_gke_audit_log.example.credentials[0].private_key_id
-}
-
-output "private_key" {
-  value     = lacework_integration_gcp_gke_audit_log.example.credentials[0].private_key
-  sensitive = true
-}
-
 output "integration_type" {
   value = lacework_integration_gcp_gke_audit_log.example.integration_type
 }
