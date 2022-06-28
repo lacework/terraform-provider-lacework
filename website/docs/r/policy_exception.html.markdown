@@ -47,5 +47,5 @@ The following arguments are supported:
 A Lacework policy can be imported using a `POLICY_ID` and `EXCEPTION_ID`, e.g.
 
 ```
-$ terraform import lacework_policy_exception.example YourLQLPolicyID ab1234c5-de6f-789g-1234-5hi6789jk1lm
+$ terraform import lacework_policy_exception.example YourLQLPolicyID YourExceptionID
 ```
