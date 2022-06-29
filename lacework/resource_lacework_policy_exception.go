@@ -48,11 +48,30 @@ func resourceLaceworkPolicyException() *schema.Resource {
 						"field_values": {
 							Type:        schema.TypeList,
 							Description: "The field values",
-							Required:    true,
+							Optional:    true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 								StateFunc: func(val interface{}) string {
 									return strings.TrimSpace(val.(string))
+								},
+							},
+						},
+						"field_value_map": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "A list of key value pairs to filter the policy exception",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:        schema.TypeString,
+										Description: "The values map key",
+										Required:    true,
+									},
+									"value": {
+										Type:        schema.TypeString,
+										Description: "The values map value",
+										Required:    true,
+									},
 								},
 							},
 						},
@@ -77,12 +96,11 @@ func resourceLaceworkPolicyException() *schema.Resource {
 
 func resourceLaceworkPolicyExceptionCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework    = meta.(*api.Client)
-		policyID    = d.Get("policy_id").(string)
-		constraints []api.PolicyExceptionConstraint
+		lacework = meta.(*api.Client)
+		policyID = d.Get("policy_id").(string)
 	)
 
-	err := castSchemaSetToConstraintArray(d, "constraint", &constraints)
+	constraints, err := castSchemaSetToConstraintArray(d, "constraint")
 	if err != nil {
 		return err
 	}
@@ -129,12 +147,11 @@ func resourceLaceworkPolicyExceptionRead(d *schema.ResourceData, meta interface{
 
 func resourceLaceworkPolicyExceptionUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework    = meta.(*api.Client)
-		constraints []api.PolicyExceptionConstraint
-		policyID    = d.Get("policy_id").(string)
+		lacework = meta.(*api.Client)
+		policyID = d.Get("policy_id").(string)
 	)
 
-	err := castSchemaSetToConstraintArray(d, "constraint", &constraints)
+	constraints, err := castSchemaSetToConstraintArray(d, "constraint")
 	if err != nil {
 		return err
 	}
@@ -189,14 +206,13 @@ func importLaceworkPolicyException(d *schema.ResourceData, meta interface{}) ([]
 	return []*schema.ResourceData{d}, nil
 }
 
-func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string, templateList *[]api.PolicyExceptionConstraint) (err error) {
+func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string) (constraints []api.PolicyExceptionConstraint, err error) {
 	var (
-		t    api.PolicyExceptionConstraint
 		list []any
 	)
 
 	if d.Get(attr) == nil {
-		return errors.Errorf("attribute %s not found", attr)
+		return nil, errors.Errorf("attribute %s not found", attr)
 	}
 
 	list = d.Get(attr).(*schema.Set).List()
@@ -206,16 +222,44 @@ func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string, templat
 			log.Printf("[WARN] unable to cast constraint %v", item)
 			continue
 		}
-		val := sanitizeAlertTemplateKeys(iMap)
+
+		val := sanitizeConstraintKeys(iMap)
+		if _, ok := val["fieldValues"]; ok {
+			delete(val, "fieldvalues")
+		}
+
 		v, err := json.Marshal(val)
 		if err != nil {
-			return errors.New("failed to marshall constraint attribute")
+			return nil, errors.New("failed to marshall constraint attribute")
 		}
+		var t api.PolicyExceptionConstraint
 		err = json.Unmarshal(v, &t)
 		if err != nil {
-			return errors.New("failed to unmarshall constraint attribute")
+			return nil, errors.New("failed to unmarshall constraint attribute")
 		}
-		*templateList = append(*templateList, t)
+		constraints = append(constraints, t)
 	}
 	return
+}
+
+func sanitizeConstraintKeys(itemMap map[string]any) map[string]any {
+	var newMap = make(map[string]any)
+	var constraintMapList []any
+	for k, v := range itemMap {
+		if k == "field_value_map" {
+			list := v.(*schema.Set).List()
+			if len(list) > 0 {
+				for _, item := range list {
+					constraintMapList = append(constraintMapList, item)
+				}
+				newMap["fieldValues"] = constraintMapList
+				continue
+			}
+		}
+		newKey := strings.Replace(k, "_", "", -1)
+		if newKey != "fieldvaluemap" {
+			newMap[newKey] = v
+		}
+	}
+	return newMap
 }

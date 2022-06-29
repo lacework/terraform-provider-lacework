@@ -7,11 +7,19 @@ terraform {
 }
 
 resource "lacework_policy_exception" "example" {
-  policy_id   = var.policy_id
+  policy_id   = "lacework-global-39"
   description = var.description
   constraint {
-    field_key    = var.field_key
-    field_values = var.field_values
+    field_key    = "accountIds"
+    field_values = ["*"]
+  }
+
+  constraint {
+    field_key    = "resourceNames"
+    field_value_map {
+      key = "test"
+      value = "test"
+    }
   }
 }
 
