@@ -76,5 +76,22 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 		assert.Equal(t, "PROJECT", actualIntegrationType)
 		assert.Equal(t, gcreds.ProjectID, actualProjectId)
 		assert.Equal(t, "projects/techally-hipstershop-275821/subscriptions/gcp-gke-audit-log-subscription", actualSubscription)
+
+		// Update GcpGkeAudit with invalid configuration
+		terraformOptions.Vars = map[string]interface{}{
+			"name":             "GcpGkeAudit log integration updated",
+			"client_id":        gcreds.ClientID,
+			"client_email":     gcreds.ClientEmail,
+			"private_key_id":   gcreds.PrivateKeyID,
+			"private_key":      gcreds.PrivateKey,
+			"integration_type": "ORGANIZATION",
+			"project_id":       gcreds.ProjectID,
+			"subscription":     "projects/techally-hipstershop-275821/subscriptions/gcp-gke-audit-log-subscription",
+		}
+
+		_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
+		assert.Contains(t, err.Error(),
+			"error updating cloud account integration: organization_id MUST be"+
+				" set when integration_type is ORGANIZATION")
 	}
 }

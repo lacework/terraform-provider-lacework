@@ -158,6 +158,12 @@ func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, met
 		}
 	)
 
+	if d.Get("integration_type").(string) == "ORGANIZATION" &&
+		(d.Get("organization_id") == nil || d.Get("organization_id") == "") {
+		return fmt.Errorf("error creating cloud account integration: " +
+			"organization_id MUST be set when integration_type is ORGANIZATION, ")
+	}
+
 	gcpGkeAuditLog := api.NewCloudAccount(d.Get("name").(string),
 		api.GcpGkeAuditCloudAccount,
 		gcpGkeAuditLogData,
@@ -265,6 +271,12 @@ func resourceLaceworkIntegrationGcpGkeAuditLogUpdate(d *schema.ResourceData, met
 		api.GcpGkeAuditCloudAccount,
 		gcpGkeAuditLogData,
 	)
+
+	if d.Get("integration_type").(string) == "ORGANIZATION" &&
+		(d.Get("organization_id") == nil || d.Get("organization_id") == "") {
+		return fmt.Errorf("error updating cloud account integration: " +
+			"organization_id MUST be set when integration_type is ORGANIZATION")
+	}
 
 	if !d.Get("enabled").(bool) {
 		gcpGkeAuditLog.Enabled = 0
