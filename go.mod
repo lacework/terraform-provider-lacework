@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/gruntwork-io/terratest v0.40.17
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.13.0
-	github.com/lacework/go-sdk v0.36.1-0.20220621101646-85d5214a6d09
+	github.com/lacework/go-sdk v0.37.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.3
 	golang.org/x/text v0.3.7
@@ -41,7 +41,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.12.0 // indirect
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform-exec v0.16.1 // indirect
-	github.com/hashicorp/terraform-json v0.13.0 // indirect
+	github.com/hashicorp/terraform-json v0.14.0 // indirect
 	github.com/hashicorp/terraform-plugin-go v0.8.0 // indirect
 	github.com/hashicorp/terraform-plugin-log v0.3.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.0.0-20210412075316-9b2996cce896 // indirect

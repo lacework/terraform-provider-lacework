@@ -187,7 +187,7 @@ github.com/hashicorp/logutils
 ## explicit; go 1.17
 github.com/hashicorp/terraform-exec/internal/version
 github.com/hashicorp/terraform-exec/tfexec
-# github.com/hashicorp/terraform-json v0.13.0
+# github.com/hashicorp/terraform-json v0.14.0
 ## explicit; go 1.13
 github.com/hashicorp/terraform-json
 # github.com/hashicorp/terraform-plugin-go v0.8.0
@@ -258,7 +258,7 @@ github.com/klauspost/compress/huff0
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v0.36.1-0.20220621101646-85d5214a6d09
+# github.com/lacework/go-sdk v0.37.0
 ## explicit; go 1.18
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
