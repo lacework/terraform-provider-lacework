@@ -83,6 +83,17 @@ func GetCloudAccountEksAuditLogData(result string) api.AwsEksAuditData {
 	return response.Data.Data
 }
 
+func GetCloudAccountAgentlessScanningResponse(result string) api.AwsAgentlessScanningResponse {
+	id := GetIDFromTerraResults(result)
+
+	response, err := LwClient.V2.CloudAccounts.GetAwsAgentlessScanning(id)
+	if err != nil {
+		log.Fatalf("Unable to find eks audit log id: %s\n Response: %v", id, response)
+	}
+
+	return response
+}
+
 func GetCloudAccountGkeAuditLogData(result string) api.GcpGkeAuditData {
 	id := GetIDFromTerraResults(result)
 
