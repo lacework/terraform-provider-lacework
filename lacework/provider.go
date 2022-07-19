@@ -368,11 +368,11 @@ func fileExist(name string) bool {
 func validStaticCredentials(account, key, secret, token string) bool {
 	if account != "" {
 		// 1) using account, key and secret
-		if token != "" {
+		if key != "" && secret != "" {
 			return true
 		}
 		// 2) using account and token
-		if key != "" && secret != "" {
+		if token != "" {
 			return true
 		}
 	}

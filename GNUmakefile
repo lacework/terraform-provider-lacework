@@ -76,7 +76,7 @@ uninstall: ## Removes installed provider package from BINARY_PATH
 
 .PHONY: integration-test
 integration-test: clean-test install ## Runs clean-test and install, then runs all integration tests
-	gotestsum -f testname -- -v ./integration
+	gotestsum -f testname -- -v ./integration -run=$(regex)
 
 .PHONY: test-go-junit-ci
 test-go-junit-ci: clean-test install ## Runs clean-test and install, then runs all integration tests and output as junit xml format
