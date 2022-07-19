@@ -32,6 +32,7 @@ resource "lacework_alert_channel_slack" "critical" {
 ```
 
 ## Authentication
+
 The Lacework provider can be configured with the proper credentials via the following supported methods:
 
 * Static credentials
@@ -39,6 +40,7 @@ The Lacework provider can be configured with the proper credentials via the foll
 * Configuration file
 
 ### Static credentials
+
 !> **Warning:** Hard-coding credentials into any Terraform configuration is not
 recommended. Secrets could be leaked by committing this file to a public version
 control system.
@@ -54,7 +56,24 @@ provider "lacework" {
 }
 ```
 
+#### Using an API Access Token
+
+For short-lived workflows, Lacework provides an alternative method to configure the provider by using an
+API access token (`api_token`), note that all API tokens from the Lacework platform are short-lived which
+means that once the token expires, a new one needs to be generated and configured.
+
+```hcl
+provider "lacework" {
+  account   = "my-account"
+  api_token = "my-api-token"
+}
+```
+
+-> **Note:** You can use the [Lacework CLI](https://docs.lacework.com/cli) command `lacework access-token` to
+generate an API access token and the command `lacework configure show account` to display your configured account.
+
 ### Environment Variables
+
 You can provide your credentials via the `LW_ACCOUNT`, `LW_API_KEY`, and `LW_API_SECRET` environment
 variables, they represent your Lacework account subdomain of URL, Lacework API access key, and Lacework
 API access secret, respectively.
@@ -65,21 +84,43 @@ API access secret, respectively.
 provider "lacework" {}
 ```
 
-#### Bash:
+**Bash:**
 ```
 export LW_ACCOUNT="my-account"
 export LW_API_KEY="my-api-key"
 export LW_API_SECRET="my-api-secret"
 ```
 
-#### Powershell:
+**Powershell:**
 ```
 $Env:LW_ACCOUNT = "my-account"
 $Env:LW_API_KEY = "my-api-key"
 $Env:LW_API_SECRET = "my-api-secret"
 ```
 
+#### Using an API Access Token
+
+For short-lived workflows, Lacework provides an alternative method to configure the provider by using an
+API access token (`LW_API_TOKEN`), note that all API tokens from the Lacework platform are short-lived which
+means that once the token expires, a new one needs to be generated and configured.
+
+**Bash:**
+```
+export LW_ACCOUNT="my-account"
+export LW_API_TOKEN="my-api-token"
+```
+
+**Powershell:**
+```
+$Env:LW_ACCOUNT = "my-account"
+$Env:LW_API_TOKEN = "my-api-token"
+```
+
+-> **Note:** You can use the [Lacework CLI](https://docs.lacework.com/cli) command `lacework access-token` to
+generate an API access token and the command `lacework configure show account` to display your configured account.
+
 ### Configuration file
+
 It is possible to use credentials from the Lacework configuration file. The default location on Linux and OS X
 is `$HOME/.lacework.toml`, and for Windows users is `"%USERPROFILE%\.lacework.toml"`. This configuration file
 can be easily managed using the [Lacework CLI](https://docs.lacework.com/cli). This
@@ -97,7 +138,7 @@ An organization can contain multiple accounts so you can manage components such 
 team members, and audit logs at a more granular level inside an organization. A team member may have access
 to multiple accounts and can easily switch between them.
 
--> **Note:** To enroll your account in an organization follow the [Organization Enrollment Process](https://support.lacework.com/hc/en-us/articles/360041727394-Organization-Overview) documentation.
+-> **Note:** To enroll your account in an organization follow the [Organization Enrollment Process](https://docs.lacework.com/console/organization-overview) documentation.
 
 Use the argument `subaccount` to switch to a different account inside your organizational account.
 
@@ -210,4 +251,4 @@ The following arguments are supported in the `provider` block:
   sets (for organization administrators only). It can also be sourced from the `LW_ORGANIZATION`
   environment variable.
 
--> **Note:** To generate a set of API access keys follow [this documentation](https://support.lacework.com/hc/en-us/articles/360011403853-Generate-API-Access-Keys-and-Tokens).
+-> **Note:** To generate a set of API access keys follow [this documentation](https://docs.lacework.com/console/generate-api-access-keys-and-tokens).
