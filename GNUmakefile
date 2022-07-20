@@ -71,7 +71,8 @@ install: write-terraform-rc fmtcheck ## Updates the terraformrc to point to the 
 	go build -o $(DIR)/$(BINARY_PATH)
 
 .PHONY: uninstall
-uninstall: ## Removes installed provider package from BINARY_PATH
+uninstall: remove-terraform-rc ## Removes installed provider package from BINARY_PATH
+	@rm -rvf "$(HOME)/.terraform.d/plugins/registry.terraform.io/lacework/lacework"
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
 .PHONY: integration-test
@@ -160,6 +161,10 @@ endif
 .PHONY: write-terraform-rc
 write-terraform-rc: ## Write to terraformrc file to mirror lacework/lacework to BINARY_PATH
 	scripts/mirror-provider.sh
+
+.PHONY: remove-terraform-rc
+remove-terraform-rc: ## Remove the terraformrc file
+	@rm -vf "$(HOME)/.terraformrc"
 
 .PHONY: clean-test
 clean-test: ## Find and remove any .terraform directories or tfstate files
