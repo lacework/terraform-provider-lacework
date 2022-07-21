@@ -17,6 +17,7 @@ func TestIntegrationGcpGkeAuditLog(t *testing.T) {
 	if assert.Nil(t, err, "this test requires you to set GOOGLE_CREDENTIALS environment variable") {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_gcp_gke_audit_log",
+			EnvVars:      tokenEnvVar,
 			Vars: map[string]interface{}{
 				"name":             "GCP GKE audit log integration example",
 				"client_id":        gcreds.ClientID,

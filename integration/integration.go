@@ -11,11 +11,26 @@ import (
 var (
 	LwClient    *api.Client
 	LwOrgClient *api.Client
+	LwApiToken  string
+	tokenEnvVar map[string]string
 )
 
 func init() {
 	LwClient = lwTestCLient()
 	LwOrgClient = lwOrgTestClient()
+	LwApiToken = generateUniqueApiToken()
+	tokenEnvVar = map[string]string{
+		"LW_API_TOKEN": LwApiToken,
+	}
+}
+
+func generateUniqueApiToken() string {
+	token, err := LwClient.GenerateToken()
+	if err != nil {
+		log.Fatalf("Failed to generate API token, %v", err)
+	}
+
+	return token.Token
 }
 
 func lwTestCLient() (lw *api.Client) {

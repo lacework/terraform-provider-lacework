@@ -18,6 +18,7 @@ func TestAgentAccessTokenCreate(t *testing.T) {
 	// Create new Agent Access Token
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_agent_access_token",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"token_name": tokenName,
 		},
@@ -31,6 +32,7 @@ func TestAgentAccessTokenCreate(t *testing.T) {
 	// Read Agent Access Token
 	dataTerraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/data_source_lacework_agent_access_token",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"token_name": tokenName,
 		}})

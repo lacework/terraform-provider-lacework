@@ -22,6 +22,7 @@ func TestResourceGroupLwAccountCreate(t *testing.T) {
 	name := fmt.Sprintf("Terraform Test LwAccount Resource Group - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_account",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
 			"description":         "Terraform Test LwAccount Resource Group",

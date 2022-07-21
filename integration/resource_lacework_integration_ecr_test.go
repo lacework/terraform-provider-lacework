@@ -18,6 +18,7 @@ func TestIntegrationECRCreate(t *testing.T) {
 	if assert.Nil(t, err, "this test requires you to set AWS_ECR_IAM environment variable") {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_ecr/iam_role",
+			EnvVars:      tokenEnvVar,
 			Vars: map[string]interface{}{
 				"integration_name":       "Amazon Elastic Container Registry Example",
 				"role_arn":               awsCreds.RoleArn,
@@ -53,6 +54,7 @@ func TestIntegrationECRCreate(t *testing.T) {
 func TestIntegrationECRNumImagesValidation(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_ecr/iam_role",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"integration_name": "Amazon Elastic Container Registry Example",
 			"num_images":       0,
@@ -93,6 +95,7 @@ func TestIntegrationECRNumImagesValidation(t *testing.T) {
 	//Test omit num images
 	terraformOptions = terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_ecr/iam_role",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"integration_name": "Amazon Elastic Container Registry Example",
 		},

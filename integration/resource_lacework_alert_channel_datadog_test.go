@@ -14,6 +14,7 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 	apiKey := "vatasha-fake-dd-api-key"
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_datadog",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":    "Datadog Alert Channel Example",
 			"datadog_site":    "com",

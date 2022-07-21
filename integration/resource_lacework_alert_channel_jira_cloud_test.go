@@ -15,6 +15,7 @@ import (
 func TestAlertChannelJiraCloudCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_jira_cloud",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":    "My Jira Cloud Example",
 			"jira_url":        "test-lacework.atlassian.net",

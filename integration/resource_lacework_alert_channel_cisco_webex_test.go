@@ -15,6 +15,7 @@ import (
 func TestAlertChannelCiscoWebexCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_cisco_webex",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name": "Cisco Webex Alert Channel Example",
 			"webhook_url":  "https://webexapis.com/v1/webhooks/incoming/api-token",

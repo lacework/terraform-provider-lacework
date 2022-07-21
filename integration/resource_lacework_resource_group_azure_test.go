@@ -18,6 +18,7 @@ func TestResourceGroupAzureCreate(t *testing.T) {
 	name := fmt.Sprintf("Terraform Test Azure Resource Group - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_resource_group_azure",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"resource_group_name": name,
 			"description":         "Terraform Test Azure Resource Group",
