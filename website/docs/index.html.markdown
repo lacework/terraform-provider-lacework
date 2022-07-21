@@ -31,7 +31,7 @@ resource "lacework_alert_channel_slack" "critical" {
 }
 ```
 
-## Authentication
+# Authentication
 
 The Lacework provider can be configured with the proper credentials via the following supported methods:
 
@@ -39,7 +39,7 @@ The Lacework provider can be configured with the proper credentials via the foll
 * Environment variables
 * Configuration file
 
-### Static credentials
+## Static credentials
 
 !> **Warning:** Hard-coding credentials into any Terraform configuration is not
 recommended. Secrets could be leaked by committing this file to a public version
@@ -56,7 +56,7 @@ provider "lacework" {
 }
 ```
 
-#### Using an API Access Token
+### Using an API Access Token
 
 For short-lived workflows, Lacework provides an alternative method to configure the provider by using an
 API access token (`api_token`), note that all API tokens from the Lacework platform are short-lived which
@@ -72,7 +72,7 @@ provider "lacework" {
 -> **Note:** You can use the [Lacework CLI](https://docs.lacework.com/cli) command `lacework access-token` to
 generate an API access token and the command `lacework configure show account` to display your configured account.
 
-### Environment Variables
+## Environment Variables
 
 You can provide your credentials via the `LW_ACCOUNT`, `LW_API_KEY`, and `LW_API_SECRET` environment
 variables, they represent your Lacework account subdomain of URL, Lacework API access key, and Lacework
@@ -98,7 +98,7 @@ $Env:LW_API_KEY = "my-api-key"
 $Env:LW_API_SECRET = "my-api-secret"
 ```
 
-#### Using an API Access Token
+### Using an API Access Token
 
 For short-lived workflows, Lacework provides an alternative method to configure the provider by using an
 API access token (`LW_API_TOKEN`), note that all API tokens from the Lacework platform are short-lived which
@@ -119,7 +119,7 @@ $Env:LW_API_TOKEN = "my-api-token"
 -> **Note:** You can use the [Lacework CLI](https://docs.lacework.com/cli) command `lacework access-token` to
 generate an API access token and the command `lacework configure show account` to display your configured account.
 
-### Configuration file
+## Configuration file
 
 It is possible to use credentials from the Lacework configuration file. The default location on Linux and OS X
 is `$HOME/.lacework.toml`, and for Windows users is `"%USERPROFILE%\.lacework.toml"`. This configuration file
@@ -132,7 +132,7 @@ provider "lacework" {
 }
 ```
 
-## Organizational Accounts
+# Organizational Accounts
 
 An organization can contain multiple accounts so you can manage components such as alerts, resource groups,
 team members, and audit logs at a more granular level inside an organization. A team member may have access
@@ -178,9 +178,10 @@ resource "lacework_alert_channel_slack" "business_unit_critical" {
 }
 ```
 
-For a module, use its `providers` meta-argument to specify which provider configurations should be mapped to which local provider names inside the module:
+For a module, use its `providers` meta-argument to specify which provider configurations should be mapped to which
+local provider names inside the module:
 ```hcl
-module "lacework_module" {
+module "data_export_1" {
   source  = "lacework/s3-data-export/aws"
   version = "~> 0.1"
 
@@ -190,7 +191,7 @@ module "lacework_module" {
   # ...
 }
 
-module "lacework_module" {
+module "data_export_2" {
   source  = "lacework/s3-data-export/aws"
   version = "~> 0.1"
 
@@ -203,7 +204,7 @@ module "lacework_module" {
 
 !> **Warning:** To manage multiple accounts, your user should have the Organization Administrator Role.
 
-### Organization Level Access
+## Organization Level Access
 
 Organization administrators can access organization level data sets by setting the `organization` argument to `true`.
 ```hcl
@@ -217,31 +218,36 @@ provider "lacework" {
 Using this type of configuration is intended for managing resources such as alerts, resource groups, team members,
 cloud accounts, and more, at the organization level.
 
-### Migrating existing resources to the Organization level
+## Migrating existing resources to the Organization level
 
 When attempting to migrate an existing resource from one of your Lacework accounts to the organization level,
 you need to delete the resource, update the Lacework provider to access the organization level data set, and
 run `terraform apply` to create a new resource at the organization level.
 
-## Argument Reference
+# Argument Reference
 
 The following arguments are supported in the `provider` block:
 
 * `profile` - (Optional) This is the Lacework profile name to use, profiles are configured
-  at `$HOME/.lacework.toml` via the [Lacework CLI](https://docs.lacework.com/cli).
-  It can also be sourced from the `LW_PROFILE` environment variable.
+  at `$HOME/.lacework.toml` via the [Lacework CLI](https://docs.lacework.com/cli). It can also
+  be sourced from the `LW_PROFILE` environment variable.
 
 * `account` - (Optional) This is the Lacework account subdomain of URL (i.e. `<ACCOUNT>`
   .lacework.net). It must be provided, but it can also be sourced from the `LW_ACCOUNT`
   environment variable, or via the configuration file if `profile` is specified.
 
-* `api_key` - (Optional) This is a Lacework API access key. It must be provided, but it can
-  also be sourced from the `LW_API_KEY` environment variable, or via the configuration file
-  if `profile` is specified.
+* `api_key` - (Optional) This is a Lacework API access key. It must be provided when an `api_token`
+  is not used. It can also be sourced from the `LW_API_KEY` environment variable, or via the
+  configuration file if `profile` is specified.
 
-* `api_secret` - (Optional) This is a Lacework API access secret. It must be provided, but it
-  can also be sourced from the `LW_API_SECRET` environment variable, or via the configuration
-  file if `profile` is specified.
+* `api_secret` - (Optional) This is a Lacework API access secret. It must be provided when an
+  `api_token` is not used. It can also be sourced from the `LW_API_SECRET` environment variable,
+  or via the configuration file if `profile` is specified.
+
+* `api_token` - (Optional) This is a Lacework API access token. It must be provided when neither
+  the `api_key` nor the `api_secret` are used. It can also be sourced from the `LW_API_TOKEN`
+  environment variable. Note that all API access tokens from the Lacework platform are short-lived
+  which means that once the token expires, a new one needs to be generated and configured.
 
 * `subaccount` - (Optional) The sub-account name inside your organization (for organization
   administrators only). It can also be sourced from the `LW_SUBACCOUNT` environment variable,
@@ -251,4 +257,4 @@ The following arguments are supported in the `provider` block:
   sets (for organization administrators only). It can also be sourced from the `LW_ORGANIZATION`
   environment variable.
 
--> **Note:** To generate a set of API access keys follow [this documentation](https://docs.lacework.com/console/generate-api-access-keys-and-tokens).
+-> **Note:** For more information about creating a set of API access keys, see [Generate API Access Keys and Tokens](https://docs.lacework.com/console/generate-api-access-keys-and-tokens).
