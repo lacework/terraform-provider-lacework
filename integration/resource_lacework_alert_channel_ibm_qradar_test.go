@@ -13,6 +13,7 @@ import (
 func TestIbmQRadarAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_qradar",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":       "IbmQRadar Alert Channel Example",
 			"host_url":           "https://qradar-lacework.com",

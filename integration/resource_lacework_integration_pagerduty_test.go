@@ -13,6 +13,7 @@ import (
 func TestPagerDutyAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_pagerduty",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":    "PagerDuty Alert Channel Example",
 			"integration_key": "1234abc8901abc567abc123abc78e012",

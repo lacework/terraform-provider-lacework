@@ -15,6 +15,7 @@ import (
 func TestAlertChannelSlackCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_slack",
+		EnvVars:      tokenEnvVar,
 	})
 	defer terraform.Destroy(t, terraformOptions)
 

@@ -21,6 +21,7 @@ func TestAlertChannelCloudWatchCreate(t *testing.T) {
 		},
 		EnvVars: map[string]string{
 			"TF_VAR_event_bus_arn": eventBusArn,
+			"LW_API_TOKEN":         LwApiToken,
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)

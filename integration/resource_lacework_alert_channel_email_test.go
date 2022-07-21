@@ -15,6 +15,7 @@ import (
 func TestAlertChannelEmailCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_email",
+		EnvVars:      tokenEnvVar,
 	})
 	defer terraform.Destroy(t, terraformOptions)
 

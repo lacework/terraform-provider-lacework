@@ -21,6 +21,7 @@ func _TestAlertRuleCreate(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
 			"description":         "Alert Rule created by Terraform",
@@ -94,6 +95,7 @@ func _TestAlertRuleSeverities(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
 			"severities":          []string{"Critical", "high", "mEdIuM", "LOW"},
@@ -137,6 +139,7 @@ func _TestAlertRuleCategories(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
 			"event_categories":    []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},

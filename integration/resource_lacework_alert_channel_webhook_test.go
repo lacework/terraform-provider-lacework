@@ -13,6 +13,7 @@ import (
 func TestWebhookAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_webhook",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name": "Webhook Alert Channel Example",
 			"webhook_url":  "https://hook.com/webhook?api-token=123",
