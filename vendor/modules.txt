@@ -258,7 +258,7 @@ github.com/klauspost/compress/huff0
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v0.38.1-0.20220714163409-e6718576f977
+# github.com/lacework/go-sdk v0.39.1-0.20220726131944-f517e0e48fe6
 ## explicit; go 1.18
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
