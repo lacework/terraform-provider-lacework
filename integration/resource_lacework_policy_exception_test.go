@@ -15,6 +15,7 @@ import (
 func TestPolicyExceptionCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_policy_exception",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"policy_id":    "lacework-global-46",
 			"description":  "Policy Exception Created via Terraform",

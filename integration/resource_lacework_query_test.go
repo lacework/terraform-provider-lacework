@@ -19,6 +19,7 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 	queryID := fmt.Sprintf("Lql_Terraform_Query_%d", time.Now().UnixMilli())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"query_id": queryID,
 			"query":    queryString},

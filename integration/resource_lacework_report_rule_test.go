@@ -22,6 +22,7 @@ func _TestReportRuleCreate(t *testing.T) {
 	resourceGroupName := fmt.Sprintf("Used for Report Rule Test - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_report_rule",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
 			"description":         "Report Rule created by Terraform",

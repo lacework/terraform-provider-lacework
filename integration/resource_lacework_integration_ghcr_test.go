@@ -24,6 +24,7 @@ func TestIntegrationGHCRCreate(t *testing.T) {
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_password": creds.Token,
+				"LW_API_TOKEN":    LwApiToken,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)

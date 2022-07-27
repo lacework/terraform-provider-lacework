@@ -15,6 +15,7 @@ import (
 func TestAlertProfileCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_profile",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":    "CUSTOM_PROFILE_TERRAFORM_TEST",
 			"extends": "LW_CFG_GCP_DEFAULT_PROFILE",
@@ -65,6 +66,7 @@ func TestAlertProfileCreate(t *testing.T) {
 func TestAlertProfileValidate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_profile",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":    "LW_PROFILE_TERRAFORM_TEST",
 			"extends": "LW_CFG_GCP_DEFAULT_PROFILE",

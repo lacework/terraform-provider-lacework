@@ -15,6 +15,7 @@ import (
 func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_aws_eks_audit_log",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"role_arn":    "arn:aws:iam::249446771485:role/lacework-iam-example-role",
 			"external_id": "12345",

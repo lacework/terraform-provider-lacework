@@ -1,3 +1,19 @@
+## v0.22.1 (July 22, 2022)
+
+## Documentation Updates
+* docs: adds api_token to argument reference (#348) (Salim Afiune)([2f5b07a](https://github.com/lacework/terraform-provider-lacework/commit/2f5b07a36cf0c41b01f8b390f09ebacc72ec9e32))
+## Other Changes
+* ci: version bump to v0.22.1-dev (Lacework)([f0e1b40](https://github.com/lacework/terraform-provider-lacework/commit/f0e1b40b6e4ed0ae16bba6941d305edc91875b47))
+* test: Use unique API token for all integration tests (#347) (Salim Afiune)([0c85f89](https://github.com/lacework/terraform-provider-lacework/commit/0c85f892c5db68c76cc11fa0a3ef67be50399dd9))
+
+## v0.22.0 (July 20, 2022)
+
+## Features
+* feat: support authentication via API token (#344) (Salim Afiune)([4550bce](https://github.com/lacework/terraform-provider-lacework/commit/4550bce99c97babc8cefef5caff62ed8018493a1))
+* feat: new lacework_policy_exception resource (#326) (Darren)([01e87d3](https://github.com/lacework/terraform-provider-lacework/commit/01e87d37dd668910cdf89cc92c510e61ac0d73f1))
+## Other Changes
+* ci: version bump to v0.21.1-dev (Lacework)([7681f5d](https://github.com/lacework/terraform-provider-lacework/commit/7681f5d627112655270f526c66b299446d010eb7))
+
 ## v0.21.0 (June 30, 2022)
 
 ## Features

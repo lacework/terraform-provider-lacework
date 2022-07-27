@@ -20,6 +20,7 @@ func TestTeamMemberStandalone(t *testing.T) {
 	email := fmt.Sprintf("vatasha.white+%d@lacework.net", time.Now().Unix())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_team_member_standalone",
+		EnvVars:      tokenEnvVar,
 		Vars:         map[string]interface{}{"email": email},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -64,6 +65,7 @@ func TestTeamMemberOrg(t *testing.T) {
 	}
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_team_member_organization",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"email":         email,
 			"user_accounts": []string{account},

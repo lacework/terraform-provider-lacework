@@ -19,6 +19,7 @@ import (
 func TestPolicyCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_policy",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"title":       "lql-terraform-policy",
 			"severity":    "High",

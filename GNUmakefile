@@ -71,12 +71,13 @@ install: write-terraform-rc fmtcheck ## Updates the terraformrc to point to the 
 	go build -o $(DIR)/$(BINARY_PATH)
 
 .PHONY: uninstall
-uninstall: ## Removes installed provider package from BINARY_PATH
+uninstall: remove-terraform-rc ## Removes installed provider package from BINARY_PATH
+	@rm -rvf "$(HOME)/.terraform.d/plugins/registry.terraform.io/lacework/lacework"
 	@rm -vf $(DIR)/$(PACKAGENAME)
 
 .PHONY: integration-test
 integration-test: clean-test install ## Runs clean-test and install, then runs all integration tests
-	gotestsum -f testname -- -v ./integration
+	gotestsum -f testname -- -v ./integration -run=$(regex)
 
 .PHONY: test-go-junit-ci
 test-go-junit-ci: clean-test install ## Runs clean-test and install, then runs all integration tests and output as junit xml format
@@ -160,6 +161,10 @@ endif
 .PHONY: write-terraform-rc
 write-terraform-rc: ## Write to terraformrc file to mirror lacework/lacework to BINARY_PATH
 	scripts/mirror-provider.sh
+
+.PHONY: remove-terraform-rc
+remove-terraform-rc: ## Remove the terraformrc file
+	@rm -vf "$(HOME)/.terraformrc"
 
 .PHONY: clean-test
 clean-test: ## Find and remove any .terraform directories or tfstate files

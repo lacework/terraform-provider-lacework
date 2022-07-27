@@ -13,6 +13,7 @@ import (
 func TestNewRelicAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_newrelic",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name": "NewRelic Insights Alert Channel Example",
 			"insert_key":   "x-xx-xxxxxxxxxxxxxxxxxx",

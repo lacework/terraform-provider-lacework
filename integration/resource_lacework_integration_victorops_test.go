@@ -13,6 +13,7 @@ import (
 func TestVictorOpsAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_victorops",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name": "VictorOps Alert Channel Example",
 			"webhook_url":  "https://alert.victorops.com/integrations/generic/20131114/alert/31e945ee-5cad-44e7-afb0-97c20ea80dd8/database",

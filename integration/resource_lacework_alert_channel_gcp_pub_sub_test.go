@@ -28,6 +28,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_private_key": gcreds.PrivateKey,
+				"LW_API_TOKEN":       LwApiToken,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
@@ -48,6 +49,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 		}
 		terraformOptions.EnvVars = map[string]string{
 			"TF_VAR_private_key": gcreds.PrivateKey,
+			"LW_API_TOKEN":       LwApiToken,
 		}
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)

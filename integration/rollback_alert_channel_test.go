@@ -13,6 +13,7 @@ import (
 func TestAlertChannelRollback(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_microsoft_teams",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":     "Test Name",
 			"webhook_url":      "https://outlook.office.com/webhook/api-token",

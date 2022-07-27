@@ -51,6 +51,12 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("LW_API_SECRET", nil),
 				Description: "Lacework API access secret",
 			},
+			"api_token": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("LW_API_TOKEN", nil),
+				Description: "Lacework API access token",
+			},
 			"organization": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -130,6 +136,7 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		organization = d.Get("organization").(bool)
 		key          = d.Get("api_key").(string)
 		secret       = d.Get("api_secret").(string)
+		token        = d.Get("api_token").(string)
 		userAgent    = fmt.Sprintf("Terraform/%s", version)
 		apiOpts      = []api.Option{
 			api.WithHeader("User-Agent", userAgent),
@@ -162,8 +169,16 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		}
 	}
 
-	if account != "" && key != "" && secret != "" {
-		apiOpts = append(apiOpts, api.WithApiKeys(key, secret))
+	// authentication via environment variables or static credentials
+	if validStaticCredentials(account, key, secret, token) {
+		if token != "" {
+			apiOpts = append(apiOpts, api.WithToken(token))
+		}
+
+		if key != "" && secret != "" {
+			apiOpts = append(apiOpts, api.WithApiKeys(key, secret))
+		}
+
 		apiOpts = append(apiOpts, api.WithApiV2()) // default to APIv2
 
 		if subaccount != "" {
@@ -185,6 +200,7 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 		return lw, diags
 	}
 
+	// authentication via configuration file
 	if profile == "" {
 		profile = "default"
 	}
@@ -239,6 +255,10 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 
 	if secret == "" {
 		secret = config.ApiSecret
+	}
+
+	if token != "" {
+		apiOpts = append(apiOpts, api.WithToken(token))
 	}
 
 	apiOpts = append(apiOpts, api.WithApiKeys(key, secret))
@@ -339,4 +359,22 @@ Refer to the provider documentation for more information:
 func fileExist(name string) bool {
 	_, err := os.Stat(name)
 	return !os.IsNotExist(err)
+}
+
+// there are two valid static credentials
+//
+// 1) using an account, key and secret to generate a token
+// 2) using an account and token
+func validStaticCredentials(account, key, secret, token string) bool {
+	if account != "" {
+		// 1) using account, key and secret
+		if key != "" && secret != "" {
+			return true
+		}
+		// 2) using account and token
+		if token != "" {
+			return true
+		}
+	}
+	return false
 }

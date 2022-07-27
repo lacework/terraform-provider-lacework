@@ -13,6 +13,7 @@ import (
 func TestSplunkAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_splunk",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name": "Splunk Alert Channel Example",
 			"channel":      "Splunk Channel",

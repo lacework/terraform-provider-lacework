@@ -13,6 +13,7 @@ import (
 func TestServiceNowRestAlertChannelCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_channel_service_now",
+		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":         "Service Now Alert Channel Example",
 			"instance_url":         "https://dev123.service-now.com",

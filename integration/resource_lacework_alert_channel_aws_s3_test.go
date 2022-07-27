@@ -24,6 +24,7 @@ func TestAlertChannelAwsS3Create(t *testing.T) {
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_bucket_arn": s3BucketArn,
+				"LW_API_TOKEN":      LwApiToken,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)

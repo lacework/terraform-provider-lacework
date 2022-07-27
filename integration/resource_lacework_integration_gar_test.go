@@ -25,6 +25,7 @@ func TestIntegrationGARCreate(t *testing.T) {
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_private_key": gcreds.PrivateKey, // @afiune this will avoid printing secrets in our pipeline
+				"LW_API_TOKEN":       LwApiToken,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
