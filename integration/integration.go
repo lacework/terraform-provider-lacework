@@ -231,9 +231,8 @@ func GetAlertChannelProps(result string) api.AlertChannelResponse {
 	return data
 }
 
-func GetVulnerabilityExceptionProps(result string, resourceID int) api.VulnerabilityExceptionResponse {
-	id := GetSpecificIDFromTerraResults(resourceID, result)
-
+func GetVulnerabilityExceptionProps(result string) api.VulnerabilityExceptionResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
 	var data api.VulnerabilityExceptionResponse
 	err := LwClient.V2.VulnerabilityExceptions.Get(id, &data)
 	if err != nil {
