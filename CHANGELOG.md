@@ -1,3 +1,11 @@
+## v0.22.2 (August 02, 2022)
+
+## Bug Fixes
+* fix: fixable parameter for vulnerability_exception resources (#342) (Darren)([4b5bb7a](https://github.com/lacework/terraform-provider-lacework/commit/4b5bb7a6751dccbda3532609b1c2f7cfdac9fec1))
+## Other Changes
+* build(deps): bump github.com/stretchr/testify from 1.7.3 to 1.8.0 (#337) (dependabot[bot])([2229d06](https://github.com/lacework/terraform-provider-lacework/commit/2229d069c887086f4a9e5a4f23fef6ce8b14b586))
+* ci: version bump to v0.22.2-dev (Lacework)([a420033](https://github.com/lacework/terraform-provider-lacework/commit/a42003381d099ead77b5f4d1f652765f9ba5b8eb))
+
 ## v0.22.1 (July 22, 2022)
 
 ## Documentation Updates
