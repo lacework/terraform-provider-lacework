@@ -1,6 +1,6 @@
 //
-// Author:: Salim Afiune Maya (<afiune@lacework.net>)
-// Copyright:: Copyright 2020, Lacework Inc.
+// Author:: Darren Murray (<darren.murray@lacework.net>)
+// Copyright:: Copyright 2022, Lacework Inc.
 // License:: Apache License, Version 2.0
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,18 @@
 // limitations under the License.
 //
 
-package api
+package array
 
-type ValidateQuery struct {
-	QueryText string `json:"queryText"`
-}
-
-func (svc *QueryService) Validate(vq ValidateQuery) (
-	response QueryResponse,
-	err error,
-) {
-	err = svc.client.RequestEncoderDecoder(
-		"POST", apiV2QueriesValidate, vq, &response)
-	return
+// Unique removes duplicates from a slice and returns the list with only unique values
+// accepts a slice of string or int
+func Unique[T string | int](sliceList []T) []T {
+	var list []T
+	allKeys := make(map[T]bool)
+	for _, item := range sliceList {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }

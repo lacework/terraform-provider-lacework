@@ -46,7 +46,6 @@ func NewV2PolicyService(c *Client) *PolicyService {
 var ValidPolicySeverities = []string{"critical", "high", "medium", "low", "info"}
 
 type NewPolicy struct {
-	EvaluatorID   string   `json:"evaluatorId,omitempty" yaml:"evaluatorId,omitempty"`
 	PolicyID      string   `json:"policyId,omitempty" yaml:"policyId,omitempty" `
 	PolicyType    string   `json:"policyType" yaml:"policyType"`
 	QueryID       string   `json:"queryId" yaml:"queryId"`
@@ -98,7 +97,6 @@ This would prevent someone from toggling something to disabled or 0 respectively
 As such we are using pointers instead of primitives for booleans and integers in this struct
 */
 type UpdatePolicy struct {
-	EvaluatorID   string   `json:"evaluatorId,omitempty" yaml:"evaluatorId,omitempty"`
 	PolicyID      string   `json:"policyId,omitempty" yaml:"policyId,omitempty"`
 	PolicyType    string   `json:"policyType,omitempty" yaml:"policyType,omitempty"`
 	QueryID       string   `json:"queryId,omitempty" yaml:"queryId,omitempty"`
@@ -145,23 +143,22 @@ func ParseUpdatePolicy(s string) (UpdatePolicy, error) {
 }
 
 type Policy struct {
-	EvaluatorID    string   `json:"evaluatorId"`
-	PolicyID       string   `json:"policyId"`
-	PolicyType     string   `json:"policyType"`
-	QueryID        string   `json:"queryId"`
-	Title          string   `json:"title"`
-	Enabled        bool     `json:"enabled"`
-	Description    string   `json:"description"`
-	Remediation    string   `json:"remediation"`
-	Severity       string   `json:"severity"`
-	Limit          int      `json:"limit"`
-	EvalFrequency  string   `json:"evalFrequency"`
-	AlertEnabled   bool     `json:"alertEnabled"`
-	AlertProfile   string   `json:"alertProfile"`
-	Tags           []string `json:"tags"`
-	Owner          string   `json:"owner"`
-	LastUpdateTime string   `json:"lastUpdateTime"`
-	LastUpdateUser string   `json:"lastUpdateUser"`
+	PolicyID       string   `json:"policyId" yaml:"policyId"`
+	PolicyType     string   `json:"policyType" yaml:"-"`
+	QueryID        string   `json:"queryId" yaml:"queryId"`
+	Title          string   `json:"title" yaml:"title"`
+	Enabled        bool     `json:"enabled" yaml:"enabled"`
+	Description    string   `json:"description" yaml:"description"`
+	Remediation    string   `json:"remediation" yaml:"remediation"`
+	Severity       string   `json:"severity" yaml:"severity"`
+	Limit          int      `json:"limit" yaml:"limit"`
+	EvalFrequency  string   `json:"evalFrequency" yaml:"evalFrequency"`
+	AlertEnabled   bool     `json:"alertEnabled" yaml:"alertEnabled"`
+	AlertProfile   string   `json:"alertProfile" yaml:"alertProfile"`
+	Tags           []string `json:"tags" yaml:"tags"`
+	Owner          string   `json:"owner" yaml:"-"`
+	LastUpdateTime string   `json:"lastUpdateTime" yaml:"-"`
+	LastUpdateUser string   `json:"lastUpdateUser" yaml:"-"`
 }
 
 func (p *Policy) HasTag(t string) bool {
