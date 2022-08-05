@@ -12,6 +12,7 @@ import (
 //
 // It uses the go-sdk to verify the created integration,
 // applies an update with new integration name and destroys it
+// nolint
 func _TestIntegrationAwsAgentlessScanningLog(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_aws_agentless_scanning",
