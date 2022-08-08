@@ -88,7 +88,7 @@ func GetCloudAccountAgentlessScanningResponse(result string) api.AwsSidekickResp
 
 	response, err := LwClient.V2.CloudAccounts.GetAwsSidekick(id)
 	if err != nil {
-		log.Fatalf("Unable to find eks audit log id: %s\n Response: %v", id, response)
+		log.Fatalf("Unable to find aws sidekick id: %s\n Response: %v", id, response)
 	}
 
 	return response
