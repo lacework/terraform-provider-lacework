@@ -83,6 +83,17 @@ func GetCloudAccountEksAuditLogData(result string) api.AwsEksAuditData {
 	return response.Data.Data
 }
 
+func GetCloudAccountAgentlessScanningResponse(result string) api.AwsSidekickResponse {
+	id := GetIDFromTerraResults(result)
+
+	response, err := LwClient.V2.CloudAccounts.GetAwsSidekick(id)
+	if err != nil {
+		log.Fatalf("Unable to find aws sidekick id: %s\n Response: %v", id, response)
+	}
+
+	return response
+}
+
 func GetCloudAccountGkeAuditLogData(result string) api.GcpGkeAuditData {
 	id := GetIDFromTerraResults(result)
 
