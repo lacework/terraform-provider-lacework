@@ -19,6 +19,12 @@ resource "lacework_integration_aws_agentless_scanning" "account_abc" {
   query_text                = var.query_text
   scan_containers           = true
   scan_host_vulnerabilities = true
+  account_id = "0123456789"
+  bucket_arn = "arn:aws:s3:::bucket-arn"
+	credentials { 
+	  role_arn = "arn:aws:iam::0123456789:role/iam-123"
+	  external_id = "0123456789"
+	}
 }
 ```
 
@@ -31,8 +37,18 @@ The following arguments are supported:
 * `query_text` - (Optional) The lql query.
 * `scan_containers` - (Optional) Whether to includes scanning for containers.
 * `scan_host_vulnerabilities` - (Optional) Whether to includes scanning for host vulnerabilities.
+* `account_id` - (Optional) The aws account id.
+* `bucket_arn` - (Optional) The bucket arn.
+* `credentials` - (Optional) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
+
+### Credentials
+
+  `credentials` supports the following arguments:
+
+* `role_arn` - (Optional) The role arn.
+* `external_id` - (Optional) The external id.
 
 ## Import
 
