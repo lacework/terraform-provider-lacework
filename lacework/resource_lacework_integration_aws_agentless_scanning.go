@@ -54,6 +54,36 @@ var awsAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 		Default:     false,
 		Description: "Whether to includes scanning for host vulnerabilities.",
 	},
+	"account_id": {
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "The aws account id",
+	},
+	"bucket_arn": {
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "The bucket arn",
+	},
+	"credentials": {
+		Type:        schema.TypeList,
+		MaxItems:    1,
+		Optional:    true,
+		Description: "The credentials needed by the integration",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"external_id": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "The external id",
+				},
+				"role_arn": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "The role arn",
+				},
+			},
+		},
+	},
 	"enabled": {
 		Type:        schema.TypeBool,
 		Optional:    true,
@@ -102,6 +132,12 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		ScanFrequency:           d.Get("scan_frequency").(int),
 		ScanContainers:          d.Get("scan_containers").(bool),
 		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		AccountID:               d.Get("account_id").(string),
+		BucketArn:               d.Get("bucket_arn").(string),
+		CrossAccountCreds: api.AwsSidekickCrossAccountCredentials{
+			RoleArn:    d.Get("credentials.0.role_arn").(string),
+			ExternalID: d.Get("credentials.0.external_id").(string),
+		},
 	}
 
 	if d.Get("query_text") != nil {
@@ -176,6 +212,12 @@ func resourceLaceworkIntegrationAwsAgentlessScanningRead(d *schema.ResourceData,
 		d.Set("type_name", cloudAccount.Type)
 		d.Set("org_level", cloudAccount.IsOrg == 1)
 
+		creds := make(map[string]string)
+		creds["role_arn"] = response.Data.Data.CrossAccountCreds.RoleArn
+		creds["external_id"] = response.Data.Data.CrossAccountCreds.ExternalID
+
+		d.Set("credentials", []map[string]string{creds})
+
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsSidekickCloudAccount.String(), cloudAccount.IntgGuid,
 		)
@@ -195,6 +237,12 @@ func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceDat
 		ScanFrequency:           d.Get("scan_frequency").(int),
 		ScanContainers:          d.Get("scan_containers").(bool),
 		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		AccountID:               d.Get("account_id").(string),
+		BucketArn:               d.Get("bucket_arn").(string),
+		CrossAccountCreds: api.AwsSidekickCrossAccountCredentials{
+			RoleArn:    d.Get("credentials.0.role_arn").(string),
+			ExternalID: d.Get("credentials.0.external_id").(string),
+		},
 	}
 
 	if d.Get("query_text") != nil {
