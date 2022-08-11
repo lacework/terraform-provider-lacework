@@ -64,7 +64,7 @@ func TestDataExportRuleCreate(t *testing.T) {
 	actualIDs = terraform.Output(t, terraformOptions, "integration_ids")
 	actualProfileVersions = terraform.Output(t, terraformOptions, "profile_versions")
 
-	assert.Equal(t, "Data Export Rule From Terraform", updateProps.Data.Filter.Name)
+	assert.Equal(t, "Data Export Rule From Terraform Updated", updateProps.Data.Filter.Name)
 	assert.Equal(t, []string{"V1"}, updateProps.Data.Filter.ProfileVersions)
 	assert.Equal(t, []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"}, updateProps.Data.IDs)
 	assert.Equal(t, "Dataexport", updateProps.Data.Type)
