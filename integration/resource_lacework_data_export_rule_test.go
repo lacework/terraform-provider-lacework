@@ -70,7 +70,7 @@ func TestDataExportRuleCreate(t *testing.T) {
 	assert.Equal(t, "Dataexport", updateProps.Data.Type)
 	assert.Equal(t, 1, updateProps.Data.Filter.Enabled)
 
-	assert.Equal(t, "Data Export Rule From Terraform Updatedgs", actualName)
+	assert.Equal(t, "Data Export Rule From Terraform Updated", actualName)
 	assert.Equal(t, "Dataexport", actualType)
 	assert.Equal(t, "[V1]", actualProfileVersions)
 	assert.Equal(t, "[TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A]", actualIDs)
