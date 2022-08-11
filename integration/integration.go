@@ -328,3 +328,13 @@ func GetPolicyExceptionProps(result string, policyID string) (resp api.PolicyExc
 	}
 	return
 }
+
+func GetDataExportRuleProps(result string) api.DataExportRuleResponse {
+	id := GetSpecificIDFromTerraResults(1, result)
+
+	data, err := LwClient.V2.DataExportRules.Get(id)
+	if err != nil {
+		log.Fatalf("Unable to retrieve data export rule with id: %s", id)
+	}
+	return data
+}

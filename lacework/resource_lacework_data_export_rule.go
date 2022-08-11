@@ -40,7 +40,7 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 			},
 			"type": {
 				Type:        schema.TypeString,
-				Required:    false,
+				Optional:    true,
 				Description: "The type of the data export rule",
 				Default:     "Dataexport",
 			},
@@ -72,14 +72,6 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"type_name": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"org_level": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -97,8 +89,8 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 		}
 	)
 
-	if !d.Get("enabled").(bool) {
-		exportRule.Filter.Enabled = 0
+	if d.Get("enabled").(bool) {
+		exportRule.Filter.Enabled = 1
 	}
 
 	log.Printf("[INFO] Creating data export rule with data:\n%+v\n", exportRule)
@@ -156,8 +148,8 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 
 	exportRule.ID = d.Id()
 
-	if !d.Get("enabled").(bool) {
-		exportRule.Filter.Enabled = 0
+	if d.Get("enabled").(bool) {
+		exportRule.Filter.Enabled = 1
 	}
 
 	log.Printf("[INFO] Updating data export rule with data:\n%+v\n", exportRule)
