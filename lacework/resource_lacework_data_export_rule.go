@@ -83,14 +83,15 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 			Filter: api.DataExportRuleFilter{
 				Name:            d.Get("name").(string),
 				ProfileVersions: castAttributeToStringSlice(d, "profile_versions"),
+				Enabled:         1,
 			},
 			Type: d.Get("type").(string),
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
 		}
 	)
 
-	if d.Get("enabled").(bool) {
-		exportRule.Filter.Enabled = 1
+	if !d.Get("enabled").(bool) {
+		exportRule.Filter.Enabled = 0
 	}
 
 	log.Printf("[INFO] Creating data export rule with data:\n%+v\n", exportRule)
@@ -140,6 +141,7 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 			Filter: api.DataExportRuleFilter{
 				Name:            d.Get("name").(string),
 				ProfileVersions: castAttributeToStringSlice(d, "profile_versions"),
+				Enabled:         1,
 			},
 			Type: d.Get("type").(string),
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
@@ -148,8 +150,8 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 
 	exportRule.ID = d.Id()
 
-	if d.Get("enabled").(bool) {
-		exportRule.Filter.Enabled = 1
+	if !d.Get("enabled").(bool) {
+		exportRule.Filter.Enabled = 0
 	}
 
 	log.Printf("[INFO] Updating data export rule with data:\n%+v\n", exportRule)

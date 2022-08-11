@@ -11,7 +11,6 @@ resource "lacework_data_export_rule" "example" {
   profile_versions = var.profile_versions
   type             = var.type
   integration_ids  = var.integration_ids
-  enabled = true
 }
 
 variable "name" {
