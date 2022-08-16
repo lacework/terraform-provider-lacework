@@ -121,6 +121,7 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"lacework_api_token":          dataSourceLaceworkApiToken(),
 			"lacework_agent_access_token": dataSourceLaceworkAgentAccessToken(),
+			"lacework_user_profile":       dataSourceLaceworkUserProfile(),
 		},
 
 		ConfigureContextFunc: providerConfigure,
