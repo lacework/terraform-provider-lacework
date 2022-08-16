@@ -25,9 +25,14 @@ The following attributes are exported:
 * `org_admin` - A boolean representing whether the user is an organization admin.
 * `org_user` - A boolean representing whether the user is an organization user.
 * `url` - A string representing the login URL for the Lacework account.
-* `accounts` - An array of accounts in the Lacework tenant.
-    * `account_name` - A string representing the account name.
-    * `admin` - A boolean representing whether the user is an account admin.
-    * `cust_guid` - A string representing the Customer GUID for the account.
-    * `user_enabled` - A boolean representing whether the user is enabled.
-    * `user_guid` - A string representing the User GUID in the account.
+* `accounts` - A list of accounts in the Lacework tenant. See [Account](#account) below for details.
+
+### Account
+
+An `account` exposes the following attributes:
+
+* `account_name` - A string representing the account name.
+* `admin` - A boolean representing whether the user is an account admin.
+* `cust_guid` - A string representing the Customer GUID for the account.
+* `user_enabled` - A boolean representing whether the user is enabled.
+* `user_guid` - A string representing the User GUID in the account.

@@ -19,4 +19,5 @@ func TestUserProfileDataSource(t *testing.T) {
 	terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	url := terraform.Output(t, terraformOptions, "lacework_user_profile_url")
 	assert.NotEmpty(t, url)
+	assert.Contains(t, url, "lacework.net")
 }
