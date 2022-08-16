@@ -1,7 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v0.24.0`.
+Another day, another release. These are the release notes for the version `v0.25.0`.
 
 ## Features
-* feat: add credentials to aws_agentless_scanning resource (#354) (Darren)([c6426dd](https://github.com/lacework/terraform-provider-lacework/commit/c6426dd4525bd0f978cca7e7304983ce87efebcf))
+* feat(data-source): added lacework_user_profile (#357) (Alan Nix)([31380aa](https://github.com/lacework/terraform-provider-lacework/commit/31380aa3c1887c3dbc37f9cb8d249a4a115fb345))
 ## Other Changes
-* ci: version bump to v0.23.1-dev (Lacework)([b288dfc](https://github.com/lacework/terraform-provider-lacework/commit/b288dfc389bd9374bb5f3e843a1f0aae927fae5c))
+* ci: version bump to v0.24.1-dev (Lacework)([cc441cd](https://github.com/lacework/terraform-provider-lacework/commit/cc441cd4a31908f0d06e71170a765e3db6938e9a))
