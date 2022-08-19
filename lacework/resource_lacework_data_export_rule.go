@@ -100,6 +100,8 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
 	d.Set("guid", response.Data.ID)
+	d.Set("profile_versions", response.Data.Filter.ProfileVersions)
+	d.Set("type", response.Data.Type)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
 	d.Set("created_or_updated_time", response.Data.Filter.UpdatedTime)
 	d.Set("created_or_updated_by", response.Data.Filter.CreatedBy)
@@ -159,6 +161,8 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
+	d.Set("profile_versions", response.Data.Filter.ProfileVersions)
+	d.Set("type", response.Data.Type)
 	d.Set("guid", response.Data.ID)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
 	d.Set("created_or_updated_time", response.Data.Filter.UpdatedTime)
