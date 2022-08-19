@@ -82,7 +82,7 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 				ProfileVersions: []string{"V1"},
 				Enabled:         1,
 			},
-			Type: "dataExport",
+			Type: "Dataexport",
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
 		}
 	)
@@ -140,7 +140,7 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 				ProfileVersions: []string{"V1"},
 				Enabled:         1,
 			},
-			Type: "dataExport",
+			Type: "Dataexport",
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
 		}
 	)
