@@ -8,8 +8,6 @@ terraform {
 
 resource "lacework_data_export_rule" "example" {
   name             = var.name
-  profile_versions = var.profile_versions
-  type             = var.type
   integration_ids  = var.integration_ids
 }
 
@@ -18,19 +16,9 @@ variable "name" {
   default = "Data Export Rule From Terraform"
 }
 
-variable "profile_versions" {
-  type    = list(string)
-  default = ["V1"]
-}
-
 variable "integration_ids" {
   type    = list(string)
   default = ["TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"]
-}
-
-variable "type" {
-  type    = string
-  default = "Dataexport"
 }
 
 output "name" {

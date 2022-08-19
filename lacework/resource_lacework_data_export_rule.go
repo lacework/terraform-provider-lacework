@@ -27,27 +27,10 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 				Description: "The name of the data export rule",
 				Required:    true,
 			},
-			"profile_versions": {
-				Type:        schema.TypeList,
-				Required:    true,
-				Description: "List of profile versions",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
-					},
-				},
-			},
-			"type": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "The type of the data export rule",
-				Default:     "Dataexport",
-			},
 			"integration_ids": {
 				Type:        schema.TypeList,
 				Required:    true,
-				Description: "List of integration ids",
+				Description: "The list alert channel ids for the rule to use.",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
@@ -59,6 +42,20 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
+			},
+			"type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"profile_versions": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
 			},
 			"guid": {
 				Type:     schema.TypeString,
@@ -82,10 +79,10 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 		exportRule = api.DataExportRule{
 			Filter: api.DataExportRuleFilter{
 				Name:            d.Get("name").(string),
-				ProfileVersions: castAttributeToStringSlice(d, "profile_versions"),
+				ProfileVersions: []string{"V1"},
 				Enabled:         1,
 			},
-			Type: d.Get("type").(string),
+			Type: "dataExport",
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
 		}
 	)
@@ -140,10 +137,10 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 		exportRule = api.DataExportRule{
 			Filter: api.DataExportRuleFilter{
 				Name:            d.Get("name").(string),
-				ProfileVersions: castAttributeToStringSlice(d, "profile_versions"),
+				ProfileVersions: []string{"V1"},
 				Enabled:         1,
 			},
-			Type: d.Get("type").(string),
+			Type: "dataExport",
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
 		}
 	)

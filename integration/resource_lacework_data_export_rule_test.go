@@ -17,10 +17,8 @@ func TestDataExportRuleCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_data_export_rule",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
-			"name":             "Data Export Rule From Terraform",
-			"type":             "Dataexport",
-			"integration_ids":  []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"},
-			"profile_versions": []string{"V1"},
+			"name":            "Data Export Rule From Terraform",
+			"integration_ids": []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -49,10 +47,8 @@ func TestDataExportRuleCreate(t *testing.T) {
 
 	// Update Data Export Rule
 	terraformOptions.Vars = map[string]interface{}{
-		"name":             "Data Export Rule From Terraform Updated",
-		"type":             "Dataexport",
-		"integration_ids":  []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"},
-		"profile_versions": []string{"V1"},
+		"name":            "Data Export Rule From Terraform Updated",
+		"integration_ids": []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"},
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)

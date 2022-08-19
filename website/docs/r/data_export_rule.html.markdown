@@ -13,11 +13,10 @@ For more information, see the [Data Export Rules documentation](https://docs.lac
 
 ## Example Usage
 
-#### Data Export Rule with Slack Data Export Channel
+#### Data Export Rule with S3 Data Export Channel
 ```hcl
 resource "lacework_data_export_rule" "example" {
   name             = "Data Export Rule From Terraform Updated"
-  profile_versions = ["V1"]
   integration_ids  = ["INT_ABC123AB385C123D4567AB8EB45BA0E7ABCD12ABF65673A"]
 }
 ```
@@ -27,9 +26,7 @@ resource "lacework_data_export_rule" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The data export rule name.
-* `profile_versions` - (Required) The list of integration ids.
-* `integration_ids` - (Required) The list of integration ids.
-* `type` - (Optional) The type of the export rule. Defaults to `Dataexport`.
+* `integration_ids` - (Required) The list alert channel ids for the rule to use.
 * `enabled` - (Optional) Whether the rule is enabled or disabled. Defaults to `true`.
 
 ## Import
