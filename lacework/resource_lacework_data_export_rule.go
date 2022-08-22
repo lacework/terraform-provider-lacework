@@ -52,7 +52,7 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"profile_versions": {
+			"profile_versions_computed": {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Schema{
@@ -106,7 +106,7 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
 	d.Set("guid", response.Data.ID)
-	d.Set("profile_versions", response.Data.Filter.ProfileVersions)
+	d.Set("profile_versions_computed", response.Data.Filter.ProfileVersions)
 	d.Set("type", response.Data.Type)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
 	d.Set("created_or_updated_time", response.Data.Filter.UpdatedTime)
@@ -129,7 +129,7 @@ func resourceLaceworkDataExportRuleRead(d *schema.ResourceData, meta interface{}
 	d.Set("name", response.Data.Filter.Name)
 	d.Set("description", response.Data.Filter.Description)
 	d.Set("guid", response.Data.ID)
-	d.Set("profile_versions", response.Data.Filter.ProfileVersions)
+	d.Set("profile_versions_computed", response.Data.Filter.ProfileVersions)
 	d.Set("integration_ids", response.Data.IDs)
 	d.Set("type", response.Data.Type)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
@@ -169,7 +169,7 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
-	d.Set("profile_versions", response.Data.Filter.ProfileVersions)
+	d.Set("profile_versions_computed", response.Data.Filter.ProfileVersions)
 	d.Set("type", response.Data.Type)
 	d.Set("guid", response.Data.ID)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
