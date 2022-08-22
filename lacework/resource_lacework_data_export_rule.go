@@ -24,7 +24,7 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the data export rule",
+				Description: "The name of the data export rule.",
 				Required:    true,
 			},
 			"integration_ids": {
@@ -37,6 +37,11 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
+			},
+			"description": {
+				Type:        schema.TypeString,
+				Description: "The summary of the data export rule.",
+				Optional:    true,
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
@@ -79,6 +84,7 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 		exportRule = api.DataExportRule{
 			Filter: api.DataExportRuleFilter{
 				Name:            d.Get("name").(string),
+				Description:     d.Get("description").(string),
 				ProfileVersions: []string{"V1"},
 				Enabled:         1,
 			},
@@ -121,6 +127,7 @@ func resourceLaceworkDataExportRuleRead(d *schema.ResourceData, meta interface{}
 
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
+	d.Set("description", response.Data.Filter.Description)
 	d.Set("guid", response.Data.ID)
 	d.Set("profile_versions", response.Data.Filter.ProfileVersions)
 	d.Set("integration_ids", response.Data.IDs)
@@ -139,6 +146,7 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 		exportRule = api.DataExportRule{
 			Filter: api.DataExportRuleFilter{
 				Name:            d.Get("name").(string),
+				Description:     d.Get("description").(string),
 				ProfileVersions: []string{"V1"},
 				Enabled:         1,
 			},

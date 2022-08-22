@@ -27,6 +27,7 @@ The following arguments are supported:
 
 * `name` - (Required) The data export rule name.
 * `integration_ids` - (Required) The list alert channel ids for the rule to use.
+* `description` - (Optional) The summary of the data export rule.
 * `enabled` - (Optional) Whether the rule is enabled or disabled. Defaults to `true`.
 
 ## Import
