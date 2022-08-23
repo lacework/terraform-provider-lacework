@@ -35,10 +35,6 @@ output "description" {
   value = lacework_data_export_rule.example.description
 }
 
-output "profile_versions" {
-  value = lacework_data_export_rule.example.profile_versions
-}
-
 output "integration_ids" {
   value = lacework_data_export_rule.example.integration_ids
 }

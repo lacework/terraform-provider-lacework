@@ -32,7 +32,6 @@ func TestDataExportRuleCreate(t *testing.T) {
 	actualDescription := terraform.Output(t, terraformOptions, "description")
 	actualEnabled := terraform.Output(t, terraformOptions, "enabled")
 	actualIDs := terraform.Output(t, terraformOptions, "integration_ids")
-	actualProfileVersions := terraform.Output(t, terraformOptions, "profile_versions")
 
 	assert.Equal(t, "Data Export Rule From Terraform", createProps.Data.Filter.Name)
 	assert.Equal(t, "An Example Data Export Rule Created From Terraform", createProps.Data.Filter.Description)
@@ -43,7 +42,6 @@ func TestDataExportRuleCreate(t *testing.T) {
 
 	assert.Equal(t, "Data Export Rule From Terraform", actualName)
 	assert.Equal(t, "An Example Data Export Rule Created From Terraform", actualDescription)
-	assert.Equal(t, "[V1]", actualProfileVersions)
 	assert.Equal(t, "[TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A]", actualIDs)
 	assert.Equal(t, "true", actualEnabled)
 
@@ -61,7 +59,6 @@ func TestDataExportRuleCreate(t *testing.T) {
 	actualDescription = terraform.Output(t, terraformOptions, "description")
 	actualEnabled = terraform.Output(t, terraformOptions, "enabled")
 	actualIDs = terraform.Output(t, terraformOptions, "integration_ids")
-	actualProfileVersions = terraform.Output(t, terraformOptions, "profile_versions")
 
 	assert.Equal(t, "Data Export Rule From Terraform Updated", updateProps.Data.Filter.Name)
 	assert.Equal(t, "An Example Data Export Rule Created From Terraform Updated", updateProps.Data.Filter.Description)
@@ -72,8 +69,6 @@ func TestDataExportRuleCreate(t *testing.T) {
 
 	assert.Equal(t, "Data Export Rule From Terraform Updated", actualName)
 	assert.Equal(t, "An Example Data Export Rule Created From Terraform Updated", actualDescription)
-	assert.Equal(t, "[V1]", actualProfileVersions)
 	assert.Equal(t, "[TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A]", actualIDs)
 	assert.Equal(t, "true", actualEnabled)
-
 }
