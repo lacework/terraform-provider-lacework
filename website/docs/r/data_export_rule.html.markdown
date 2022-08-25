@@ -9,15 +9,33 @@ description: |-
 # lacework\_data\_export\_rule
 
 Use this resource to export data collected from your Lacework account.
-For more information, see the [Data Export Rules documentation](https://docs.lacework.com/console/category/data-shares--export).
+For more information, see [Data Export Rules](https://docs.lacework.com/console/category/data-shares--export) and
+[S3 Data Export](https://docs.lacework.com/console/s3-data-export) documentation.
 
 ## Example Usage
 
-#### Data Export Rule with S3 Data Export Channel
+#### Data Export Rule
 ```hcl
 resource "lacework_data_export_rule" "example" {
   name             = "Data Export Rule From Terraform Updated"
   integration_ids  = ["INT_ABC123AB385C123D4567AB8EB45BA0E7ABCD12ABF65673A"]
+}
+```
+
+#### Data Export Rule with S3 Data Export Channel
+```hcl
+resource "lacework_alert_channel_aws_s3" "data_export" {
+  name = "s3 Alerts"
+  bucket_arn  = "arn:aws:s3:::bucket_name/key_name"
+  credentials {
+    role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
+    external_id = "12345"
+  }
+}
+
+resource "lacework_data_export_rule" "example" {
+  name             = "Data Export Rule From Terraform Updated"
+  integration_ids  = [lacework_alert_channel_aws_s3.data_export.id]
 }
 ```
 
@@ -26,7 +44,7 @@ resource "lacework_data_export_rule" "example" {
 The following arguments are supported:
 
 * `name` - (Required) The data export rule name.
-* `integration_ids` - (Required) The list alert channel ids for the rule to use.
+* `integration_ids` - (Required) The list s3 data export alert channel ids for the rule to use.
 * `description` - (Optional) The summary of the data export rule.
 * `enabled` - (Optional) Whether the rule is enabled or disabled. Defaults to `true`.
 
