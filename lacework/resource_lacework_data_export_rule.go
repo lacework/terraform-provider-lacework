@@ -52,16 +52,6 @@ func resourceLaceworkDataExportRule() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"profile_versions_computed": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
-					},
-				},
-			},
 			"guid": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -83,10 +73,9 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 		lacework   = meta.(*api.Client)
 		exportRule = api.DataExportRule{
 			Filter: api.DataExportRuleFilter{
-				Name:            d.Get("name").(string),
-				Description:     d.Get("description").(string),
-				ProfileVersions: []string{"V1"},
-				Enabled:         1,
+				Name:        d.Get("name").(string),
+				Description: d.Get("description").(string),
+				Enabled:     1,
 			},
 			Type: "Dataexport",
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
@@ -106,7 +95,6 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
 	d.Set("guid", response.Data.ID)
-	d.Set("profile_versions_computed", response.Data.Filter.ProfileVersions)
 	d.Set("type", response.Data.Type)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
 	d.Set("created_or_updated_time", response.Data.Filter.UpdatedTime)
@@ -129,7 +117,6 @@ func resourceLaceworkDataExportRuleRead(d *schema.ResourceData, meta interface{}
 	d.Set("name", response.Data.Filter.Name)
 	d.Set("description", response.Data.Filter.Description)
 	d.Set("guid", response.Data.ID)
-	d.Set("profile_versions_computed", response.Data.Filter.ProfileVersions)
 	d.Set("integration_ids", response.Data.IDs)
 	d.Set("type", response.Data.Type)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
@@ -145,10 +132,9 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 		lacework   = meta.(*api.Client)
 		exportRule = api.DataExportRule{
 			Filter: api.DataExportRuleFilter{
-				Name:            d.Get("name").(string),
-				Description:     d.Get("description").(string),
-				ProfileVersions: []string{"V1"},
-				Enabled:         1,
+				Name:        d.Get("name").(string),
+				Description: d.Get("description").(string),
+				Enabled:     1,
 			},
 			Type: "Dataexport",
 			IDs:  castAttributeToStringSlice(d, "integration_ids"),
@@ -169,7 +155,6 @@ func resourceLaceworkDataExportRuleUpdate(d *schema.ResourceData, meta interface
 
 	d.SetId(response.Data.ID)
 	d.Set("name", response.Data.Filter.Name)
-	d.Set("profile_versions_computed", response.Data.Filter.ProfileVersions)
 	d.Set("type", response.Data.Type)
 	d.Set("guid", response.Data.ID)
 	d.Set("enabled", response.Data.Filter.Enabled == 1)
