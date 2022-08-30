@@ -49,10 +49,11 @@ type DataExportRule struct {
 
 type DataExportRuleFilter struct {
 	Name            string   `json:"name"`
+	Description     string   `json:"description"`
 	CreatedBy       string   `json:"createdOrUpdatedBy,omitempty"`
 	UpdatedTime     string   `json:"createdOrUpdatedTime,omitempty"`
 	Enabled         int      `json:"enabled"`
-	ProfileVersions []string `json:"profileVersions"`
+	ProfileVersions []string `json:"profileVersions,omitempty"`
 }
 
 // List returns a list of Data Export Rules

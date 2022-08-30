@@ -80,7 +80,7 @@ func _TestAlertRuleCreate(t *testing.T) {
 	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350")
 	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53")
 	assert.Equal(t, []string{"High", "Medium"}, api.NewAlertRuleSeveritiesFromIntSlice(updateProps.Data.Filter.Severity).ToStringSlice())
-	assert.Equal(t, []string{actualResourceGroupID}, createProps.Data.Filter.ResourceGroups)
+	assert.Equal(t, []string{actualResourceGroupID}, updateProps.Data.Filter.ResourceGroups)
 	assert.Equal(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
 
 	assert.Equal(t, "Updated Alert Rule created by Terraform", actualDescription)
