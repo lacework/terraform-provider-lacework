@@ -107,7 +107,7 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/googleapis/gax-go/v2 v2.0.5
 ## explicit
 github.com/googleapis/gax-go/v2
-# github.com/gruntwork-io/terratest v0.40.18
+# github.com/gruntwork-io/terratest v0.40.20
 ## explicit; go 1.17
 github.com/gruntwork-io/terratest/modules/collections
 github.com/gruntwork-io/terratest/modules/files
