@@ -35,7 +35,6 @@ func TestDataExportRuleCreate(t *testing.T) {
 
 	assert.Equal(t, "Data Export Rule From Terraform", createProps.Data.Filter.Name)
 	assert.Equal(t, "An Example Data Export Rule Created From Terraform", createProps.Data.Filter.Description)
-	assert.Equal(t, []string{"V1"}, createProps.Data.Filter.ProfileVersions)
 	assert.Equal(t, []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"}, createProps.Data.IDs)
 	assert.Equal(t, "Dataexport", createProps.Data.Type)
 	assert.Equal(t, 1, createProps.Data.Filter.Enabled)
@@ -62,7 +61,6 @@ func TestDataExportRuleCreate(t *testing.T) {
 
 	assert.Equal(t, "Data Export Rule From Terraform Updated", updateProps.Data.Filter.Name)
 	assert.Equal(t, "An Example Data Export Rule Created From Terraform Updated", updateProps.Data.Filter.Description)
-	assert.Equal(t, []string{"V1"}, updateProps.Data.Filter.ProfileVersions)
 	assert.Equal(t, []string{"TECHALLY_E839836BC385C452E68B3CA7EB45BA0E7BDA39CCF65673A"}, updateProps.Data.IDs)
 	assert.Equal(t, "Dataexport", updateProps.Data.Type)
 	assert.Equal(t, 1, updateProps.Data.Filter.Enabled)
