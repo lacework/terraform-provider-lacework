@@ -97,6 +97,22 @@ func castAttributeToArrayOfKeyValueMap(d *schema.ResourceData, attr string) []ma
 	return aMap
 }
 
+// extract an attribute from the provided ResourceData and convert it into a map of strings
+// with string keys
+func castAttributeToArrayKeyMapOfStrings(d *schema.ResourceData, attr string) []map[string]string {
+	if castMap, ok := d.Get(attr).(map[string]interface{}); ok {
+		mapList := make([]map[string]string, 1)
+		stringMap := make(map[string]string)
+		for key, val := range castMap {
+			stringMap[key] = val.(string)
+		}
+		mapList[0] = stringMap
+		return mapList
+	}
+
+	return []map[string]string{}
+}
+
 func castAttributeToArrayOfCustomKeyValueMap(d *schema.ResourceData, attr string, key string, value string) []map[string]string {
 	list := d.Get(attr).(*schema.Set).List()
 	aMap := make([]map[string]string, len(list))

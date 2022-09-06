@@ -118,15 +118,15 @@ func GetIntegrationName(result string, integration string) string {
 	return res.Data.Name
 }
 
-func GetEcrWithCrossAccountCreds(result string) api.AwsEcrWithCrossAccountIntegration {
+func GetEcrWithCrossAccountCreds(result string) api.AwsEcrIamRoleIntegration {
 	id := GetIDFromTerraResults(result)
 
-	res, err := LwClient.Integrations.GetAwsEcrWithCrossAccount(id)
-	if err != nil || len(res.Data) == 0 {
+	res, err := LwClient.V2.ContainerRegistries.GetAwsEcrIamRole(id)
+	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
 
-	return res.Data[0]
+	return res.Data
 }
 
 func GetContainerRegistryIntegration(result string) api.ContainerRegIntegration {
