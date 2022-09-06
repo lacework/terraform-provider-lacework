@@ -98,6 +98,7 @@ const (
 	GcpGarContainerRegistry
 	GhcrContainerRegistry
 	InlineScannerContainerRegistry
+	GcpGcrContainerRegistry
 )
 
 // ContainerRegistryTypes is the list of available Container Registry integration types
@@ -106,6 +107,7 @@ var ContainerRegistryTypes = map[containerRegistryType]string{
 	GcpGarContainerRegistry:        "GCP_GAR",
 	GhcrContainerRegistry:          "GHCR",
 	InlineScannerContainerRegistry: "INLINE_SCANNER",
+	GcpGcrContainerRegistry:        "GCP_GCR",
 }
 
 // String returns the string representation of a Container Registry integration type
