@@ -74,9 +74,9 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 								// does NOT return the private key configured in the Lacework server. So if
 								// any other element changed from the credentials then we trigger a diff
 								return !d.HasChanges(
-									"name", "limit_by_tag", "limit_by_label", "org_level", "enabled",
+									"name", "org_level", "enabled",
 									"credentials.0.client_id", "credentials.0.private_key_id",
-									"credentials.0.client_email", "limit_by_repos", "limit_num_imgs",
+									"credentials.0.client_email", "limit_num_imgs",
 									"limit_by_tags", "limit_by_labels", "limit_by_repositories",
 								)
 							},
@@ -92,9 +92,8 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of image tags to limit the assessment of images with matching tags",
-				ConflictsWith: []string{"limit_by_tag"},
+				Optional:    true,
+				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
 			"limit_by_labels": {
 				Type: schema.TypeMap,
@@ -104,9 +103,8 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
-				ConflictsWith: []string{"limit_by_label"},
+				Optional:    true,
+				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
 			},
 			"limit_by_repositories": {
 				Type: schema.TypeList,
@@ -116,9 +114,8 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of repositories to assess",
-				ConflictsWith: []string{"limit_by_repos"},
+				Optional:    true,
+				Description: "A list of repositories to assess",
 			},
 			"limit_num_imgs": {
 				Type:     schema.TypeInt,
