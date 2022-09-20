@@ -194,8 +194,6 @@ func resourceLaceworkIntegrationGcrCreate(d *schema.ResourceData, meta interface
 
 	log.Printf("[INFO] Created %s registry type with guid: %v\n", api.GcpGcrContainerRegistry.String(), integration.IntgGuid)
 	return nil
-
-	return nil
 }
 
 func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}) error {
