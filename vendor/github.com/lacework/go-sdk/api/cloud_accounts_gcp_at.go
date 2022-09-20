@@ -18,41 +18,42 @@
 
 package api
 
-// GetGcpCfg gets a single GcpCfg integration matching the provided integration guid
-func (svc *CloudAccountsService) GetGcpCfg(guid string) (
-	response GcpCfgIntegrationResponse,
+// GetGcpAtSes gets a single GcpAtSes integration matching the provided integration guid
+func (svc *CloudAccountsService) GetGcpAtSes(guid string) (
+	response GcpAtSesIntegrationResponse,
 	err error,
 ) {
 	err = svc.get(guid, &response)
 	return
 }
 
-// UpdateGcpCfg updates a single GcpCfg integration on the Lacework Server
-func (svc *CloudAccountsService) UpdateGcpCfg(data CloudAccount) (
-	response GcpCfgIntegrationResponse,
+// UpdateGcpAtSes updates a single GcpAtSes integration on the Lacework Server
+func (svc *CloudAccountsService) UpdateGcpAtSes(data CloudAccount) (
+	response GcpAtSesIntegrationResponse,
 	err error,
 ) {
 	err = svc.update(data.ID(), data, &response)
 	return
 }
 
-type GcpCfgIntegrationResponse struct {
-	Data V2GcpCfgIntegration `json:"data"`
+type GcpAtSesIntegrationResponse struct {
+	Data V2GcpAtSesIntegration `json:"data"`
 }
 
-type V2GcpCfgIntegration struct {
+type V2GcpAtSesIntegration struct {
 	v2CommonIntegrationData
-	Data GcpCfgData `json:"data"`
+	Data GcpAtSesData `json:"data"`
 }
 
-type GcpCfgData struct {
-	Credentials GcpCfgCredentials `json:"credentials"`
-	IDType      string            `json:"idType"`
+type GcpAtSesData struct {
+	Credentials GcpAtSesCredentials `json:"credentials"`
+	IDType      string              `json:"idType"`
 	// Either the org id or project id
-	ID string `json:"id"`
+	ID               string `json:"id"`
+	SubscriptionName string `json:"subscriptionName"`
 }
 
-type GcpCfgCredentials struct {
+type GcpAtSesCredentials struct {
 	ClientID     string `json:"clientId"`
 	ClientEmail  string `json:"clientEmail"`
 	PrivateKeyID string `json:"privateKeyId"`
