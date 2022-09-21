@@ -142,11 +142,12 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewGcpAuditLogIntegration(d.Get("name").(string),
-		api.GcpIntegrationData{
+	data := api.NewCloudAccount(d.Get("name").(string),
+		api.GcpAtSesCloudAccount,
+		api.GcpAtSesData{
 			ID:     d.Get("resource_id").(string),
 			IDType: resourceLevel.String(),
-			Credentials: api.GcpCredentials{
+			Credentials: api.GcpAtSesCredentials{
 				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
 				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
@@ -162,48 +163,37 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 
 	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
-		log.Printf("[INFO] Creating %s integration\n", api.GcpAuditLogIntegration.String())
-		response, err := lacework.Integrations.CreateGcp(data)
+		log.Printf("[INFO] Creating %s integration\n", api.GcpAtSesCloudAccount.String())
+		response, err := lacework.V2.CloudAccounts.Create(data)
 		if err != nil {
 			if retries <= 0 {
 				return resource.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
-						api.GcpAuditLogIntegration.String(), err,
+					fmt.Errorf("error creating %s integration: %s",
+						api.GcpAtSesCloudAccount.String(), err,
 					))
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
-				api.GcpAuditLogIntegration.String(), retries, err,
+				api.GcpAtSesCloudAccount.String(), retries, err,
 			)
 			return resource.RetryableError(fmt.Errorf(
-				"Unable to create %s integration (retrying %d more time(s))",
-				api.GcpAuditLogIntegration.String(), retries,
+				"unable to create %s integration (retrying %d more time(s))",
+				api.GcpAtSesCloudAccount.String(), retries,
 			))
 		}
 
-		log.Printf("[INFO] Verifying server response")
-		err = validateGcpIntegrationResponse(&response)
-		if err != nil {
-			return resource.NonRetryableError(err)
-		}
-
-		// @afiune at this point in time, we know the data field has a single value
-		integration := response.Data[0]
+		integration := response.Data
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
 		d.Set("enabled", integration.Enabled == 1)
-		d.Set("resource_level", integration.Data.IDType)
-		d.Set("resource_id", integration.Data.ID)
-		d.Set("subscription", integration.Data.SubscriptionName)
-
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("type_name", integration.TypeName)
+		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
-			api.GcpAuditLogIntegration.String(), integration.IntgGuid)
+			api.GcpAtSesCloudAccount.String(), integration.IntgGuid)
 		return nil
 	})
 }
@@ -212,36 +202,35 @@ func resourceLaceworkIntegrationGcpAtRead(d *schema.ResourceData, meta interface
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading %s integration with guid: %v\n",
-		api.GcpAuditLogIntegration.String(), d.Id())
-	response, err := lacework.Integrations.GetGcp(d.Id())
+		api.GcpAtSesCloudAccount.String(), d.Id())
+	response, err := lacework.V2.CloudAccounts.GetGcpAtSes(d.Id())
 
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	integration := response.Data
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
 
-			creds := make(map[string]string)
-			creds["client_id"] = integration.Data.Credentials.ClientID
-			creds["client_email"] = integration.Data.Credentials.ClientEmail
-			creds["private_key_id"] = integration.Data.Credentials.PrivateKeyID
-			d.Set("credentials", []map[string]string{creds})
-			d.Set("resource_level", integration.Data.IDType)
-			d.Set("resource_id", integration.Data.ID)
-			d.Set("subscription", integration.Data.SubscriptionName)
+		creds := make(map[string]string)
+		creds["client_id"] = integration.Data.Credentials.ClientID
+		creds["client_email"] = integration.Data.Credentials.ClientEmail
+		creds["private_key_id"] = integration.Data.Credentials.PrivateKeyID
+		d.Set("credentials", []map[string]string{creds})
+		d.Set("resource_level", integration.Data.IDType)
+		d.Set("resource_id", integration.Data.ID)
+		d.Set("subscription", integration.Data.SubscriptionName)
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n",
-				api.GcpAuditLogIntegration.String(), integration.IntgGuid)
-			return nil
-		}
+		log.Printf("[INFO] Read %s integration with guid: %v\n",
+			api.GcpAtSesCloudAccount.String(), integration.IntgGuid)
+		return nil
 	}
 
 	d.SetId("")
@@ -258,11 +247,12 @@ func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interfa
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewGcpAuditLogIntegration(d.Get("name").(string),
-		api.GcpIntegrationData{
+	data := api.NewCloudAccount(d.Get("name").(string),
+		api.GcpAtSesCloudAccount,
+		api.GcpAtSesData{
 			ID:     d.Get("resource_id").(string),
 			IDType: resourceLevel.String(),
-			Credentials: api.GcpCredentials{
+			Credentials: api.GcpAtSesCredentials{
 				ClientID:     d.Get("credentials.0.client_id").(string),
 				ClientEmail:  d.Get("credentials.0.client_email").(string),
 				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
@@ -279,20 +269,13 @@ func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interfa
 	data.IntgGuid = d.Id()
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n",
-		api.GcpAuditLogIntegration.String(), data)
-	response, err := lacework.Integrations.UpdateGcp(data)
+		api.GcpAtSesCloudAccount.String(), data)
+	response, err := lacework.V2.CloudAccounts.UpdateGcpAtSes(data)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateGcpIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point in time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
@@ -302,11 +285,11 @@ func resourceLaceworkIntegrationGcpAtUpdate(d *schema.ResourceData, meta interfa
 
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
-		api.GcpAuditLogIntegration.String(), d.Id())
+		api.GcpAtSesCloudAccount.String(), d.Id())
 	return nil
 }
 
@@ -314,15 +297,15 @@ func resourceLaceworkIntegrationGcpAtDelete(d *schema.ResourceData, meta interfa
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s integration with guid: %v\n",
-		api.GcpAuditLogIntegration.String(), d.Id())
+		api.GcpAtSesCloudAccount.String(), d.Id())
 
-	_, err := lacework.Integrations.DeleteGcp(d.Id())
+	err := lacework.V2.CloudAccounts.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
 	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
-		api.GcpAuditLogIntegration.String(), d.Id())
+		api.GcpAtSesCloudAccount.String(), d.Id())
 
 	return nil
 }
