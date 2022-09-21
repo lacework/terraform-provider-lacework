@@ -9,7 +9,7 @@ import (
 )
 
 // TestIntegrationECRCreate applies integration terraform:
-// => '../examples/resource_lacework_integration_gar'
+// => '../examples/resource_lacework_integration_ecr/iam_role'
 //
 // It uses the go-sdk to verify the created integration,
 // applies an update with new integration name and destroys it
@@ -32,10 +32,10 @@ func TestIntegrationECRCreate(t *testing.T) {
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		createData := GetEcrWithCrossAccountCreds(create)
 		assert.Equal(t, "Amazon Elastic Container Registry Example", createData.Name)
-		assert.Equal(t, awsCreds.RoleArn, createData.Data.Credentials.RoleArn)
-		assert.Equal(t, awsCreds.ExternalID, createData.Data.Credentials.ExternalID)
+		assert.Equal(t, awsCreds.RoleArn, createData.Data.CrossAccountCredentials.RoleArn)
+		assert.Equal(t, awsCreds.ExternalID, createData.Data.CrossAccountCredentials.ExternalID)
 		assert.Equal(t, awsCreds.RegistryDomain, createData.Data.RegistryDomain)
-		assert.Equal(t, true, createData.Data.AwsEcrCommonData.NonOSPackageEval)
+		assert.Equal(t, true, createData.Data.NonOSPackageEval)
 
 		terraformOptions.Vars["integration_name"] = "Amazon Elastic Container Registry Updated"
 		terraformOptions.Vars["non_os_package_support"] = true
@@ -44,10 +44,10 @@ func TestIntegrationECRCreate(t *testing.T) {
 		updateData := GetEcrWithCrossAccountCreds(update)
 
 		assert.Equal(t, "Amazon Elastic Container Registry Updated", updateData.Name)
-		assert.Equal(t, awsCreds.RoleArn, updateData.Data.Credentials.RoleArn)
-		assert.Equal(t, awsCreds.ExternalID, updateData.Data.Credentials.ExternalID)
+		assert.Equal(t, awsCreds.RoleArn, updateData.Data.CrossAccountCredentials.RoleArn)
+		assert.Equal(t, awsCreds.ExternalID, updateData.Data.CrossAccountCredentials.ExternalID)
 		assert.Equal(t, awsCreds.RegistryDomain, updateData.Data.RegistryDomain)
-		assert.Equal(t, true, updateData.Data.AwsEcrCommonData.NonOSPackageEval)
+		assert.Equal(t, true, updateData.Data.NonOSPackageEval)
 	}
 }
 

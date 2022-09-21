@@ -1,51 +1,66 @@
 package lacework
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/pkg/errors"
-
 	"github.com/lacework/go-sdk/api"
+	"github.com/pkg/errors"
 )
 
 func importLaceworkECRIntegration(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
+	var awsAuthType string
 
 	log.Printf("[INFO] Importing Lacework integration with guid: %s\n", d.Id())
-	response, err := lacework.Integrations.Get(d.Id())
+
+	var response api.ContainerRegistryRaw
+
+	err := lacework.V2.ContainerRegistries.Get(d.Id(), &response)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			log.Printf("[INFO] Integration found with guid: %v\n", integration.IntgGuid)
+	integration := response.IntgGuid
+	if integration == d.Id() {
+		log.Printf("[INFO] ECR integration found with guid: %v\n", integration)
 
-			// @afiune this field is important since it tells the resource which API functions to use
-			// we will extract it from the raw integration response so that the READ functions populate
-			// the rest of the fiels
-			if awsAuthType, ok := integration.Data["AWS_AUTH_TYPE"]; ok {
-				d.Set("aws_auth_type", awsAuthType.(string))
-			} else {
-				// if this field does not exist, the user might be importing a wrong integration type
-				// (or the SCHEMA changed again without notice...)
-				return nil, errors.New("AWS_AUTH_TYPE not found. Are you importing an ECR integration?")
-			}
-
-			log.Printf("[INFO] ECR integration found with guid: %v\n", integration.IntgGuid)
-			return []*schema.ResourceData{d}, nil
+		awsAuthType, err = getAuthTypeFromRaw(response)
+		if err != nil || awsAuthType == "" {
+			return nil, errors.Wrapf(err, "unable to import Lacework resource with guid '%s'",
+				d.Id())
 		}
+
+		d.Set("aws_auth_type", awsAuthType)
+
+		return []*schema.ResourceData{d}, nil
 	}
 
 	log.Printf("[INFO] Raw integration response: %v\n", response)
 	return nil, fmt.Errorf(
-		"Unable to import Lacework resource. Integration with guid '%s' was not found.",
+		"unable to import Lacework resource. Integration with guid '%s' was not found",
 		d.Id(),
 	)
+}
+
+func getAuthTypeFromRaw(raw api.ContainerRegistryRaw) (string, error) {
+	if casting, ok := raw.GetData().(map[string]interface{}); ok {
+		if _, exist := casting["data"]; exist {
+			if castData, ok := casting["data"].(map[string]interface{}); ok {
+				if t, exist := castData["awsAuthType"]; exist {
+					return t.(string), nil
+				}
+			}
+		}
+
+	}
+
+	return "", errors.New("field AwsAuthType not found in response.")
+
 }
 
 func resourceLaceworkIntegrationEcr() *schema.Resource {
@@ -113,34 +128,6 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 				Default:     true,
 				Description: "Enable program language scanning",
 			},
-
-			// TODO @afiune remove these resources when we release v1.0
-			"limit_by_tag": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Default:       "*",
-				Description:   "A comma-separated list of image tags to limit the assessment of images with matching tags",
-				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider",
-				ConflictsWith: []string{"limit_by_tags"},
-			},
-			"limit_by_label": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Default:       "*",
-				Description:   "A comma-separated list of image labels to limit the assessment of images with matching labels",
-				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider",
-				ConflictsWith: []string{"limit_by_labels"},
-			},
-
-			"limit_by_repos": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Description:   "A comma-separated list of repositories to assess",
-				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_repositories` in version 1.0 of the Lacework provider",
-				ConflictsWith: []string{"limit_by_repositories"},
-			},
-			// END TODO @afiune
-
 			"limit_by_tags": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
@@ -149,9 +136,8 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of image tags to limit the assessment of images with matching tags",
-				ConflictsWith: []string{"limit_by_tag"},
+				Optional:    true,
+				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
 			"limit_by_labels": {
 				Type: schema.TypeMap,
@@ -161,9 +147,8 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
-				ConflictsWith: []string{"limit_by_label"},
+				Optional:    true,
+				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
 			},
 			"limit_by_repositories": {
 				Type: schema.TypeList,
@@ -173,9 +158,8 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of repositories to assess",
-				ConflictsWith: []string{"limit_by_repos"},
+				Optional:    true,
+				Description: "A list of repositories to assess",
 			},
 			"limit_num_imgs": {
 				Type:         schema.TypeInt,
@@ -208,7 +192,7 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 			"org_level": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Wheter or not this integration is configured at the Organization level",
+				Description: "Whether or not this integration is configured at the Organization level",
 			},
 		},
 	}
@@ -242,134 +226,16 @@ For more information visit https://registry.terraform.io/providers/lacework/lace
 }
 
 func resourceLaceworkIntegrationEcrRead(d *schema.ResourceData, meta interface{}) error {
-	lacework := meta.(*api.Client)
+	log.Printf("[INFO] Reading %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 
 	switch d.Get("aws_auth_type").(string) {
-	case api.AwsEcrAccessKey.String():
-		log.Printf("[INFO] %s Authentication: %s\n", api.EcrRegistry.String(), api.AwsEcrAccessKey.String())
-		return resourceLaceworkIntegrationEcrReadWithAccessKey(d, lacework)
-
 	case api.AwsEcrIAM.String():
-		log.Printf("[INFO] %s Authentication: %s\n", api.EcrRegistry.String(), api.AwsEcrIAM.String())
-		return resourceLaceworkIntegrationEcrReadWithIAMRole(d, lacework)
-
+		return readEcrIam(d, meta)
+	case api.AwsEcrAccessKey.String():
+		return readEcrAccessKey(d, meta)
 	default:
 		return errors.Errorf("Unsupported ECR authentication type '%s'.", d.Get("aws_auth_type").(string))
 	}
-}
-
-func resourceLaceworkIntegrationEcrReadWithIAMRole(d *schema.ResourceData, lacework *api.Client) error {
-	log.Printf("[INFO] Reading %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
-	response, err := lacework.Integrations.GetAwsEcrWithCrossAccount(d.Id())
-	if err != nil {
-		return resourceNotFound(d, err)
-	}
-
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
-			// @afiune this field is important for updates since it will force a new resource
-			d.Set("aws_auth_type", integration.Data.AwsAuthType)
-			d.Set("registry_domain", integration.Data.RegistryDomain)
-
-			creds := make(map[string]string)
-			creds["role_arn"] = integration.Data.Credentials.RoleArn
-			creds["external_id"] = integration.Data.Credentials.ExternalID
-			d.Set("credentials", []map[string]string{creds})
-
-			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
-
-			if _, ok := d.GetOk("limit_by_tags"); ok {
-				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
-			} else {
-				d.Set("limit_by_tag", integration.Data.LimitByTag)
-			}
-
-			if _, ok := d.GetOk("limit_by_labels"); ok {
-				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
-			} else {
-				d.Set("limit_by_label", integration.Data.LimitByLabel)
-			}
-
-			if _, ok := d.GetOk("limit_by_repositories"); ok {
-				d.Set("limit_by_repositories", strings.Split(integration.Data.LimitByRep, ","))
-			} else {
-				d.Set("limit_by_repos", integration.Data.LimitByRep)
-			}
-
-			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
-				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
-	return nil
-}
-
-func resourceLaceworkIntegrationEcrReadWithAccessKey(d *schema.ResourceData, lacework *api.Client) error {
-	log.Printf("[INFO] Reading %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
-	response, err := lacework.Integrations.GetAwsEcrWithAccessKey(d.Id())
-	if err != nil {
-		return resourceNotFound(d, err)
-	}
-
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
-
-			// @afiune this field is important for updates since it will force a new resource
-			d.Set("aws_auth_type", integration.Data.AwsAuthType)
-			d.Set("registry_domain", integration.Data.RegistryDomain)
-
-			creds := make(map[string]string)
-			creds["access_key_id"] = integration.Data.Credentials.AccessKeyID
-			d.Set("credentials", []map[string]string{creds})
-
-			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
-
-			if _, ok := d.GetOk("limit_by_tags"); ok {
-				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
-			} else {
-				d.Set("limit_by_tag", integration.Data.LimitByTag)
-			}
-
-			if _, ok := d.GetOk("limit_by_labels"); ok {
-				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
-			} else {
-				d.Set("limit_by_label", integration.Data.LimitByLabel)
-			}
-
-			if _, ok := d.GetOk("limit_by_repositories"); ok {
-				d.Set("limit_by_repositories", strings.Split(integration.Data.LimitByRep, ","))
-			} else {
-				d.Set("limit_by_repos", integration.Data.LimitByRep)
-			}
-
-			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
-				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
-			return nil
-		}
-	}
-
-	d.SetId("")
-	return nil
 }
 
 func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -434,36 +300,19 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 }
 
 func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lacework *api.Client) error {
-
-	limitByTags := d.Get("limit_by_tag").(string)
-	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
-		limitByTags = strings.Join(tags, ",")
-	}
-
-	limitByLabels := d.Get("limit_by_label").(string)
-	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
-		limitByLabels = joinMapStrings(labels, ",")
-	}
-
-	limitByRepos := d.Get("limit_by_repos").(string)
-	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
-		limitByRepos = strings.Join(repos, ",")
-	}
-
-	data := api.NewAwsEcrWithCrossAccountIntegration(d.Get("name").(string),
-		api.AwsEcrDataWithCrossAccountCreds{
-			Credentials: api.AwsCrossAccountCreds{
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.AwsEcrContainerRegistry,
+		api.AwsEcrIamRoleData{
+			CrossAccountCredentials: api.AwsEcrCrossAccountCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),
 			},
-			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:       limitByTags,
-				LimitByLabel:     limitByLabels,
-				LimitByRep:       limitByRepos,
-				LimitNumImg:      d.Get("limit_num_imgs").(int),
-				RegistryDomain:   d.Get("registry_domain").(string),
-				NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			},
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel:     castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 		},
 	)
 
@@ -473,68 +322,42 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 
 	data.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration %s registry with authentication %s\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), data.Data.AwsAuthType)
-	response, err := lacework.Integrations.UpdateAwsEcrWithCrossAccount(data)
+	log.Printf("[INFO] Updating %s registry\n", api.AwsEcrContainerRegistry.String())
+	response, err := lacework.V2.ContainerRegistries.UpdateAwsEcrIamRole(data)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Verifying server response")
-	err = validateEcrWithIAMRoleIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point in time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
-	log.Printf("[INFO] Updated %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
+	log.Printf("[INFO] Updated  %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 
 	return nil
 }
 
 func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, lacework *api.Client) error {
-
-	limitByTags := d.Get("limit_by_tag").(string)
-	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
-		limitByTags = strings.Join(tags, ",")
-	}
-
-	limitByLabels := d.Get("limit_by_label").(string)
-	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
-		limitByLabels = joinMapStrings(labels, ",")
-	}
-
-	limitByRepos := d.Get("limit_by_repos").(string)
-	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
-		limitByRepos = strings.Join(repos, ",")
-	}
-
-	data := api.NewAwsEcrWithAccessKeyIntegration(d.Get("name").(string),
-		api.AwsEcrDataWithAccessKeyCreds{
-			Credentials: api.AwsEcrAccessKeyCreds{
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.AwsEcrContainerRegistry,
+		api.AwsEcrAccessKeyData{
+			AccessKeyCredentials: api.AwsEcrAccessKeyCredentials{
 				AccessKeyID:     d.Get("credentials.0.access_key_id").(string),
 				SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
 			},
-			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:       limitByTags,
-				LimitByLabel:     limitByLabels,
-				LimitByRep:       limitByRepos,
-				LimitNumImg:      d.Get("limit_num_imgs").(int),
-				RegistryDomain:   d.Get("registry_domain").(string),
-				NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			},
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_labels"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			RegistryDomain:   d.Get("registry_domain").(string),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 		},
 	)
 
@@ -544,33 +367,24 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 
 	data.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration %s registry with authentication %s\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), data.Data.AwsAuthType)
-	response, err := lacework.Integrations.UpdateAwsEcrWithAccessKey(data)
+	log.Printf("[INFO] Updating %s registry\n", api.AwsEcrContainerRegistry.String())
+	response, err := lacework.V2.ContainerRegistries.UpdateAwsEcrAccessKey(data)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Verifying server response")
-	err = validateEcrWithAccessKeyIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point in time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
-	log.Printf("[INFO] Updated %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
+	log.Printf("[INFO] Updated %s registry type with guid: %v\n", api.EcrRegistry.String(), d.Id())
 
 	return nil
 }
@@ -578,16 +392,14 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 func resourceLaceworkIntegrationEcrDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
+	log.Printf("[INFO] Deleting %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 
-	_, err := lacework.Integrations.Delete(d.Id())
+	err := lacework.V2.ContainerRegistries.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
+	log.Printf("[INFO] Deleted %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 
 	return nil
 }
@@ -627,26 +439,30 @@ func validateAccessKeyCreds(d *schema.ResourceData) error {
 }
 
 func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, lacework *api.Client) error {
-	data := api.NewAwsEcrWithAccessKeyIntegration(d.Get("name").(string),
-		api.AwsEcrDataWithAccessKeyCreds{
-			Credentials: api.AwsEcrAccessKeyCreds{
-				AccessKeyID:     d.Get("credentials.0.access_key_id").(string),
-				SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
-			},
-			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:       d.Get("limit_by_tag").(string),
-				LimitByLabel:     d.Get("limit_by_label").(string),
-				LimitByRep:       d.Get("limit_by_repos").(string),
-				LimitNumImg:      d.Get("limit_num_imgs").(int),
-				RegistryDomain:   d.Get("registry_domain").(string),
-				NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			},
+	iamRoleData := api.AwsEcrAccessKeyData{
+		AccessKeyCredentials: api.AwsEcrAccessKeyCredentials{
+			AccessKeyID:     d.Get("credentials.0.access_key_id").(string),
+			SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
 		},
+		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitNumImg:      d.Get("limit_num_imgs").(int),
+		RegistryDomain:   d.Get("registry_domain").(string),
+		NonOSPackageEval: d.Get("non_os_package_support").(bool),
+	}
+
+	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+	if len(labels) != 0 {
+		iamRoleData.LimitByLabel = labels
+	}
+
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.AwsEcrContainerRegistry,
+		iamRoleData,
 	)
 
-	log.Printf("[INFO] Creating %s integration %s registry with authentication %s\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), data.Data.AwsAuthType)
-	response, err := lacework.Integrations.CreateAwsEcrWithAccessKey(data)
+	log.Printf("[INFO] Creating %s registry\n", api.AwsEcrContainerRegistry.String())
+	response, err := lacework.V2.ContainerRegistries.Create(data)
 	if err != nil {
 		return err
 	}
@@ -655,68 +471,65 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 		data.Enabled = 0
 	}
 
-	log.Printf("[INFO] Verifying server response")
-	err = validateEcrWithAccessKeyIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point in time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
+	ecrData, err := castRawToAwsEcrAccessKeyData(response.Data.Data)
+	if err != nil {
+		return err
+	}
 	// @afiune this field is important for updates since it will force a new resource
-	d.Set("aws_auth_type", integration.Data.AwsAuthType)
+	d.Set("aws_auth_type", ecrData.AwsAuthType)
 
 	log.Printf("[INFO] Created %s integration %s registry type with guid: %v\n",
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
 	return nil
+}
+
+func castRawToAwsEcrAccessKeyData(data any) (ecrData api.AwsEcrAccessKeyData, err error) {
+	dataJson, err := json.Marshal(data)
+	err = json.Unmarshal(dataJson, &ecrData)
+	return
+}
+
+func castRawToAwsEcrIamRoleData(data any) (ecrData api.AwsEcrIamRoleData, err error) {
+	dataJson, err := json.Marshal(data)
+	err = json.Unmarshal(dataJson, &ecrData)
+	return
 }
 
 func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lacework *api.Client) error {
-
-	limitByTags := d.Get("limit_by_tag").(string)
-	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
-		limitByTags = strings.Join(tags, ",")
-	}
-
-	limitByLabels := d.Get("limit_by_label").(string)
-	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
-		limitByLabels = joinMapStrings(labels, ",")
-	}
-
-	limitByRepos := d.Get("limit_by_repos").(string)
-	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
-		limitByRepos = strings.Join(repos, ",")
-	}
-
-	data := api.NewAwsEcrWithCrossAccountIntegration(d.Get("name").(string),
-		api.AwsEcrDataWithCrossAccountCreds{
-			Credentials: api.AwsCrossAccountCreds{
-				RoleArn:    d.Get("credentials.0.role_arn").(string),
-				ExternalID: d.Get("credentials.0.external_id").(string),
-			},
-			AwsEcrCommonData: api.AwsEcrCommonData{
-				LimitByTag:       limitByTags,
-				LimitByLabel:     limitByLabels,
-				LimitByRep:       limitByRepos,
-				LimitNumImg:      d.Get("limit_num_imgs").(int),
-				RegistryDomain:   d.Get("registry_domain").(string),
-				NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			},
+	iamRoleData := api.AwsEcrIamRoleData{
+		CrossAccountCredentials: api.AwsEcrCrossAccountCredentials{
+			RoleArn:    d.Get("credentials.0.role_arn").(string),
+			ExternalID: d.Get("credentials.0.external_id").(string),
 		},
+		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitNumImg:      d.Get("limit_num_imgs").(int),
+		RegistryDomain:   d.Get("registry_domain").(string),
+		NonOSPackageEval: d.Get("non_os_package_support").(bool),
+	}
+
+	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+	if len(labels) != 0 {
+		iamRoleData.LimitByLabel = labels
+	}
+
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.AwsEcrContainerRegistry,
+		iamRoleData,
 	)
 
-	log.Printf("[INFO] Creating %s integration %s registry with authentication %s\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), data.Data.AwsAuthType)
-	response, err := lacework.Integrations.CreateAwsEcrWithCrossAccount(data)
+	log.Printf("[INFO] Creating %s registry\n", api.AwsEcrContainerRegistry.String())
+	response, err := lacework.V2.ContainerRegistries.Create(data)
 	if err != nil {
 		return err
 	}
@@ -725,101 +538,113 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 		data.Enabled = 0
 	}
 
-	log.Printf("[INFO] Verifying server response")
-	err = validateEcrWithIAMRoleIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point in time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.SetId(integration.IntgGuid)
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
+	ecrData, err := castRawToAwsEcrIamRoleData(response.Data.Data)
+	if err != nil {
+		return err
+	}
 	// @afiune this field is important for updates since it will force a new resource
-	d.Set("aws_auth_type", integration.Data.AwsAuthType)
+	d.Set("aws_auth_type", ecrData.AwsAuthType)
 
 	log.Printf("[INFO] Created %s integration %s registry type with guid: %v\n",
 		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
 	return nil
 }
 
-// validateEcrWithIAMRoleIntegrationResponse checks weather or not the server
-// response has any inconsistent data, it returns a friendly error message describing
-// the problem and how to report it
-func validateEcrWithIAMRoleIntegrationResponse(
-	response *api.AwsEcrWithCrossAccountIntegrationResponse) error {
-	if len(response.Data) == 0 {
-		// @afiune this edge case should never happen, if we land here it means that
-		// something went wrong in the server side of things (Lacework API), so let
-		// us inform that to our users
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
+func readEcrIam(d *schema.ResourceData, meta interface{}) error {
+	lacework := meta.(*api.Client)
+	response, err := lacework.V2.ContainerRegistries.GetAwsEcrIamRole(d.Id())
+	if err != nil {
+		return resourceNotFound(d, err)
 	}
 
-	if len(response.Data) > 1 {
-		// @afiune if we are creating a single integration and the server returns
-		// more than one integration inside the 'data' field, it is definitely another
-		// edge case that should never happen
-		msg := `
-There is more that one integration inside the server response data.
+	if response.Data.IntgGuid == d.Id() {
+		d.Set("name", response.Data.Name)
+		d.Set("intg_guid", response.Data.IntgGuid)
+		d.Set("enabled", response.Data.Enabled == 1)
+		d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+		d.Set("type_name", response.Data.Type)
+		d.Set("org_level", response.Data.IsOrg == 1)
 
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
+		d.Set("non_os_package_support", response.Data.Data.NonOSPackageEval)
+		d.Set("registry_domain", response.Data.Data.RegistryDomain)
+		d.Set("aws_auth_type", response.Data.Data.AwsAuthType)
+
+		creds := make(map[string]string)
+		creds["role_arn"] = response.Data.Data.CrossAccountCredentials.RoleArn
+		creds["external_id"] = response.Data.Data.CrossAccountCredentials.ExternalID
+		d.Set("credentials", []map[string]string{creds})
+
+		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
+		if len(response.Data.Data.LimitByTag) != 0 {
+			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
+		if len(response.Data.Data.LimitByRep) != 0 {
+			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		}
+
+		if len(response.Data.Data.LimitByLabel) != 0 {
+			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		}
+
+		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), response.Data.IntgGuid)
+		return nil
 	}
 
+	d.SetId("")
 	return nil
 }
 
-// validateEcrWithAccessKeyIntegrationResponse checks weather or not the server
-// response has any inconsistent data, it returns a friendly error message describing
-// the problem and how to report it
-func validateEcrWithAccessKeyIntegrationResponse(
-	response *api.AwsEcrWithAccessKeyIntegrationResponse) error {
-	if len(response.Data) == 0 {
-		// @afiune this edge case should never happen, if we land here it means that
-		// something went wrong in the server side of things (Lacework API), so let
-		// us inform that to our users
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
+func readEcrAccessKey(d *schema.ResourceData, meta interface{}) error {
+	lacework := meta.(*api.Client)
+	response, err := lacework.V2.ContainerRegistries.GetAwsEcrAccessKey(d.Id())
+	if err != nil {
+		return resourceNotFound(d, err)
 	}
 
-	if len(response.Data) > 1 {
-		// @afiune if we are creating a single integration and the server returns
-		// more than one integration inside the 'data' field, it is definitely another
-		// edge case that should never happen
-		msg := `
-There is more that one integration inside the server response data.
+	if response.Data.IntgGuid == d.Id() {
+		d.Set("name", response.Data.Name)
+		d.Set("intg_guid", response.Data.IntgGuid)
+		d.Set("enabled", response.Data.Enabled == 1)
+		d.Set("created_or_updated_time", response.Data.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", response.Data.CreatedOrUpdatedBy)
+		d.Set("type_name", response.Data.Type)
+		d.Set("org_level", response.Data.IsOrg == 1)
 
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
+		d.Set("non_os_package_support", response.Data.Data.NonOSPackageEval)
+		d.Set("registry_domain", response.Data.Data.RegistryDomain)
+		d.Set("aws_auth_type", response.Data.Data.AwsAuthType)
+
+		creds := make(map[string]string)
+		creds["access_key_id"] = response.Data.Data.AccessKeyCredentials.AccessKeyID
+		d.Set("credentials", []map[string]string{creds})
+
+		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
+		if len(response.Data.Data.LimitByTag) != 0 {
+			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
+		if len(response.Data.Data.LimitByRep) != 0 {
+			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		}
+
+		if len(response.Data.Data.LimitByLabel) != 0 {
+			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		}
+
+		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), response.Data.IntgGuid)
+		return nil
 	}
 
+	d.SetId("")
 	return nil
 }
