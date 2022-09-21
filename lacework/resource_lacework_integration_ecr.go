@@ -373,7 +373,6 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 		return err
 	}
 
-	// @afiune at this point in time, we know the data field has a single value
 	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
