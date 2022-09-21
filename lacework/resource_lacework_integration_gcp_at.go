@@ -327,7 +327,7 @@ func resourceLaceworkIntegrationGcpAtDelete(d *schema.ResourceData, meta interfa
 	return nil
 }
 
-// validateAwsIntegrationResponse checks weather or not the server response has
+// validateGcpIntegrationResponse checks weather or not the server response has
 // any inconsistent data, it returns a friendly error message describing the
 // problem and how to report it
 func validateGcpIntegrationResponse(response *api.GcpIntegrationsResponse) error {
