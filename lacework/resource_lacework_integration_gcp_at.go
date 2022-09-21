@@ -309,39 +309,3 @@ func resourceLaceworkIntegrationGcpAtDelete(d *schema.ResourceData, meta interfa
 
 	return nil
 }
-
-// validateGcpIntegrationResponse checks weather or not the server response has
-// any inconsistent data, it returns a friendly error message describing the
-// problem and how to report it
-func validateGcpIntegrationResponse(response *api.GcpIntegrationsResponse) error {
-	if len(response.Data) == 0 {
-		// @afiune this edge case should never happen, if we land here it means that
-		// something went wrong in the server side of things (Lacework API), so let
-		// us inform that to our users
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		// @afiune if we are creating a single integration and the server returns
-		// more than one integration inside the 'data' field, it is definitely another
-		// edge case that should never happen
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
-	return nil
-}
