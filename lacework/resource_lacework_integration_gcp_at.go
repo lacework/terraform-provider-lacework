@@ -182,10 +182,6 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 			))
 		}
 
-		if err != nil {
-			return resource.NonRetryableError(err)
-		}
-
 		integration := response.Data
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
