@@ -91,13 +91,13 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		aws      = api.NewAwsIntegration(d.Get("name").(string),
-			api.AwsGovCloudCfgIntegration,
-			api.AwsIntegrationData{
-				GovCloudCredentials: &api.AwsGovCloudCreds{
+		aws      = api.NewCloudAccount(d.Get("name").(string),
+			api.AwsUsGovCfgCloudAccount,
+			api.AwsUsGovCfgData{
+				Credentials: api.AwsUsGovCfgCredentials{
 					AccessKeyID:     d.Get("credentials.0.access_key_id").(string),
 					SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
-					AccountID:       d.Get("account_id").(string),
+					AwsAccountID:    d.Get("account_id").(string),
 				},
 			},
 		)
@@ -109,32 +109,26 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 
 	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
-		log.Printf("[INFO] Creating %s integration\n", api.AwsGovCloudCfgIntegration.String())
-		response, err := lacework.Integrations.CreateAws(aws)
+		log.Printf("[INFO] Creating %s integration\n", api.AwsUsGovCfgCloudAccount.String())
+		response, err := lacework.V2.CloudAccounts.Create(aws)
 		if err != nil {
 			if retries <= 0 {
 				return resource.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
-						api.AwsGovCloudCfgIntegration.String(), err,
+					fmt.Errorf("error creating %s integration: %s",
+						api.AwsUsGovCfgCloudAccount.String(), err,
 					))
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
-				api.AwsGovCloudCfgIntegration.String(), retries, err,
+				api.AwsUsGovCfgCloudAccount.String(), retries, err,
 			)
 			return resource.RetryableError(fmt.Errorf(
-				"Unable to create %s integration (retrying %d more time(s))",
-				api.AwsGovCloudCfgIntegration.String(), retries,
+				"unable to create %s integration (retrying %d more time(s))",
+				api.AwsUsGovCfgCloudAccount.String(), retries,
 			))
 		}
 
-		log.Printf("[INFO] Verifying server response")
-		err = validateAwsIntegrationResponse(&response)
-		if err != nil {
-			return resource.NonRetryableError(err)
-		}
-
-		integration := response.Data[0]
+		integration := response.Data
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
@@ -142,11 +136,11 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("type_name", integration.TypeName)
+		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
-			api.AwsGovCloudCfgIntegration.String(), integration.IntgGuid)
+			api.AwsUsGovCfgCloudAccount.String(), integration.IntgGuid)
 		return nil
 	})
 }
@@ -155,33 +149,32 @@ func resourceLaceworkIntegrationAwsGovCloudCfgRead(d *schema.ResourceData, meta 
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading %s integration with guid: %v\n",
-		api.AwsGovCloudCfgIntegration.String(), d.Id())
-	response, err := lacework.Integrations.GetAws(d.Id())
+		api.AwsUsGovCfgCloudAccount.String(), d.Id())
+	response, err := lacework.V2.CloudAccounts.GetAwsUsGovCfg(d.Id())
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
-			d.Set("account_id", integration.Data.GetAccountID())
+	integration := response.Data
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
+		d.Set("account_id", integration.Data.Credentials.AwsAccountID)
 
-			creds := make(map[string]string)
-			credentials := integration.Data.GetGovCloudCredentials()
-			creds["access_key_id"] = credentials.AccessKeyID
-			creds["secret_access_key"] = credentials.SecretAccessKey
-			d.Set("credentials", []map[string]string{creds})
+		creds := make(map[string]string)
+		credentials := integration.Data.Credentials
+		creds["access_key_id"] = credentials.AccessKeyID
+		creds["secret_access_key"] = credentials.SecretAccessKey
+		d.Set("credentials", []map[string]string{creds})
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n",
-				api.AwsGovCloudCfgIntegration.String(), integration.IntgGuid)
-			return nil
-		}
+		log.Printf("[INFO] Read %s integration with guid: %v\n",
+			api.AwsUsGovCfgCloudAccount.String(), integration.IntgGuid)
+		return nil
 	}
 
 	d.SetId("")
@@ -191,13 +184,13 @@ func resourceLaceworkIntegrationAwsGovCloudCfgRead(d *schema.ResourceData, meta 
 func resourceLaceworkIntegrationAwsGovCloudCfgUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		aws      = api.NewAwsIntegration(d.Get("name").(string),
-			api.AwsGovCloudCfgIntegration,
-			api.AwsIntegrationData{
-				GovCloudCredentials: &api.AwsGovCloudCreds{
+		aws      = api.NewCloudAccount(d.Get("name").(string),
+			api.AwsCfgCloudAccount,
+			api.AwsUsGovCfgData{
+				Credentials: api.AwsUsGovCfgCredentials{
 					AccessKeyID:     d.Get("credentials.0.access_key_id").(string),
 					SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
-					AccountID:       d.Get("account_id").(string),
+					AwsAccountID:    d.Get("account_id").(string),
 				},
 			},
 		)
@@ -210,29 +203,23 @@ func resourceLaceworkIntegrationAwsGovCloudCfgUpdate(d *schema.ResourceData, met
 	aws.IntgGuid = d.Id()
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n",
-		api.AwsGovCloudCfgIntegration.String(), aws)
-	response, err := lacework.Integrations.UpdateAws(aws)
+		api.AwsUsGovCfgCloudAccount.String(), aws)
+	response, err := lacework.V2.CloudAccounts.UpdateAwsUsGovCfg(aws)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAwsIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
-		api.AwsGovCloudCfgIntegration.String(), d.Id())
+		api.AwsUsGovCfgCloudAccount.String(), d.Id())
 	return nil
 }
 
@@ -240,14 +227,14 @@ func resourceLaceworkIntegrationAwsGovCloudCfgDelete(d *schema.ResourceData, met
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s integration with guid: %v\n",
-		api.AwsGovCloudCfgIntegration.String(), d.Id())
-	_, err := lacework.Integrations.DeleteAws(d.Id())
+		api.AwsUsGovCfgCloudAccount.String(), d.Id())
+	err := lacework.V2.CloudAccounts.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
 	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
-		api.AwsGovCloudCfgIntegration.String(), d.Id())
+		api.AwsUsGovCfgCloudAccount.String(), d.Id())
 	return nil
 }
 
