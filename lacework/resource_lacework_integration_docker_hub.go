@@ -43,34 +43,6 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 				Sensitive:   true,
 				Description: "The password for the specified Docker Hub user",
 			},
-
-			// TODO @afiune remove these resources when we release v1.0
-			"limit_by_tag": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Default:       "*",
-				Description:   "A comma-separated list of image tags to limit the assessment of images with matching tags",
-				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider",
-				ConflictsWith: []string{"limit_by_tags"},
-			},
-			"limit_by_label": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Default:       "*",
-				Description:   "A comma-separated list of image labels to limit the assessment of images with matching labels",
-				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider",
-				ConflictsWith: []string{"limit_by_labels"},
-			},
-
-			"limit_by_repos": {
-				Type:          schema.TypeString,
-				Optional:      true,
-				Description:   "A comma-separated list of repositories to assess",
-				Deprecated:    "This attribute will be replaced by a new attribute `limit_by_repositories` in version 1.0 of the Lacework provider",
-				ConflictsWith: []string{"limit_by_repositories"},
-			},
-			// END TODO @afiune
-
 			"limit_by_tags": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
@@ -145,112 +117,88 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 
 func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-
-	limitByTags := d.Get("limit_by_tag").(string)
-	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
-		limitByTags = strings.Join(tags, ",")
-	}
-
-	limitByLabels := d.Get("limit_by_label").(string)
-	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
-		limitByLabels = joinMapStrings(labels, ",")
-	}
-
-	limitByRepos := d.Get("limit_by_repos").(string)
-	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
-		limitByRepos = strings.Join(repos, ",")
-	}
-
-	data := api.NewDockerHubRegistryIntegration(d.Get("name").(string),
-		api.ContainerRegData{
-			LimitByTag:       limitByTags,
-			LimitByLabel:     limitByLabels,
-			LimitByRep:       limitByRepos,
-			LimitNumImg:      d.Get("limit_num_imgs").(int),
-			NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			Credentials: api.ContainerRegCreds{
-				Username: d.Get("username").(string),
-				Password: d.Get("password").(string),
-			},
+	dockerHubData := api.DockerhubData{
+		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitNumImg:      d.Get("limit_num_imgs").(int),
+		NonOSPackageEval: d.Get("non_os_package_support").(bool),
+		Credentials: api.DockerhubCredentials{
+			Username: d.Get("username").(string),
+			Password: d.Get("password").(string),
 		},
+	}
+
+	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+	if len(labels) != 0 {
+		dockerHubData.LimitByLabel = labels
+	}
+
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.DockerhubContainerRegistry,
+		dockerHubData,
 	)
 
 	if !d.Get("enabled").(bool) {
 		data.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration %s registry type with data:\n%+v\n",
-		api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), data)
-	response, err := lacework.Integrations.CreateContainerRegistry(data)
+	log.Printf("[INFO] Creating %s registry type with data:\n%+v\n", api.DockerhubContainerRegistry.String(), data)
+	response, err := lacework.V2.ContainerRegistries.Create(data)
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		d.SetId(integration.IntgGuid)
-		d.Set("name", integration.Name)
-		d.Set("intg_guid", integration.IntgGuid)
-		d.Set("enabled", integration.Enabled == 1)
-		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("type_name", integration.TypeName)
-		d.Set("org_level", integration.IsOrg == 1)
+	integration := response.Data
+	d.SetId(integration.IntgGuid)
+	d.Set("name", integration.Name)
+	d.Set("intg_guid", integration.IntgGuid)
+	d.Set("enabled", integration.Enabled == 1)
+	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+	d.Set("type_name", integration.Type)
+	d.Set("org_level", integration.IsOrg == 1)
 
-		log.Printf("[INFO] Created %s integration %s registry type with guid: %v\n",
-			api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), integration.IntgGuid)
-		return nil
-	}
-
+	log.Printf("[INFO] Created %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), integration.IntgGuid)
 	return nil
 }
 
 func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), d.Id())
-	response, err := lacework.Integrations.GetContainerRegistry(d.Id())
+	log.Printf("[INFO] Reading %s integration %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
+	response, err := lacework.V2.ContainerRegistries.GetDockerhub(d.Id())
 
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	integration := response.Data
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
 
-			d.Set("username", integration.Data.Credentials.Username)
-			d.Set("limit_num_imgs", integration.Data.LimitNumImg)
-			d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
+		d.Set("username", integration.Data.Credentials.Username)
+		d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
+		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
 
-			if _, ok := d.GetOk("limit_by_tags"); ok {
-				d.Set("limit_by_tags", strings.Split(integration.Data.LimitByTag, ","))
-			} else {
-				d.Set("limit_by_tag", integration.Data.LimitByTag)
-			}
-
-			if _, ok := d.GetOk("limit_by_labels"); ok {
-				d.Set("limit_by_labels", strings.Split(integration.Data.LimitByLabel, ","))
-			} else {
-				d.Set("limit_by_label", integration.Data.LimitByLabel)
-			}
-
-			if _, ok := d.GetOk("limit_by_repositories"); ok {
-				d.Set("limit_by_repositories", strings.Split(integration.Data.LimitByRep, ","))
-			} else {
-				d.Set("limit_by_repos", integration.Data.LimitByRep)
-			}
-
-			log.Printf("[INFO] Read %s integration %s registry type with guid: %v\n",
-				api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), integration.IntgGuid)
-			return nil
+		if len(response.Data.Data.LimitByTag) != 0 {
+			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 		}
+		if len(response.Data.Data.LimitByRep) != 0 {
+			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		}
+
+		if len(response.Data.Data.LimitByLabel) != 0 {
+			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		}
+
+		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), integration.IntgGuid)
+		return nil
 	}
 
 	d.SetId("")
@@ -260,33 +208,25 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	limitByTags := d.Get("limit_by_tag").(string)
-	if tags := castAttributeToStringSlice(d, "limit_by_tags"); len(tags) != 0 {
-		limitByTags = strings.Join(tags, ",")
-	}
-
-	limitByLabels := d.Get("limit_by_label").(string)
-	if labels := castAttributeToStringKeyMapOfStrings(d, "limit_by_labels"); len(labels) != 0 {
-		limitByLabels = joinMapStrings(labels, ",")
-	}
-
-	limitByRepos := d.Get("limit_by_repos").(string)
-	if repos := castAttributeToStringSlice(d, "limit_by_repositories"); len(repos) != 0 {
-		limitByRepos = strings.Join(repos, ",")
-	}
-
-	data := api.NewDockerHubRegistryIntegration(d.Get("name").(string),
-		api.ContainerRegData{
-			LimitByTag:       limitByTags,
-			LimitByLabel:     limitByLabels,
-			LimitByRep:       limitByRepos,
-			LimitNumImg:      d.Get("limit_num_imgs").(int),
-			NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			Credentials: api.ContainerRegCreds{
-				Username: d.Get("username").(string),
-				Password: d.Get("password").(string),
-			},
+	dockerHubData := api.DockerhubData{
+		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitNumImg:      d.Get("limit_num_imgs").(int),
+		NonOSPackageEval: d.Get("non_os_package_support").(bool),
+		Credentials: api.DockerhubCredentials{
+			Username: d.Get("username").(string),
+			Password: d.Get("password").(string),
 		},
+	}
+
+	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+	if len(labels) != 0 {
+		dockerHubData.LimitByLabel = labels
+	}
+
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.DockerhubContainerRegistry,
+		dockerHubData,
 	)
 
 	if !d.Get("enabled").(bool) {
@@ -295,28 +235,24 @@ func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta int
 
 	data.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration %s registry type with data:\n%+v\n",
-		api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), data)
-	response, err := lacework.Integrations.UpdateContainerRegistry(data)
+	log.Printf("[INFO] Updating %s registry type with data:\n%+v\n", api.DockerhubContainerRegistry.String(), data)
+	response, err := lacework.V2.ContainerRegistries.UpdateDockerhub(data)
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	integration := response.Data
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
 
-			log.Printf("[INFO] Updated %s integration %s registry type with guid: %v\n",
-				api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), d.Id())
-
-			return nil
-		}
+		log.Printf("[INFO] Updated %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
+		return nil
 	}
 
 	return nil
@@ -325,16 +261,14 @@ func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta int
 func resourceLaceworkIntegrationDockerHubDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), d.Id())
+	log.Printf("[INFO] Deleting %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
 
-	_, err := lacework.Integrations.Delete(d.Id())
+	err := lacework.V2.ContainerRegistries.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.DockerHubRegistry.String(), d.Id())
+	log.Printf("[INFO] Deleted %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
 
 	return nil
 }
