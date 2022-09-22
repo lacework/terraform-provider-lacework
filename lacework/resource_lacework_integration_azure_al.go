@@ -101,12 +101,12 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		azure    = api.NewAzureIntegration(d.Get("name").(string),
-			api.AzureActivityLogIntegration,
-			api.AzureIntegrationData{
+		azure    = api.NewCloudAccount(d.Get("name").(string),
+			api.AzureAlSeqCloudAccount,
+			api.AzureAlSeqData{
 				TenantID: d.Get("tenant_id").(string),
 				QueueUrl: d.Get("queue_url").(string),
-				Credentials: api.AzureIntegrationCreds{
+				Credentials: api.AzureAlSeqCredentials{
 					ClientID:     d.Get("credentials.0.client_id").(string),
 					ClientSecret: d.Get("credentials.0.client_secret").(string),
 				},
@@ -119,44 +119,37 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 
 	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
-		log.Printf("[INFO] Creating %s integration\n", api.AzureActivityLogIntegration.String())
-		response, err := lacework.Integrations.CreateAzure(azure)
+		log.Printf("[INFO] Creating %s integration\n", api.AzureAlSeqCloudAccount.String())
+		response, err := lacework.V2.CloudAccounts.Create(azure)
 		if err != nil {
 			if retries <= 0 {
 				return resource.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
-						api.AzureActivityLogIntegration.String(), err,
+					fmt.Errorf("error creating %s integration: %s",
+						api.AzureAlSeqCloudAccount.String(), err,
 					))
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
-				api.AzureActivityLogIntegration.String(), retries, err,
+				api.AzureAlSeqCloudAccount.String(), retries, err,
 			)
 			return resource.RetryableError(fmt.Errorf(
-				"Unable to create %s integration (retrying %d more time(s))",
-				api.AzureActivityLogIntegration.String(), retries,
+				"unable to create %s integration (retrying %d more time(s))",
+				api.AzureAlSeqCloudAccount.String(), retries,
 			))
 		}
 
-		log.Println("[INFO] Verifying server response data")
-		err = validateAzureIntegrationResponse(&response)
-		if err != nil {
-			return resource.NonRetryableError(err)
-		}
-
-		// @afiune at this point of time, we know the data field has a single value
-		integration := response.Data[0]
+		integration := response.Data
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
 		d.Set("enabled", integration.Enabled == 1)
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("type_name", integration.TypeName)
+		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
-			api.AzureActivityLogIntegration.String(), integration.IntgGuid)
+			api.AzureAlSeqCloudAccount.String(), integration.IntgGuid)
 		return nil
 	})
 }
@@ -164,31 +157,30 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 func resourceLaceworkIntegrationAzureActivityLogRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
-	response, err := lacework.Integrations.GetAzure(d.Id())
+	log.Printf("[INFO] Reading %s integration with guid: %v\n", api.AzureAlSeqCloudAccount.String(), d.Id())
+	response, err := lacework.V2.CloudAccounts.GetAzureAlSeq(d.Id())
 	if err != nil {
 		return err
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	integration := response.Data
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
 
-			creds := make(map[string]string)
-			creds["client_id"] = integration.Data.Credentials.ClientID
-			d.Set("credentials", []map[string]string{creds})
-			d.Set("queue_url", integration.Data.QueueUrl)
-			d.Set("tenant_id", integration.Data.TenantID)
+		creds := make(map[string]string)
+		creds["client_id"] = integration.Data.Credentials.ClientID
+		d.Set("credentials", []map[string]string{creds})
+		d.Set("queue_url", integration.Data.QueueUrl)
+		d.Set("tenant_id", integration.Data.TenantID)
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), integration.IntgGuid)
-			return nil
-		}
+		log.Printf("[INFO] Read %s integration with guid: %v\n", api.AzureAlSeqCloudAccount.String(), integration.IntgGuid)
+		return nil
 	}
 
 	d.SetId("")
@@ -198,12 +190,12 @@ func resourceLaceworkIntegrationAzureActivityLogRead(d *schema.ResourceData, met
 func resourceLaceworkIntegrationAzureActivityLogUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		azure    = api.NewAzureIntegration(d.Get("name").(string),
-			api.AzureActivityLogIntegration,
-			api.AzureIntegrationData{
+		azure    = api.NewCloudAccount(d.Get("name").(string),
+			api.AzureAlSeqCloudAccount,
+			api.AzureAlSeqData{
 				TenantID: d.Get("tenant_id").(string),
 				QueueUrl: d.Get("queue_url").(string),
-				Credentials: api.AzureIntegrationCreds{
+				Credentials: api.AzureAlSeqCredentials{
 					ClientID:     d.Get("credentials.0.client_id").(string),
 					ClientSecret: d.Get("credentials.0.client_secret").(string),
 				},
@@ -217,41 +209,34 @@ func resourceLaceworkIntegrationAzureActivityLogUpdate(d *schema.ResourceData, m
 
 	azure.IntgGuid = d.Id()
 
-	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AzureActivityLogIntegration.String(), azure)
-	response, err := lacework.Integrations.UpdateAzure(azure)
+	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AzureAlSeqCloudAccount.String(), azure)
+	response, err := lacework.V2.CloudAccounts.UpdateAzureAlSeq(azure)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAzureIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point of time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
-	log.Printf("[INFO] Updated %sw integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
+	log.Printf("[INFO] Updated %sw integration with guid: %v\n", api.AzureAlSeqCloudAccount.String(), d.Id())
 	return nil
 }
 
 func resourceLaceworkIntegrationAzureActivityLogDelete(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
+	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AzureAlSeqCloudAccount.String(), d.Id())
 	_, err := lacework.Integrations.DeleteAzure(d.Id())
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AzureActivityLogIntegration.String(), d.Id())
+	log.Printf("[INFO] Deleted %s integration with guid: %v\n", api.AzureAlSeqCloudAccount.String(), d.Id())
 	return nil
 }
