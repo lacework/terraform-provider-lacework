@@ -232,7 +232,7 @@ func resourceLaceworkIntegrationAzureActivityLogDelete(d *schema.ResourceData, m
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s integration with guid: %v\n", api.AzureAlSeqCloudAccount.String(), d.Id())
-	_, err := lacework.Integrations.DeleteAzure(d.Id())
+	err := lacework.V2.CloudAccounts.Delete(d.Id())
 	if err != nil {
 		return err
 	}
