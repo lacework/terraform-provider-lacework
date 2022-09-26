@@ -161,7 +161,7 @@ func resourceLaceworkIntegrationGcrCreate(d *schema.ResourceData, meta interface
 	lacework := meta.(*api.Client)
 	gcrData := api.GcpGcrData{
 		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-		LimitByRepo:      castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
 		LimitNumImg:      d.Get("limit_num_imgs").(int),
 		RegistryDomain:   d.Get("registry_domain").(string),
 		NonOSPackageEval: d.Get("non_os_package_support").(bool),
@@ -238,8 +238,8 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 		if len(response.Data.Data.LimitByTag) != 0 {
 			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 		}
-		if len(response.Data.Data.LimitByRepo) != 0 {
-			d.Set("limit_by_repositories", response.Data.Data.LimitByRepo)
+		if len(response.Data.Data.LimitByRep) != 0 {
+			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
 		}
 		if len(response.Data.Data.LimitByLabel) != 0 {
 			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
@@ -258,7 +258,7 @@ func resourceLaceworkIntegrationGcrUpdate(d *schema.ResourceData, meta interface
 
 	gcrData := api.GcpGcrData{
 		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-		LimitByRepo:      castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
 		LimitNumImg:      d.Get("limit_num_imgs").(int),
 		RegistryDomain:   d.Get("registry_domain").(string),
 		NonOSPackageEval: d.Get("non_os_package_support").(bool),
