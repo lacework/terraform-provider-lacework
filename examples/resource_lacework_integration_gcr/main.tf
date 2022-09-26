@@ -23,9 +23,8 @@ resource "lacework_integration_gcr" "example" {
   limit_by_tags         = ["dev*", "*test"]
   limit_by_repositories = ["my-repo", "other-repo"]
 
-  limit_by_labels {
-    key   = "foo"
-    value = "bar"
+  limit_by_labels = {
+    foo = "bar"
   }
 }
 
