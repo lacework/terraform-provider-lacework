@@ -18,10 +18,9 @@ func TestIntegrationGCRCreate(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_gcr",
 			Vars: map[string]interface{}{
-				"client_id":              gcreds.ClientID,
-				"client_email":           gcreds.ClientEmail,
-				"private_key_id":         gcreds.PrivateKeyID,
-				"non_os_package_support": true,
+				"client_id":      gcreds.ClientID,
+				"client_email":   gcreds.ClientEmail,
+				"private_key_id": gcreds.PrivateKeyID,
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_private_key": gcreds.PrivateKey,
@@ -38,7 +37,6 @@ func TestIntegrationGCRCreate(t *testing.T) {
 
 		// Update Google Container Registry
 		terraformOptions.Vars["integration_name"] = "Google Artifact Container Updated"
-		terraformOptions.Vars["non_os_package_support"] = true
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetContainerRegistryIntegration(update)
