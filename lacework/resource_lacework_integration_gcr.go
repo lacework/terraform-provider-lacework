@@ -60,6 +60,14 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 						"private_key_id": {
 							Type:     schema.TypeString,
 							Required: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								return !d.HasChanges(
+									"name", "org_level", "enabled",
+									"credentials.0.client_id",
+									"credentials.0.client_email", "limit_num_imgs",
+									"limit_by_tags", "limit_by_labels", "limit_by_repositories",
+								)
+							},
 						},
 						"client_email": {
 							Type:     schema.TypeString,
@@ -70,12 +78,9 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 							Required:  true,
 							Sensitive: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								// @afiune we can't compare this element since our API, for security reasons,
-								// does NOT return the private key configured in the Lacework server. So if
-								// any other element changed from the credentials then we trigger a diff
 								return !d.HasChanges(
 									"name", "org_level", "enabled",
-									"credentials.0.client_id", "credentials.0.private_key_id",
+									"credentials.0.client_id",
 									"credentials.0.client_email", "limit_num_imgs",
 									"limit_by_tags", "limit_by_labels", "limit_by_repositories",
 								)
@@ -154,23 +159,28 @@ func resourceLaceworkIntegrationGcr() *schema.Resource {
 
 func resourceLaceworkIntegrationGcrCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	data := api.NewContainerRegistry(d.Get("name").(string),
-		api.GcpGarContainerRegistry,
-		api.GcpGcrData{
-			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_labels"),
-			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitNumImg:      d.Get("limit_num_imgs").(int),
-			RegistryDomain:   d.Get("registry_domain").(string),
-			NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			Credentials: api.GcpCredentialsV2{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
-				PrivateKey:   d.Get("credentials.0.private_key").(string),
-			},
+	gcrData := api.GcpGcrData{
+		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitNumImg:      d.Get("limit_num_imgs").(int),
+		RegistryDomain:   d.Get("registry_domain").(string),
+		NonOSPackageEval: d.Get("non_os_package_support").(bool),
+		Credentials: api.GcpCredentialsV2{
+			ClientID:     d.Get("credentials.0.client_id").(string),
+			ClientEmail:  d.Get("credentials.0.client_email").(string),
+			PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+			PrivateKey:   d.Get("credentials.0.private_key").(string),
 		},
-	)
+	}
+
+	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+	if len(labels) != 0 {
+		gcrData.LimitByLabel = labels
+	}
+
+	data := api.NewContainerRegistry(d.Get("name").(string),
+		api.GcpGcrContainerRegistry,
+		gcrData)
 
 	if !d.Get("enabled").(bool) {
 		data.Enabled = 0
@@ -225,9 +235,15 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 		d.Set("limit_num_imgs", integration.Data.LimitNumImg)
 		d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 
-		d.Set("limit_by_tags", integration.Data.LimitByTag)
-		d.Set("limit_by_repositories", integration.Data.LimitByRep)
-		d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(integration.Data.LimitByLabel))
+		if len(response.Data.Data.LimitByTag) != 0 {
+			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
+		}
+		if len(response.Data.Data.LimitByRep) != 0 {
+			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		}
+		if len(response.Data.Data.LimitByLabel) != 0 {
+			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		}
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.GcpGcrContainerRegistry.String(), integration.IntgGuid)
 		return nil
@@ -240,23 +256,28 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 func resourceLaceworkIntegrationGcrUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
+	gcrData := api.GcpGcrData{
+		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitNumImg:      d.Get("limit_num_imgs").(int),
+		RegistryDomain:   d.Get("registry_domain").(string),
+		NonOSPackageEval: d.Get("non_os_package_support").(bool),
+		Credentials: api.GcpCredentialsV2{
+			ClientID:     d.Get("credentials.0.client_id").(string),
+			ClientEmail:  d.Get("credentials.0.client_email").(string),
+			PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+			PrivateKey:   d.Get("credentials.0.private_key").(string),
+		},
+	}
+
+	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+	if len(labels) != 0 {
+		gcrData.LimitByLabel = labels
+	}
+
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.GcpGcrContainerRegistry,
-		api.GcpGarData{
-			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_labels"),
-			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitNumImg:      d.Get("limit_num_imgs").(int),
-			RegistryDomain:   d.Get("registry_domain").(string),
-			NonOSPackageEval: d.Get("non_os_package_support").(bool),
-			Credentials: api.GcpCredentialsV2{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
-				PrivateKey:   d.Get("credentials.0.private_key").(string),
-			},
-		},
-	)
+		gcrData)
 
 	if !d.Get("enabled").(bool) {
 		data.Enabled = 0
