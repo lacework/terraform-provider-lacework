@@ -34,15 +34,12 @@ variable "integration_name" {
 }
 variable "client_id" {
   type      = string
-  sensitive = true
 }
 variable "client_email" {
   type      = string
-  sensitive = true
 }
 variable "private_key_id" {
   type      = string
-  sensitive = true
 }
 variable "private_key" {
   type      = string

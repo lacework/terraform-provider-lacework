@@ -32,15 +32,15 @@ func TestIntegrationGCRCreate(t *testing.T) {
 		// Create new Google Container Registry
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		createData := GetContainerRegisteryGcr(create)
-		assert.Equal(t, "Google Artifact Container Example", createData.Data.Name)
-		assert.Equal(t, map[string]string{"foo": "bar"}, createData.Data.Data.LimitByLabel)
+		assert.Equal(t, "Google Container Registry Example", createData.Data.Name)
+		assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
 
 		// Update Google Container Registry
-		terraformOptions.Vars["integration_name"] = "Google Artifact Container Updated"
+		terraformOptions.Vars["integration_name"] = "Google Container Registry Updated"
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetContainerRegistryIntegration(update)
-		assert.Equal(t, "Google Artifact Registry Updated", updateData.Name)
-		assert.Equal(t, map[string]string{"foo": "bar"}, createData.Data.Data.LimitByLabel)
+		assert.Equal(t, "Google Container Registry Updated", updateData.Name)
+		assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
 	}
 }
