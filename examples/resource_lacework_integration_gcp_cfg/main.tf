@@ -1,14 +1,48 @@
+terraform {
+  required_providers {
+    lacework = {
+      source = "lacework/lacework"
+    }
+  }
+}
+
 provider "lacework" {}
 
 resource "lacework_integration_gcp_cfg" "example" {
-  name = "Example-GCP-Integration"
+  name = var.integration_name
   credentials {
-    client_id      = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    private_key_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    client_email   = "email@some-project-name.iam.gserviceaccount.com"
-    private_key    = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    client_id      = var.client_id
+    client_email   = var.client_email
+    private_key_id = var.private_key_id
+    private_key    = var.private_key
   }
   resource_level = "PROJECT"
-  resource_id    = "example-project_id"
+  resource_id    = "techally-test"
   retries        = 10
+}
+
+
+variable "integration_name" {
+  type    = string
+  default = "Google Cfg Example"
+}
+variable "client_id" {
+  type      = string
+  sensitive = true
+}
+variable "client_email" {
+  type      = string
+  sensitive = true
+}
+variable "private_key_id" {
+  type      = string
+  sensitive = true
+}
+variable "private_key" {
+  type      = string
+  sensitive = true
+}
+variable "non_os_package_support" {
+  type    = bool
+  default = true
 }

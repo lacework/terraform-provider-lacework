@@ -56,6 +56,13 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 						"private_key_id": {
 							Type:     schema.TypeString,
 							Required: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								return !d.HasChanges(
+									"name", "resource_level", "resource_id", "org_level", "enabled",
+									"credentials.0.client_id",
+									"credentials.0.client_email",
+								)
+							},
 						},
 						"client_email": {
 							Type:     schema.TypeString,
@@ -71,7 +78,7 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 								// any other element changed from the credentials then we trigger a diff
 								return !d.HasChanges(
 									"name", "resource_level", "resource_id", "org_level", "enabled",
-									"credentials.0.client_id", "credentials.0.private_key_id",
+									"credentials.0.client_id",
 									"credentials.0.client_email",
 								)
 							},

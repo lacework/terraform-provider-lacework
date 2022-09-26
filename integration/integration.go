@@ -141,6 +141,18 @@ func GetContainerRegistryIntegration(result string) api.ContainerRegIntegration 
 	return res.Data[0]
 }
 
+func GetGcpCfgIntegration(result string) api.GcpCfgIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.CloudAccounts.GetGcpCfg(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
 func GetResourceGroupDescription(result string) string {
 	id := GetIDFromTerraResults(result)
 
