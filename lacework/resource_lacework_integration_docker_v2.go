@@ -62,9 +62,8 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of image tags to limit the assessment of images with matching tags",
-				ConflictsWith: []string{"limit_by_tag"},
+				Optional:    true,
+				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
 			"limit_by_labels": {
 				Type: schema.TypeMap,
@@ -74,9 +73,8 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
-				ConflictsWith: []string{"limit_by_label"},
+				Optional:    true,
+				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
 			},
 			"non_os_package_support": {
 				Type:        schema.TypeBool,
