@@ -147,9 +147,9 @@ resource "%s" "%s" {
     enabled        = %t
     username       = "%s"
     password       = "%s"
-    limit_by_tag   = "%s"
-    limit_by_label = "%s"
-    limit_by_repos = "%s"
+    limit_by_tags   = "%s"
+    limit_by_labels = "%s"
+    limit_by_repositories = "%s"
     limit_num_imgs = %s
 }
 `,
