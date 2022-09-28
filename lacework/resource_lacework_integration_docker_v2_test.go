@@ -144,8 +144,8 @@ resource "%s" "%s" {
     username        = "%s"
     password        = "%s"
     ssl             = %s
-    limit_by_tag    = "%s"
-    limit_by_label  = "%s"
+    limit_by_tags    = "%s"
+    limit_by_labels  = "%s"
 }
 `,
 		testAccIntegrationDockerV2ResourceType,
