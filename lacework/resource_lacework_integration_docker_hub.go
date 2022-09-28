@@ -165,7 +165,7 @@ func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta int
 func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	log.Printf("[INFO] Reading %s integration %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
+	log.Printf("[INFO] Reading %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
 	response, err := lacework.V2.ContainerRegistries.GetDockerhub(d.Id())
 
 	if err != nil {
