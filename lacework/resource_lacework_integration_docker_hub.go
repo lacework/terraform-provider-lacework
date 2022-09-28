@@ -51,9 +51,8 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of image tags to limit the assessment of images with matching tags",
-				ConflictsWith: []string{"limit_by_tag"},
+				Optional:    true,
+				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
 			"limit_by_labels": {
 				Type: schema.TypeMap,
@@ -63,9 +62,8 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A key based map of labels to limit the assessment of images with matching key:value labels",
-				ConflictsWith: []string{"limit_by_label"},
+				Optional:    true,
+				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
 			},
 			"limit_by_repositories": {
 				Type: schema.TypeList,
@@ -75,9 +73,8 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 						return strings.TrimSpace(val.(string))
 					},
 				},
-				Optional:      true,
-				Description:   "A list of repositories to assess",
-				ConflictsWith: []string{"limit_by_repos"},
+				Optional:    true,
+				Description: "A list of repositories to assess",
 			},
 			"limit_num_imgs": {
 				Type:        schema.TypeInt,
