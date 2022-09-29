@@ -114,25 +114,19 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 
 func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	dockerHubData := api.DockerhubData{
-		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
-		LimitNumImg:      d.Get("limit_num_imgs").(int),
-		NonOSPackageEval: d.Get("non_os_package_support").(bool),
-		Credentials: api.DockerhubCredentials{
-			Username: d.Get("username").(string),
-			Password: d.Get("password").(string),
-		},
-	}
-
-	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
-	if len(labels) != 0 {
-		dockerHubData.LimitByLabel = labels
-	}
-
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.DockerhubContainerRegistry,
-		dockerHubData,
+		api.DockerhubData{
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
+			Credentials: api.DockerhubCredentials{
+				Username: d.Get("username").(string),
+				Password: d.Get("password").(string),
+			},
+		},
 	)
 
 	if !d.Get("enabled").(bool) {
@@ -182,17 +176,9 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 		d.Set("username", integration.Data.Credentials.Username)
 		d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
-
-		if len(response.Data.Data.LimitByTag) != 0 {
-			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
-		}
-		if len(response.Data.Data.LimitByRep) != 0 {
-			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
-		}
-
-		if len(response.Data.Data.LimitByLabel) != 0 {
-			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
-		}
+		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
+		d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), integration.IntgGuid)
 		return nil
@@ -204,26 +190,19 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 
 func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-
-	dockerHubData := api.DockerhubData{
-		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
-		LimitNumImg:      d.Get("limit_num_imgs").(int),
-		NonOSPackageEval: d.Get("non_os_package_support").(bool),
-		Credentials: api.DockerhubCredentials{
-			Username: d.Get("username").(string),
-			Password: d.Get("password").(string),
-		},
-	}
-
-	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
-	if len(labels) != 0 {
-		dockerHubData.LimitByLabel = labels
-	}
-
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.DockerhubContainerRegistry,
-		dockerHubData,
+		api.DockerhubData{
+			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+			LimitNumImg:      d.Get("limit_num_imgs").(int),
+			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			NonOSPackageEval: d.Get("non_os_package_support").(bool),
+			Credentials: api.DockerhubCredentials{
+				Username: d.Get("username").(string),
+				Password: d.Get("password").(string),
+			},
+		},
 	)
 
 	if !d.Get("enabled").(bool) {
