@@ -109,26 +109,20 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 func resourceLaceworkIntegrationDockerV2Create(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 	notifications := d.Get("notifications").(bool)
-	dockerhubV2Data := api.DockerhubV2Data{
-		LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
-		RegistryDomain:        d.Get("registry_domain").(string),
-		NonOSPackageEval:      d.Get("non_os_package_support").(bool),
-		RegistryNotifications: &notifications,
-		Credentials: api.DockerhubV2Credentials{
-			Username: d.Get("username").(string),
-			Password: d.Get("password").(string),
-			SSL:      d.Get("ssl").(bool),
-		},
-	}
-
-	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
-	if len(labels) != 0 {
-		dockerhubV2Data.LimitByLabel = labels
-	}
-
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.DockerhubV2ContainerRegistry,
-		dockerhubV2Data,
+		api.DockerhubV2Data{
+			LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+			RegistryDomain:        d.Get("registry_domain").(string),
+			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
+			RegistryNotifications: &notifications,
+			Credentials: api.DockerhubV2Credentials{
+				Username: d.Get("username").(string),
+				Password: d.Get("password").(string),
+				SSL:      d.Get("ssl").(bool),
+			},
+		},
 	)
 
 	if !d.Get("enabled").(bool) {
@@ -181,14 +175,8 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 		d.Set("ssl", integration.Data.Credentials.SSL)
 		d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 		d.Set("notifications", integration.Data.RegistryNotifications)
-
-		if len(response.Data.Data.LimitByTag) != 0 {
-			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
-		}
-
-		if len(response.Data.Data.LimitByLabel) != 0 {
-			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
-		}
+		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
+		d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.DockerhubV2ContainerRegistry.String(), integration.IntgGuid)
 		return nil
@@ -201,26 +189,20 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 func resourceLaceworkIntegrationDockerV2Update(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 	notifications := d.Get("notifications").(bool)
-	dockerhubV2Data := api.DockerhubV2Data{
-		LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
-		RegistryDomain:        d.Get("registry_domain").(string),
-		NonOSPackageEval:      d.Get("non_os_package_support").(bool),
-		RegistryNotifications: &notifications,
-		Credentials: api.DockerhubV2Credentials{
-			Username: d.Get("username").(string),
-			Password: d.Get("password").(string),
-			SSL:      d.Get("ssl").(bool),
-		},
-	}
-
-	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
-	if len(labels) != 0 {
-		dockerhubV2Data.LimitByLabel = labels
-	}
-
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.DockerhubV2ContainerRegistry,
-		dockerhubV2Data,
+		api.DockerhubV2Data{
+			LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
+			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+			RegistryDomain:        d.Get("registry_domain").(string),
+			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
+			RegistryNotifications: &notifications,
+			Credentials: api.DockerhubV2Credentials{
+				Username: d.Get("username").(string),
+				Password: d.Get("password").(string),
+				SSL:      d.Get("ssl").(bool),
+			},
+		},
 	)
 
 	if !d.Get("enabled").(bool) {
