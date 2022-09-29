@@ -119,7 +119,7 @@ func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta int
 		api.DockerhubData{
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
 			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+			LimitByLabel:     castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
 			LimitNumImg:      d.Get("limit_num_imgs").(int),
 			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.DockerhubCredentials{
@@ -196,7 +196,7 @@ func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta int
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
 			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:      d.Get("limit_num_imgs").(int),
-			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByLabel:     castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
 			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.DockerhubCredentials{
 				Username: d.Get("username").(string),
