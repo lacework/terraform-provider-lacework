@@ -159,15 +159,6 @@ func castArrayOfStringKeyMapOfStringsToLimitByLabelSet(list []map[string]string)
 	return aMap
 }
 
-// TODO @afiune remove this function when we release v1.0
-func joinMapStrings(m map[string]string, delimit string) string {
-	out := make([]string, 0)
-	for _, val := range m {
-		out = append(out, val)
-	}
-	return strings.Join(out, delimit)
-}
-
 func ContainsStr(array []string, expected string) bool {
 	for _, value := range array {
 		if expected == value {
