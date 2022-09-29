@@ -113,7 +113,7 @@ func resourceLaceworkIntegrationDockerV2Create(d *schema.ResourceData, meta inte
 		api.DockerhubV2ContainerRegistry,
 		api.DockerhubV2Data{
 			LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+			LimitByLabel:          castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
 			RegistryDomain:        d.Get("registry_domain").(string),
 			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
 			RegistryNotifications: &notifications,
@@ -193,7 +193,7 @@ func resourceLaceworkIntegrationDockerV2Update(d *schema.ResourceData, meta inte
 		api.DockerhubV2ContainerRegistry,
 		api.DockerhubV2Data{
 			LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel: castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
+			LimitByLabel:          castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
 			RegistryDomain:        d.Get("registry_domain").(string),
 			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
 			RegistryNotifications: &notifications,
