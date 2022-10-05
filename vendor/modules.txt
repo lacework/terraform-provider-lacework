@@ -97,7 +97,7 @@ github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/empty
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/google/go-cmp v0.5.8
+# github.com/google/go-cmp v0.5.9
 ## explicit; go 1.13
 github.com/google/go-cmp/cmp
 github.com/google/go-cmp/cmp/internal/diff
@@ -174,7 +174,7 @@ github.com/hashicorp/hc-install/internal/version
 github.com/hashicorp/hc-install/product
 github.com/hashicorp/hc-install/releases
 github.com/hashicorp/hc-install/src
-# github.com/hashicorp/hcl/v2 v2.13.0
+# github.com/hashicorp/hcl/v2 v2.14.0
 ## explicit; go 1.18
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
@@ -184,15 +184,15 @@ github.com/hashicorp/hcl/v2/json
 # github.com/hashicorp/logutils v1.0.0
 ## explicit
 github.com/hashicorp/logutils
-# github.com/hashicorp/terraform-exec v0.17.2
-## explicit; go 1.17
+# github.com/hashicorp/terraform-exec v0.17.3
+## explicit; go 1.18
 github.com/hashicorp/terraform-exec/internal/version
 github.com/hashicorp/terraform-exec/tfexec
 # github.com/hashicorp/terraform-json v0.14.0
 ## explicit; go 1.13
 github.com/hashicorp/terraform-json
-# github.com/hashicorp/terraform-plugin-go v0.12.0
-## explicit; go 1.17
+# github.com/hashicorp/terraform-plugin-go v0.14.0
+## explicit; go 1.18
 github.com/hashicorp/terraform-plugin-go/internal/logging
 github.com/hashicorp/terraform-plugin-go/tfprotov5
 github.com/hashicorp/terraform-plugin-go/tfprotov5/internal/diag
@@ -216,8 +216,8 @@ github.com/hashicorp/terraform-plugin-log/internal/hclogutils
 github.com/hashicorp/terraform-plugin-log/internal/logging
 github.com/hashicorp/terraform-plugin-log/tflog
 github.com/hashicorp/terraform-plugin-log/tfsdklog
-# github.com/hashicorp/terraform-plugin-sdk/v2 v2.20.0
-## explicit; go 1.17
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.23.0
+## explicit; go 1.18
 github.com/hashicorp/terraform-plugin-sdk/v2/diag
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource
@@ -554,7 +554,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.28.0
+# google.golang.org/protobuf v1.28.1
 ## explicit; go 1.11
 google.golang.org/protobuf/cmd/protoc-gen-go/internal_gengo
 google.golang.org/protobuf/compiler/protogen
