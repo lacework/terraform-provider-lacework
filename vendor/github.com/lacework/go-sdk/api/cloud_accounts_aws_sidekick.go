@@ -27,9 +27,27 @@ func (svc *CloudAccountsService) GetAwsSidekick(guid string) (
 	return
 }
 
+// GetAwsSidekickOrg gets a single AwsSidekickOrg integration matching the provided integration guid
+func (svc *CloudAccountsService) GetAwsSidekickOrg(guid string) (
+	response AwsSidekickOrgResponse,
+	err error,
+) {
+	err = svc.get(guid, &response)
+	return
+}
+
 // CreateAwsSidekick creates an AwsSidekick Cloud Account integration
 func (svc *CloudAccountsService) CreateAwsSidekick(data CloudAccount) (
 	response AwsSidekickResponse,
+	err error,
+) {
+	err = svc.create(data, &response)
+	return
+}
+
+// CreateAwsSidekickOrg creates an AwsSidekickOrg Cloud Account integration
+func (svc *CloudAccountsService) CreateAwsSidekickOrg(data CloudAccount) (
+	response AwsSidekickOrgResponse,
 	err error,
 ) {
 	err = svc.create(data, &response)
@@ -45,14 +63,33 @@ func (svc *CloudAccountsService) UpdateAwsSidekick(data CloudAccount) (
 	return
 }
 
+// UpdateAwsSidekickOrg updates a single AwsSidekickOrg integration on the Lacework Server
+func (svc *CloudAccountsService) UpdateAwsSidekickOrg(data CloudAccount) (
+	response AwsSidekickResponse,
+	err error,
+) {
+	err = svc.update(data.ID(), data, &response)
+	return
+}
+
 type AwsSidekickResponse struct {
 	Data AwsSidekick `json:"data"`
+}
+
+type AwsSidekickOrgResponse struct {
+	Data AwsSidekickOrg `json:"data"`
 }
 
 type AwsSidekick struct {
 	v2CommonIntegrationData
 	awsSidekickToken `json:"serverToken"`
 	Data             AwsSidekickData `json:"data"`
+}
+
+type AwsSidekickOrg struct {
+	v2CommonIntegrationData
+	awsSidekickToken `json:"serverToken"`
+	Data             AwsSidekickOrgData `json:"data"`
 }
 
 type awsSidekickToken struct {
@@ -69,6 +106,26 @@ type AwsSidekickData struct {
 
 	ScanContainers          bool `json:"scanContainers"`
 	ScanHostVulnerabilities bool `json:"scanHostVulnerabilities"`
+
+	AccountID         string                             `json:"awsAccountId,omitempty"`
+	BucketArn         string                             `json:"bucketArn,omitempty"`
+	CrossAccountCreds AwsSidekickCrossAccountCredentials `json:"crossAccountCredentials"`
+}
+
+type AwsSidekickOrgData struct {
+	//QueryText represents an lql json string
+	QueryText string `json:"queryText,omitempty"`
+
+	//ScanFrequency in hours, 24 == 24 hours
+	ScanFrequency int `json:"scanFrequency"`
+
+	ScanContainers          bool `json:"scanContainers"`
+	ScanHostVulnerabilities bool `json:"scanHostVulnerabilities"`
+
+	//Properties specific to the AWS organization integration type
+	ScanningAccount   string   `json:"scanningAccount"`
+	ManagementAccount string   `json:"managementAccount,omitempty"`
+	MonitoredAccounts []string `json:"monitoredAccounts"`
 
 	AccountID         string                             `json:"awsAccountId,omitempty"`
 	BucketArn         string                             `json:"bucketArn,omitempty"`
