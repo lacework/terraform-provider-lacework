@@ -56,6 +56,14 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 						"private_key_id": {
 							Type:     schema.TypeString,
 							Required: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								return !d.HasChanges(
+									"name", "resource_level", "resource_id",
+									"subscription", "org_level", "enabled",
+									"credentials.0.client_id",
+									"credentials.0.client_email",
+								)
+							},
 						},
 						"client_email": {
 							Type:     schema.TypeString,
@@ -73,7 +81,6 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 									"name", "resource_level", "resource_id",
 									"subscription", "org_level", "enabled",
 									"credentials.0.client_id",
-									"credentials.0.private_key_id",
 									"credentials.0.client_email",
 								)
 							},
