@@ -62,18 +62,16 @@ func testAccCheckAlertChannelNewRelicDestroy(s *terraform.State) error {
 			continue
 		}
 
-		response, err := lacework.Integrations.GetNewRelicAlertChannel(rs.Primary.ID)
+		response, err := lacework.V2.AlertChannels.GetNewRelicInsights(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
-		for _, integration := range response.Data {
-			if integration.IntgGuid == rs.Primary.ID {
-				return fmt.Errorf(
-					"the %s integration (%s) still exists",
-					api.NewRelicChannelIntegration, rs.Primary.ID,
-				)
-			}
+		if response.Data.IntgGuid == rs.Primary.ID {
+			return fmt.Errorf(
+				"the %s integration (%s) still exists",
+				api.NewRelicInsightsAlertChannelType, rs.Primary.ID,
+			)
 		}
 	}
 
@@ -93,24 +91,22 @@ func testAccCheckAlertChannelNewRelicExists(resourceTypeAndName string) resource
 			return fmt.Errorf("resource (%s) ID not set", resourceTypeAndName)
 		}
 
-		response, err := lacework.Integrations.GetNewRelicAlertChannel(rs.Primary.ID)
+		response, err := lacework.V2.AlertChannels.GetNewRelicInsights(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
-		if len(response.Data) < 1 {
+		if response.Data.Name == "" {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.NewRelicChannelIntegration, rs.Primary.ID)
+				api.NewRelicInsightsAlertChannelType, rs.Primary.ID)
 		}
 
-		for _, integration := range response.Data {
-			if integration.IntgGuid == rs.Primary.ID {
-				return nil
-			}
+		if response.Data.IntgGuid == rs.Primary.ID {
+			return nil
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.NewRelicChannelIntegration, rs.Primary.ID)
+			api.NewRelicInsightsAlertChannelType, rs.Primary.ID)
 	}
 }
 
