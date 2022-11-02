@@ -71,7 +71,7 @@ func testAccCheckAlertChannelQRadarDestroy(s *terraform.State) error {
 		if response.Data.IntgGuid == rs.Primary.ID {
 			return fmt.Errorf(
 				"the %s integration (%s) still exists",
-				api.QRadarChannelIntegration, rs.Primary.ID,
+				api.IbmQRadarAlertChannelType, rs.Primary.ID,
 			)
 		}
 	}
@@ -99,7 +99,7 @@ func testAccCheckAlertChannelQRadarExists(resourceTypeAndName string) resource.T
 
 		if response.Data.Name == "" {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.QRadarChannelIntegration, rs.Primary.ID)
+				api.IbmQRadarAlertChannelType, rs.Primary.ID)
 		}
 
 		if response.Data.ID() == rs.Primary.ID {
@@ -107,7 +107,7 @@ func testAccCheckAlertChannelQRadarExists(resourceTypeAndName string) resource.T
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.QRadarChannelIntegration, rs.Primary.ID)
+			api.IbmQRadarAlertChannelType, rs.Primary.ID)
 	}
 }
 
