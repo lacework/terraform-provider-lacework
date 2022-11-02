@@ -69,7 +69,7 @@ func testAccCheckAlertChannelVictorOpsDestroy(s *terraform.State) error {
 		if response.Data.IntgGuid == rs.Primary.ID {
 			return fmt.Errorf(
 				"the %s integration (%s) still exists",
-				api.VictorOpsChannelIntegration, rs.Primary.ID,
+				api.VictorOpsAlertChannelType, rs.Primary.ID,
 			)
 		}
 	}
@@ -97,7 +97,7 @@ func testAccCheckAlertChannelVictorOpsExists(resourceTypeAndName string) resourc
 
 		if response.Data.Name == "" {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.VictorOpsChannelIntegration, rs.Primary.ID)
+				api.VictorOpsAlertChannelType, rs.Primary.ID)
 		}
 
 		if response.Data.IntgGuid == rs.Primary.ID {
@@ -105,7 +105,7 @@ func testAccCheckAlertChannelVictorOpsExists(resourceTypeAndName string) resourc
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.VictorOpsChannelIntegration, rs.Primary.ID)
+			api.VictorOpsAlertChannelType, rs.Primary.ID)
 	}
 }
 
