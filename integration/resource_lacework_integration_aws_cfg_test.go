@@ -12,7 +12,6 @@ import (
 //
 // It uses the go-sdk to verify the created integration,
 // applies an update with new integration name and destroys it
-// nolint
 func TestIntegrationAwsCfg(t *testing.T) {
 	awsCreds, err := awsLoadDefaultCredentials()
 	if assert.Nil(t, err, "this test requires you to set AWS_ECR_IAM environment variable") {
