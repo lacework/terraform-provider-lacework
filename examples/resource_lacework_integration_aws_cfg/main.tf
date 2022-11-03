@@ -1,4 +1,10 @@
-provider "lacework" {}
+terraform {
+  required_providers {
+    lacework = {
+      source = "lacework/lacework"
+    }
+  }
+}
 
 resource "lacework_integration_aws_cfg" "example" {
   name = var.name
