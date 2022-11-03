@@ -1,13 +1,18 @@
 provider "lacework" {}
 
 resource "lacework_integration_aws_cfg" "example" {
-  name = "AWS config integration example"
+  name = var.name
   credentials {
     role_arn    = var.role_arn
     external_id = var.external_id
   }
 
   retries = 10
+}
+
+variable "name" {
+  type = string
+  default = "aws cfg created by tf"
 }
 
 variable "role_arn" {
