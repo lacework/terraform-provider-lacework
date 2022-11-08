@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationGcpGkeAuditLog() *schema.Resource {
 		Update:   resourceLaceworkIntegrationGcpGkeAuditLogUpdate,
 		Delete:   resourceLaceworkIntegrationGcpGkeAuditLogDelete,
 		Schema:   gcpGkeAuditLogIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
+		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
 	}
 }
 

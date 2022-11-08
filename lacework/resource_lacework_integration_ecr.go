@@ -258,7 +258,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 			log.Println("[WARN] Change of authentication method detected. Need destroy and recreation")
 			log.Printf("[INFO] Deleting %s integration %s registry type with guid: %v\n",
 				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
-			_, err := lacework.Integrations.Delete(d.Id())
+			err := lacework.V2.ContainerRegistries.Delete(d.Id())
 			if err != nil {
 				return err
 			}
@@ -284,7 +284,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 			log.Println("[WARN] Change of authentication method detected. Need destroy and recreation")
 			log.Printf("[INFO] Deleting %s integration %s registry type with guid: %v\n",
 				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
-			_, err := lacework.Integrations.Delete(d.Id())
+			err := lacework.V2.ContainerRegistries.Delete(d.Id())
 			if err != nil {
 				return err
 			}
