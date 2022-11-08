@@ -49,8 +49,6 @@ The following arguments are supported:
 * `password` - (Required) The password for the specified user.
 * `ssl` - (Optional) Enable or disable SSL communication. Defaults to `false`.
 * `notifications` - (Optional) Subscribe to registry notifications. Defaults to `false`.
-* `limit_by_tag` - (Optional, **Deprecated**) An image tag to limit the assessment of images with matching tag. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`. This attribute will be replaced by a new attribute `limit_by_tags` in version 1.0 of the Lacework provider.
-* `limit_by_label` - (Optional, **Deprecated**) An image label to limit the assessment of images with matching label. If you specify `limit_by_tag` and `limit_by_label` limits, they function as an `AND`. Supported field input are `mytext*mytext`, `mytext`, `mytext*`, or `mytext`. Only one `*` wildcard is supported. Defaults to `*`. This attribute will be replaced by a new attribute `limit_by_labels` in version 1.0 of the Lacework provider.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
@@ -64,5 +62,5 @@ A Lacework Docker V2 container registry integration can be imported using a `INT
 $ terraform import lacework_integration_docker_v2.jfrog EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retrieve the `INT_GUID` from existing integrations in your account, use the
-	Lacework CLI command `lacework integration list`. To install this tool follow
+	Lacework CLI command `lacework container-registry list`. To install this tool follow
 	[this documentation](https://docs.lacework.com/cli/).

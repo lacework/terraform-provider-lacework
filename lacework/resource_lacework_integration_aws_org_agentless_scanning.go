@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanning() *schema.Resource {
 		Update:   resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate,
 		Delete:   resourceLaceworkIntegrationAwsOrgAgentlessScanningDelete,
 		Schema:   awsOrgAgentlessScanningIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
+		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
 	}
 }
 

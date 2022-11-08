@@ -18,7 +18,7 @@ func resourceLaceworkIntegrationAwsEksAuditLog() *schema.Resource {
 		Update:   resourceLaceworkIntegrationAwsEksAuditLogUpdate,
 		Delete:   resourceLaceworkIntegrationAwsEksAuditLogDelete,
 		Schema:   awsEksAuditLogIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
+		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
 	}
 }
 

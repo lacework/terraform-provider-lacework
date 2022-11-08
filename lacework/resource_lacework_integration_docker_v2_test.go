@@ -65,18 +65,16 @@ func testAccCheckIntegrationDockerV2Destroy(s *terraform.State) error {
 			continue
 		}
 
-		response, err := lacework.Integrations.GetSlackAlertChannel(rs.Primary.ID)
+		response, err := lacework.V2.ContainerRegistries.GetDockerhubV2(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
-		for _, integration := range response.Data {
-			if integration.IntgGuid == rs.Primary.ID {
-				return fmt.Errorf(
-					"the %s integration (%s) still exists",
-					api.SlackChannelIntegration, rs.Primary.ID,
-				)
-			}
+		if response.Data.IntgGuid == rs.Primary.ID {
+			return fmt.Errorf(
+				"the %s integration (%s) still exists",
+				api.DockerhubV2ContainerRegistry, rs.Primary.ID,
+			)
 		}
 	}
 
@@ -96,24 +94,22 @@ func testAccCheckIntegrationDockerV2Exists(resourceTypeAndName string) resource.
 			return fmt.Errorf("resource (%s) ID not set", resourceTypeAndName)
 		}
 
-		response, err := lacework.Integrations.GetSlackAlertChannel(rs.Primary.ID)
+		response, err := lacework.V2.ContainerRegistries.GetDockerhubV2(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
-		if len(response.Data) < 1 {
+		if response.Data.Name == "" {
 			return fmt.Errorf("the %s integration (%s) doesn't exist",
-				api.SlackChannelIntegration, rs.Primary.ID)
+				api.DockerhubV2ContainerRegistry, rs.Primary.ID)
 		}
 
-		for _, integration := range response.Data {
-			if integration.IntgGuid == rs.Primary.ID {
-				return nil
-			}
+		if response.Data.IntgGuid == rs.Primary.ID {
+			return nil
 		}
 
 		return fmt.Errorf("the %s integration (%s) doesn't exist",
-			api.SlackChannelIntegration, rs.Primary.ID)
+			api.DockerhubV2ContainerRegistry, rs.Primary.ID)
 	}
 }
 
@@ -144,8 +140,8 @@ resource "%s" "%s" {
     username        = "%s"
     password        = "%s"
     ssl             = %s
-    limit_by_tag    = "%s"
-    limit_by_label  = "%s"
+    limit_by_tags    = "%s"
+    limit_by_labels  = "%s"
 }
 `,
 		testAccIntegrationDockerV2ResourceType,

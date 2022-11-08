@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 		Delete: resourceLaceworkIntegrationAzureCfgDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkCloudAccount,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -97,11 +97,11 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		azure    = api.NewAzureIntegration(d.Get("name").(string),
-			api.AzureCfgIntegration,
-			api.AzureIntegrationData{
+		azure    = api.NewCloudAccount(d.Get("name").(string),
+			api.AwsCfgCloudAccount,
+			api.AzureCfgData{
 				TenantID: d.Get("tenant_id").(string),
-				Credentials: api.AzureIntegrationCreds{
+				Credentials: api.AzureCfgCredentials{
 					ClientID:     d.Get("credentials.0.client_id").(string),
 					ClientSecret: d.Get("credentials.0.client_secret").(string),
 				},
@@ -115,44 +115,37 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 
 	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
-		log.Printf("[INFO] Creating %s integration\n", api.AzureCfgIntegration.String())
-		response, err := lacework.Integrations.CreateAzure(azure)
+		log.Printf("[INFO] Creating %s integration\n", api.AwsCfgCloudAccount.String())
+		response, err := lacework.V2.CloudAccounts.Create(azure)
 		if err != nil {
 			if retries <= 0 {
 				return resource.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
-						api.AzureCfgIntegration.String(), err,
+					fmt.Errorf("error creating %s integration: %s",
+						api.AwsCfgCloudAccount.String(), err,
 					))
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
-				api.AzureCfgIntegration.String(), retries, err,
+				api.AwsCfgCloudAccount.String(), retries, err,
 			)
 			return resource.RetryableError(fmt.Errorf(
-				"Unable to create %s integration (retrying %d more time(s))",
-				api.AzureCfgIntegration.String(), retries,
+				"unable to create %s integration (retrying %d more time(s))",
+				api.AwsCfgCloudAccount.String(), retries,
 			))
 		}
 
-		log.Println("[INFO] Verifying server response data")
-		err = validateAzureIntegrationResponse(&response)
-		if err != nil {
-			return resource.NonRetryableError(err)
-		}
-
-		// @afiune at this point in time, we know the data field has a single value
-		integration := response.Data[0]
+		integration := response.Data
 		d.SetId(integration.IntgGuid)
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
 		d.Set("enabled", integration.Enabled == 1)
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("type_name", integration.TypeName)
+		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
-			api.AzureCfgIntegration.String(), integration.IntgGuid)
+			api.AwsCfgCloudAccount.String(), integration.IntgGuid)
 		return nil
 	})
 }
@@ -161,30 +154,29 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading %s integration with guid: %v\n",
-		api.AzureCfgIntegration.String(), d.Id())
-	response, err := lacework.Integrations.GetAzure(d.Id())
+		api.AwsCfgCloudAccount.String(), d.Id())
+	response, err := lacework.V2.CloudAccounts.GetAzureCfg(d.Id())
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
 
-	for _, integration := range response.Data {
-		if integration.IntgGuid == d.Id() {
-			d.Set("name", integration.Name)
-			d.Set("intg_guid", integration.IntgGuid)
-			d.Set("enabled", integration.Enabled == 1)
-			d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
-			d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-			d.Set("type_name", integration.TypeName)
-			d.Set("org_level", integration.IsOrg == 1)
+	integration := response.Data
+	if integration.IntgGuid == d.Id() {
+		d.Set("name", integration.Name)
+		d.Set("intg_guid", integration.IntgGuid)
+		d.Set("enabled", integration.Enabled == 1)
+		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
+		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
+		d.Set("type_name", integration.Type)
+		d.Set("org_level", integration.IsOrg == 1)
 
-			creds := make(map[string]string)
-			creds["client_id"] = integration.Data.Credentials.ClientID
-			d.Set("credentials", []map[string]string{creds})
-			d.Set("tenant_id", integration.Data.TenantID)
+		creds := make(map[string]string)
+		creds["client_id"] = integration.Data.Credentials.ClientID
+		d.Set("credentials", []map[string]string{creds})
+		d.Set("tenant_id", integration.Data.TenantID)
 
-			log.Printf("[INFO] Read %s integration with guid: %v\n", api.AzureCfgIntegration.String(), integration.IntgGuid)
-			return nil
-		}
+		log.Printf("[INFO] Read %s integration with guid: %v\n", api.AwsCfgCloudAccount.String(), integration.IntgGuid)
+		return nil
 	}
 
 	d.SetId("")
@@ -194,11 +186,11 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		azure    = api.NewAzureIntegration(d.Get("name").(string),
-			api.AzureCfgIntegration,
-			api.AzureIntegrationData{
+		azure    = api.NewCloudAccount(d.Get("name").(string),
+			api.AwsCfgCloudAccount,
+			api.AzureCfgData{
 				TenantID: d.Get("tenant_id").(string),
-				Credentials: api.AzureIntegrationCreds{
+				Credentials: api.AzureCfgCredentials{
 					ClientID:     d.Get("credentials.0.client_id").(string),
 					ClientSecret: d.Get("credentials.0.client_secret").(string),
 				},
@@ -213,30 +205,23 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 	azure.IntgGuid = d.Id()
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n",
-		api.AzureCfgIntegration.String(), azure)
-	response, err := lacework.Integrations.UpdateAzure(azure)
+		api.AwsCfgCloudAccount.String(), azure)
+	response, err := lacework.V2.CloudAccounts.UpdateAzureCfg(azure)
 	if err != nil {
 		return err
 	}
 
-	log.Println("[INFO] Verifying server response data")
-	err = validateAzureIntegrationResponse(&response)
-	if err != nil {
-		return err
-	}
-
-	// @afiune at this point in time, we know the data field has a single value
-	integration := response.Data[0]
+	integration := response.Data
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-	d.Set("type_name", integration.TypeName)
+	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
-		api.AzureCfgIntegration.String(), d.Id())
+		api.AwsCfgCloudAccount.String(), d.Id())
 	return nil
 }
 
@@ -244,49 +229,13 @@ func resourceLaceworkIntegrationAzureCfgDelete(d *schema.ResourceData, meta inte
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s integration with guid: %v\n",
-		api.AzureCfgIntegration.String(), d.Id())
-	_, err := lacework.Integrations.DeleteAzure(d.Id())
+		api.AwsCfgCloudAccount.String(), d.Id())
+	err := lacework.V2.CloudAccounts.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
 	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
-		api.AzureCfgIntegration.String(), d.Id())
-	return nil
-}
-
-// validateAzureIntegrationResponse checks whether or not the server response has
-// any inconsistent data, it returns a friendly error message describing the
-// problem and how to report it
-func validateAzureIntegrationResponse(response *api.AzureIntegrationsResponse) error {
-	if len(response.Data) == 0 {
-		// @afiune this edge case should never happen, if we land here it means that
-		// something went wrong in the server side of things (Lacework API), so let
-		// us inform that to our users
-		msg := `
-Unable to read sever response data. (empty 'data' field)
-
-This was an unexpected behavior, verify that your integration has been
-created successfully and report this issue to support@lacework.net
-`
-		return fmt.Errorf(msg)
-	}
-
-	if len(response.Data) > 1 {
-		// @afiune if we are creating a single integration and the server returns
-		// more than one integration inside the 'data' field, it is definitely another
-		// edge case that should never happen
-		msg := `
-There is more that one integration inside the server response data.
-
-List of integrations:
-`
-		for _, integration := range response.Data {
-			msg = msg + fmt.Sprintf("\t%s: %s\n", integration.IntgGuid, integration.Name)
-		}
-		msg = msg + unexpectedBehaviorMsg()
-		return fmt.Errorf(msg)
-	}
-
+		api.AwsCfgCloudAccount.String(), d.Id())
 	return nil
 }

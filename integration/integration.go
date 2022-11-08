@@ -129,18 +129,6 @@ func GetEcrWithCrossAccountCreds(result string) api.AwsEcrIamRoleIntegration {
 	return res.Data
 }
 
-func GetContainerRegistryIntegration(result string) api.ContainerRegIntegration {
-	id := GetIDFromTerraResults(result)
-
-	res, err := LwClient.Integrations.GetContainerRegistry(id)
-
-	if err != nil || len(res.Data) == 0 {
-		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
-	}
-
-	return res.Data[0]
-}
-
 func GetGcpCfgIntegration(result string) api.GcpCfgIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
@@ -153,10 +141,34 @@ func GetGcpCfgIntegration(result string) api.GcpCfgIntegrationResponse {
 	return res
 }
 
+func GetContainerRegisteryGar(result string) api.GcpGarIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.ContainerRegistries.GetGcpGar(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
 func GetContainerRegisteryGcr(result string) api.GcpGcrIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetGcpGcr(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
+func GetContainerRegisteryGhcr(result string) api.GhcrIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.ContainerRegistries.GetGhcr(id)
 
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)

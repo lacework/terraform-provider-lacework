@@ -63,15 +63,13 @@ func testAccCheckIntegrationAzureActivityLogDestroy(s *terraform.State) error {
 			continue
 		}
 
-		response, err := lacework.Integrations.GetAzure(rs.Primary.ID)
+		response, err := lacework.V2.CloudAccounts.GetAzureAlSeq(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
-		for _, integration := range response.Data {
-			if integration.IntgGuid == rs.Primary.ID {
-				return fmt.Errorf("the AZURE integration (%s) still exists", rs.Primary.ID)
-			}
+		if response.Data.IntgGuid == rs.Primary.ID {
+			return fmt.Errorf("the AZURE integration (%s) still exists", rs.Primary.ID)
 		}
 	}
 
@@ -91,19 +89,17 @@ func testAccCheckIntegrationAzureActivityLogExists(resourceTypeAndName string) r
 			return fmt.Errorf("resource (%s) ID not set", resourceTypeAndName)
 		}
 
-		response, err := lacework.Integrations.GetAzure(rs.Primary.ID)
+		response, err := lacework.V2.CloudAccounts.GetAzureAlSeq(rs.Primary.ID)
 		if err != nil {
 			return err
 		}
 
-		if len(response.Data) < 1 {
+		if response.Data.Name == "" {
 			return fmt.Errorf("the AZURE integration (%s) doesn't exist", rs.Primary.ID)
 		}
 
-		for _, integration := range response.Data {
-			if integration.IntgGuid == rs.Primary.ID {
-				return nil
-			}
+		if response.Data.IntgGuid == rs.Primary.ID {
+			return nil
 		}
 
 		return fmt.Errorf("the AZURE integration (%s) doesn't exist", rs.Primary.ID)
