@@ -7,7 +7,6 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
-	"github.com/pkg/errors"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -40,24 +39,10 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				Default:     true,
 				Description: "The state of the alert rule",
 			},
-			"channels": {
-				Type:          schema.TypeSet,
-				Optional:      true,
-				Description:   "List of channels for the alert rule",
-				Deprecated:    "This attribute deprecated and has been replaced by `alert_channels`",
-				ConflictsWith: []string{"alert_channels"},
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
-					},
-				},
-			},
 			"alert_channels": {
-				Type:          schema.TypeSet,
-				Optional:      true,
-				Description:   "List of alert channels for the alert rule",
-				ConflictsWith: []string{"channels"},
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "List of alert channels for the alert rule",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
@@ -149,10 +134,6 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 	var alertChannels []interface{}
 	if _, ok := d.GetOk("alert_channels"); ok {
 		alertChannels = d.Get("alert_channels").(*schema.Set).List()
-	} else if _, ok := d.GetOk("channels"); ok {
-		alertChannels = d.Get("channels").(*schema.Set).List()
-	} else {
-		return errors.New("alert_channels attribute must be set")
 	}
 
 	var (
@@ -215,12 +196,7 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("severities", api.NewAlertRuleSeveritiesFromIntSlice(response.Data.Filter.Severity).ToStringSlice())
 	d.Set("resource_groups", response.Data.Filter.ResourceGroups)
 	d.Set("event_categories", response.Data.Filter.EventCategories)
-
-	if _, ok := d.GetOk("channels"); ok {
-		d.Set("channels", response.Data.Channels)
-	} else {
-		d.Set("alert_channels", response.Data.Channels)
-	}
+	d.Set("alert_channels", response.Data.Channels)
 
 	log.Printf("[INFO] Read alert rule with guid %s\n", response.Data.Guid)
 	return nil
@@ -230,10 +206,6 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 	var alertChannels []interface{}
 	if _, ok := d.GetOk("alert_channels"); ok {
 		alertChannels = d.Get("alert_channels").(*schema.Set).List()
-	} else if _, ok := d.GetOk("channels"); ok {
-		alertChannels = d.Get("channels").(*schema.Set).List()
-	} else {
-		return errors.New("alert_channels attribute must be set")
 	}
 
 	var (
