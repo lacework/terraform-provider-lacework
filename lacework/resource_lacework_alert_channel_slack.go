@@ -16,7 +16,7 @@ func resourceLaceworkAlertChannelSlack() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelSlackDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkAlertChannel,
 		},
 
 		Schema: map[string]*schema.Schema{

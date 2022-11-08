@@ -184,21 +184,19 @@ func importLaceworkAgentAccessToken(d *schema.ResourceData, meta interface{}) ([
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Importing agent access token.")
-	response, err := lacework.Agents.GetToken(d.Id())
+	response, err := lacework.V2.AgentAccessTokens.Get(d.Id())
 	if err != nil {
 		return nil, err
 	}
 
-	for _, token := range response.Data {
-		if token.AccessToken == d.Id() {
-			log.Printf("[INFO] agent access token found. name=%s, description=%s, enabled=%t",
-				token.TokenAlias, token.Props.Description, token.Status())
+	if response.Data.AccessToken == d.Id() {
+		log.Printf("[INFO] agent access token found. name=%s, description=%s, enabled=%t",
+			response.Data.TokenAlias, response.Data.Props.Description, response.Data.State())
 
-			d.Set("token", token.AccessToken)
-			d.SetId(token.TokenAlias)
+		d.Set("token", response.Data.AccessToken)
+		d.SetId(response.Data.TokenAlias)
 
-			return []*schema.ResourceData{d}, nil
-		}
+		return []*schema.ResourceData{d}, nil
 	}
 
 	log.Printf("[INFO] Raw response: %v\n", response)

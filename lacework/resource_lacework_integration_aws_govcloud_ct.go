@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAwsGovCloudCT() *schema.Resource {
 		Delete: resourceLaceworkIntegrationAwsGovCloudCTDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkCloudAccount,
 		},
 
 		Schema: map[string]*schema.Schema{

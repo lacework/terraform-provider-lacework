@@ -20,7 +20,7 @@ func resourceLaceworkIntegrationGcpCfg() *schema.Resource {
 		Delete: resourceLaceworkIntegrationGcpCfgDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkCloudAccount,
 		},
 
 		Schema: map[string]*schema.Schema{
