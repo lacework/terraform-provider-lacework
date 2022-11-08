@@ -38,7 +38,7 @@ func TestIntegrationGcpCfgCreate(t *testing.T) {
 		terraformOptions.Vars["integration_name"] = "Google Cfg Updated"
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
-		updateData := GetContainerRegistryIntegration(update)
-		assert.Equal(t, "Google Cfg Updated", updateData.Name)
+		updateData := GetGcpCfgIntegration(update)
+		assert.Equal(t, "Google Cfg Updated", updateData.Data.Name)
 	}
 }

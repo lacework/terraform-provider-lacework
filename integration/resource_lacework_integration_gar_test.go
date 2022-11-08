@@ -32,17 +32,17 @@ func TestIntegrationGARCreate(t *testing.T) {
 
 		// Create new Google Artifact Registry
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-		createData := GetContainerRegistryIntegration(create)
-		assert.Equal(t, "Google Artifact Registry Example", createData.Name)
-		assert.Equal(t, true, createData.Data.NonOSPackageEval)
+		createData := GetContainerRegisteryGar(create)
+		assert.Equal(t, "Google Artifact Registry Example", createData.Data.Name)
+		assert.Equal(t, true, createData.Data.Data.NonOSPackageEval)
 
 		// Update Google Artifact Registry
 		terraformOptions.Vars["integration_name"] = "Google Artifact Registry Updated"
 		terraformOptions.Vars["non_os_package_support"] = true
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
-		updateData := GetContainerRegistryIntegration(update)
-		assert.Equal(t, "Google Artifact Registry Updated", updateData.Name)
-		assert.Equal(t, true, updateData.Data.NonOSPackageEval)
+		updateData := GetContainerRegisteryGar(update)
+		assert.Equal(t, "Google Artifact Registry Updated", updateData.Data.Name)
+		assert.Equal(t, true, updateData.Data.Data.NonOSPackageEval)
 	}
 }
