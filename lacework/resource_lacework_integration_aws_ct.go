@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
 		Update:   resourceLaceworkIntegrationAwsCloudTrailUpdate,
 		Delete:   resourceLaceworkIntegrationAwsCloudTrailDelete,
 		Schema:   awsCloudTrailIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkIntegration},
+		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
 	}
 }
 

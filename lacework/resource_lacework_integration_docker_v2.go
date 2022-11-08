@@ -17,7 +17,7 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 		Delete: resourceLaceworkIntegrationDockerV2Delete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkContainerRegistry,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -240,7 +240,7 @@ func resourceLaceworkIntegrationDockerV2Delete(d *schema.ResourceData, meta inte
 
 	log.Printf("[INFO] Deleting %s registry type with guid: %v\n", api.DockerhubV2ContainerRegistry.String(), d.Id())
 
-	_, err := lacework.Integrations.Delete(d.Id())
+	err := lacework.V2.ContainerRegistries.Delete(d.Id())
 	if err != nil {
 		return err
 	}

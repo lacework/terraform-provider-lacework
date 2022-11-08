@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 		Delete: resourceLaceworkIntegrationAzureCfgDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkIntegration,
+			State: importLaceworkCloudAccount,
 		},
 
 		Schema: map[string]*schema.Schema{
