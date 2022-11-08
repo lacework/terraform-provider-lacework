@@ -50,5 +50,5 @@ A Lacework AWS Config integration for AWS GovCloud can be imported using a `INT_
 $ terraform import lacework_integration_aws_govcloud_cfg.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retrieve the `INT_GUID` from existing integrations in your account, use the
-	Lacework CLI command `lacework integration list`. To install this tool follow
+	Lacework CLI command `lacework cloud-account list`. To install this tool follow
 	[this documentation](https://docs.lacework.com/cli/).
