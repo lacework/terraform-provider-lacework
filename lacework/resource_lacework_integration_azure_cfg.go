@@ -98,7 +98,7 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
 		azure    = api.NewCloudAccount(d.Get("name").(string),
-			api.AwsCfgCloudAccount,
+			api.AzureCfgCloudAccount,
 			api.AzureCfgData{
 				TenantID: d.Get("tenant_id").(string),
 				Credentials: api.AzureCfgCredentials{
@@ -115,22 +115,22 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 
 	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
 		retries--
-		log.Printf("[INFO] Creating %s integration\n", api.AwsCfgCloudAccount.String())
+		log.Printf("[INFO] Creating %s integration\n", api.AzureCfgCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(azure)
 		if err != nil {
 			if retries <= 0 {
 				return resource.NonRetryableError(
 					fmt.Errorf("error creating %s integration: %s",
-						api.AwsCfgCloudAccount.String(), err,
+						api.AzureCfgCloudAccount.String(), err,
 					))
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
-				api.AwsCfgCloudAccount.String(), retries, err,
+				api.AzureCfgCloudAccount.String(), retries, err,
 			)
 			return resource.RetryableError(fmt.Errorf(
 				"unable to create %s integration (retrying %d more time(s))",
-				api.AwsCfgCloudAccount.String(), retries,
+				api.AzureCfgCloudAccount.String(), retries,
 			))
 		}
 
@@ -145,7 +145,7 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 		d.Set("org_level", integration.IsOrg == 1)
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
-			api.AwsCfgCloudAccount.String(), integration.IntgGuid)
+			api.AzureCfgCloudAccount.String(), integration.IntgGuid)
 		return nil
 	})
 }
@@ -154,7 +154,7 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading %s integration with guid: %v\n",
-		api.AwsCfgCloudAccount.String(), d.Id())
+		api.AzureCfgCloudAccount.String(), d.Id())
 	response, err := lacework.V2.CloudAccounts.GetAzureCfg(d.Id())
 	if err != nil {
 		return resourceNotFound(d, err)
@@ -175,7 +175,7 @@ func resourceLaceworkIntegrationAzureCfgRead(d *schema.ResourceData, meta interf
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("tenant_id", integration.Data.TenantID)
 
-		log.Printf("[INFO] Read %s integration with guid: %v\n", api.AwsCfgCloudAccount.String(), integration.IntgGuid)
+		log.Printf("[INFO] Read %s integration with guid: %v\n", api.AzureCfgCloudAccount.String(), integration.IntgGuid)
 		return nil
 	}
 
@@ -187,7 +187,7 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 	var (
 		lacework = meta.(*api.Client)
 		azure    = api.NewCloudAccount(d.Get("name").(string),
-			api.AwsCfgCloudAccount,
+			api.AzureCfgCloudAccount,
 			api.AzureCfgData{
 				TenantID: d.Get("tenant_id").(string),
 				Credentials: api.AzureCfgCredentials{
@@ -205,7 +205,7 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 	azure.IntgGuid = d.Id()
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n",
-		api.AwsCfgCloudAccount.String(), azure)
+		api.AzureCfgCloudAccount.String(), azure)
 	response, err := lacework.V2.CloudAccounts.UpdateAzureCfg(azure)
 	if err != nil {
 		return err
@@ -221,7 +221,7 @@ func resourceLaceworkIntegrationAzureCfgUpdate(d *schema.ResourceData, meta inte
 	d.Set("org_level", integration.IsOrg == 1)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
-		api.AwsCfgCloudAccount.String(), d.Id())
+		api.AzureCfgCloudAccount.String(), d.Id())
 	return nil
 }
 
@@ -229,13 +229,13 @@ func resourceLaceworkIntegrationAzureCfgDelete(d *schema.ResourceData, meta inte
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Deleting %s integration with guid: %v\n",
-		api.AwsCfgCloudAccount.String(), d.Id())
+		api.AzureCfgCloudAccount.String(), d.Id())
 	err := lacework.V2.CloudAccounts.Delete(d.Id())
 	if err != nil {
 		return err
 	}
 
 	log.Printf("[INFO] Deleted %s integration with guid: %v\n",
-		api.AwsCfgCloudAccount.String(), d.Id())
+		api.AzureCfgCloudAccount.String(), d.Id())
 	return nil
 }
