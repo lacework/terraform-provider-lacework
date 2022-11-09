@@ -1,3 +1,8 @@
+## v1.0.1 (November 09, 2022)
+
+## Bug Fixes
+* fix: azure_cfg resource sening incorrect cloud account type (#403) (Darren)([1036ecd](https://github.com/lacework/terraform-provider-lacework/commit/1036ecd8ddc7f09b9ebefb7f8ba30d8fa8a02655))
+
 ## v1.0.0 (November 08, 2022)
 
 ## Refactor
