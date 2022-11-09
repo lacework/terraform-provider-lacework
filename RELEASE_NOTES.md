@@ -12,6 +12,7 @@ Another day, another release. These are the release notes for the version `v1.0.
 * refactor: migrate resource_lacework_integration_aws_govcloud_cfg to use v2 api (#375) (Darren)([5d5f082](https://github.com/lacework/terraform-provider-lacework/commit/5d5f082431c7e5b4e9f489fb8250f77c5a67e21f))
 * refactor: migrate resource_lacework_integration_aws_govcloud_ct to use v2 api (#376) (Darren)([805d386](https://github.com/lacework/terraform-provider-lacework/commit/805d3867a3795e6ea828c84a9f1fcc21a3a491fd))
 ## Bug Fixes
+* fix: azure_cfg resource sening incorrect cloud account type (#403) (Darren)([1036ecd](https://github.com/lacework/terraform-provider-lacework/commit/1036ecd8ddc7f09b9ebefb7f8ba30d8fa8a02655))
 * fix: remove unused func (Darren Murray)([dddeb21](https://github.com/lacework/terraform-provider-lacework/commit/dddeb2157f5d4e6aa997c464e2d91a9fb5a24f60))
 * fix: remove unused funcs (Darren Murray)([b6ff8f8](https://github.com/lacework/terraform-provider-lacework/commit/b6ff8f89b88a9f698fa06d4cd2ade5fe7cdece6b))
 ## Documentation Updates
