@@ -1,5 +1,5 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.0.0`.
+Another day, another release. These are the release notes for the version `v1.0.1`.
 
 ## Refactor
 * refactor: remove last usages of v1 api (#397) (Darren)([724842c](https://github.com/lacework/terraform-provider-lacework/commit/724842cf96aa6d151401e20f678fc742583370f3))
@@ -12,6 +12,7 @@ Another day, another release. These are the release notes for the version `v1.0.
 * refactor: migrate resource_lacework_integration_aws_govcloud_cfg to use v2 api (#375) (Darren)([5d5f082](https://github.com/lacework/terraform-provider-lacework/commit/5d5f082431c7e5b4e9f489fb8250f77c5a67e21f))
 * refactor: migrate resource_lacework_integration_aws_govcloud_ct to use v2 api (#376) (Darren)([805d386](https://github.com/lacework/terraform-provider-lacework/commit/805d3867a3795e6ea828c84a9f1fcc21a3a491fd))
 ## Bug Fixes
+* fix: azure_cfg resource sening incorrect cloud account type (#403) (Darren)([1036ecd](https://github.com/lacework/terraform-provider-lacework/commit/1036ecd8ddc7f09b9ebefb7f8ba30d8fa8a02655))
 * fix: remove unused func (Darren Murray)([dddeb21](https://github.com/lacework/terraform-provider-lacework/commit/dddeb2157f5d4e6aa997c464e2d91a9fb5a24f60))
 * fix: remove unused funcs (Darren Murray)([b6ff8f8](https://github.com/lacework/terraform-provider-lacework/commit/b6ff8f89b88a9f698fa06d4cd2ade5fe7cdece6b))
 ## Documentation Updates
@@ -22,6 +23,7 @@ Another day, another release. These are the release notes for the version `v1.0.
 * build(deps): bump github.com/gruntwork-io/terratest (#386) (dependabot[bot])([eafb1b4](https://github.com/lacework/terraform-provider-lacework/commit/eafb1b4d1e903cb2eec670cacdc3ed9d525c935c))
 * build(deps): bump github.com/hashicorp/terraform-plugin-sdk/v2 (#387) (dependabot[bot])([5dbbd34](https://github.com/lacework/terraform-provider-lacework/commit/5dbbd34f66e52f5838c9247e2635d8d92749ffea))
 * build(deps): bump github.com/lacework/go-sdk from 0.43.0 to 0.44.1 (#393) (dependabot[bot])([43fb505](https://github.com/lacework/terraform-provider-lacework/commit/43fb505b7150a096acee33ce1d11fd9bef7f30e8))
+* ci: version bump to v1.0.1-dev (Salim Afiune Maya)([e08bf89](https://github.com/lacework/terraform-provider-lacework/commit/e08bf8995981e08bd16fc7700a0df86f9e338343))
 * ci: version bump to v0.27.1-dev (Lacework)([2d8e4f8](https://github.com/lacework/terraform-provider-lacework/commit/2d8e4f882d35ee7d66d09c574e8269de3e75be6f))
 * test: update integration test read to use v2 api (Darren Murray)([f5323f6](https://github.com/lacework/terraform-provider-lacework/commit/f5323f604b7be29d4b9ac38c33692a85561c26f0))
 * test: move all tests to use APIv2 (#394) (Darren)([b88acee](https://github.com/lacework/terraform-provider-lacework/commit/b88acee715d181e0e20289a4106dd4ad56a7ba86))
