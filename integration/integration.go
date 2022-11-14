@@ -177,6 +177,30 @@ func GetContainerRegisteryGhcr(result string) api.GhcrIntegrationResponse {
 	return res
 }
 
+func GetContainerRegisteryInlineScanner(result string) api.InlineScannerIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.ContainerRegistries.GetInlineScanner(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
+func GetContainerRegisteryProxyScanner(result string) api.ProxyScannerIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.ContainerRegistries.GetProxyScanner(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
 func GetResourceGroupDescription(result string) string {
 	id := GetIDFromTerraResults(result)
 
