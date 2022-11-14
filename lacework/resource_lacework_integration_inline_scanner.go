@@ -50,12 +50,12 @@ func resourceLaceworkIntegrationInlineScanner() *schema.Resource {
 					},
 				},
 				Optional:    true,
-				Description: "A list of key/value labels to limit the assessment of images",
+				Description: "A list of identifier tags as key:value pairs",
 			},
 			"limit_num_scan": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     5,
+				Default:     60,
 				Description: "The maximum number of newest container images to assess per repository.",
 			},
 			"intg_guid": {
