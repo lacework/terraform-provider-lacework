@@ -25,9 +25,16 @@ The following arguments are supported:
 
 * `name` - (Required) The Container Registry integration name.
 
-* `limit_num_scans` - (Optional) The maximum number of newest container images to assess per repository. Must be one of `5`, `10`, or `15`. Defaults to `5`.
+* `limit_num_scans` - (Optional) The maximum number of scans per hour that this integration can perform. Defaults to `60`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `integration_tags` - (Optional) A key based map of tags to limit the assessment of images with matching `key:value` tags.
+* `integration_tags` - (Optional) Identifier tags as `key:value` pairs.
+
+## Argument Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `server_token` - The inline scanner access token.
+* `uri` - The inline scanner github path.
 
 ## Import
 

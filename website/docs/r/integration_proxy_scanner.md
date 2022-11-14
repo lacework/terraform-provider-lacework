@@ -30,6 +30,13 @@ The following arguments are supported:
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
 
+## Argument Reference
+
+In addition to the arguments listed above, the following computed attributes are exported:
+
+* `server_token` - The proxy scanner access token.
+* `uri` - The proxy scanner github path.
+
 ## Import
 
 A Lacework Proxy Scanner container registry integration can be imported using a `INT_GUID`, e.g.
