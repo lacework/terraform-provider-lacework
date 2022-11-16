@@ -88,7 +88,7 @@ func getAlert(alerts []api.AlertTemplate, name string) api.AlertTemplate {
 	var alert api.AlertTemplate
 	for _, a := range alerts {
 		if a.EventName == name {
-			return alert
+			return a
 		}
 	}
 	return alert
