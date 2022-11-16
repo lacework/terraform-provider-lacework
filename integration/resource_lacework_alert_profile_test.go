@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/lacework/go-sdk/api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,11 +32,13 @@ func TestAlertProfileCreate(t *testing.T) {
 	actualExtends := terraform.Output(t, terraformOptions, "extends")
 	actualDescription := terraform.Output(t, terraformOptions, "alert_description")
 
+	alert := getAlert(createProps.Data.Alerts, "LW Configuration GCP Violation Alert")
+
 	assert.Equal(t, "LW_CFG_GCP_DEFAULT_PROFILE", createProps.Data.Extends)
-	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}}", createProps.Data.Alerts[0].Description)
-	assert.Equal(t, "Violation", createProps.Data.Alerts[0].Name)
-	assert.Equal(t, "LW Configuration GCP Violation Alert", createProps.Data.Alerts[0].EventName)
-	assert.Equal(t, "{{_OCCURRENCE}} violation detected in project {{PROJECT_ID}}", createProps.Data.Alerts[0].Subject)
+	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}}", alert.Description)
+	assert.Equal(t, "Violation", alert.Name)
+	assert.Equal(t, "LW Configuration GCP Violation Alert", alert.EventName)
+	assert.Equal(t, "{{_OCCURRENCE}} violation detected in project {{PROJECT_ID}}", alert.Subject)
 
 	assert.Equal(t, "CUSTOM_PROFILE_TERRAFORM_TEST", actualID)
 	assert.Equal(t, "LW_CFG_GCP_DEFAULT_PROFILE", actualExtends)
@@ -53,11 +56,13 @@ func TestAlertProfileCreate(t *testing.T) {
 	actualExtends = terraform.Output(t, terraformOptions, "extends")
 	actualDescription = terraform.Output(t, terraformOptions, "alert_description")
 
+	alert = getAlert(updateProps.Data.Alerts, "LW Configuration GCP Violation Alert")
+
 	assert.Equal(t, "LW_CFG_GCP_DEFAULT_PROFILE", updateProps.Data.Extends)
-	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}} Updated", updateProps.Data.Alerts[0].Description)
-	assert.Equal(t, "Violation", updateProps.Data.Alerts[0].Name)
-	assert.Equal(t, "LW Configuration GCP Violation Alert", updateProps.Data.Alerts[0].EventName)
-	assert.Equal(t, "{{_OCCURRENCE}} violation detected in project {{PROJECT_ID}}", updateProps.Data.Alerts[0].Subject)
+	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}} Updated", alert.Description)
+	assert.Equal(t, "Violation", alert.Name)
+	assert.Equal(t, "LW Configuration GCP Violation Alert", alert.EventName)
+	assert.Equal(t, "{{_OCCURRENCE}} violation detected in project {{PROJECT_ID}}", alert.Subject)
 
 	assert.Equal(t, "LW_CFG_GCP_DEFAULT_PROFILE", actualExtends)
 	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}} Updated", actualDescription)
@@ -77,4 +82,14 @@ func TestAlertProfileValidate(t *testing.T) {
 
 	assert.Error(t, err)
 	assert.Contains(t, msg, "expected value of name to not start with any of \"LW_\"")
+}
+
+func getAlert(alerts []api.AlertTemplate, name string) api.AlertTemplate {
+	var alert api.AlertTemplate
+	for _, a := range alerts {
+		if a.EventName == name {
+			return a
+		}
+	}
+	return alert
 }
