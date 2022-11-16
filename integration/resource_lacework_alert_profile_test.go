@@ -56,7 +56,7 @@ func TestAlertProfileCreate(t *testing.T) {
 	actualExtends = terraform.Output(t, terraformOptions, "extends")
 	actualDescription = terraform.Output(t, terraformOptions, "alert_description")
 
-	alert = getAlert(createProps.Data.Alerts, "LW Configuration GCP Violation Alert")
+	alert = getAlert(updateProps.Data.Alerts, "LW Configuration GCP Violation Alert")
 
 	assert.Equal(t, "LW_CFG_GCP_DEFAULT_PROFILE", updateProps.Data.Extends)
 	assert.Equal(t, "{{_OCCURRENCE}} violation for GCP Resource {{RESOURCE_TYPE}}:{{RESOURCE_ID}} in project {{PROJECT_ID}} region {{RESOURCE_REGION}} Updated", alert.Description)
@@ -84,11 +84,12 @@ func TestAlertProfileValidate(t *testing.T) {
 	assert.Contains(t, msg, "expected value of name to not start with any of \"LW_\"")
 }
 
-func getAlert(alerts []api.AlertTemplate, name string) (alert api.AlertTemplate) {
+func getAlert(alerts []api.AlertTemplate, name string) api.AlertTemplate {
+	var alert api.AlertTemplate
 	for _, a := range alerts {
 		if a.EventName == name {
-			alert = a
+			return alert
 		}
 	}
-	return
+	return alert
 }
