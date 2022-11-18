@@ -142,7 +142,7 @@ func _TestAlertRuleCategories(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
-			"event_categories":    []string{"Compliance", "APP", "CloUD", "fIlE", "machine", "uSER", "PlatforM"},
+			"event_categories":    []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -154,8 +154,8 @@ func _TestAlertRuleCategories(t *testing.T) {
 
 	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
 
-	assert.Equal(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform"}, createProps.Data.Filter.EventCategories)
-	assert.Equal(t, "[Compliance App Cloud File Machine User Platform]", actualCategories)
+	assert.Equal(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity"}, createProps.Data.Filter.EventCategories)
+	assert.Equal(t, "[Compliance App Cloud File Machine User Platform K8sActivity]", actualCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -170,7 +170,7 @@ func _TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform'",
+			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform', 'K8sActivity'",
 		)
 	}
 }

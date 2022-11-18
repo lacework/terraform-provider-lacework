@@ -4,17 +4,11 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 // extract an attribute from the provided ResourceData and convert it into a string slice
 func castAttributeToStringSlice(d *schema.ResourceData, attr string) []string {
 	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return s })
-}
-
-func castAndTitleCaseStringSlice(d *schema.ResourceData, attr string) []string {
-	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return cases.Title(language.English).String(strings.ToLower(s)) })
 }
 
 func castAndUpperStringSlice(iArray []interface{}) []string {

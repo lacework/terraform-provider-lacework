@@ -90,20 +90,20 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				Description: "List of event categories for the alert rule. Valid categories are: " +
-					"Compliance, App, Cloud, File, Machine, User, Platform",
+					"Compliance, App, Cloud, File, Machine, User, Platform, K8sActivity",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(cases.Title(language.English).String(strings.ToLower(val.(string))))
+						return strings.TrimSpace(val.(string))
 					},
 					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-						switch strings.ToLower(value.(string)) {
-						case "compliance", "app", "cloud", "file", "machine", "user", "platform":
+						switch value.(string) {
+						case "Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity":
 							return nil, nil
 						default:
 							return nil, []error{
 								fmt.Errorf(
-									"%s: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform'", key,
+									"%s: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform', 'K8sActivity'", key,
 								),
 							}
 						}
@@ -145,7 +145,7 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 				Description:     d.Get("description").(string),
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
-				EventCategories: castAndTitleCaseStringSlice(d, "event_categories"),
+				EventCategories: castAttributeToStringSlice(d, "event_categories"),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
 		)
@@ -217,7 +217,7 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 				Description:     d.Get("description").(string),
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
-				EventCategories: castAndTitleCaseStringSlice(d, "event_categories"),
+				EventCategories: castAttributeToStringSlice(d, "event_categories"),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
 		)
