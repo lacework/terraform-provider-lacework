@@ -30,7 +30,8 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createData := GetContainerRegisteryInlineScanner(create)
 	assert.Equal(t, tokenName, createData.Data.Name)
-	// assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.IdentifierTag)
+	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.IdentifierTag)
+	assert.Equal(t, 60, createData.Data.Data.LimitNumScan)
 
 	// Update Github Container Registry
 	terraformOptions.Vars["name"] = "Github Container Registry Updated"
@@ -38,5 +39,16 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	updateData := GetContainerRegisteryInlineScanner(update)
 	assert.Equal(t, "Github Container Registry Updated", updateData.Data.Name)
-	// assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.IdentifierTag)
+	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.IdentifierTag)
+	assert.Equal(t, 60, createData.Data.Data.LimitNumScan)
+
+	server_token := terraform.Output(t, terraformOptions, "server_token")
+	assert.NotEmpty(t, server_token)
+	server_uri := terraform.Output(t, terraformOptions, "server_uri")
+	assert.NotEmpty(t, server_uri)
+	policy_enabled := terraform.Output(t, terraformOptions, "policy_enabled")
+	assert.NotEmpty(t, policy_enabled)
+	policy_guids := terraform.Output(t, terraformOptions, "policy_guids")
+	assert.NotEmpty(t, policy_guids)
+
 }

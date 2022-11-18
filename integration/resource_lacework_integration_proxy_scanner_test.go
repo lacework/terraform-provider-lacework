@@ -30,6 +30,10 @@ func TestIntegrationProxyScannerCreate(t *testing.T) {
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createData := GetContainerRegisteryProxyScanner(create)
 	assert.Equal(t, tokenName, createData.Data.Name)
+	assert.Equal(t, 10, createData.Data.Data.LimitNumImg)
+	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
+	assert.Equal(t, []string{"dev*", "*test"}, createData.Data.Data.LimitByTag)
+	assert.Equal(t, []string{"repo/my-image", "repo/other-image"}, createData.Data.Data.LimitByRep)
 
 	// Update Github Container Registry
 	terraformOptions.Vars["name"] = "Github Container Registry Updated"
@@ -37,4 +41,19 @@ func TestIntegrationProxyScannerCreate(t *testing.T) {
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	updateData := GetContainerRegisteryProxyScanner(update)
 	assert.Equal(t, "Github Container Registry Updated", updateData.Data.Name)
+	assert.Equal(t, 10, createData.Data.Data.LimitNumImg)
+	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
+	assert.Equal(t, []string{"dev*", "*test"}, createData.Data.Data.LimitByTag)
+	assert.Equal(t, []string{"repo/my-image", "repo/other-image"}, createData.Data.Data.LimitByRep)
+	assert.NotEmpty(t, createData.Data.ServerToken.ServerToken)
+	assert.NotEmpty(t, createData.Data.ServerToken.Uri)
+
+	server_token := terraform.Output(t, terraformOptions, "server_token")
+	assert.NotEmpty(t, server_token)
+	server_uri := terraform.Output(t, terraformOptions, "server_uri")
+	assert.NotEmpty(t, server_uri)
+	policy_enabled := terraform.Output(t, terraformOptions, "policy_enabled")
+	assert.NotEmpty(t, policy_enabled)
+	policy_guids := terraform.Output(t, terraformOptions, "policy_guids")
+	assert.NotEmpty(t, policy_guids)
 }

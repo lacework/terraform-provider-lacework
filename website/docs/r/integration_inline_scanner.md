@@ -29,12 +29,14 @@ The following arguments are supported:
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `integration_tags` - (Optional) Identifier tags as `key:value` pairs.
 
-## Argument Reference
+## Attributes Reference
 
 In addition to the arguments listed above, the following computed attributes are exported:
 
 * `server_token` - The inline scanner access token.
-* `uri` - The inline scanner github path.
+* `server_token_uri` - The inline scanner github path.
+* `policy_evaluate` - A `bool` value indicating whether a policy is associated to this token.
+* `policy_guids` - A `list` policy guids associated to this token.
 
 ## Import
 
