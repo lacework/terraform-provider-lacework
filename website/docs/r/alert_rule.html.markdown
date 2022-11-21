@@ -63,7 +63,7 @@ The following arguments are supported:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
 * `event_categories` - (Optional) The list of event categories the rule will apply to. Valid categories include:
-  `Compliance`, `App`, `Cloud`,`File`, `Machine`, `User` and `Platform`.
+  `Compliance`, `App`, `Cloud`,`File`, `Machine`, `User`, `Platform` and `K8sActivity`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
