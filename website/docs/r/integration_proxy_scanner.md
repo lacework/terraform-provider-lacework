@@ -19,7 +19,7 @@ resource "lacework_integration_proxy_scanner" "example" {
 }
 ```
 
-## Attributes Reference
+## Argument Reference
 
 The following arguments are supported:
 
@@ -29,8 +29,6 @@ The following arguments are supported:
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
-* `policy_evaluate` - A `bool` value indicating whether a policy is associated to this token.
-* `policy_guids` - A `list` policy guids associated to this token.
 
 ## Argument Reference
 
@@ -38,6 +36,8 @@ In addition to the arguments listed above, the following computed attributes are
 
 * `server_token` - The proxy scanner access token.
 * `server_token_uri` - The proxy scanner github path.
+* `policy_evaluate` - A `bool` value indicating whether a policy is associated to this token.
+* `policy_guids` - A `list` policy guids associated to this token.
 ## Import
 
 A Lacework Proxy Scanner container registry integration can be imported using a `INT_GUID`, e.g.
