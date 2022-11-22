@@ -46,9 +46,4 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 	assert.NotEmpty(t, server_token)
 	server_uri := terraform.Output(t, terraformOptions, "server_uri")
 	assert.NotEmpty(t, server_uri)
-	policy_enabled := terraform.Output(t, terraformOptions, "policy_enabled")
-	assert.NotEmpty(t, policy_enabled)
-	policy_guids := terraform.Output(t, terraformOptions, "policy_guids")
-	assert.NotEmpty(t, policy_guids)
-
 }

@@ -1,9 +1,7 @@
 package lacework
 
 import (
-	"encoding/json"
 	"log"
-	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -111,17 +109,6 @@ func resourceLaceworkIntegrationProxyScanner() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"policy_evaluate": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"policy_guids": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 		},
 	}
 }
@@ -169,23 +156,6 @@ func resourceLaceworkIntegrationProxyScannerCreate(d *schema.ResourceData, meta 
 	log.Printf("[INFO] Created ContVulnCfg integration for %s registry type with guid %s\n",
 		api.ProxyScannerContainerRegistry.String(), integration.IntgGuid)
 
-	if d.Get("policy_evaluate").(bool) {
-		log.Printf("[INFO] Map policies...\n")
-		_, err := lacework.V2.ContainerRegistries.MapPolicy(
-			response.Data.IntgGuid,
-			api.MapPolicyRequest{
-				Evaluate:    d.Get("policy_evaluate").(bool),
-				PolicyGuids: castAttributeToStringSlice(d, "policy_guids"),
-			},
-		)
-		if err != nil {
-			return err
-		}
-	} else {
-		d.Set("policy_guids", nil)
-		d.Set("policy_evaluate", false)
-	}
-
 	return nil
 }
 
@@ -209,32 +179,6 @@ func resourceLaceworkIntegrationProxyScannerRead(d *schema.ResourceData, meta in
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
 	d.Set("server_token_uri", integration.ServerToken.Uri)
-
-	// check for props and marshal
-	if t, ok := integration.Props.(map[string]interface{}); ok {
-		if jsonbody, err := json.Marshal(t); err != nil {
-			return err
-		} else {
-			props := api.V2IntegrationProps{}
-			if err := json.Unmarshal(jsonbody, &props); err != nil {
-				return err
-			}
-			nop := props.PolicyEvaluation
-			if nop != nil {
-				log.Printf("[INFO] Found inline policy evaluation: %s\n", strconv.FormatBool(nop.Evaluate))
-				d.Set("policy_evaluate", nop.Evaluate)
-				if nop.Evaluate {
-					for _, nog := range nop.PolicyGuids {
-						log.Printf("[INFO] Found inline policy guid: %s\n", nog)
-					}
-					d.Set("policy_guids", nop.PolicyGuids)
-				}
-			}
-		}
-	} else {
-		d.Set("policy_guids", nil)
-		d.Set("policy_evaluate", false)
-	}
 
 	d.Set("limit_num_imgs", integration.Data.LimitNumImg)
 	d.Set("limit_by_tags", integration.Data.LimitByTag)
@@ -282,34 +226,6 @@ func resourceLaceworkIntegrationProxyScannerUpdate(d *schema.ResourceData, meta 
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
 	d.Set("server_token_uri", integration.ServerToken.Uri)
-
-	if d.Get("policy_evaluate").(bool) {
-		log.Printf("[INFO] Map policies...\n")
-		_, err := lacework.V2.ContainerRegistries.MapPolicy(
-			response.Data.IntgGuid,
-			api.MapPolicyRequest{
-				Evaluate:    d.Get("policy_evaluate").(bool),
-				PolicyGuids: castAttributeToStringSlice(d, "policy_guids"),
-			},
-		)
-		if err != nil {
-			return err
-		}
-	} else {
-		log.Printf("[INFO] Unmap policies...\n")
-		_, err := lacework.V2.ContainerRegistries.MapPolicy(
-			response.Data.IntgGuid,
-			api.MapPolicyRequest{
-				Evaluate:    d.Get("policy_evaluate").(bool),
-				PolicyGuids: []string{},
-			},
-		)
-		if err != nil {
-			return err
-		}
-		d.Set("policy_guids", nil)
-		d.Set("policy_evaluate", false)
-	}
 
 	d.Set("limit_num_imgs", integration.Data.LimitNumImg)
 	d.Set("limit_by_tags", integration.Data.LimitByTag)
