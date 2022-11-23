@@ -51,18 +51,14 @@ Alternatively, this example shows how to load a [service account key created](ht
 using the Cloud Console or the `gcloud` command-line tool located on a local file on disk:
 
 ```hcl
-locals {
-  gcr_credentials = jsondecode(file("/path/to/creds.json"))
-}
-
 resource "lacework_integration_gcr" "example" {
   name            = "GRC Example"
   registry_domain = "gcr.io"
   credentials {
-    client_id      = local.gcr_credentials.client_id
-    client_email   = local.gcr_credentials.client_email
-    private_key_id = local.gcr_credentials.private_key_id
-    private_key    = local.gcr_credentials.private_key
+    client_id      = "123456789012345678900"
+    client_email   = "email@abc-project-name.iam.gserviceaccount.com"
+    private_key_id = "1234abcd1234abcd1234abcd1234abcd1234abcd"
+    private_key    = "-----BEGIN PRIVATE KEY-----\n ... -----END PRIVATE KEY-----\n"
   }
 }
 ```
@@ -76,10 +72,32 @@ The following arguments are supported:
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `limit_num_imgs` - (Optional) The maximum number of newest container images to assess per repository. Must be one of `5`, `10`, or `15`. Defaults to `5`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
-* `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
-* `limit_by_repositories` - (Optional) A list of repositories to assess.
 * `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
+* `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
+* `limit_by_repositories` - (Optional) A list of repositories to assess.
+* `limit_by_label` - (Optional) A list of key/value labels to limit the assessment of images. If you specify `limit_by_tags` and `limit_by_label` limits, they function as an `AND`.
+
+The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
+* `key` - (Required) The key of the label.
+* `value` - (Required) The value of the label.
+
+For example, to limit by the label `key` with values `value` and `value2`, plus the label `key1` with value `value`.
+```hcl
+limit_by_label {
+  key   = "key"
+  value = "value"
+}
+
+limit_by_label {
+  key   = "key"
+  value = "value2"
+}
+
+limit_by_label {
+  key   = "key1"
+  value = "value"
+}
+```
 
 ### Credentials
 

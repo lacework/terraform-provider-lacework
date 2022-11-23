@@ -17,4 +17,14 @@ resource "lacework_integration_ecr" "iam_role" {
   }
   non_os_package_support = var.non_os_package_support
   limit_num_imgs         = var.num_images
+
+  limit_by_label {
+    key   = "key1"
+    value = "label1"
+  }
+
+  limit_by_label {
+    key   = "key2"
+    value = "label2"
+  }
 }

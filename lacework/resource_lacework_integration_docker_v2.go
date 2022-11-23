@@ -65,16 +65,23 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 				Optional:    true,
 				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
-			"limit_by_labels": {
-				Type: schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
+			"limit_by_label": {
+				Type: schema.TypeSet,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
 					},
 				},
 				Optional:    true,
-				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
+				Description: "A list of key/value labels to limit the assessment of images",
 			},
 			"non_os_package_support": {
 				Type:        schema.TypeBool,
@@ -113,7 +120,7 @@ func resourceLaceworkIntegrationDockerV2Create(d *schema.ResourceData, meta inte
 		api.DockerhubV2ContainerRegistry,
 		api.DockerhubV2Data{
 			LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:          castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByLabel:          castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			RegistryDomain:        d.Get("registry_domain").(string),
 			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
 			RegistryNotifications: &notifications,
@@ -176,7 +183,7 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 		d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 		d.Set("notifications", integration.Data.RegistryNotifications)
 		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
-		d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.DockerhubV2ContainerRegistry.String(), integration.IntgGuid)
 		return nil
@@ -193,7 +200,7 @@ func resourceLaceworkIntegrationDockerV2Update(d *schema.ResourceData, meta inte
 		api.DockerhubV2ContainerRegistry,
 		api.DockerhubV2Data{
 			LimitByTag:            castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:          castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByLabel:          castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			RegistryDomain:        d.Get("registry_domain").(string),
 			NonOSPackageEval:      d.Get("non_os_package_support").(bool),
 			RegistryNotifications: &notifications,

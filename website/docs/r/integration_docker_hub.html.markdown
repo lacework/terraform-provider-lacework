@@ -40,6 +40,23 @@ The `limit_by_label` block can be defined multiple times to define multiple labe
 * `key` - (Required) The key of the label.
 * `value` - (Required) The value of the label.
 
+For example, to limit by the label `key` with values `value` and `value2`, plus the label `key1` with value `value`.
+```hcl
+limit_by_label {
+  key   = "key"
+  value = "value"
+}
+
+limit_by_label {
+  key   = "key"
+  value = "value2"
+}
+
+limit_by_label {
+  key   = "key1"
+  value = "value"
+}
+```
 
 ## Import
 

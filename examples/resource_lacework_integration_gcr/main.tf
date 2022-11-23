@@ -9,8 +9,8 @@ terraform {
 provider "lacework" {}
 
 resource "lacework_integration_gcr" "example" {
-  name            = var.integration_name
-  registry_domain = "gcr.io"
+  name                   = var.integration_name
+  registry_domain        = "gcr.io"
   non_os_package_support = true
   credentials {
     client_id      = var.client_id
@@ -23,8 +23,19 @@ resource "lacework_integration_gcr" "example" {
   limit_by_tags         = ["dev*", "*test"]
   limit_by_repositories = ["my-repo", "other-repo"]
 
-  limit_by_labels = {
-    foo = "bar"
+  limit_by_label {
+    key   = "key"
+    value = "value"
+  }
+
+  limit_by_label {
+    key   = "key"
+    value = "value2"
+  }
+
+  limit_by_label {
+    key   = "foo"
+    value = "bar"
   }
 }
 
@@ -33,13 +44,13 @@ variable "integration_name" {
   default = "Google Container Registry Example"
 }
 variable "client_id" {
-  type      = string
+  type = string
 }
 variable "client_email" {
-  type      = string
+  type = string
 }
 variable "private_key_id" {
-  type      = string
+  type = string
 }
 variable "private_key" {
   type      = string

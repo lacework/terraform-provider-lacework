@@ -33,7 +33,16 @@ func TestIntegrationGCRCreate(t *testing.T) {
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		createData := GetContainerRegisteryGcr(create)
 		assert.Equal(t, "Google Container Registry Example", createData.Data.Name)
-		assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
+
+		assert.Contains(t, createData.Data.Data.LimitByRep, "my-repo")
+		assert.Contains(t, createData.Data.Data.LimitByRep, "other-repo")
+
+		assert.Contains(t, createData.Data.Data.LimitByTag, "dev*")
+		assert.Contains(t, createData.Data.Data.LimitByTag, "*test")
+
+		assert.Contains(t, createData.Data.Data.LimitByLabel, map[string]string{"key": "value"})
+		assert.Contains(t, createData.Data.Data.LimitByLabel, map[string]string{"key": "value2"})
+		assert.Contains(t, createData.Data.Data.LimitByLabel, map[string]string{"foo": "bar"})
 
 		// Update Google Container Registry
 		terraformOptions.Vars["integration_name"] = "Google Container Registry Updated"
@@ -41,6 +50,15 @@ func TestIntegrationGCRCreate(t *testing.T) {
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
 		updateData := GetContainerRegisteryGcr(update)
 		assert.Equal(t, "Google Container Registry Updated", updateData.Data.Name)
-		assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
+
+		assert.Contains(t, createData.Data.Data.LimitByRep, "my-repo")
+		assert.Contains(t, createData.Data.Data.LimitByRep, "other-repo")
+
+		assert.Contains(t, createData.Data.Data.LimitByTag, "dev*")
+		assert.Contains(t, createData.Data.Data.LimitByTag, "*test")
+
+		assert.Contains(t, createData.Data.Data.LimitByLabel, map[string]string{"key": "value"})
+		assert.Contains(t, createData.Data.Data.LimitByLabel, map[string]string{"key": "value2"})
+		assert.Contains(t, createData.Data.Data.LimitByLabel, map[string]string{"foo": "bar"})
 	}
 }

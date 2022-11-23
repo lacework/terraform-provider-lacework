@@ -50,9 +50,31 @@ The following arguments are supported:
 * `ssl` - (Optional) Enable or disable SSL communication. Defaults to `false`.
 * `notifications` - (Optional) Subscribe to registry notifications. Defaults to `false`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
-* `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
+* `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
+* `limit_by_label` - (Optional) A list of key/value labels to limit the assessment of images. If you specify `limit_by_tags` and `limit_by_label` limits, they function as an `AND`.
+
+The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
+* `key` - (Required) The key of the label.
+* `value` - (Required) The value of the label.
+
+For example, to limit by the label `key` with values `value` and `value2`, plus the label `key1` with value `value`.
+```hcl
+limit_by_label {
+  key   = "key"
+  value = "value"
+}
+
+limit_by_label {
+  key   = "key"
+  value = "value2"
+}
+
+limit_by_label {
+  key   = "key1"
+  value = "value"
+}
+```
 
 ## Import
 
