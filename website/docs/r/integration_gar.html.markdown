@@ -43,28 +43,6 @@ module "gar" {
 
 To see the list of inputs, outputs and dependencies, visit the [Terraform registry page of this module](https://registry.terraform.io/modules/lacework/gar/gcp/latest).
 
-## Example Loading Credentials from Local File
-
-Alternatively, this example shows how to load a [service account key created](https://cloud.google.com/iam/docs/creating-managing-service-account-keys#creating_service_account_keys)
-using the Cloud Console or the `gcloud` command-line tool located on a local file on disk:
-
-```hcl
-locals {
-  gar_credentials = jsondecode(file("/path/to/creds.json"))
-}
-
-resource "lacework_integration_gar" "example" {
-  name            = "GAR Example"
-  registry_domain = "us-west1-docker.pkg.dev"
-  credentials {
-    client_id      = local.gar.client_id
-    client_email   = local.gar.client_email
-    private_key_id = local.gar.private_key_id
-    private_key    = local.gar.private_key
-  }
-}
-```
-
 ## Example Using Limits
 
 ```hcl
@@ -116,6 +94,24 @@ The following arguments are supported:
 The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
 * `key` - (Required) The key of the label.
 * `value` - (Required) The value of the label.
+
+For example, to limit by the label `key` with values `value` and `value2`, plus the label `key1` with value `value`.
+```hcl
+limit_by_label {
+  key   = "key"
+  value = "value"
+}
+
+limit_by_label {
+  key   = "key"
+  value = "value2"
+}
+
+limit_by_label {
+  key   = "key1"
+  value = "value"
+}
+```
 
 ### Credentials
 
