@@ -165,6 +165,18 @@ func GetContainerRegisteryGcr(result string) api.GcpGcrIntegrationResponse {
 	return res
 }
 
+func GetContainerRegisteryDockerhub(result string) api.DockerhubIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.ContainerRegistries.GetDockerhub(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
 func GetContainerRegisteryGhcr(result string) api.GhcrIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
