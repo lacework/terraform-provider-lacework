@@ -78,12 +78,16 @@ The following arguments are supported:
 * `name` - (Required) The ECR integration name.
 * `registry_domain` - (Required) The Amazon Container Registry (ECR) domain in the format `YourAWSAccount.dkr.ecr.YourRegion.amazonaws.com`, where `YourAWSAcount` is the AWS account number for the AWS IAM user that has a role with permissions to access the ECR and `YourRegion` is your AWS region such as `us-west-2`.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
+* `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
 * `limit_num_imgs` - (Optional) The maximum number of newest container images to assess per repository. Must be one of `5`, `10`, or `15`. Defaults to `5`.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `limit_by_tags` - (Optional) A list of image tags to limit the assessment of images with matching tags. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
-* `limit_by_labels` - (Optional) A key based map of labels to limit the assessment of images with matching `key:value` labels. If you specify `limit_by_tags` and `limit_by_labels` limits, they function as an `AND`.
 * `limit_by_repositories` - (Optional) A list of repositories to assess.
-* `non_os_package_support` - (Optional) Enable [program language scanning](https://docs.lacework.com/container-image-support#language-libraries-support). Defaults to `true`.
+* `limit_by_label` - (Optional) A list of key/value labels to limit the assessment of images. If you specify `limit_by_tags` and `limit_by_label` limits, they function as an `AND`.
+
+The `limit_by_label` block can be defined multiple times to define multiple label limits, it supports:
+* `key` - (Required) The key of the label.
+* `value` - (Required) The value of the label.
 
 ### Credentials
 

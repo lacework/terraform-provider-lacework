@@ -139,16 +139,23 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 				Optional:    true,
 				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
-			"limit_by_labels": {
-				Type: schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
+			"limit_by_label": {
+				Type: schema.TypeSet,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
 					},
 				},
 				Optional:    true,
-				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
+				Description: "A list of key/value labels to limit the assessment of images",
 			},
 			"limit_by_repositories": {
 				Type: schema.TypeList,
@@ -308,7 +315,7 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 				ExternalID: d.Get("credentials.0.external_id").(string),
 			},
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:     castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:      d.Get("limit_num_imgs").(int),
 			RegistryDomain:   d.Get("registry_domain").(string),
@@ -353,7 +360,7 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 				SecretAccessKey: d.Get("credentials.0.secret_access_key").(string),
 			},
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
-			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_labels"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:      d.Get("limit_num_imgs").(int),
 			RegistryDomain:   d.Get("registry_domain").(string),
@@ -446,14 +453,10 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 		},
 		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
 		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 		LimitNumImg:      d.Get("limit_num_imgs").(int),
 		RegistryDomain:   d.Get("registry_domain").(string),
 		NonOSPackageEval: d.Get("non_os_package_support").(bool),
-	}
-
-	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
-	if len(labels) != 0 {
-		iamRoleData.LimitByLabel = labels
 	}
 
 	data := api.NewContainerRegistry(d.Get("name").(string),
@@ -513,14 +516,10 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 		},
 		LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
 		LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
+		LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 		LimitNumImg:      d.Get("limit_num_imgs").(int),
 		RegistryDomain:   d.Get("registry_domain").(string),
 		NonOSPackageEval: d.Get("non_os_package_support").(bool),
-	}
-
-	labels := castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels")
-	if len(labels) != 0 {
-		iamRoleData.LimitByLabel = labels
 	}
 
 	data := api.NewContainerRegistry(d.Get("name").(string),
@@ -586,16 +585,9 @@ func readEcrIam(d *schema.ResourceData, meta interface{}) error {
 		d.Set("credentials", []map[string]string{creds})
 
 		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
-		if len(response.Data.Data.LimitByTag) != 0 {
-			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
-		}
-		if len(response.Data.Data.LimitByRep) != 0 {
-			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
-		}
-
-		if len(response.Data.Data.LimitByLabel) != 0 {
-			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
-		}
+		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
+		d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), response.Data.IntgGuid)
 		return nil
@@ -630,16 +622,9 @@ func readEcrAccessKey(d *schema.ResourceData, meta interface{}) error {
 		d.Set("credentials", []map[string]string{creds})
 
 		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
-		if len(response.Data.Data.LimitByTag) != 0 {
-			d.Set("limit_by_tags", response.Data.Data.LimitByTag)
-		}
-		if len(response.Data.Data.LimitByRep) != 0 {
-			d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
-		}
-
-		if len(response.Data.Data.LimitByLabel) != 0 {
-			d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
-		}
+		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
+		d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
+		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), response.Data.IntgGuid)
 		return nil
