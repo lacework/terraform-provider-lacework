@@ -81,21 +81,6 @@ func TestCastAttributeToStringSliceEmpty(t *testing.T) {
 	)
 }
 
-func TestCastAttributeToStringKeyMapOfStrings(t *testing.T) {
-	var (
-		expected     = map[string]string{"foo": "bar", "key": "value"}
-		d            = resourceLaceworkIntegrationGcr()
-		testResource = d.TestResourceData()
-	)
-
-	testResource.Set("limit_by_labels", expected)
-	actual := castAttributeToStringKeyMapOfStrings(testResource, "limit_by_labels")
-
-	assert.Equal(t, expected, actual,
-		"%s did not match expected value: %s", actual, expected,
-	)
-}
-
 func TestContainsStr(t *testing.T) {
 	assert.True(t, ContainsStr([]string{"a", "b", "c"}, "b"))
 	assert.True(t, ContainsStr([]string{"exact string!"}, "exact string!"))

@@ -41,45 +41,33 @@ func castStringSliceToInterface(strs []string) []interface{} {
 	return arr
 }
 
-// extract an attribute from the provided ResourceData and convert it into a map of strings
-// with string keys
-func castAttributeToStringKeyMapOfStrings(d *schema.ResourceData, attr string) map[string]string {
-	mapStrings := d.Get(attr).(map[string]interface{})
-	newParams := make(map[string]string, len(mapStrings))
-	for key, val := range mapStrings {
-		newParams[key] = val.(string)
-	}
-
-	return newParams
-}
-
 // extract an attribute from the provided ResourceData and convert it into an array of map of strings
 // with string keys. (needed for API v2 ContainerRegistry Limits)
 //
 // Example of key/value TypeSet:
 //
-// label {
-//   key = "foo"
-//   value = "bar"
-// }
+//	label {
+//	  key = "foo"
+//	  value = "bar"
+//	}
 //
-// label {
-//   key = "abc"
-//   value = "xyz"
-// }
+//	label {
+//	  key = "abc"
+//	  value = "xyz"
+//	}
 //
-// label {
-//   key = "key"
-//   value = "value"
-// }
+//	label {
+//	  key = "key"
+//	  value = "value"
+//	}
 //
 // The returned array of map of strings with string keys:
 //
-// []map[string]string{
-//   {"foo": "bar"},
-//   {"abc": "xyz"},
-//   {"key": "value"},
-// }
+//	[]map[string]string{
+//	  {"foo": "bar"},
+//	  {"abc": "xyz"},
+//	  {"key": "value"},
+//	}
 func castAttributeToArrayOfKeyValueMap(d *schema.ResourceData, attr string) []map[string]string {
 	list := d.Get(attr).(*schema.Set).List()
 	aMap := make([]map[string]string, len(list))
@@ -122,23 +110,24 @@ func castAttributeToArrayOfCustomKeyValueMap(d *schema.ResourceData, attr string
 // needed for API v2 ContainerRegistry Limits
 //
 // @afiune This function reverts the array of map (from APIv2) to a TypeSet array
-//         which is pretty much what castAttributeToArrayOfKeyValueMap() returns
+//
+//	which is pretty much what castAttributeToArrayOfKeyValueMap() returns
 //
 // Example of an array of map of strings with string keys:
 //
-// []map[string]string{
-//   {"foo": "bar"},
-//   {"abc": "xyz"},
-//   {"key": "value"},
-// }
+//	[]map[string]string{
+//	  {"foo": "bar"},
+//	  {"abc": "xyz"},
+//	  {"key": "value"},
+//	}
 //
 // The returned array of key/value TypeSet:
 //
-// mockLabels = []map[string]string{
-//   {"key": "foo", "value": "bar"},
-//   {"key": "abc", "value": "xyz"},
-//   {"key": "key", "value": "value"},
-// }
+//	mockLabels = []map[string]string{
+//	  {"key": "foo", "value": "bar"},
+//	  {"key": "abc", "value": "xyz"},
+//	  {"key": "key", "value": "value"},
+//	}
 func castArrayOfStringKeyMapOfStringsToLimitByLabelSet(list []map[string]string) []map[string]string {
 	aMap := make([]map[string]string, len(list))
 

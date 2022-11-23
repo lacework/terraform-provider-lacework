@@ -14,7 +14,7 @@ import (
 //
 // It uses the go-sdk to verify the created query,
 // applies an update and destroys it
-//nolint
+// nolint
 func TestQueryCreateCloudtrail(t *testing.T) {
 	queryID := fmt.Sprintf("Lql_Terraform_Query_%d", time.Now().UnixMilli())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
