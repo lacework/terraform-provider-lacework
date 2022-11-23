@@ -54,16 +54,23 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 				Optional:    true,
 				Description: "A list of image tags to limit the assessment of images with matching tags",
 			},
-			"limit_by_labels": {
-				Type: schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
+			"limit_by_label": {
+				Type: schema.TypeSet,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"key": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"value": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
 					},
 				},
 				Optional:    true,
-				Description: "A key based map of labels to limit the assessment of images with matching key:value labels",
+				Description: "A list of key/value labels to limit the assessment of images",
 			},
 			"limit_by_repositories": {
 				Type: schema.TypeList,
@@ -119,7 +126,7 @@ func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta int
 		api.DockerhubData{
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
 			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
-			LimitByLabel:     castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			LimitNumImg:      d.Get("limit_num_imgs").(int),
 			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.DockerhubCredentials{
@@ -178,7 +185,7 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
 		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 		d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
-		d.Set("limit_by_labels", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), integration.IntgGuid)
 		return nil
@@ -196,7 +203,7 @@ func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta int
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
 			LimitByRep:       castAttributeToStringSlice(d, "limit_by_repositories"),
 			LimitNumImg:      d.Get("limit_num_imgs").(int),
-			LimitByLabel:     castAttributeToArrayKeyMapOfStrings(d, "limit_by_labels"),
+			LimitByLabel:     castAttributeToArrayOfKeyValueMap(d, "limit_by_label"),
 			NonOSPackageEval: d.Get("non_os_package_support").(bool),
 			Credentials: api.DockerhubCredentials{
 				Username: d.Get("username").(string),

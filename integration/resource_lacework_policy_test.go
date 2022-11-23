@@ -15,7 +15,7 @@ import (
 //
 // It uses the go-sdk to verify the created policy,
 // applies an update and destroys it
-//nolint
+// nolint
 func TestPolicyCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_policy",

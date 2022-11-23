@@ -16,7 +16,7 @@ import (
 //
 // It uses the go-sdk to verify the created report rule,
 // applies an update and destroys it
-//nolint
+// nolint
 func _TestReportRuleCreate(t *testing.T) {
 	name := fmt.Sprintf("Report Rule - %s", time.Now())
 	resourceGroupName := fmt.Sprintf("Used for Report Rule Test - %s", time.Now())
