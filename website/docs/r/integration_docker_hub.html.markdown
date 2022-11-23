@@ -40,7 +40,6 @@ The `limit_by_label` block can be defined multiple times to define multiple labe
 * `key` - (Required) The key of the label.
 * `value` - (Required) The value of the label.
 
-
 ## Import
 
 A Lacework Docker Hub container registry integration can be imported using a `INT_GUID`, e.g.
