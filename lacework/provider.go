@@ -102,6 +102,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_gcp_cfg":                    resourceLaceworkIntegrationGcpCfg(),
 			"lacework_integration_gcp_at":                     resourceLaceworkIntegrationGcpAt(),
 			"lacework_integration_gcp_gke_audit_log":          resourceLaceworkIntegrationGcpGkeAuditLog(),
+			"lacework_integration_gcp_agentless_scanning":     resourceLaceworkIntegrationGcpAgentlessScanning(),
 			"lacework_integration_gar":                        resourceLaceworkIntegrationGar(),
 			"lacework_integration_gcr":                        resourceLaceworkIntegrationGcr(),
 			"lacework_integration_ghcr":                       resourceLaceworkIntegrationGhcr(),
