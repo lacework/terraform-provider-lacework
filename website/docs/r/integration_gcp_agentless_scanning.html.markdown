@@ -32,8 +32,6 @@ resource "lacework_integration_gcp_agentless_scanning" "account_abc" {
 
 The following arguments are supported:
 
-The following arguments are supported:
-
 * `name` - (Required) The GCP Agentless Scanning integration name.
 * `resource_level` = (Required) "PROJECT" or "ORGANIZATION"
 * `resource_id` - (Required) The organization or project ID.

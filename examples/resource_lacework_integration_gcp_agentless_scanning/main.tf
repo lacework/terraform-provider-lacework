@@ -62,8 +62,8 @@ variable "query_text" {
 }
 
 variable "filter_list" {
-  type    = string
-  default = ""
+  type    = list(string)
+  default = ["proj1", "proj2"]
 }
 
 resource "lacework_integration_gcp_agentless_scanning" "example" {

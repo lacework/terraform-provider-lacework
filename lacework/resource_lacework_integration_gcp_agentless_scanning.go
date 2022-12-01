@@ -1,11 +1,9 @@
 package lacework
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -27,17 +25,19 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The integration name.",
 			},
 			"intg_guid": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "The state of the external integration.",
 			},
 			"retries": {
 				Type:        schema.TypeInt,
@@ -52,8 +52,9 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"client_id": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Client Id from credentials file.",
 						},
 						"private_key_id": {
 							Type:     schema.TypeString,
@@ -65,10 +66,12 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 									"credentials.0.client_email",
 								)
 							},
+							Description: "Private Key Id from credentials file.",
 						},
 						"client_email": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Client email from credentials file.",
 						},
 						"private_key": {
 							Type:      schema.TypeString,
@@ -84,11 +87,13 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 									"credentials.0.client_email",
 								)
 							},
+							Description: "Private Key from credentials file.",
 						},
 						"token_uri": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Default:  "https://oauth2.googleapis.com/token",
+							Type:        schema.TypeString,
+							Optional:    true,
+							Default:     "https://oauth2.googleapis.com/token",
+							Description: "Token URI from credentials file.",
 						},
 					},
 				},
@@ -114,10 +119,12 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 						}
 					}
 				},
+				Description: "Integration level - ORGANIZATION / PROJECT.",
 			},
 			"resource_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Organization Id or Project Id.",
 			},
 			"created_or_updated_time": {
 				Type:     schema.TypeString,
@@ -136,37 +143,50 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 				Computed: true,
 			},
 			"bucket_name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Bucket containing analysis results shared with Lacework platform.",
 			},
 			"scanning_project_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "Project ID where scanner is deployed.",
 			},
 			"scan_frequency": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  24,
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     24,
+				Description: "How often in hours the scan will run in hours.",
 			},
 			"scan_containers": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to includes scanning for containers.",
 			},
 			"scan_host_vulnerabilities": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Whether to includes scanning for host vulnerabilities.",
 			},
 			"query_text": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The LQL query text.",
 			},
 			"filter_list": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Optional: true,
-				Default:  "",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+				},
+				Default:     nil,
+				Description: "List of Projects to specifically include/exclude.",
 			},
 		},
 	}
@@ -204,18 +224,9 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 			ScanContainers:          d.Get("scan_containers").(bool),
 			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
 			QueryText:               d.Get("query_text").(string),
-			FilterList:              d.Get("filter_list").(string),
+			FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
 		},
 	)
-
-	f, _ := os.Create("/tmp/yourfile")
-	defer f.Close()
-
-	w := bufio.NewWriter(f)
-	//choose random number for recipe
-
-	_, _ = fmt.Fprintf(w, "%v\n", data)
-	fmt.Printf("Data is %+v", data)
 
 	if !d.Get("enabled").(bool) {
 		data.Enabled = 0
@@ -295,7 +306,15 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 		d.Set("scan_containers", integration.Data.ScanContainers)
 		d.Set("scan_host_vulnerabilities", integration.Data.ScanHostVulnerabilities)
 		d.Set("query_text", integration.Data.QueryText)
-		d.Set("filter_list", integration.Data.FilterList)
+
+		filter_list := strings.Split(integration.Data.FilterList, ",")
+		if integration.Data.FilterList != "" && len(filter_list) > 0 {
+			var trimmed_filter_list []string
+			for _, elem := range filter_list {
+				trimmed_filter_list = append(trimmed_filter_list, strings.TrimSpace(elem))
+			}
+			d.Set("filter_list", trimmed_filter_list)
+		}
 
 		log.Printf("[INFO] Read %s integration with guid: %v\n",
 			api.GcpSidekickCloudAccount.String(), integration.IntgGuid)
@@ -334,7 +353,7 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 			ScanContainers:          d.Get("scan_containers").(bool),
 			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
 			QueryText:               d.Get("query_text").(string),
-			FilterList:              d.Get("filter_list").(string),
+			FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
 		},
 	)
 
