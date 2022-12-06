@@ -587,7 +587,10 @@ func readEcrIam(d *schema.ResourceData, meta interface{}) error {
 		d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
 		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 		d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
-		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+
+		if limitByLabelsLength(response.Data.Data.LimitByLabel) != 0 {
+			d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		}
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), response.Data.IntgGuid)
 		return nil
@@ -595,6 +598,16 @@ func readEcrIam(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId("")
 	return nil
+}
+
+func limitByLabelsLength(labels []map[string]string) int {
+	var keys []string
+	for _, i := range labels {
+		for k, _ := range i {
+			keys = append(keys, k)
+		}
+	}
+	return len(keys)
 }
 
 func readEcrAccessKey(d *schema.ResourceData, meta interface{}) error {
