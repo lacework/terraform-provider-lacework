@@ -142,6 +142,14 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+			"server_token": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"uri": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"bucket_name": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -236,7 +244,7 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.GcpSidekickCloudAccount.String())
 		log.Printf("[INFO] Creating %v integration\n", data)
-		response, err := lacework.V2.CloudAccounts.Create(data)
+		response, err := lacework.V2.CloudAccounts.CreateGcpSidekick(data)
 
 		if err != nil {
 			if retries <= 0 {
@@ -265,6 +273,8 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
+		d.Set("server_token", integration.ServerToken)
+		d.Set("uri", integration.Uri)
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
 			api.GcpSidekickCloudAccount.String(), integration.IntgGuid)
@@ -291,6 +301,8 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
+		d.Set("server_token", integration.ServerToken)
+		d.Set("uri", integration.Uri)
 
 		creds := make(map[string]string)
 		creds["client_id"] = integration.Data.Credentials.ClientID
@@ -381,6 +393,8 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
+	d.Set("server_token", integration.ServerToken)
+	d.Set("uri", integration.Uri)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
 		api.GcpSidekickCloudAccount.String(), d.Id())
