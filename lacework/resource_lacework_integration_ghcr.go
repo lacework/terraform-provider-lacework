@@ -207,7 +207,9 @@ func resourceLaceworkIntegrationGhcrRead(d *schema.ResourceData, meta interface{
 	d.Set("limit_num_imgs", response.Data.Data.LimitNumImg)
 	d.Set("limit_by_tags", response.Data.Data.LimitByTag)
 	d.Set("limit_by_repositories", response.Data.Data.LimitByRep)
-	d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+	if limitByLabelsLength(response.Data.Data.LimitByLabel) != 0 {
+		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+	}
 
 	log.Printf("[INFO] Read ContVulnCfg integration for %s registry type with guid %s\n",
 		api.GhcrContainerRegistry.String(), response.Data.IntgGuid)

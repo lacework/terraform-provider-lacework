@@ -183,7 +183,9 @@ func resourceLaceworkIntegrationDockerV2Read(d *schema.ResourceData, meta interf
 		d.Set("non_os_package_support", integration.Data.NonOSPackageEval)
 		d.Set("notifications", integration.Data.RegistryNotifications)
 		d.Set("limit_by_tags", response.Data.Data.LimitByTag)
-		d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		if limitByLabelsLength(response.Data.Data.LimitByLabel) != 0 {
+			d.Set("limit_by_label", castArrayOfStringKeyMapOfStringsToLimitByLabelSet(response.Data.Data.LimitByLabel))
+		}
 
 		log.Printf("[INFO] Read %s registry type with guid: %v\n", api.DockerhubV2ContainerRegistry.String(), integration.IntgGuid)
 		return nil
