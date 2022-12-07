@@ -78,7 +78,7 @@ func testAccCheckAlertChannelJiraCloudDestroy(s *terraform.State) error {
 		if response.Data.IntgGuid == rs.Primary.ID {
 			return fmt.Errorf(
 				"the %s integration (%s) still exists",
-				api.JiraIntegration, rs.Primary.ID,
+				api.JiraCloudAlertType, rs.Primary.ID,
 			)
 		}
 	}

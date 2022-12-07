@@ -326,14 +326,14 @@ func verifyPrimaryAccount(account string, opts ...api.Option) (string, error) {
 		return account, err
 	}
 
-	orgInfo, err := lwApi.Account.GetOrganizationInfo()
+	orgInfo, err := lwApi.V2.OrganizationInfo.Get()
 	if err != nil {
 		return account, err
 	}
 
-	if orgInfo.OrgAccount {
+	if orgInfo.Data[0].OrgAccount {
 		log.Println("[INFO] Organizational account detected")
-		return strings.ToLower(orgInfo.AccountName()), nil
+		return strings.ToLower(orgInfo.Data[0].AccountName()), nil
 	}
 
 	log.Println("[INFO] Account is NOT an organizational account")
