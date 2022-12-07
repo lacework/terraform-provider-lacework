@@ -35,7 +35,7 @@ func TestAlertChannelGcpPubSubCreate(t *testing.T) {
 
 		// Create new GCP Pub Sub Alert Channel
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-		assert.Equal(t, "My GCP Pub Sub Example", GetIntegrationName(create, "GCP_PUBSUB"))
+		assert.Equal(t, "My GCP Pub Sub Example", GetAlertChannelName(create))
 
 		// Update GCP Pub Sub Alert Channel
 		terraformOptions.Vars = map[string]interface{}{

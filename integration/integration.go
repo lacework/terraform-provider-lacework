@@ -105,12 +105,12 @@ func GetCloudAccountGkeAuditLogData(result string) api.GcpGkeAuditData {
 	return response.Data.Data
 }
 
-func GetIntegrationName(result string, integration string) string {
-	var res api.V2CommonIntegration
+func GetAlertChannelName(result string) string {
+	var res api.AlertChannelResponse
+
 	id := GetIDFromTerraResults(result)
 
-	integrationType, _ := api.FindIntegrationType(integration)
-	err := LwClient.V2.Schemas.GetService(integrationType.Schema()).Get(id, &res)
+	err := LwClient.V2.AlertChannels.Get(id, &res)
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}

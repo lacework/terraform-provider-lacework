@@ -25,7 +25,7 @@ func TestAlertChannelCiscoWebexCreate(t *testing.T) {
 
 	// Create new Cisco webex Alert Channel
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Cisco Webex Alert Channel Example", GetIntegrationName(create, "CISCO_SPARK_WEBHOOK"))
+	assert.Equal(t, "Cisco Webex Alert Channel Example", GetAlertChannelName(create))
 
 	// Update Cisco Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
