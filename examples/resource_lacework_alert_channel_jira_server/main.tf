@@ -14,6 +14,7 @@ resource "lacework_alert_channel_jira_server" "example" {
   issue_type           = var.issue_type
   project_key          = var.project_key
   username             = var.username
+  configuration        = var.configuration
   group_issues_by      = var.group_issues_by
   custom_template_file = var.custom_template_file
   password             = var.password
@@ -48,6 +49,10 @@ variable "username" {
 variable "password" {
   type      = string
   sensitive = true
+}
+
+variable "configuration" {
+  type = string
 }
 
 variable "group_issues_by" {
@@ -90,6 +95,10 @@ output "issue_type" {
 
 output "project_key" {
   value = lacework_alert_channel_jira_server.example.project_key
+}
+
+output "configuration" {
+  value = lacework_alert_channel_jira_server.example.configuration
 }
 
 output "group_issues_by" {

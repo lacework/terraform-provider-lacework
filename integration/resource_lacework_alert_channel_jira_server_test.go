@@ -23,6 +23,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 			"project_key":     "fake-project-key",
 			"username":        "fake-username-techally",
 			"password":        "fake-password",
+			"configuration":   "Bidirectional",
 			"group_issues_by": "Events",
 		},
 	})
@@ -40,6 +41,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		"project_key":     "fake-project-key-updated",
 		"username":        "fake-username-techally-updated",
 		"password":        "fake-password-updated",
+		"configuration":   "Unidirectional",
 		"group_issues_by": "Resources",
 	}
 
@@ -57,6 +59,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		assert.Equal(t, "Task", data["issueType"])
 		assert.Equal(t, "fake-project-key-updated", data["projectId"])
 		assert.Equal(t, "fake-username-techally-updated", data["username"])
+		assert.Equal(t, "Unidirectional", data["configuration"])
 		assert.Equal(t, "Resources", data["issueGrouping"])
 		assert.Equal(t, customTemplateFileEncoded, data["customTemplateFile"])
 
@@ -67,6 +70,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		actualProjectKey := terraform.Output(t, terraformOptions, "project_key")
 		actualUsername := terraform.Output(t, terraformOptions, "username")
 		actualPassword := terraform.Output(t, terraformOptions, "password")
+		actualConfiguration := terraform.Output(t, terraformOptions, "configuration")
 		actualIssueGrouping := terraform.Output(t, terraformOptions, "group_issues_by")
 		actualCustomTemplateFile := terraform.Output(t, terraformOptions, "custom_template_file")
 
@@ -76,6 +80,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		assert.Equal(t, data["projectId"], actualProjectKey)
 		assert.Equal(t, data["username"], actualUsername)
 		assert.Equal(t, "fake-password-updated", actualPassword)
+		assert.Equal(t, data["configuration"], actualConfiguration)
 		assert.Equal(t, data["issueGrouping"], actualIssueGrouping)
 		assert.Equal(t, customTemplateFile, actualCustomTemplateFile)
 	}
