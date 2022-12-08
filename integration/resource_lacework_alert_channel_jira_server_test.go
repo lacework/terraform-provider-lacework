@@ -23,7 +23,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 			"project_key":     "fake-project-key",
 			"username":        "fake-username-techally",
 			"password":        "fake-password",
-			"configuration":   "Bidirectional",
+			"configuration":   "Unidirectional",
 			"group_issues_by": "Events",
 		},
 	})
@@ -41,7 +41,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		"project_key":     "fake-project-key-updated",
 		"username":        "fake-username-techally-updated",
 		"password":        "fake-password-updated",
-		"configuration":   "Unidirectional",
+		"configuration":   "Bidirectional",
 		"group_issues_by": "Resources",
 	}
 
@@ -59,7 +59,7 @@ func TestAlertChannelJiraServerCreate(t *testing.T) {
 		assert.Equal(t, "Task", data["issueType"])
 		assert.Equal(t, "fake-project-key-updated", data["projectId"])
 		assert.Equal(t, "fake-username-techally-updated", data["username"])
-		assert.Equal(t, "Unidirectional", data["configuration"])
+		assert.Equal(t, "Bidirectional", data["configuration"])
 		assert.Equal(t, "Resources", data["issueGrouping"])
 		assert.Equal(t, customTemplateFileEncoded, data["customTemplateFile"])
 
