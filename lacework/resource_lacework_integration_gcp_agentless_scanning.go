@@ -301,8 +301,6 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 		d.Set("type_name", integration.Type)
 		d.Set("org_level", integration.IsOrg == 1)
-		d.Set("server_token", integration.ServerToken)
-		d.Set("uri", integration.Uri)
 
 		creds := make(map[string]string)
 		creds["client_id"] = integration.Data.Credentials.ClientID
@@ -393,8 +391,6 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
-	d.Set("server_token", integration.ServerToken)
-	d.Set("uri", integration.Uri)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
 		api.GcpSidekickCloudAccount.String(), d.Id())
