@@ -59,7 +59,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		assert.Equal(t, "Story", data["issueType"])
 		assert.Equal(t, "fake-project-key-updated", data["projectId"])
 		assert.Equal(t, "fake-username-techally-updated", data["username"])
-		assert.Equal(t, "Bidirectional", data["configuration"])
+		assert.Equal(t, "Bidirectional", data["bidirectionalConfig"])
 		assert.Equal(t, "Resources", data["issueGrouping"])
 		assert.Equal(t, customTemplateFileEncoded, data["customTemplateFile"])
 
@@ -79,7 +79,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		assert.Equal(t, data["jiraUrl"], actualJiraUrl)
 		assert.Equal(t, data["projectId"], actualProjectKey)
 		assert.Equal(t, data["username"], actualUsername)
-		assert.Equal(t, data["configuration"], actualConfiguration)
+		assert.Equal(t, data["bidirectionalConfig"], actualConfiguration)
 		assert.Equal(t, data["issueGrouping"], actualIssueGrouping)
 		assert.Equal(t, customTemplateFile, actualCustomTemplateFile)
 		assert.Equal(t, "fake-api-token-updated", actualApiToken)
