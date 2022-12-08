@@ -156,7 +156,7 @@ resource "%s" "%s" {
     project_key = "%s"
     username    = "%s"
     api_token   = "%s"
-	configuration = "%s"
+    configuration = "%s"
     group_issues_by = "%s"
     custom_template_file = "%s"
 }
