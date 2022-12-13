@@ -15,6 +15,7 @@ resource "lacework_alert_channel_jira_cloud" "example" {
   project_key          = var.project_key
   username             = var.username
   api_token            = var.api_token
+  configuration        = var.configuration
   group_issues_by      = var.group_issues_by
   custom_template_file = var.custom_template_file
   // test_integration input is used in this example only for testing
@@ -48,6 +49,10 @@ variable "username" {
 variable "api_token" {
   type      = string
   sensitive = true
+}
+
+variable "configuration" {
+  type = string
 }
 
 variable "group_issues_by" {
@@ -90,6 +95,10 @@ output "issue_type" {
 
 output "project_key" {
   value = lacework_alert_channel_jira_cloud.example.project_key
+}
+
+output "configuration" {
+  value = lacework_alert_channel_jira_cloud.example.configuration
 }
 
 output "group_issues_by" {

@@ -23,6 +23,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 			"project_key":     "fake-project-key",
 			"username":        "fake-username-techally",
 			"api_token":       "fake-api-token",
+			"configuration":   "Unidirectional",
 			"group_issues_by": "Events",
 		},
 	})
@@ -40,6 +41,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		"project_key":     "fake-project-key-updated",
 		"username":        "fake-username-techally-updated",
 		"api_token":       "fake-api-token-updated",
+		"configuration":   "Bidirectional",
 		"group_issues_by": "Resources",
 	}
 
@@ -57,6 +59,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		assert.Equal(t, "Story", data["issueType"])
 		assert.Equal(t, "fake-project-key-updated", data["projectId"])
 		assert.Equal(t, "fake-username-techally-updated", data["username"])
+		assert.Equal(t, "Bidirectional", data["bidirectionalConfig"])
 		assert.Equal(t, "Resources", data["issueGrouping"])
 		assert.Equal(t, customTemplateFileEncoded, data["customTemplateFile"])
 
@@ -67,6 +70,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		actualProjectKey := terraform.Output(t, terraformOptions, "project_key")
 		actualUsername := terraform.Output(t, terraformOptions, "username")
 		actualApiToken := terraform.Output(t, terraformOptions, "api_token")
+		actualConfiguration := terraform.Output(t, terraformOptions, "configuration")
 		actualIssueGrouping := terraform.Output(t, terraformOptions, "group_issues_by")
 		actualCustomTemplateFile := terraform.Output(t, terraformOptions, "custom_template_file")
 
@@ -75,6 +79,7 @@ func TestAlertChannelJiraCloudCreate(t *testing.T) {
 		assert.Equal(t, data["jiraUrl"], actualJiraUrl)
 		assert.Equal(t, data["projectId"], actualProjectKey)
 		assert.Equal(t, data["username"], actualUsername)
+		assert.Equal(t, data["bidirectionalConfig"], actualConfiguration)
 		assert.Equal(t, data["issueGrouping"], actualIssueGrouping)
 		assert.Equal(t, customTemplateFile, actualCustomTemplateFile)
 		assert.Equal(t, "fake-api-token-updated", actualApiToken)

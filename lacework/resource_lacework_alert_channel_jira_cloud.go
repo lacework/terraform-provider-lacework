@@ -66,6 +66,23 @@ func resourceLaceworkAlertChannelJiraCloud() *schema.Resource {
 				ValidateFunc: validation.StringIsJSON,
 				Description:  "A Custom Template JSON file to populate fields in the new Jira issues",
 			},
+			"configuration": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch value.(string) {
+					case "Unidirectional", "Bidirectional":
+						return nil, nil
+					default:
+						return nil, []error{
+							fmt.Errorf(
+								"%s: can only be either 'Unidirectional' or 'Bidirectional' (default: Unidirectional)", key,
+							),
+						}
+					}
+				},
+				Description: "Whether the integration is Unidirectional or Bidirectional. Defaults to Unidirectional",
+			},
 			"group_issues_by": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -121,6 +138,7 @@ func resourceLaceworkAlertChannelJiraCloudCreate(d *schema.ResourceData, meta in
 		jiraData           = api.JiraDataV2{
 			JiraUrl:       d.Get("jira_url").(string),
 			IssueType:     d.Get("issue_type").(string),
+			Configuration: d.Get("configuration").(string),
 			IssueGrouping: d.Get("group_issues_by").(string),
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),
@@ -185,6 +203,7 @@ func resourceLaceworkAlertChannelJiraCloudRead(d *schema.ResourceData, meta inte
 
 	d.Set("jira_url", response.Data.Data.JiraUrl)
 	d.Set("issue_type", response.Data.Data.IssueType)
+	d.Set("configuration", response.Data.Data.Configuration)
 	d.Set("group_issues_by", response.Data.Data.IssueGrouping)
 	d.Set("project_key", response.Data.Data.ProjectID)
 	d.Set("username", response.Data.Data.Username)
@@ -209,6 +228,7 @@ func resourceLaceworkAlertChannelJiraCloudUpdate(d *schema.ResourceData, meta in
 		jiraData           = api.JiraDataV2{
 			JiraUrl:       d.Get("jira_url").(string),
 			IssueType:     d.Get("issue_type").(string),
+			Configuration: d.Get("configuration").(string),
 			IssueGrouping: d.Get("group_issues_by").(string),
 			ProjectID:     d.Get("project_key").(string),
 			Username:      d.Get("username").(string),

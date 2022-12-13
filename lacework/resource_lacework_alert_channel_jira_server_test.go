@@ -123,6 +123,9 @@ func testAccAlertChannelJiraServerEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccAlertChannelJiraUsername); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraUsername)
 	}
+	if v := os.Getenv(testAccAlertChannelJiraConfiguration); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraConfiguration)
+	}
 	if v := os.Getenv(testAccAlertChannelJiraGroupIssuesBy); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraGroupIssuesBy)
 	}
@@ -144,6 +147,7 @@ resource "%s" "%s" {
     project_key = "%s"
     username    = "%s"
     password    = "%s"
+    configuration = "%s"
     group_issues_by = "%s"
     custom_template_file = "%s"
 }
@@ -156,6 +160,7 @@ resource "%s" "%s" {
 		os.Getenv(testAccAlertChannelJiraProjectKey),
 		os.Getenv(testAccAlertChannelJiraUsername),
 		os.Getenv(testAccAlertChannelJiraPassword),
+		os.Getenv(testAccAlertChannelJiraConfiguration),
 		os.Getenv(testAccAlertChannelJiraGroupIssuesBy),
 		os.Getenv(testAccAlertChannelJiraCustomTemplateFile),
 	)

@@ -19,6 +19,7 @@ const (
 	testAccAlertChannelJiraIssueType          = "JIRA_ISSUE_TYPE"
 	testAccAlertChannelJiraProjectKey         = "JIRA_PROJECT_KEY"
 	testAccAlertChannelJiraUsername           = "JIRA_USERNAME"
+	testAccAlertChannelJiraConfiguration      = "JIRA_CONFIGURATION"
 	testAccAlertChannelJiraGroupIssuesBy      = "JIRA_GROUP_ISSUES_BY"
 	testAccAlertChannelJiraCustomTemplateFile = "JIRA_CUSTOM_TEMPLATE_FILE"
 
@@ -131,6 +132,9 @@ func testAccAlertChannelJiraCloudEnvVarsPreCheck(t *testing.T) {
 	if v := os.Getenv(testAccAlertChannelJiraUsername); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraUsername)
 	}
+	if v := os.Getenv(testAccAlertChannelJiraConfiguration); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraConfiguration)
+	}
 	if v := os.Getenv(testAccAlertChannelJiraGroupIssuesBy); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccAlertChannelJiraGroupIssuesBy)
 	}
@@ -152,6 +156,7 @@ resource "%s" "%s" {
     project_key = "%s"
     username    = "%s"
     api_token   = "%s"
+    configuration = "%s"
     group_issues_by = "%s"
     custom_template_file = "%s"
 }
@@ -164,6 +169,7 @@ resource "%s" "%s" {
 		os.Getenv(testAccAlertChannelJiraProjectKey),
 		os.Getenv(testAccAlertChannelJiraUsername),
 		os.Getenv(testAccAlertChannelJiraApiToken),
+		os.Getenv(testAccAlertChannelJiraConfiguration),
 		os.Getenv(testAccAlertChannelJiraGroupIssuesBy),
 		os.Getenv(testAccAlertChannelJiraCustomTemplateFile),
 	)

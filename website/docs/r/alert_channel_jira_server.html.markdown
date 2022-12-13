@@ -23,12 +23,13 @@ Before creating the Jira alert channel, verify the following prerequisites:
 
 ```hcl
 resource "lacework_alert_channel_jira_server" "example" {
-  name        = "My Jira Server Alert Channel Example"
-  jira_url    = "mycompany.atlassian.net"
-  issue_type  = "Bug"
-  project_key = "EXAMPLE"
-  username    = "my@username.com"
-  password    = "abcd1234"
+  name          = "My Jira Server Alert Channel Example"
+  jira_url      = "mycompany.atlassian.net"
+  issue_type    = "Bug"
+  project_key   = "EXAMPLE"
+  username      = "my@username.com"
+  password      = "abcd1234"
+  configuration = "Bidirectional"
 }
 ```
 
@@ -42,6 +43,10 @@ The following arguments are supported:
 * `project_key` - (Required) The project key for the Jira project where the new Jira issues should be created.
 * `username` - (Required) The Jira user name. Lacework recommends a dedicated Jira user. See above for more information.
 * `password` - (Required) The password to the Jira user.
+* `configuration` - (Optional) Defines whether the integration is Unidirectional or Bidirectional.  For more information, see [more about Bidirectional Jira integrations](https://docs.lacework.com/onboarding/jira#bidirectional-integration).  Defaults to `Unidirectional`.
+  The available options are:
+  * **Unidirectional**: A unidirectional integration with Jira allows you to programatically generate a corresponding Jira issue for an alert. When the alert status is updated, the Jira status is updated.
+  * **Bidirectional**: A bidirectional integration with Jira allows you to programatically generate a corresponding Jira issue for an alert. When the alert status is updated, the Jira status is updated, and vice-versa.
 * `group_issues_by` - (Optional) Defines how Lacework compliance events get grouped. Must be one of `Events` or `Resources`. Defaults to `Events`.
   The available options are:
   * **Events**:	Single Jira issue will be created when compliance events of the same type but from different resources are detected by Lacework. For example, if three different S3 resources are generating the same compliance event, only one Jira ticket is created.
