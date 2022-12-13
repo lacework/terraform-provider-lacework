@@ -250,7 +250,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 
 	switch d.Get("aws_auth_type").(string) {
 	case api.AwsEcrAccessKey.String():
-		log.Printf("[INFO] %s Authentication: %s\n", api.EcrRegistry.String(), api.AwsEcrAccessKey.String())
+		log.Printf("[INFO] %s Authentication: %s\n", api.AwsEcrContainerRegistry.String(), api.AwsEcrAccessKey.String())
 
 		if err := validateAccessKeyCreds(d); err != nil {
 			// verify if the user is trying to change the authentication method
@@ -263,8 +263,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 			// yup, the user is trying to change the authentication method
 			// we need to delete the integration and create a new one
 			log.Println("[WARN] Change of authentication method detected. Need destroy and recreation")
-			log.Printf("[INFO] Deleting %s integration %s registry type with guid: %v\n",
-				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
+			log.Printf("[INFO] Deleting %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 			err := lacework.V2.ContainerRegistries.Delete(d.Id())
 			if err != nil {
 				return err
@@ -276,7 +275,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 		return resourceLaceworkIntegrationEcrUpdateWithAccessKey(d, lacework)
 
 	case api.AwsEcrIAM.String():
-		log.Printf("[INFO] %s Authentication: %s\n", api.EcrRegistry.String(), api.AwsEcrIAM.String())
+		log.Printf("[INFO] %s Authentication: %s\n", api.AwsEcrContainerRegistry.String(), api.AwsEcrIAM.String())
 
 		if err := validateIAMRoleCreds(d); err != nil {
 			// verify if the user is trying to change the authentication method
@@ -289,8 +288,7 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 			// yup, the user is trying to change the authentication method
 			// we need to delete the integration and create a new one
 			log.Println("[WARN] Change of authentication method detected. Need destroy and recreation")
-			log.Printf("[INFO] Deleting %s integration %s registry type with guid: %v\n",
-				api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), d.Id())
+			log.Printf("[INFO] Deleting %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 			err := lacework.V2.ContainerRegistries.Delete(d.Id())
 			if err != nil {
 				return err
@@ -391,7 +389,7 @@ func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, l
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", integration.Data.AwsAuthType)
 
-	log.Printf("[INFO] Updated %s registry type with guid: %v\n", api.EcrRegistry.String(), d.Id())
+	log.Printf("[INFO] Updated %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), d.Id())
 
 	return nil
 }
@@ -491,8 +489,7 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", ecrData.AwsAuthType)
 
-	log.Printf("[INFO] Created %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
+	log.Printf("[INFO] Created %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), integration.IntgGuid)
 	return nil
 }
 
@@ -554,8 +551,7 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 	// @afiune this field is important for updates since it will force a new resource
 	d.Set("aws_auth_type", ecrData.AwsAuthType)
 
-	log.Printf("[INFO] Created %s integration %s registry type with guid: %v\n",
-		api.ContainerRegistryIntegration.String(), api.EcrRegistry.String(), integration.IntgGuid)
+	log.Printf("[INFO] Created %s registry type with guid: %v\n", api.AwsEcrContainerRegistry.String(), integration.IntgGuid)
 	return nil
 }
 

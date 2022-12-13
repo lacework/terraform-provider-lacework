@@ -21,12 +21,12 @@ func TestAlertChannelSlackCreate(t *testing.T) {
 
 	// Create new Slack Alert Channel
 	create := terraform.InitAndApply(t, terraformOptions)
-	assert.Equal(t, "Slack Alert Channel Example", GetIntegrationName(create, "SLACK_CHANNEL"))
+	assert.Equal(t, "Slack Alert Channel Example", GetAlertChannelName(create))
 
 	// Update Slack Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "Slack Alert Channel Updated"}
 
 	update := terraform.Apply(t, terraformOptions)
-	assert.Equal(t, "Slack Alert Channel Updated", GetIntegrationName(update, "SLACK_CHANNEL"))
+	assert.Equal(t, "Slack Alert Channel Updated", GetAlertChannelName(update))
 }

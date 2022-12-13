@@ -109,3 +109,7 @@ output "scanning_project_id" {
 output "scan_frequency" {
   value = lacework_integration_gcp_agentless_scanning.example.scan_frequency
 }
+
+output "server_token" {
+  value = lacework_integration_gcp_agentless_scanning.example.server_token
+}

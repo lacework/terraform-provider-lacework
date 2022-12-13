@@ -101,7 +101,7 @@ func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, met
 		alert.Enabled = 0
 	}
 
-	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.AwsCloudWatchIntegration, alert)
+	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.CloudwatchEbAlertChannelType, alert)
 	response, err := lacework.V2.AlertChannels.Create(alert)
 	if err != nil {
 		return err

@@ -21,12 +21,12 @@ func TestAlertChannelEmailCreate(t *testing.T) {
 
 	// Create new Email Alert Channel
 	create := terraform.InitAndApply(t, terraformOptions)
-	assert.Equal(t, "Email Alert Channel Example", GetIntegrationName(create, "EMAIL_USER"))
+	assert.Equal(t, "Email Alert Channel Example", GetAlertChannelName(create))
 
 	// Update Email Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "Email Alert Channel Updated"}
 
 	update := terraform.Apply(t, terraformOptions)
-	assert.Equal(t, "Email Alert Channel Updated", GetIntegrationName(update, "EMAIL_USER"))
+	assert.Equal(t, "Email Alert Channel Updated", GetAlertChannelName(update))
 }

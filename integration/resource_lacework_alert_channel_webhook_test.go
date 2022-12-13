@@ -23,7 +23,7 @@ func TestWebhookAlertChannelCreate(t *testing.T) {
 
 	// Create new Webhook Alert Channel
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Webhook Alert Channel Example", GetIntegrationName(create, "WEBHOOK"))
+	assert.Equal(t, "Webhook Alert Channel Example", GetAlertChannelName(create))
 
 	// Update Webhook Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
@@ -35,7 +35,7 @@ func TestWebhookAlertChannelCreate(t *testing.T) {
 
 	actualName := terraform.Output(t, terraformOptions, "channel_name")
 	actualUrl := terraform.Output(t, terraformOptions, "webhook_url")
-	assert.Equal(t, "Webhook Alert Channel Updated", GetIntegrationName(update, "WEBHOOK"))
+	assert.Equal(t, "Webhook Alert Channel Updated", GetAlertChannelName(update))
 	assert.Equal(t, "Webhook Alert Channel Updated", actualName)
 	assert.Equal(t, "https://hook.com/webhook?api-token=321", actualUrl)
 }

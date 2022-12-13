@@ -25,7 +25,7 @@ func TestAlertChannelMicrosoftTeams(t *testing.T) {
 
 	// Create new Microsoft Teams Alert Channel
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-	assert.Equal(t, "Test Name", GetIntegrationName(create, "MICROSOFT_TEAMS"))
+	assert.Equal(t, "Test Name", GetAlertChannelName(create))
 
 	// Update Microsoft Teams Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
