@@ -331,7 +331,7 @@ func verifyPrimaryAccount(account string, opts ...api.Option) (string, error) {
 		return account, err
 	}
 
-	if orgInfo.Data[0].OrgAccount {
+	if len(orgInfo.Data) > 0 && orgInfo.Data[0].OrgAccount {
 		log.Println("[INFO] Organizational account detected")
 		return strings.ToLower(orgInfo.Data[0].AccountName()), nil
 	}

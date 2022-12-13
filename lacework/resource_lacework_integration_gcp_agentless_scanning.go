@@ -316,6 +316,7 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 		d.Set("scan_containers", integration.Data.ScanContainers)
 		d.Set("scan_host_vulnerabilities", integration.Data.ScanHostVulnerabilities)
 		d.Set("query_text", integration.Data.QueryText)
+		d.Set("uri", integration.Uri)
 
 		filter_list := strings.Split(integration.Data.FilterList, ",")
 		if integration.Data.FilterList != "" && len(filter_list) > 0 {
@@ -391,6 +392,8 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
+	d.Set("server_token", integration.ServerToken)
+	d.Set("uri", integration.Uri)
 
 	log.Printf("[INFO] Updated %s integration with guid: %v\n",
 		api.GcpSidekickCloudAccount.String(), d.Id())
