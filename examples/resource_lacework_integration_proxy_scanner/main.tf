@@ -26,7 +26,3 @@ resource "lacework_integration_proxy_scanner" "example" {
 output "server_token" {
     value = lacework_integration_proxy_scanner.example.server_token
 }
-
-output "server_uri" {
-    value = lacework_integration_proxy_scanner.example.server_uri
-}
