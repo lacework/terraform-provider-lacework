@@ -31,7 +31,7 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 	createData := GetContainerRegisteryInlineScanner(create)
 	assert.Equal(t, tokenName, createData.Data.Name)
 	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.IdentifierTag)
-	assert.Equal(t, 60, createData.Data.Data.LimitNumScan)
+	assert.Equal(t, "60", createData.Data.Data.LimitNumScan)
 
 	// Update Github Container Registry
 	terraformOptions.Vars["name"] = "Github Container Registry Updated"
@@ -40,7 +40,7 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 	updateData := GetContainerRegisteryInlineScanner(update)
 	assert.Equal(t, "Github Container Registry Updated", updateData.Data.Name)
 	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.IdentifierTag)
-	assert.Equal(t, 60, createData.Data.Data.LimitNumScan)
+	assert.Equal(t, "60", createData.Data.Data.LimitNumScan)
 
 	server_token := terraform.Output(t, terraformOptions, "server_token")
 	assert.NotEmpty(t, server_token)
