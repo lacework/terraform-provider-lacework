@@ -44,6 +44,4 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 
 	server_token := terraform.Output(t, terraformOptions, "server_token")
 	assert.NotEmpty(t, server_token)
-	server_uri := terraform.Output(t, terraformOptions, "server_uri")
-	assert.NotEmpty(t, server_uri)
 }
