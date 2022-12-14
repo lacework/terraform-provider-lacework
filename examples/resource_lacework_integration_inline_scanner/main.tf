@@ -11,7 +11,7 @@ provider "lacework" {
 }
 
 resource "lacework_integration_inline_scanner" "example" {
-  name                   = var.integration_name
+  name                   = var.name
 
   limit_num_scan        = 60
   identifier_tag {

@@ -11,7 +11,7 @@ provider "lacework" {
 }
 
 resource "lacework_integration_proxy_scanner" "example" {
-  name                   = var.integration_name
+  name                   = var.name
 
   limit_num_imgs        = 10
   limit_by_tags         = ["dev*", "*test"]
