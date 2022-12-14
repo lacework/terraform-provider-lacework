@@ -18,7 +18,7 @@ func TestIntegrationInlineScannerCreate(t *testing.T) {
 	tokenName := fmt.Sprintf("Inline Scanner Token Terraform - %s", time.Now())
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_integration_inlineScanner",
+		TerraformDir: "../examples/resource_lacework_integration_inline_scanner",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name": tokenName,
