@@ -95,7 +95,7 @@ func resourceLaceworkIntegrationInlineScannerCreate(d *schema.ResourceData, meta
 		d.Get("name").(string),
 		api.InlineScannerContainerRegistry,
 		api.InlineScannerData{
-			IdentifierTag: castAttributeToArrayKeyMapOfStrings(d, "identifier_tag"),
+			IdentifierTag: castAttributeToArrayOfKeyValueMap(d, "identifier_tag"),
 			LimitNumScan:  strconv.Itoa(d.Get("limit_num_scan").(int)),
 		},
 	)
@@ -167,7 +167,7 @@ func resourceLaceworkIntegrationInlineScannerUpdate(d *schema.ResourceData, meta
 	data := api.NewContainerRegistry(d.Get("name").(string),
 		api.InlineScannerContainerRegistry,
 		api.InlineScannerData{
-			IdentifierTag: castAttributeToArrayKeyMapOfStrings(d, "identifier_tag"),
+			IdentifierTag: castAttributeToArrayOfKeyValueMap(d, "identifier_tag"),
 			LimitNumScan:  strconv.Itoa(d.Get("limit_num_scan").(int)),
 		},
 	)
