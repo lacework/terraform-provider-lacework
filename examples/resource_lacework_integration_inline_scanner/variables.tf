@@ -1,4 +1,4 @@
 variable "name" {
   type    = string
-  default = "Github Container Registry Example"
+  default = "Inline Scanner Container Registry Example"
 }

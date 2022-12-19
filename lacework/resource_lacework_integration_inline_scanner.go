@@ -148,7 +148,7 @@ func resourceLaceworkIntegrationInlineScannerRead(d *schema.ResourceData, meta i
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
-	d.Set("server_token_uri", integration.ServerToken.Uri)
+	d.Set("server_uri", integration.ServerToken.Uri)
 
 	if limit_num_scan, err := strconv.Atoi(integration.Data.LimitNumScan); err == nil {
 		log.Printf("[INFO] Setting limit_num_scan: %d\n", limit_num_scan)
@@ -194,7 +194,7 @@ func resourceLaceworkIntegrationInlineScannerUpdate(d *schema.ResourceData, meta
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
-	d.Set("server_token_uri", integration.ServerToken.Uri)
+	d.Set("server_uri", integration.ServerToken.Uri)
 
 	if limit_num_scan, err := strconv.Atoi(integration.Data.LimitNumScan); err == nil {
 		log.Printf("[INFO] Setting limit_num_scan: %d\n", limit_num_scan)

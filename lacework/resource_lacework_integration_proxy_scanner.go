@@ -150,8 +150,7 @@ func resourceLaceworkIntegrationProxyScannerCreate(d *schema.ResourceData, meta 
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
-	d.Set("server_token", integration.ServerToken.ServerToken)
-	d.Set("server_token_uri", integration.ServerToken.Uri)
+	d.Set("server_uri", integration.ServerToken.Uri)
 
 	log.Printf("[INFO] Created ContVulnCfg integration for %s registry type with guid %s\n",
 		api.ProxyScannerContainerRegistry.String(), integration.IntgGuid)
@@ -178,7 +177,7 @@ func resourceLaceworkIntegrationProxyScannerRead(d *schema.ResourceData, meta in
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
-	d.Set("server_token_uri", integration.ServerToken.Uri)
+	d.Set("server_uri", integration.ServerToken.Uri)
 
 	d.Set("limit_num_imgs", integration.Data.LimitNumImg)
 	d.Set("limit_by_tags", integration.Data.LimitByTag)
@@ -225,7 +224,7 @@ func resourceLaceworkIntegrationProxyScannerUpdate(d *schema.ResourceData, meta 
 	d.Set("type_name", integration.Type)
 	d.Set("org_level", integration.IsOrg == 1)
 	d.Set("server_token", integration.ServerToken.ServerToken)
-	d.Set("server_token_uri", integration.ServerToken.Uri)
+	d.Set("server_uri", integration.ServerToken.Uri)
 
 	d.Set("limit_num_imgs", integration.Data.LimitNumImg)
 	d.Set("limit_by_tags", integration.Data.LimitByTag)

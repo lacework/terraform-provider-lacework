@@ -15,32 +15,32 @@ import (
 // It uses the go-sdk to verify the created integration,
 // applies an update with new integration name and destroys it
 func TestIntegrationProxyScannerCreate(t *testing.T) {
-	tokenName := fmt.Sprintf("Proxy Scanner Token Terraform - %s", time.Now())
+	integrationName := fmt.Sprintf("Proxy Scanner Container Registry - %s", time.Now())
 
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_proxy_scanner",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
-			"name": tokenName,
+			"name": integrationName,
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
-	// Create new Github Container Registry
+	// Create new Proxy Scanner Container Registry
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createData := GetContainerRegisteryProxyScanner(create)
-	assert.Equal(t, tokenName, createData.Data.Name)
+	assert.Equal(t, integrationName, createData.Data.Name)
 	assert.Equal(t, 10, createData.Data.Data.LimitNumImg)
 	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
 	assert.Equal(t, []string{"dev*", "*test"}, createData.Data.Data.LimitByTag)
 	assert.Equal(t, []string{"repo/my-image", "repo/other-image"}, createData.Data.Data.LimitByRep)
 
-	// Update Github Container Registry
-	terraformOptions.Vars["name"] = "Github Container Registry Updated"
+	// Update Proxy Scanner Container Registry
+	terraformOptions.Vars["name"] = "Proxy Scanner Container Registry Updated"
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
 	updateData := GetContainerRegisteryProxyScanner(update)
-	assert.Equal(t, "Github Container Registry Updated", updateData.Data.Name)
+	assert.Equal(t, "Proxy Scanner Container Registry Updated", updateData.Data.Name)
 	assert.Equal(t, 10, createData.Data.Data.LimitNumImg)
 	assert.Equal(t, []map[string]string{{"foo": "bar"}}, createData.Data.Data.LimitByLabel)
 	assert.Equal(t, []string{"dev*", "*test"}, createData.Data.Data.LimitByTag)
