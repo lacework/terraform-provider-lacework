@@ -8,7 +8,7 @@ require (
 	github.com/lacework/go-sdk v1.1.3-0.20221214173411-1ec57f679902
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.1
-	golang.org/x/text v0.4.0
+	golang.org/x/text v0.5.0
 )
 
 require (
