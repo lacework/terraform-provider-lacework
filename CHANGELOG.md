@@ -1,3 +1,10 @@
+## v1.4.0 (December 19, 2022)
+
+## Features
+* feat: add inline and proxy scanner resources (#434) (Salim Afiune)([d7e00749](https://github.com/lacework/terraform-provider-lacework/commit/d7e00749f4aaeaeb7b80d8741ed9640d331a0e34))
+## Other Changes
+* ci: version bump to v1.3.1-dev (Lacework)([2cf43092](https://github.com/lacework/terraform-provider-lacework/commit/2cf4309254046cf683bc0971edc9b0ccbbbc7df5))
+
 ## v1.3.0 (December 13, 2022)
 
 ## Features
