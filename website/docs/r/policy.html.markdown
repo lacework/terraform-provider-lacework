@@ -50,7 +50,7 @@ resource "lacework_policy" "example" {
   severity    = "High"
   type        = "Violation"
   evaluation  = "Hourly"
-  tags        = ["domain:AWS", "custom"]
+  tags        = ["cloud_AWS", "custom"]
   enabled     = false
 
   alerting {

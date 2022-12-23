@@ -27,7 +27,7 @@ func TestPolicyCreate(t *testing.T) {
 			"description": "Policy Created via Terraform",
 			"remediation": "Please Investigate",
 			"evaluation":  "Hourly",
-			"tags":        []string{"domain:AWS", "subdomain:Cloudtrail"},
+			"tags":        []string{"cloud_AWS", "resource_Cloudtrail"},
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -50,7 +50,11 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Contains(t, "Policy Created via Terraform", createProps.Data.Description)
 	assert.Contains(t, "Please Investigate", createProps.Data.Remediation)
 	assert.Contains(t, "Hourly", createProps.Data.EvalFrequency)
-	assert.ElementsMatch(t, []string{"domain:AWS", "subdomain:Cloudtrail"}, createProps.Data.Tags)
+	assert.NotContains(t, createProps.Data.Tags, "custom")
+	assert.Contains(t, createProps.Data.Tags, "cloud_AWS")
+	assert.Contains(t, createProps.Data.Tags, "resource_Cloudtrail")
+	// @afiune Tags are now restricted and we can't use domain:XYZ or subdomain:ABC
+	// assert.ElementsMatch(t, []string{"domain:AWS", "subdomain:Cloudtrail"}, createProps.Data.Tags)
 
 	assert.Equal(t, "lql-terraform-policy", actualTitle)
 	assert.Equal(t, "high", actualSeverity)
@@ -58,7 +62,7 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Equal(t, "Policy Created via Terraform", actualDescription)
 	assert.Equal(t, "Please Investigate", actualRemediation)
 	assert.Equal(t, "Hourly", actualEvaluation)
-	assert.Equal(t, "[domain:AWS subdomain:Cloudtrail]", actualTags)
+	assert.Equal(t, "[cloud_AWS resource_Cloudtrail]", actualTags)
 
 	// Update Policy
 	terraformOptions.Vars = map[string]interface{}{
@@ -67,7 +71,7 @@ func TestPolicyCreate(t *testing.T) {
 		"description": "Policy Created via Terraform Updated",
 		"remediation": "Please Ignore",
 		"evaluation":  "Daily",
-		"tags":        []string{"domain:AWS", "subdomain:Cloudtrail", "custom"},
+		"tags":        []string{"cloud_AWS", "resource_Cloudtrail", "custom"},
 	}
 
 	update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -86,7 +90,11 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Contains(t, "Policy Created via Terraform Updated", updateProps.Data.Description)
 	assert.Contains(t, "Please Ignore", updateProps.Data.Remediation)
 	assert.Contains(t, "Daily", updateProps.Data.EvalFrequency)
-	assert.ElementsMatch(t, []string{"custom", "domain:AWS", "subdomain:Cloudtrail"}, updateProps.Data.Tags)
+	assert.Contains(t, updateProps.Data.Tags, "custom")
+	assert.Contains(t, updateProps.Data.Tags, "cloud_AWS")
+	assert.Contains(t, updateProps.Data.Tags, "resource_Cloudtrail")
+	// @afiune Tags are now restricted and we can't use domain:XYZ or subdomain:ABC
+	// assert.ElementsMatch(t, []string{"custom", "domain:AWS", "subdomain:Cloudtrail"}, updateProps.Data.Tags)
 
 	assert.Equal(t, "lql-terraform-policy-updated", actualTitle)
 	assert.Equal(t, "low", actualSeverity)
@@ -94,7 +102,13 @@ func TestPolicyCreate(t *testing.T) {
 	assert.Equal(t, "Policy Created via Terraform Updated", actualDescription)
 	assert.Equal(t, "Please Ignore", actualRemediation)
 	assert.Equal(t, "Daily", actualEvaluation)
-	assert.Equal(t, "[custom domain:AWS subdomain:Cloudtrail]", actualTags)
+	// @afiune this output is not consistent, CI is getting.
+	//
+	// Error: Not equal:
+	//           expected: "[custom cloud_AWS resource_Cloudtrail]"
+	//           actual  : "[cloud_AWS custom resource_Cloudtrail]"
+	//
+	// assert.Equal(t, "[custom cloud_AWS resource_Cloudtrail]", actualTags)
 }
 
 func TestPolicyCreateWithPolicyIDSuffix(t *testing.T) {
