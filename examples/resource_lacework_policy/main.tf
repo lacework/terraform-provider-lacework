@@ -60,8 +60,8 @@ variable "policy_id_suffix" {
 }
 
 variable "tags" {
-  type = list(string)
-  default = ["domain:AWS", "custom"]
+  type    = list(string)
+  default = ["cloud_AWS", "custom"]
 }
 
 output "title" {
