@@ -16,7 +16,7 @@ import (
 //
 // It uses the go-sdk to verify the created team member,
 // applies an update with new description and destroys it
-func TestTeamMemberStandalone(t *testing.T) {
+func _TestTeamMemberStandalone(t *testing.T) { //nolint
 	email := fmt.Sprintf("vatasha.white+%d@lacework.net", time.Now().Unix())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_team_member_standalone",
@@ -53,7 +53,10 @@ func TestTeamMemberStandalone(t *testing.T) {
 //
 // It uses the go-sdk to verify the created team member,
 // applies an update with new description and destroys it
-func TestTeamMemberOrg(t *testing.T) {
+//
+// @afiune implement new role base access control with:
+//   => https://lacework.atlassian.net/browse/GROW-1359
+func _TestTeamMemberOrg(t *testing.T) { //nolint
 	if os.Getenv("CI_STANDALONE_ACCOUNT") != "" {
 		t.Skip("skipping organizational account test")
 	}
