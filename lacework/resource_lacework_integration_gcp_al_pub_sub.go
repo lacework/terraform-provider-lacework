@@ -208,7 +208,7 @@ func resourceLaceworkIntegrationGcpPubSubAuditLogCreate(d *schema.ResourceData, 
 
 		d.Set("created_or_updated_time", cloudAccount.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", cloudAccount.CreatedOrUpdatedBy)
-		d.Set("type_name", cloudAccount.Type) // @afiune should we deprecate?
+		d.Set("type_name", cloudAccount.Type)
 		d.Set("is_org", cloudAccount.IsOrg == 1)
 
 		log.Printf("[INFO] Created %s cloud account integration with guid: %v\n",
