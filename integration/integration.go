@@ -105,6 +105,17 @@ func GetCloudAccountGkeAuditLogData(result string) api.GcpGkeAuditData {
 	return response.Data.Data
 }
 
+func GetCloudAccountGcpPubSubAuditLogData(result string) api.GcpAlPubSubIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	response, err := LwClient.V2.CloudAccounts.GetGcpAlPubSub(id)
+	if err != nil {
+		log.Fatalf("Unable to find gke audit log id: %s\n Response: %v", id, response)
+	}
+
+	return response
+}
+
 func GetAlertChannelName(result string) string {
 	var res api.AlertChannelResponse
 
