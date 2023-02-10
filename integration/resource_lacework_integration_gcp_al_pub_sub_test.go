@@ -51,7 +51,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		assert.Equal(t, gcreds.ProjectID, actualProjectId)
 		assert.Equal(t, "projects/techally-hipstershop-275821/subscriptions/gcp-al-pub-subscription", actualSubscription)
 		assert.Equal(t, "projects/techally-hipstershop-275821/topics/gcp-al-pub-topic", actualTopicId)
-		
+
 		// Get the newly created integration from the api
 		createData := GetCloudAccountGcpPubSubAuditLogData(create)
 		assert.Equal(t, "GCP pub sub audit log integration example", createData.Data.Name)
