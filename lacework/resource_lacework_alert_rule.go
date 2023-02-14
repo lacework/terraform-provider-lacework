@@ -87,7 +87,7 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				},
 			},
 			"event_categories": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Description: "List of event categories for the alert rule. Valid categories are: " +
 					"Compliance, App, Cloud, File, Machine, User, Platform, K8sActivity",
@@ -137,15 +137,16 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	var (
-		lacework       = meta.(*api.Client)
-		resourceGroups = d.Get("resource_groups").(*schema.Set).List()
-		severities     = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
-		alertRule      = api.NewAlertRule(d.Get("name").(string),
+		lacework        = meta.(*api.Client)
+		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
+		eventCategories = d.Get("event_categories").(*schema.Set).List()
+		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
+		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
 				Description:     d.Get("description").(string),
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
-				EventCategories: castAttributeToStringSlice(d, "event_categories"),
+				EventCategories: castStringSlice(eventCategories),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
 		)
@@ -209,15 +210,16 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	var (
-		lacework       = meta.(*api.Client)
-		resourceGroups = d.Get("resource_groups").(*schema.Set).List()
-		severities     = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
-		alertRule      = api.NewAlertRule(d.Get("name").(string),
+		lacework        = meta.(*api.Client)
+		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
+		eventCategories = d.Get("event_categories").(*schema.Set).List()
+		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
+		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
 				Description:     d.Get("description").(string),
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
-				EventCategories: castAttributeToStringSlice(d, "event_categories"),
+				EventCategories: castStringSlice(eventCategories),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
 		)

@@ -37,7 +37,7 @@ variable "description" {
 
 variable "channels" {
   type    = list(string)
-  default = ["TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"]
+  default = ["TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"]
 }
 
 variable "severities" {
@@ -47,7 +47,7 @@ variable "severities" {
 
 variable "event_categories" {
   type    = list(string)
-  default = ["Compliance"]
+  default = ["Compliance", "Platform", "User", "Cloud"]
 }
 
 output "name" {
