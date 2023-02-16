@@ -16,8 +16,7 @@ import (
 //
 // It uses the go-sdk to verify the created alert rule,
 // applies an update and destroys it
-// nolint
-func _TestAlertRuleCreate(t *testing.T) {
+func TestAlertRuleCreate(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -25,7 +24,7 @@ func _TestAlertRuleCreate(t *testing.T) {
 		Vars: map[string]interface{}{
 			"name":                name,
 			"description":         "Alert Rule created by Terraform",
-			"channels":            []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"},
+			"channels":            []string{"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"},
 			"severities":          []string{"Critical"},
 			"event_categories":    []string{"Compliance"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
@@ -46,14 +45,14 @@ func _TestAlertRuleCreate(t *testing.T) {
 	actualResourceGroupID := terraform.Output(t, terraformOptions, "resource_group_id")
 
 	assert.Equal(t, "Alert Rule created by Terraform", createProps.Data.Filter.Description)
-	assert.Equal(t, []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350"}, createProps.Data.Channels)
+	assert.Equal(t, []string{"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"}, createProps.Data.Channels)
 	assert.Equal(t, []string{"Critical"}, api.NewAlertRuleSeveritiesFromIntSlice(createProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{actualResourceGroupID}, createProps.Data.Filter.ResourceGroups)
 	assert.Equal(t, []string{"Compliance"}, createProps.Data.Filter.EventCategories)
 
 	assert.Equal(t, name, actualName)
 	assert.Equal(t, "Alert Rule created by Terraform", actualDescription)
-	assert.Equal(t, "[TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350]", actualChannels)
+	assert.Equal(t, "[TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76]", actualChannels)
 	assert.Equal(t, string("[Critical]"), actualSeverities)
 	assert.Equal(t, "[Compliance]", actualEventCategories)
 
@@ -61,8 +60,8 @@ func _TestAlertRuleCreate(t *testing.T) {
 	terraformOptions.Vars = map[string]interface{}{
 		"name":        name,
 		"description": "Updated Alert Rule created by Terraform",
-		"channels": []string{"TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350",
-			"TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53"},
+		"channels": []string{"TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527",
+			"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"},
 		"severities":          []string{"High", "Medium"},
 		"event_categories":    []string{"Compliance", "User", "Platform"},
 		"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
@@ -77,21 +76,19 @@ func _TestAlertRuleCreate(t *testing.T) {
 	actualResourceGroupID = terraform.Output(t, terraformOptions, "resource_group_id")
 
 	assert.Equal(t, "Updated Alert Rule created by Terraform", updateProps.Data.Filter.Description)
-	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350")
-	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53")
+	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527")
+	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76")
 	assert.Equal(t, []string{"High", "Medium"}, api.NewAlertRuleSeveritiesFromIntSlice(updateProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{actualResourceGroupID}, updateProps.Data.Filter.ResourceGroups)
-	assert.Equal(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
-
+	assert.ElementsMatch(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
 	assert.Equal(t, "Updated Alert Rule created by Terraform", actualDescription)
-	assert.Equal(t, "[TECHALLY_5AB90986035F116604A26E1634340AC4FEDD1722A4D6A53 TECHALLY_AB90D4E77C93A9DE0DF6B22B9B06B9934645D6027C9D350]",
+	assert.Equal(t, "[TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76 TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527]",
 		actualChannels)
 	assert.Equal(t, "[High Medium]", actualSeverities)
-	assert.Equal(t, "[Compliance User Platform]", actualEventCategories)
+	assert.Equal(t, "[Compliance Platform User]", actualEventCategories)
 }
 
-// nolint
-func _TestAlertRuleSeverities(t *testing.T) {
+func TestAlertRuleSeverities(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -134,8 +131,7 @@ func _TestAlertRuleSeverities(t *testing.T) {
 	}
 }
 
-// nolint
-func _TestAlertRuleCategories(t *testing.T) {
+func TestAlertRuleCategories(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -154,8 +150,8 @@ func _TestAlertRuleCategories(t *testing.T) {
 
 	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
 
-	assert.Equal(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity"}, createProps.Data.Filter.EventCategories)
-	assert.Equal(t, "[Compliance App Cloud File Machine User Platform K8sActivity]", actualCategories)
+	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity"}, createProps.Data.Filter.EventCategories)
+	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform User]", actualCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
