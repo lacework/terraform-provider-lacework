@@ -52,3 +52,21 @@ func TestPolicyExceptionCreate(t *testing.T) {
 
 	assert.Equal(t, "Policy Exception Created via Terraform Updated", actualDescription)
 }
+
+// TestPolicyExceptionInvalidConstraint tests an invalid constraint returns an error and lists valid constraint fields
+func TestPolicyExceptionInvalidConstraint(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_policy_exception",
+		EnvVars:      tokenEnvVar,
+		Vars: map[string]interface{}{
+			"policy_id":    "lacework-global-46",
+			"description":  "Policy Exception Created via Terraform",
+			"field_key":    "invalid",
+			"field_values": []string{"*"},
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	_, err := terraform.InitAndApplyE(t, terraformOptions)
+	assert.ErrorContains(t, err, "[400] fieldKey: invalid is not applicable to policy lacework-global-39. Valid fieldKey are [accountIds, resourceNames, resourceTags]")
+}
