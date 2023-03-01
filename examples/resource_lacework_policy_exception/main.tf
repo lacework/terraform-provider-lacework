@@ -10,12 +10,12 @@ resource "lacework_policy_exception" "example" {
   policy_id   = "lacework-global-39"
   description = var.description
   constraint {
-    field_key    = "accountIds"
+    field_key    = var.field_key
     field_values = ["*"]
   }
 
   constraint {
-    field_key    = "resourceNames"
+    field_key    = "resourceTags"
     field_value_map {
       key = "test"
       value = "test"
