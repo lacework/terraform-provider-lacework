@@ -85,7 +85,7 @@ var gcpPubSubAuditLogIntegrationSchema = map[string]*schema.Schema{
 						// any other element changed from the credentials then we trigger a diff
 						return !d.HasChanges(
 							"name", "integration_type", "project_id", "organization_id",
-							"subscription", "enabled",
+							"subscription_id", "enabled",
 							"credentials.0.client_id",
 							"credentials.0.client_email",
 						)
@@ -121,7 +121,7 @@ var gcpPubSubAuditLogIntegrationSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "The GCP Project ID.",
 	},
-	"subscription": {
+	"subscription_id": {
 		Type:        schema.TypeString,
 		Required:    true,
 		Description: "The PubSub Subscription.",
@@ -159,7 +159,7 @@ func resourceLaceworkIntegrationGcpPubSubAuditLogCreate(d *schema.ResourceData, 
 			IntegrationType:  strings.ToUpper(d.Get("integration_type").(string)),
 			OrganizationID:   d.Get("organization_id").(string),
 			ProjectID:        d.Get("project_id").(string),
-			SubscriptionName: d.Get("subscription").(string),
+			SubscriptionName: d.Get("subscription_id").(string),
 			TopicID:          d.Get("topic_id").(string),
 		}
 	)
@@ -244,7 +244,7 @@ func resourceLaceworkIntegrationGcpPubSubAuditLogRead(d *schema.ResourceData, me
 		d.Set("integration_type", cloudAccount.Data.IntegrationType)
 		d.Set("organization_id", cloudAccount.Data.OrganizationID)
 		d.Set("project_id", cloudAccount.Data.ProjectID)
-		d.Set("subscription", cloudAccount.Data.SubscriptionName)
+		d.Set("subscription_id", cloudAccount.Data.SubscriptionName)
 		d.Set("topic_id", cloudAccount.Data.TopicID)
 
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
@@ -270,7 +270,7 @@ func resourceLaceworkIntegrationGcpPubSubAuditLogUpdate(d *schema.ResourceData, 
 			IntegrationType:  strings.ToUpper(d.Get("integration_type").(string)),
 			OrganizationID:   d.Get("organization_id").(string),
 			ProjectID:        d.Get("project_id").(string),
-			SubscriptionName: d.Get("subscription").(string),
+			SubscriptionName: d.Get("subscription_id").(string),
 			TopicID:          d.Get("topic_id").(string),
 		}
 	)

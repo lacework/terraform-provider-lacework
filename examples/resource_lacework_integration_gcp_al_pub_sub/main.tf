@@ -41,7 +41,7 @@ variable "project_id" {
   default = "example-project-id"
 }
 
-variable "subscription" {
+variable "subscription_id" {
   type    = string
   default = "projects/example-project-id/subscriptions/example-subscription"
 }
@@ -61,7 +61,7 @@ resource "lacework_integration_gcp_pub_sub_audit_log" "example" {
   }
   integration_type = var.integration_type
   project_id       = var.project_id
-  subscription     = var.subscription
+  subscription_id  = var.subscription_id
   topic_id         = var.topic_id
   retries          = 10
 }
@@ -86,8 +86,8 @@ output "project_id" {
   value = lacework_integration_gcp_pub_sub_audit_log.example.project_id
 }
 
-output "subscription" {
-  value = lacework_integration_gcp_pub_sub_audit_log.example.subscription
+output "subscription_id" {
+  value = lacework_integration_gcp_pub_sub_audit_log.example.subscription_id
 }
 
 output "topic_id" {

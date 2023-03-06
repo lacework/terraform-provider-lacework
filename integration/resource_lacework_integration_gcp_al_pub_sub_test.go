@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -13,6 +14,12 @@ import (
 // It uses the go-sdk to verify the created integration,
 // applies an update with new integration name and destroys it
 func TestIntegrationGcpAlPubSub(t *testing.T) {
+	subscription_id := os.Getenv("LW_PUB_SUB_SUBSCRIPTION")
+	if subscription_id == "" {
+		t.Log("this test requires that LW_PUB_SUB_SUBSCRIPTION is set")
+		t.FailNow()
+	}
+
 	gcreds, err := googleLoadDefaultCredentials()
 	if assert.Nil(t, err, "this test requires you to set GOOGLE_CREDENTIALS environment variable") {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
@@ -26,7 +33,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 				"private_key":      gcreds.PrivateKey,
 				"integration_type": "PROJECT",
 				"project_id":       gcreds.ProjectID,
-				"subscription":     "projects/techally-test/subscriptions/lw-at-techally-test-lacework-subscription-44c23c7d",
+				"subscription_id":  subscription_id,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
@@ -37,7 +44,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		actualClientEmail := terraform.Output(t, terraformOptions, "client_email")
 		actualIntegrationType := terraform.Output(t, terraformOptions, "integration_type")
 		actualProjectId := terraform.Output(t, terraformOptions, "project_id")
-		actualSubscription := terraform.Output(t, terraformOptions, "subscription")
+		actualSubscription := terraform.Output(t, terraformOptions, "subscription_id")
 		assert.Equal(
 			t,
 			"GCP pub sub audit log integration example",
@@ -47,7 +54,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		assert.Equal(t, gcreds.ClientEmail, actualClientEmail)
 		assert.Equal(t, "PROJECT", actualIntegrationType)
 		assert.Equal(t, gcreds.ProjectID, actualProjectId)
-		assert.Equal(t, "projects/techally-test/subscriptions/lw-at-techally-test-lacework-subscription-44c23c7d", actualSubscription)
+		assert.Equal(t, subscription_id, actualSubscription)
 
 		// Get the newly created integration from the api
 		createData := GetCloudAccountGcpPubSubAuditLogData(create)
@@ -62,7 +69,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 			"private_key":      gcreds.PrivateKey,
 			"integration_type": "PROJECT",
 			"project_id":       gcreds.ProjectID,
-			"subscription":     "projects/techally-test/subscriptions/lw-at-techally-test-lacework-subscription-44c23c7d",
+			"subscription_id":  subscription_id,
 		}
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -70,7 +77,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		actualClientEmail = terraform.Output(t, terraformOptions, "client_email")
 		actualIntegrationType = terraform.Output(t, terraformOptions, "integration_type")
 		actualProjectId = terraform.Output(t, terraformOptions, "project_id")
-		actualSubscription = terraform.Output(t, terraformOptions, "subscription")
+		actualSubscription = terraform.Output(t, terraformOptions, "subscription_id")
 
 		assert.Equal(
 			t,
@@ -81,7 +88,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		assert.Equal(t, gcreds.ClientEmail, actualClientEmail)
 		assert.Equal(t, "PROJECT", actualIntegrationType)
 		assert.Equal(t, gcreds.ProjectID, actualProjectId)
-		assert.Equal(t, "projects/techally-test/subscriptions/lw-at-techally-test-lacework-subscription-44c23c7d", actualSubscription)
+		assert.Equal(t, subscription_id, actualSubscription)
 
 		// Get the newly updated integration from the api
 		updateData := GetCloudAccountGcpPubSubAuditLogData(update)
@@ -96,7 +103,7 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 			"private_key":      gcreds.PrivateKey,
 			"integration_type": "ORGANIZATION",
 			"project_id":       gcreds.ProjectID,
-			"subscription":     "projects/techally-test/subscriptions/lw-at-techally-test-lacework-subscription-44c23c7d",
+			"subscription_id":  subscription_id,
 		}
 
 		_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)

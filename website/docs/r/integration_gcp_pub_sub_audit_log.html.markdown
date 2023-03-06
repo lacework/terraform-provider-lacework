@@ -16,7 +16,7 @@ Use this resource to configure an [GCP Pub Sub Audit Log integration](https://do
 resource "lacework_integration_gcp_pub_sub_audit_log" "account_abc" {
 	name             = "account ABC"
 	project_id       = "ABC-project-id"
-	subscription     = "projects/ABC-project-id/subscriptions/example-subscription"
+	subscription_id  = "projects/ABC-project-id/subscriptions/example-subscription"
 	topic_id         = "projects/ABC-project-id/topics/example-topic"
 	integration_type = "PROJECT"
 	credentials {
@@ -35,7 +35,7 @@ The following arguments are supported:
 * `name` - (Required) The GCP Audit Trail integration name.
 * `organization_id` - (Optional) The organization ID. Required if `integration_type` is set to `ORGANIZATION`.
 * `project_id` - (Required) The project ID.
-* `subscription` - (Required) The PubSub Subscription.
+* `subscription_id` - (Required) The PubSub Subscription.
 * `topic_id` - (Required) The PubSub Topic.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `integration_type` - (Optional) The integration type. Must be one of `PROJECT` or `ORGANIZATION`.
