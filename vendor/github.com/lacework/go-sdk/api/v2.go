@@ -38,6 +38,7 @@ type V2Endpoints struct {
 	AlertRules              *AlertRulesService
 	ReportRules             *ReportRulesService
 	CloudAccounts           *CloudAccountsService
+	ComponentData           *ComponentDataService
 	ContainerRegistries     *ContainerRegistriesService
 	Configs                 *v2ConfigService
 	ResourceGroups          *ResourceGroupsService
@@ -58,6 +59,8 @@ type V2Endpoints struct {
 	VulnerabilityExceptions *VulnerabilityExceptionsService
 	Vulnerabilities         *v2VulnerabilitiesService
 	Alerts                  *AlertsService
+	Suppressions            *SuppressionsServiceV2
+	Recommendations         *RecommendationsServiceV2
 }
 
 func NewV2Endpoints(c *Client) *V2Endpoints {
@@ -68,6 +71,7 @@ func NewV2Endpoints(c *Client) *V2Endpoints {
 		&AlertRulesService{c},
 		&ReportRulesService{c},
 		&CloudAccountsService{c},
+		&ComponentDataService{c},
 		&ContainerRegistriesService{c},
 		NewV2ConfigService(c),
 		&ResourceGroupsService{c},
@@ -88,6 +92,16 @@ func NewV2Endpoints(c *Client) *V2Endpoints {
 		&VulnerabilityExceptionsService{c},
 		NewV2VulnerabilitiesService(c),
 		&AlertsService{c},
+		&SuppressionsServiceV2{c,
+			&AwsSuppressionsV2{c},
+			&AzureSuppressionsV2{c},
+			&GcpSuppressionsV2{c},
+		},
+		&RecommendationsServiceV2{c,
+			&AwsRecommendationsV2{c},
+			&AzureRecommendationsV2{c},
+			&GcpRecommendationsV2{c},
+		},
 	}
 
 	v2.Schemas.Services = map[integrationSchema]V2Service{
@@ -128,11 +142,39 @@ type V2Pagination struct {
 	} `json:"urls"`
 }
 
+// v2PageMetadata is used to compute the total pages and the page number
+// when reading pages using the client.NextPage() function
+type v2PageMetadata struct {
+	totalPages int
+	pageNumber int
+}
+
+func (m v2PageMetadata) PageNumber() int {
+	return m.pageNumber
+}
+func (m v2PageMetadata) TotalPages() int {
+	return m.totalPages
+}
+func (m *v2PageMetadata) SetTotalPages(total int) {
+	m.totalPages = total
+}
+func (m *v2PageMetadata) PageRead() {
+	m.pageNumber++
+}
+
 // Pageable is the interface that structs should implement to become
 // pageable and be able to use the client.NextPage() function
 type Pageable interface {
 	PageInfo() *V2Pagination
 	ResetPaging()
+
+	// all these functions are automatically implemented when attaching
+	// the v2PageMetadata type into any Pageable struct, so attaching that
+	// struct is a requirement
+	PageRead()
+	SetTotalPages(int)
+	TotalPages() int
+	PageNumber() int
 }
 
 // NextPage
@@ -176,13 +218,23 @@ func (c *Client) NextPage(p Pageable) (bool, error) {
 		return false, nil
 	}
 
-	c.log.Info("pagination", zap.Int("rows", pagination.Rows),
-		zap.Int("total_rows", pagination.TotalRows),
-		zap.String("next_page", pagination.Urls.NextPage),
-	)
 	if pagination.Urls.NextPage == "" {
 		return false, nil
 	}
+
+	if p.PageNumber() == 0 {
+		// first page, initialize pagination metadata
+		p.SetTotalPages(pagination.TotalRows / pagination.Rows)
+		p.PageRead()
+	}
+
+	c.log.Info("pagination",
+		zap.Int("page_number", p.PageNumber()),
+		zap.Int("total_pages", p.TotalPages()),
+		zap.Int("rows", pagination.Rows),
+		zap.Int("total_rows", pagination.TotalRows),
+		zap.String("next_page", pagination.Urls.NextPage),
+	)
 
 	pageURL, err := url.Parse(pagination.Urls.NextPage)
 	if err != nil {
@@ -197,5 +249,6 @@ func (c *Client) NextPage(p Pageable) (bool, error) {
 	p.ResetPaging()
 	c.log.Info("pagination reset")
 	err = c.RequestDecoder("GET", path, nil, p)
+	p.PageRead()
 	return true, err
 }

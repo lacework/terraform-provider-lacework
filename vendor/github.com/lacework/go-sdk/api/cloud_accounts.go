@@ -97,6 +97,7 @@ const (
 	GcpCfgCloudAccount
 	GcpGkeAuditCloudAccount
 	GcpSidekickCloudAccount
+	GcpAlPubSubCloudAccount
 )
 
 // CloudAccountTypes is the list of available Cloud Account integration types
@@ -115,6 +116,7 @@ var CloudAccountTypes = map[cloudAccountType]string{
 	GcpCfgCloudAccount:         "GcpCfg",
 	GcpGkeAuditCloudAccount:    "GcpGkeAudit",
 	GcpSidekickCloudAccount:    "GcpSidekick",
+	GcpAlPubSubCloudAccount:    "GcpAlPubSub",
 }
 
 // String returns the string representation of a Cloud Account integration type
@@ -236,7 +238,7 @@ func (c v2CommonIntegrationData) StateString() string {
 	if c.State != nil && c.State.Ok {
 		return "Ok"
 	}
-	return "Check"
+	return "Pending"
 }
 
 type V2IntegrationState struct {

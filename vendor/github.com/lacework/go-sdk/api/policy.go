@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+	"time"
 
 	"github.com/lacework/go-sdk/internal/array"
 	"github.com/pkg/errors"
@@ -42,6 +43,32 @@ func NewV2PolicyService(c *Client) *PolicyService {
 	}
 }
 
+type policyType int
+type policyTypes map[policyType]string
+
+const (
+	PolicyTypeCompliance policyType = iota
+	PolicyTypeManual
+	PolicyTypeViolation
+)
+
+var ValidPolicyTypes = policyTypes{
+	PolicyTypeCompliance: "Compliance",
+	PolicyTypeManual:     "Manual",
+	PolicyTypeViolation:  "Violation",
+}
+
+func (p policyType) String() string {
+	return ValidPolicyTypes[p]
+}
+
+func (pt policyTypes) String() (types []string) {
+	for _, v := range pt {
+		types = append(types, v)
+	}
+	return
+}
+
 // ValidPolicySeverities is a list of all valid policy severities
 var ValidPolicySeverities = []string{"critical", "high", "medium", "low", "info"}
 
@@ -57,7 +84,7 @@ type NewPolicy struct {
 	Limit         int      `json:"limit,omitempty" yaml:"limit,omitempty"`
 	EvalFrequency string   `json:"evalFrequency,omitempty" yaml:"evalFrequency,omitempty"`
 	AlertEnabled  bool     `json:"alertEnabled" yaml:"alertEnabled"`
-	AlertProfile  string   `json:"alertProfile" yaml:"alertProfile"`
+	AlertProfile  string   `json:"alertProfile,omitempty" yaml:"alertProfile,omitempty"`
 	Tags          []string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
@@ -143,22 +170,29 @@ func ParseUpdatePolicy(s string) (UpdatePolicy, error) {
 }
 
 type Policy struct {
-	PolicyID       string   `json:"policyId" yaml:"policyId"`
-	PolicyType     string   `json:"policyType" yaml:"-"`
-	QueryID        string   `json:"queryId" yaml:"queryId"`
-	Title          string   `json:"title" yaml:"title"`
-	Enabled        bool     `json:"enabled" yaml:"enabled"`
-	Description    string   `json:"description" yaml:"description"`
-	Remediation    string   `json:"remediation" yaml:"remediation"`
-	Severity       string   `json:"severity" yaml:"severity"`
-	Limit          int      `json:"limit" yaml:"limit"`
-	EvalFrequency  string   `json:"evalFrequency" yaml:"evalFrequency"`
-	AlertEnabled   bool     `json:"alertEnabled" yaml:"alertEnabled"`
-	AlertProfile   string   `json:"alertProfile" yaml:"alertProfile"`
-	Tags           []string `json:"tags" yaml:"tags"`
-	Owner          string   `json:"owner" yaml:"-"`
-	LastUpdateTime string   `json:"lastUpdateTime" yaml:"-"`
-	LastUpdateUser string   `json:"lastUpdateUser" yaml:"-"`
+	PolicyID               string                                               `json:"policyId" yaml:"policyId"`
+	PolicyType             string                                               `json:"policyType" yaml:"-"`
+	QueryID                string                                               `json:"queryId" yaml:"queryId"`
+	Title                  string                                               `json:"title" yaml:"title"`
+	Enabled                bool                                                 `json:"enabled" yaml:"enabled"`
+	Description            string                                               `json:"description" yaml:"description"`
+	Remediation            string                                               `json:"remediation" yaml:"remediation"`
+	Severity               string                                               `json:"severity" yaml:"severity"`
+	Limit                  int                                                  `json:"limit" yaml:"limit"`
+	EvalFrequency          string                                               `json:"evalFrequency" yaml:"evalFrequency"`
+	AlertEnabled           bool                                                 `json:"alertEnabled" yaml:"alertEnabled"`
+	AlertProfile           string                                               `json:"alertProfile" yaml:"alertProfile"`
+	Tags                   []string                                             `json:"tags" yaml:"tags"`
+	Owner                  string                                               `json:"owner" yaml:"-"`
+	LastUpdateTime         string                                               `json:"lastUpdateTime" yaml:"-"`
+	LastUpdateUser         string                                               `json:"lastUpdateUser" yaml:"-"`
+	ExceptionConfiguration map[string][]PolicyExceptionConfigurationConstraints `json:"exceptionConfiguration" yaml:"-"`
+}
+
+type PolicyExceptionConfigurationConstraints struct {
+	DataType   string `json:"dataType" yaml:"dataType"`
+	FieldKey   string `json:"fieldKey" yaml:"fieldKey"`
+	MultiValue bool   `json:"multiValue" yaml:"multiValue"`
 }
 
 func (p *Policy) HasTag(t string) bool {
@@ -261,4 +295,67 @@ func (svc *PolicyService) Delete(policyID string) (
 		&response,
 	)
 	return
+}
+
+type BulkUpdatePolicy struct {
+	PolicyID string `json:"policyId,omitempty" yaml:"policyId,omitempty"`
+	Enabled  *bool  `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	Severity string `json:"severity,omitempty" yaml:"severity,omitempty"`
+}
+
+type BulkUpdatePolicies []BulkUpdatePolicy
+
+// UpdateMany supports updating the state(enabled/disabled) and severity of more than one
+// policy using the policy bulk update api
+func (svc *PolicyService) UpdateMany(policies BulkUpdatePolicies) (
+	response BulkPolicyUpdateResponse,
+	err error,
+) {
+	if len(policies) == 0 {
+		err = errors.New("a list of policies must be provided")
+		return
+	}
+
+	err = svc.client.RequestEncoderDecoder(
+		"PATCH",
+		apiV2Policies,
+		policies,
+		&response,
+	)
+	return
+}
+
+type BulkPolicyUpdateResponse struct {
+	Data []BulkPolicyUpdateResponseData `json:"data"`
+}
+
+type BulkPolicyUpdateResponseData struct {
+	EvaluatorId            string    `json:"evaluatorId,omitempty"`
+	PolicyId               string    `json:"policyId"`
+	PolicyType             string    `json:"policyType"`
+	QueryId                string    `json:"queryId,omitempty"`
+	QueryText              string    `json:"queryText,omitempty"`
+	Title                  string    `json:"title"`
+	Enabled                bool      `json:"enabled,omitempty"`
+	Description            string    `json:"description"`
+	Remediation            string    `json:"remediation"`
+	Severity               string    `json:"severity"`
+	Limit                  int       `json:"limit,omitempty"`
+	EvalFrequency          string    `json:"evalFrequency,omitempty"`
+	AlertEnabled           bool      `json:"alertEnabled,omitempty"`
+	AlertProfile           string    `json:"alertProfile,omitempty"`
+	Owner                  string    `json:"owner"`
+	LastUpdateTime         time.Time `json:"lastUpdateTime"`
+	LastUpdateUser         string    `json:"lastUpdateUser"`
+	Tags                   []string  `json:"tags"`
+	InfoLink               string    `json:"infoLink,omitempty"`
+	ExceptionConfiguration struct {
+		ConstraintFields []struct {
+			FieldKey   string `json:"fieldKey"`
+			DataType   string `json:"dataType"`
+			MultiValue bool   `json:"multiValue"`
+		} `json:"constraintFields"`
+	} `json:"exceptionConfiguration,omitempty"`
+	References            []string `json:"references,omitempty"`
+	AdditionalInformation string   `json:"additionalInformation,omitempty"`
 }
