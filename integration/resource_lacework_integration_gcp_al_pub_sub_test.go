@@ -25,8 +25,8 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_gcp_al_pub_sub",
 			EnvVars: map[string]string{
-				"LW_API_TOKEN": LwApiToken,
-				"private_key":  gcreds.PrivateKey,
+				"LW_API_TOKEN":       LwApiToken,
+				"TF_VAR_private_key": gcreds.PrivateKey,
 			},
 			Vars: map[string]interface{}{
 				"name":             "GCP pub sub audit log integration example",
@@ -74,8 +74,8 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		}
 
 		terraformOptions.EnvVars = map[string]string{
-			"LW_API_TOKEN": LwApiToken,
-			"private_key":  gcreds.PrivateKey,
+			"LW_API_TOKEN":       LwApiToken,
+			"TF_VAR_private_key": gcreds.PrivateKey,
 		}
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
@@ -112,8 +112,8 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 		}
 
 		terraformOptions.EnvVars = map[string]string{
-			"LW_API_TOKEN": LwApiToken,
-			"private_key":  gcreds.PrivateKey,
+			"LW_API_TOKEN":       LwApiToken,
+			"TF_VAR_private_key": gcreds.PrivateKey,
 		}
 
 		_, err = terraform.ApplyAndIdempotentE(t, terraformOptions)
