@@ -24,13 +24,15 @@ func TestIntegrationGcpAlPubSub(t *testing.T) {
 	if assert.Nil(t, err, "this test requires you to set GOOGLE_CREDENTIALS environment variable") {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_gcp_al_pub_sub",
-			EnvVars:      tokenEnvVar,
+			EnvVars: map[string]string{
+				"LW_API_TOKEN": LwApiToken,
+				"private_key":  gcreds.PrivateKey,
+			},
 			Vars: map[string]interface{}{
 				"name":             "GCP pub sub audit log integration example",
 				"client_id":        gcreds.ClientID,
 				"client_email":     gcreds.ClientEmail,
 				"private_key_id":   gcreds.PrivateKeyID,
-				"private_key":      gcreds.PrivateKey,
 				"integration_type": "PROJECT",
 				"project_id":       gcreds.ProjectID,
 				"subscription_id":  subscription_id,
