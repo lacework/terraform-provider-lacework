@@ -225,7 +225,6 @@ func resourceLaceworkIntegrationGcpCfgRead(d *schema.ResourceData, meta interfac
 		creds := make(map[string]string)
 		creds["client_id"] = integration.Data.Credentials.ClientID
 		creds["client_email"] = integration.Data.Credentials.ClientEmail
-		creds["private_key_id"] = integration.Data.Credentials.PrivateKeyID
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("resource_level", integration.Data.IDType)
 		d.Set("resource_id", integration.Data.ID)
