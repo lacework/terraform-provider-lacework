@@ -232,7 +232,6 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 		creds := make(map[string]string)
 		creds["client_id"] = integration.Data.Credentials.ClientID
 		creds["client_email"] = integration.Data.Credentials.ClientEmail
-		creds["private_key_id"] = integration.Data.Credentials.PrivateKeyID
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("registry_domain", integration.Data.RegistryDomain)
 		d.Set("limit_num_imgs", integration.Data.LimitNumImg)
