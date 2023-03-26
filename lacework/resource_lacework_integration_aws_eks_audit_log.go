@@ -90,7 +90,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogCreate(d *schema.ResourceData, met
 		lacework           = meta.(*api.Client)
 		retries            = d.Get("retries").(int)
 		awsEksAuditLogData = api.AwsEksAuditData{
-			SnsArn: d.Get("sns_arn").(string),
+			SnsArn:      d.Get("sns_arn").(string),
+			S3BucketArn: d.Get("bucket_arn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),
@@ -170,6 +171,7 @@ func resourceLaceworkIntegrationAwsEksAuditLogRead(d *schema.ResourceData, meta 
 		creds["external_id"] = credentials.ExternalID
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("snsArn", cloudAccount.Data.SnsArn)
+		d.Set("s3BucketArn", cloudAccount.Data.S3BucketArn)
 
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsEksAuditCloudAccount.String(), cloudAccount.IntgGuid,
@@ -185,7 +187,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogUpdate(d *schema.ResourceData, met
 	var (
 		lacework           = meta.(*api.Client)
 		awsEksAuditLogData = api.AwsEksAuditData{
-			SnsArn: d.Get("sns_arn").(string),
+			SnsArn:      d.Get("sns_arn").(string),
+			S3BucketArn: d.Get("bucket_arn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),

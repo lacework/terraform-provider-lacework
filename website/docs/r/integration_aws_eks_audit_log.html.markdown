@@ -23,12 +23,26 @@ resource "lacework_integration_aws_eks_audit_log" "account_abc" {
 }
 ```
 
+Bring your own bucket:
+```hcl
+resource "lacework_integration_aws_eks_audit_log" "account_abc" {
+  name      = "account ABC"
+  sns_arn   = "arn:aws:sns:us-west-2:123456789:foo-lacework-eks:00777777-ab77-1234-a123-a12ab1d12c1d"
+  bucket_arn = "arn:aws:s3:::lacework-example-eks-bucket"
+  credentials {
+    role_arn    = "arn:aws:iam::1234567890:role/lacework_iam_example_role"
+    external_id = "12345"
+  }
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
 
-* `name` - (Required) The AWS CloudTrail integration name.
+* `name` - (Required) The AWS EKS Audit Log integration name.
 * `sns_arn` - (Required) The SNS topic ARN to share with Lacework.
+* `bucket_arn` - (Optional) If supplied, the integration will use this bucket rather than creating a new bucket.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `retries` - (Optional) The number of attempts to create the cloud account integration. Defaults to `5`.

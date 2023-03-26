@@ -20,6 +20,7 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 			"role_arn":    "arn:aws:iam::249446771485:role/lacework-iam-example-role",
 			"external_id": "12345",
 			"sns_arn":     "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks",
+			"bucket_arn":  "arn:aws:s3:::lacework-example-eks-bucket",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -30,6 +31,7 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	actualRoleArn := terraform.Output(t, terraformOptions, "role_arn")
 	actualExternalId := terraform.Output(t, terraformOptions, "external_id")
 	actualSnsArn := terraform.Output(t, terraformOptions, "sns_arn")
+	actualBucketArn := terraform.Output(t, terraformOptions, "bucket_arn")
 	assert.Equal(
 		t,
 		"AWS EKS audit log integration example",
@@ -41,6 +43,7 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	assert.Equal(t, "arn:aws:iam::249446771485:role/lacework-iam-example-role", actualRoleArn)
 	assert.Equal(t, "12345", actualExternalId)
 	assert.Equal(t, "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks", actualSnsArn)
+	assert.Equal(t, "arn:aws:s3:::lacework-example-eks-bucket", actualBucketArn)
 
 	// Update AwsEksAudit Integration
 	terraformOptions.Vars = map[string]interface{}{
@@ -55,6 +58,7 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	actualRoleArn = terraform.Output(t, terraformOptions, "role_arn")
 	actualExternalId = terraform.Output(t, terraformOptions, "external_id")
 	actualSnsArn = terraform.Output(t, terraformOptions, "sns_arn")
+	actualBucketArn = terraform.Output(t, terraformOptions, "bucket_arn")
 	assert.Equal(
 		t,
 		"AwsEksAudit log integration updated",
@@ -66,4 +70,5 @@ func TestIntegrationAwsEksAuditLog(t *testing.T) {
 	assert.Equal(t, "arn:aws:iam::249446771485:role/lacework-iam-example-role", actualRoleArn)
 	assert.Equal(t, "12345", actualExternalId)
 	assert.Equal(t, "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks", actualSnsArn)
+	assert.Equal(t, "arn:aws:s3:::lacework-example-eks-bucket", actualBucketArn)
 }
