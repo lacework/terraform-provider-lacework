@@ -39,6 +39,7 @@ The following arguments are supported:
 
 * `name` - (Required) The agent access token name.
 * `description` - (Optional) The agent access token description.
+* `enabled` - (Optional) The state of the integration. Defaults to `true`.
 
 ## Attributes Reference
 
