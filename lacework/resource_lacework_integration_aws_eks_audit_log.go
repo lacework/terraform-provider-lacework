@@ -45,6 +45,11 @@ var awsEksAuditLogIntegrationSchema = map[string]*schema.Schema{
 		Required:    true,
 		Description: "The SNS ARN.",
 	},
+	"s3_bucket_arn": {
+		Type:        schema.TypeString,
+		Optional:    true,
+		Description: "The optional S3 Bucket ARN.",
+	},
 	"credentials": {
 		Type:        schema.TypeList,
 		MaxItems:    1,
@@ -90,7 +95,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogCreate(d *schema.ResourceData, met
 		lacework           = meta.(*api.Client)
 		retries            = d.Get("retries").(int)
 		awsEksAuditLogData = api.AwsEksAuditData{
-			SnsArn: d.Get("sns_arn").(string),
+			SnsArn:      d.Get("sns_arn").(string),
+			S3BucketArn: d.Get("s3_bucket_arn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),
@@ -169,7 +175,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogRead(d *schema.ResourceData, meta 
 		creds["role_arn"] = credentials.RoleArn
 		creds["external_id"] = credentials.ExternalID
 		d.Set("credentials", []map[string]string{creds})
-		d.Set("snsArn", cloudAccount.Data.SnsArn)
+		d.Set("sns_arn", cloudAccount.Data.SnsArn)
+		d.Set("s3_bucket_arn", cloudAccount.Data.S3BucketArn)
 
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsEksAuditCloudAccount.String(), cloudAccount.IntgGuid,
@@ -185,7 +192,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogUpdate(d *schema.ResourceData, met
 	var (
 		lacework           = meta.(*api.Client)
 		awsEksAuditLogData = api.AwsEksAuditData{
-			SnsArn: d.Get("sns_arn").(string),
+			SnsArn:      d.Get("sns_arn").(string),
+			S3BucketArn: d.Get("s3_bucket_arn").(string),
 			Credentials: api.AwsEksAuditCredentials{
 				RoleArn:    d.Get("credentials.0.role_arn").(string),
 				ExternalID: d.Get("credentials.0.external_id").(string),
@@ -218,6 +226,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogUpdate(d *schema.ResourceData, met
 	d.Set("created_or_updated_by", cloudAccount.CreatedOrUpdatedBy)
 	d.Set("type_name", cloudAccount.Type)
 	d.Set("org_level", cloudAccount.IsOrg == 1)
+	d.Set("sns_arn", cloudAccount.Data.SnsArn)
+	d.Set("s3_bucket_arn", cloudAccount.Data.S3BucketArn)
 
 	log.Printf("[INFO] Updated %s cloud account integration with guid: %v\n", api.AwsEksAuditCloudAccount.String(), d.Id())
 	return nil

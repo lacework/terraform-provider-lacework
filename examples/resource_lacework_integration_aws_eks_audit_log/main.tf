@@ -16,6 +16,11 @@ variable "sns_arn" {
   default   = "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks"
 }
 
+variable "s3_bucket_arn" {
+  type      = string
+  default   = "arn:aws:s3:::example-bucket-name"
+}
+
 variable "external_id" {
   type      = string
   default   = "12345"
@@ -27,8 +32,9 @@ variable "role_arn" {
 }
 
 resource "lacework_integration_aws_eks_audit_log" "example" {
-  name    = var.name
-  sns_arn = var.sns_arn
+  name          = var.name
+  sns_arn       = var.sns_arn
+  s3_bucket_arn = var.s3_bucket_arn
   credentials {
     role_arn    = var.role_arn
     external_id = var.external_id
@@ -42,6 +48,10 @@ output "name" {
 
 output "sns_arn" {
   value = lacework_integration_aws_eks_audit_log.example.sns_arn
+}
+
+output "s3_bucket_arn" {
+  value = lacework_integration_aws_eks_audit_log.example.s3_bucket_arn
 }
 
 output "role_arn" {

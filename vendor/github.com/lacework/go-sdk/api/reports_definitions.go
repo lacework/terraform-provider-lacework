@@ -79,11 +79,21 @@ func (svc *ReportDefinitionsService) List() (response ReportDefinitionsResponse,
 }
 
 // Get returns a ReportDefinitionResponse
-func (svc *ReportDefinitionsService) Get(reportDefinitionGuid string) (response ReportDefinitionResponse, err error) {
-	if reportDefinitionGuid == "" {
+func (svc *ReportDefinitionsService) Get(guid string) (response ReportDefinitionResponse, err error) {
+	if guid == "" {
 		return ReportDefinitionResponse{}, errors.New("specify a report definition guid")
 	}
-	apiPath := fmt.Sprintf(apiV2ReportDefinitionsFromGUID, reportDefinitionGuid)
+	apiPath := fmt.Sprintf(apiV2ReportDefinitionsFromGUID, guid)
+	err = svc.client.RequestDecoder("GET", apiPath, nil, &response)
+	return
+}
+
+// GetVersions returns a list of all versions of a reportDefinition
+func (svc *ReportDefinitionsService) GetVersions(guid string) (response ReportDefinitionsResponse, err error) {
+	if guid == "" {
+		return ReportDefinitionsResponse{}, errors.New("specify a report definition guid")
+	}
+	apiPath := fmt.Sprintf(apiV2ReportDefinitionsVersions, guid)
 	err = svc.client.RequestDecoder("GET", apiPath, nil, &response)
 	return
 }
@@ -102,6 +112,25 @@ func (svc *ReportDefinitionsService) Create(report ReportDefinition) (response R
 	return
 }
 
+func (svc *ReportDefinitionsService) Update(guid string, report ReportDefinitionUpdate) (response ReportDefinitionResponse, err error) {
+	if guid == "" {
+		return response, errors.New("specify a report definition guid")
+	}
+
+	err = svc.client.RequestEncoderDecoder("PATCH", fmt.Sprintf(apiV2ReportDefinitionsFromGUID, guid), report, &response)
+	return
+}
+
+func (svc *ReportDefinitionsService) Revert(guid string, version int) (response ReportDefinitionResponse, err error) {
+	if guid == "" {
+		return response, errors.New("specify a report definition guid")
+	}
+
+	apiPath := fmt.Sprintf(apiV2ReportDefinitionsRevert, guid, version)
+	err = svc.client.RequestEncoderDecoder("PATCH", apiPath, "", &response)
+	return
+}
+
 // NewReportDefinition creates a new report definition for Create function
 func NewReportDefinition(cfg ReportDefinitionConfig) ReportDefinition {
 	return ReportDefinition{
@@ -113,6 +142,15 @@ func NewReportDefinition(cfg ReportDefinitionConfig) ReportDefinition {
 	}
 }
 
+// NewReportDefinitionUpdate creates a new report definition for Update function
+func NewReportDefinitionUpdate(cfg ReportDefinitionConfig) ReportDefinitionUpdate {
+	return ReportDefinitionUpdate{
+		ReportName:              cfg.ReportName,
+		DisplayName:             cfg.DisplayName,
+		ReportDefinitionDetails: &ReportDefinitionDetails{Sections: cfg.Sections},
+	}
+}
+
 var ReportDefinitionSubtypes = []string{"AWS", "Azure", "GCP"}
 
 type ReportDefinitionConfig struct {
@@ -121,6 +159,13 @@ type ReportDefinitionConfig struct {
 	ReportType    string                    `json:"reportType" yaml:"reportType"`
 	SubReportType string                    `json:"subReportType" yaml:"subReportType"`
 	Sections      []ReportDefinitionSection `json:"sections,omitempty" yaml:"sections,omitempty"`
+}
+
+// ReportDefinitionUpdate represents fields allowed for update request
+type ReportDefinitionUpdate struct {
+	ReportName              string                   `json:"reportName,omitempty" yaml:"reportName,omitempty"`
+	DisplayName             string                   `json:"displayName,omitempty" yaml:"displayName,omitempty"`
+	ReportDefinitionDetails *ReportDefinitionDetails `json:"reportDefinition,omitempty" yaml:"reportDefinition,omitempty"`
 }
 
 type ReportDefinitionsResponse struct {
@@ -150,10 +195,16 @@ type ReportDefinition struct {
 	Enabled                 int                     `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
+// IsCustom returns true if report definition is user created, not created by SYSTEM
+func (report ReportDefinition) IsCustom() bool {
+	return report.CreatedBy != "SYSTEM"
+}
+
 func (report ReportDefinition) Config() ReportDefinitionConfig {
 	return ReportDefinitionConfig{
 		ReportName:    report.ReportName,
 		ReportType:    report.ReportType,
+		DisplayName:   report.DisplayName,
 		SubReportType: report.SubReportType,
 		Sections:      report.ReportDefinitionDetails.Sections,
 	}
@@ -161,7 +212,7 @@ func (report ReportDefinition) Config() ReportDefinitionConfig {
 
 type ReportDefinitionDetails struct {
 	Sections  []ReportDefinitionSection   `json:"sections"`
-	Overrides []ReportDefinitionOverrides `json:"overrides,omitempty"`
+	Overrides []ReportDefinitionOverrides `json:"overrides,omitempty" yaml:"overrides,omitempty"`
 }
 
 type ReportDefinitionOverrides struct {
@@ -177,7 +228,7 @@ type ReportDefinitionSection struct {
 
 type ReportDefinitionProps struct {
 	Engine         string   `json:"engine,omitempty" yaml:"engine,omitempty"`
-	ReleaseLabel   string   `json:"releaseLabel,omitempty" yaml:"engine,omitempty"`
-	ResourceGroups []string `json:"resourceGroups,omitempty" yaml:"engine,omitempty"`
-	Integrations   []string `json:"integrations,omitempty" yaml:"engine,omitempty"`
+	ReleaseLabel   string   `json:"releaseLabel,omitempty" yaml:"releaseLabel,omitempty"`
+	ResourceGroups []string `json:"resourceGroups,omitempty" yaml:"resourceGroups,omitempty"`
+	Integrations   []string `json:"integrations,omitempty" yaml:"integrations,omitempty"`
 }
