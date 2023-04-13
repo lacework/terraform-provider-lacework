@@ -176,7 +176,9 @@ func resourceLaceworkIntegrationAwsEksAuditLogRead(d *schema.ResourceData, meta 
 		creds["external_id"] = credentials.ExternalID
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("sns_arn", cloudAccount.Data.SnsArn)
-		d.Set("s3_bucket_arn", cloudAccount.Data.S3BucketArn)
+		if len(cloudAccount.Data.S3BucketArn) != 0 {
+			d.Set("s3_bucket_arn", cloudAccount.Data.S3BucketArn)
+		}
 
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsEksAuditCloudAccount.String(), cloudAccount.IntgGuid,

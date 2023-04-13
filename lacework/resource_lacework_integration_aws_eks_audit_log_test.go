@@ -44,6 +44,15 @@ func TestAccIntegrationAwsEksAudit(t *testing.T) {
 				),
 			},
 			{
+				Config: testAccIntegrationAwsEksAuditNoBucketConfig(
+					true,
+				),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckIntegrationAwsEksAuditExists(resourceTypeAndName),
+					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
+				),
+			},
+			{
 				Config: testAccIntegrationAwsEksAuditConfig(
 					false,
 				),
@@ -141,6 +150,27 @@ resource "%s" "%s" {
 		enabled,
 		os.Getenv(testAccIntegrationAwsEnvSnsArn),
 		os.Getenv(testAccIntegrationAwsEnvS3Arn),
+		os.Getenv(testAccIntegrationAwsEnvRoleArn),
+		os.Getenv(testAccIntegrationAwsEnvExternalId),
+	)
+}
+
+func testAccIntegrationAwsEksAuditNoBucketConfig(enabled bool) string {
+	return fmt.Sprintf(`
+resource "%s" "%s" {
+    name = "integration test"
+    enabled = %t
+    queue_url = %s
+    credentials {
+        role_arn = "%s"
+        external_id = "%s"
+    }
+}
+`,
+		testAccIntegrationAwsEksAuditResourceType,
+		testAccIntegrationAwsEksAuditResourceName,
+		enabled,
+		os.Getenv(testAccIntegrationAwsEnvSnsArn),
 		os.Getenv(testAccIntegrationAwsEnvRoleArn),
 		os.Getenv(testAccIntegrationAwsEnvExternalId),
 	)
