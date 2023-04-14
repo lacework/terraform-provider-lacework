@@ -16,11 +16,6 @@ variable "sns_arn" {
   default   = "arn:aws:sns:us-west-2:123456789123:foo-lacework-eks"
 }
 
-variable "s3_bucket_arn" {
-  type      = string
-  default   = "arn:aws:s3:::example-bucket-name"
-}
-
 variable "external_id" {
   type      = string
   default   = "12345"
