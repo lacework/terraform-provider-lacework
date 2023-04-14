@@ -1,11 +1,10 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.5.1`.
+Another day, another release. These are the release notes for the version `v1.6.0`.
 
-## Bug Fixes
-* fix: avoid sending an empty GCP private_key_id (#461) (Salim Afiune)([c0efc07b](https://github.com/lacework/terraform-provider-lacework/commit/c0efc07b40ed01df757156e12268b773b31b62e8))
+## Features
+* feat: Addition of S3 Bucket ARN for AWS EKS Audit log (#467) (djmctavish)([09309d32](https://github.com/lacework/terraform-provider-lacework/commit/09309d3232d351e64e89f340969e6155baa46b6d))
+## Documentation Updates
+* docs: add 'enabled' to agent_access_token doc (#466) (Darren)([ea55405c](https://github.com/lacework/terraform-provider-lacework/commit/ea55405cd827a8b6c68730b0abc04dea366ad764))
 ## Other Changes
-* chore: add growth-team to CODEOWNERS file (#454) (Darren)([c6e59608](https://github.com/lacework/terraform-provider-lacework/commit/c6e59608ef12b32d7fb49ea33f7c4fd9bc39d85a))
-* ci: set gcp private key to env var (#458) (djmctavish)([c6ee536a](https://github.com/lacework/terraform-provider-lacework/commit/c6ee536a686ea26df0308d70c27af3fa5ffb3b81))
-* ci: correct gcp private key env var name (#457) (Darren)([1859efbc](https://github.com/lacework/terraform-provider-lacework/commit/1859efbc5411304ec6a0de2fc4036f992ade428a))
-* ci: set gcp private key to env var (#456) (Darren)([6a4b8d33](https://github.com/lacework/terraform-provider-lacework/commit/6a4b8d3362fef1b925b77dfd9526fa6691d1b4e9))
-* ci: version bump to v1.5.1-dev (Lacework)([b6dcb8f3](https://github.com/lacework/terraform-provider-lacework/commit/b6dcb8f3bc55df9387e089a34abab6f1bedc8753))
+* ci: fix release (#469) (Darren)([cb54378f](https://github.com/lacework/terraform-provider-lacework/commit/cb54378f4915ecbd71ce6304e5051564fee49041))
+* ci: version bump to v1.5.2-dev (Lacework)([7f954384](https://github.com/lacework/terraform-provider-lacework/commit/7f954384a7c07796de74a1b339370e863ed3f1dd))
