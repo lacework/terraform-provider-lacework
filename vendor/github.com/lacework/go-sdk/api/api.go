@@ -85,6 +85,8 @@ const (
 	apiV2ConfigsGcp                = "v2/Configs/GcpProjects"
 	apiV2ConfigsGcpProjects        = "v2/Configs/GcpProjects?orgId=%s"
 
+	apiV2FeatureFlags = "v2/FeatureFlags"
+
 	apiV2Policies        = "v2/Policies"
 	apiV2Queries         = "v2/Queries"
 	apiV2QueriesExecute  = "v2/Queries/execute"
@@ -95,6 +97,8 @@ const (
 
 	apiV2ReportDefinitions         = "v2/ReportDefinitions"
 	apiV2ReportDefinitionsFromGUID = "v2/ReportDefinitions/%s"
+	apiV2ReportDefinitionsRevert   = "v2/ReportDefinitions/%s?revertTo=%d"
+	apiV2ReportDefinitionsVersions = "v2/ReportDefinitions/%s?allVersions=true"
 
 	apiV2ReportRules        = "v2/ReportRules"
 	apiV2ReportRuleFromGUID = "v2/ReportRules/%s"

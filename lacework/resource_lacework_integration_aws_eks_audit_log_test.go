@@ -17,6 +17,7 @@ const (
 
 	// Environment variables for testing AWS_EKS_AUDIT only
 	testAccIntegrationAwsEnvSnsArn = "sns:arn"
+	testAccIntegrationAwsEnvS3Arn  = "s3:arn"
 )
 
 func TestAccIntegrationAwsEksAudit(t *testing.T) {
@@ -35,6 +36,15 @@ func TestAccIntegrationAwsEksAudit(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccIntegrationAwsEksAuditConfig(
+					true,
+				),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckIntegrationAwsEksAuditExists(resourceTypeAndName),
+					resource.TestCheckResourceAttr(resourceTypeAndName, "enabled", "true"),
+				),
+			},
+			{
+				Config: testAccIntegrationAwsEksAuditNoBucketConfig(
 					true,
 				),
 				Check: resource.ComposeTestCheckFunc(
@@ -107,8 +117,12 @@ func testAccCheckIntegrationAwsEksAuditExists(resourceTypeAndName string) resour
 }
 
 func testAccIntegrationAwsEksAuditEnvVarsPreCheck(t *testing.T) {
+	print("Calling testAccIntegrationAwsEksAuditEnvVarsPreCheck")
 	if v := os.Getenv(testAccIntegrationAwsEnvSnsArn); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAwsEnvSnsArn)
+	}
+	if v := os.Getenv(testAccIntegrationAwsEnvS3Arn); v == "" {
+		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAwsEnvS3Arn)
 	}
 	if v := os.Getenv(testAccIntegrationAwsEnvRoleArn); v == "" {
 		t.Fatalf("%s must be set for acceptance tests", testAccIntegrationAwsEnvRoleArn)
@@ -119,6 +133,29 @@ func testAccIntegrationAwsEksAuditEnvVarsPreCheck(t *testing.T) {
 }
 
 func testAccIntegrationAwsEksAuditConfig(enabled bool) string {
+	return fmt.Sprintf(`
+resource "%s" "%s" {
+    name = "integration test"
+    enabled = %t
+    queue_url = %s
+	s3_bucket_arn = %s
+    credentials {
+        role_arn = "%s"
+        external_id = "%s"
+    }
+}
+`,
+		testAccIntegrationAwsEksAuditResourceType,
+		testAccIntegrationAwsEksAuditResourceName,
+		enabled,
+		os.Getenv(testAccIntegrationAwsEnvSnsArn),
+		os.Getenv(testAccIntegrationAwsEnvS3Arn),
+		os.Getenv(testAccIntegrationAwsEnvRoleArn),
+		os.Getenv(testAccIntegrationAwsEnvExternalId),
+	)
+}
+
+func testAccIntegrationAwsEksAuditNoBucketConfig(enabled bool) string {
 	return fmt.Sprintf(`
 resource "%s" "%s" {
     name = "integration test"
