@@ -3,6 +3,7 @@ terraform {
     lacework = {
       source = "lacework/lacework"
     }
+    organization = true
   }
 }
 
@@ -12,7 +13,7 @@ resource "lacework_integration_aws_org_agentless_scanning" "example" {
   scan_frequency            = 24
   scan_containers           = true
   scan_host_vulnerabilities = true
-  account_id                = var.account_id
+  account_id                = "1234556"
   bucket_arn                = var.bucket_arn
   scanning_account          = var.scanning_account
   management_account        = var.management_account
@@ -21,6 +22,20 @@ resource "lacework_integration_aws_org_agentless_scanning" "example" {
   credentials {
     role_arn    = var.role_arn
     external_id = var.external_id
+  }
+
+  org_account_mappings {
+    default_lacework_account = "lw_account_1"
+
+    mapping {
+      lacework_account = "lw_account_2"
+      aws_accounts     = ["234556677", "774564564"]
+    }
+
+    mapping {
+      lacework_account = "lw_account_3"
+      aws_accounts     = ["553453453", "934534535"]
+    }
   }
 }
 
@@ -67,6 +82,22 @@ variable "management_account" {
 variable "monitored_accounts" {
   type    = list(string)
   default = []
+}
+
+variable "org_account_mappings" {
+  
+}
+
+variable "org_account_mappings" {
+  type = list(object({
+    default_lacework_account = string
+    mapping = list(object({
+      lacework_account = string
+      aws_accounts     = list(string)
+    }))
+  }))
+  default     = []
+  description = "Mapping of AWS accounts to Lacework accounts within a Lacework organization"
 }
 
 output "name" {

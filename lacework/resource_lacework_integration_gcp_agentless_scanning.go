@@ -196,6 +196,42 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 				Default:     nil,
 				Description: "List of Projects to specifically include/exclude.",
 			},
+			"org_account_mappings": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Description: "Mapping of AWS accounts to Lacework accounts within a Lacework organization.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"default_lacework_account": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The default Lacework account name where any non-mapped AWS account will appear",
+						},
+						"mapping": {
+							Type:        schema.TypeSet,
+							Required:    true,
+							Description: "A map of AWS accounts to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"lacework_account": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+									},
+									"aws_accounts": {
+										Type:        schema.TypeSet,
+										Elem:        &schema.Schema{Type: schema.TypeString},
+										MinItems:    1,
+										Required:    true,
+										Description: "The list of AWS account IDs to map.",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
