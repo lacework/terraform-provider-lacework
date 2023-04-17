@@ -72,6 +72,18 @@ func GetCloudAccountIntegrationName(result string) string {
 	return res.Data.Name
 }
 
+func GetCloudOrgAccountIntegrationName(result string) string {
+	var res api.CloudAccountResponse
+	id := GetIDFromTerraResults(result)
+
+	err := LwOrgClient.V2.CloudAccounts.Get(id, &res)
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res.Data.Name
+}
+
 func GetCloudAccountEksAuditLogData(result string) api.AwsEksAuditData {
 	id := GetIDFromTerraResults(result)
 
@@ -87,6 +99,17 @@ func GetCloudAccountAgentlessScanningResponse(result string) api.AwsSidekickResp
 	id := GetIDFromTerraResults(result)
 
 	response, err := LwClient.V2.CloudAccounts.GetAwsSidekick(id)
+	if err != nil {
+		log.Fatalf("Unable to find aws sidekick id: %s\n Response: %v", id, response)
+	}
+
+	return response
+}
+
+func GetAwsAgentlessOrgScanningResponse(result string) api.AwsSidekickOrgResponse {
+	id := GetIDFromTerraResults(result)
+
+	response, err := LwOrgClient.V2.CloudAccounts.GetAwsSidekickOrg(id)
 	if err != nil {
 		log.Fatalf("Unable to find aws sidekick id: %s\n Response: %v", id, response)
 	}
