@@ -3,7 +3,7 @@ module github.com/lacework/terraform-provider-lacework
 go 1.18
 
 require (
-	github.com/gruntwork-io/terratest v0.41.18
+	github.com/gruntwork-io/terratest v0.41.23
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 	github.com/lacework/go-sdk v1.18.3-0.20230505113126-56dd7a049450
 	github.com/pkg/errors v0.9.1
