@@ -24,7 +24,7 @@ func TestIntegrationAwsOrgAgentlessScanningLog(t *testing.T) {
 			"org_account_mappings": []map[string]interface{}{
 				{
 					"default_lacework_account": "customerdemo",
-					"integration_mappings": []map[string]interface{}{
+					"mapping": []map[string]interface{}{
 						{
 							"lacework_account": "abc",
 							"aws_accounts":     []string{"327958430571"},
@@ -58,7 +58,7 @@ func TestIntegrationAwsOrgAgentlessScanningLog(t *testing.T) {
 		"org_account_mappings": []map[string]interface{}{
 			{
 				"default_lacework_account": "customerdemo",
-				"integration_mappings": []map[string]interface{}{
+				"mapping": []map[string]interface{}{
 					{
 						"lacework_account": "abc",
 						"aws_accounts":     []string{"327958430571"},

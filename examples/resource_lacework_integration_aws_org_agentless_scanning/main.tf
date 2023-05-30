@@ -32,11 +32,11 @@ resource "lacework_integration_aws_org_agentless_scanning" "example" {
     content {
       default_lacework_account = org_account_mappings.value["default_lacework_account"]
 
-      dynamic "integration_mappings" {
-        for_each = org_account_mappings.value["integration_mappings"]
+      dynamic "mapping" {
+        for_each = org_account_mappings.value["mapping"]
         content {
-          lacework_account = integration_mappings.value["lacework_account"]
-          aws_accounts     = integration_mappings.value["aws_accounts"]
+          lacework_account = mapping.value["lacework_account"]
+          aws_accounts     = mapping.value["aws_accounts"]
         }
       }
     }
@@ -91,7 +91,7 @@ variable "monitored_accounts" {
 variable "org_account_mappings" {
   type = list(object({
     default_lacework_account = string
-    integration_mappings = list(object({
+    mapping = list(object({
       lacework_account = string
       aws_accounts     = list(string)
     }))

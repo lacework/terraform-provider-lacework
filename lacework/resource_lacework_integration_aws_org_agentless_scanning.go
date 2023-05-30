@@ -154,7 +154,7 @@ var awsOrgAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 					Required:    true,
 					Description: "The default Lacework account name where any non-mapped AWS account will appear",
 				},
-				"integration_mappings": {
+				"mapping": {
 					Type:        schema.TypeSet,
 					Required:    true,
 					Description: "A map of AWS accounts to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
@@ -202,8 +202,8 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 	}
 
 	// verify if the user provided an account mapping
-	accountMapFile := getAwsAgentlessOrgAccountMappings(d)
-	if !accountMapFile.accountMappingEmpty() {
+	accountMapFile := getResourceOrgAccountMappings(d)
+	if !accountMapFile.Empty() {
 		accountMapFileBytes, err := json.Marshal(accountMapFile)
 		if err != nil {
 			return err
@@ -306,7 +306,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningRead(d *schema.ResourceDa
 
 		}
 
-		err = d.Set("org_account_mappings", flattenAwsAgentlessOrgAccountMappings(accountMapFile))
+		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile))
 		if err != nil {
 			return fmt.Errorf("Error flattening organization account mapping: %s", err)
 		}
@@ -342,8 +342,8 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate(d *schema.Resource
 	}
 
 	// verify if the user provided an account mapping
-	accountMapFile := getAwsAgentlessOrgAccountMappings(d)
-	if !accountMapFile.accountMappingEmpty() {
+	accountMapFile := getResourceOrgAccountMappings(d)
+	if !accountMapFile.Empty() {
 		accountMapFileBytes, err := json.Marshal(accountMapFile)
 		if err != nil {
 			return err
@@ -397,73 +397,4 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningDelete(d *schema.Resource
 
 	log.Printf("[INFO] Deleted %s cloud account integration with guid: %v\n", api.AwsSidekickOrgCloudAccount.String(), d.Id())
 	return nil
-}
-
-type accountMappingFile struct {
-	DefaultLaceworkAccount string                 `json:"defaultLaceworkAccountAws"`
-	IntegrationMappings    map[string]interface{} `json:"integration_mappings"`
-}
-
-func (f *accountMappingFile) accountMappingEmpty() bool {
-	return f.DefaultLaceworkAccount == ""
-}
-
-func getAwsAgentlessOrgAccountMappings(d *schema.ResourceData) *accountMappingFile {
-	accountMapFile := new(accountMappingFile)
-	accMapsInt := d.Get("org_account_mappings").([]interface{})
-	if len(accMapsInt) != 0 && accMapsInt[0] != nil {
-		accountMappings := accMapsInt[0].(map[string]interface{})
-
-		accountMapFile = &accountMappingFile{
-			DefaultLaceworkAccount: accountMappings["default_lacework_account"].(string),
-			IntegrationMappings:    map[string]interface{}{},
-		}
-
-		mappingSet := accountMappings["integration_mappings"].(*schema.Set)
-		for _, m := range mappingSet.List() {
-			mapping := m.(map[string]interface{})
-			accountMapFile.IntegrationMappings[mapping["lacework_account"].(string)] = map[string]interface{}{
-				"aws_accounts": castStringSlice(mapping["aws_accounts"].(*schema.Set).List()),
-			}
-		}
-
-	}
-
-	return accountMapFile
-}
-
-func flattenAwsAgentlessOrgAccountMappings(mappingFile *accountMappingsFile) []map[string]interface{} {
-	orgAccMappings := make([]map[string]interface{}, 0, 1)
-
-	if mappingFile.Empty() {
-		return orgAccMappings
-	}
-
-	mappings := map[string]interface{}{
-		"default_lacework_account": mappingFile.DefaultLaceworkAccount,
-		"integration_mappings":     flattenAwsMappings(mappingFile.Mappings),
-	}
-
-	orgAccMappings = append(orgAccMappings, mappings)
-	return orgAccMappings
-}
-
-func flattenAwsMappings(mappings map[string]interface{}) *schema.Set {
-	var (
-		orgAccountMappingsSchema = awsOrgAgentlessScanningIntegrationSchema["org_account_mappings"].Elem.(*schema.Resource)
-		mappingSchema            = orgAccountMappingsSchema.Schema["integration_mappings"].Elem.(*schema.Resource)
-		awsAccountsSchema        = mappingSchema.Schema["aws_accounts"].Elem.(*schema.Schema)
-		res                      = schema.NewSet(schema.HashResource(mappingSchema), []interface{}{})
-	)
-	for laceworkAccount, m := range mappings {
-		mappingValue := m.(map[string]interface{})
-		res.Add(map[string]interface{}{
-			"lacework_account": laceworkAccount,
-			"aws_accounts": schema.NewSet(schema.HashSchema(awsAccountsSchema),
-				mappingValue["aws_accounts"].([]interface{}),
-			),
-		})
-	}
-
-	return res
 }
