@@ -2,6 +2,7 @@ package lacework
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -142,6 +143,41 @@ var awsOrgAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 	},
+	"org_account_mappings": {
+		Type:        schema.TypeList,
+		Optional:    true,
+		Description: "Mapping of AWS accounts to Lacework accounts within a Lacework organization.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"default_lacework_account": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "The default Lacework account name where any non-mapped AWS account will appear",
+				},
+				"mapping": {
+					Type:        schema.TypeSet,
+					Required:    true,
+					Description: "A map of AWS accounts to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"lacework_account": {
+								Type:        schema.TypeString,
+								Required:    true,
+								Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+							},
+							"aws_accounts": {
+								Type:        schema.TypeSet,
+								Elem:        &schema.Schema{Type: schema.TypeString},
+								MinItems:    1,
+								Required:    true,
+								Description: "The list of AWS account IDs to map.",
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 }
 
 func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.ResourceData, meta interface{}) error {
@@ -163,6 +199,17 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 			ExternalID: d.Get("credentials.0.external_id").(string),
 		},
+	}
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d)
+	if !accountMapFile.Empty() {
+		accountMapFileBytes, err := json.Marshal(accountMapFile)
+		if err != nil {
+			return err
+		}
+
+		awsOrgAgentlessScanningData.EncodeAccountMappingFile(accountMapFileBytes)
 	}
 
 	if d.Get("query_text") != nil {
@@ -243,6 +290,27 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningRead(d *schema.ResourceDa
 
 		d.Set("credentials", []map[string]string{creds})
 
+		accountMapFileBytes, err := cloudAccount.Data.DecodeAccountMappingFile()
+		if err != nil {
+			return err
+		}
+
+		accountMapFile := new(accountMappingsFile)
+		if len(accountMapFileBytes) != 0 {
+			// The integration has an account mapping file
+			// unmarshal its content into the account mapping struct
+			err := json.Unmarshal(accountMapFileBytes, accountMapFile)
+			if err != nil {
+				return fmt.Errorf("Error decoding organization account mapping: %s", err)
+			}
+
+		}
+
+		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile))
+		if err != nil {
+			return fmt.Errorf("Error flattening organization account mapping: %s", err)
+		}
+
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsSidekickOrgCloudAccount.String(), cloudAccount.IntgGuid,
 		)
@@ -271,6 +339,17 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate(d *schema.Resource
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 			ExternalID: d.Get("credentials.0.external_id").(string),
 		},
+	}
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d)
+	if !accountMapFile.Empty() {
+		accountMapFileBytes, err := json.Marshal(accountMapFile)
+		if err != nil {
+			return err
+		}
+
+		awsOrgAgentlessScanningData.EncodeAccountMappingFile(accountMapFileBytes)
 	}
 
 	if d.Get("query_text") != nil {

@@ -6,6 +6,10 @@ terraform {
   }
 }
 
+provider "lacework" {
+  organization = true 
+}
+
 resource "lacework_integration_aws_org_agentless_scanning" "example" {
   name                      = var.name
   query_text                = var.query_text
@@ -21,6 +25,21 @@ resource "lacework_integration_aws_org_agentless_scanning" "example" {
   credentials {
     role_arn    = var.role_arn
     external_id = var.external_id
+  }
+  
+  dynamic "org_account_mappings" {
+    for_each = var.org_account_mappings
+    content {
+      default_lacework_account = org_account_mappings.value["default_lacework_account"]
+
+      dynamic "mapping" {
+        for_each = org_account_mappings.value["mapping"]
+        content {
+          lacework_account = mapping.value["lacework_account"]
+          aws_accounts     = mapping.value["aws_accounts"]
+        }
+      }
+    }
   }
 }
 
@@ -69,6 +88,24 @@ variable "monitored_accounts" {
   default = []
 }
 
+variable "org_account_mappings" {
+  type = list(object({
+    default_lacework_account = string
+    mapping = list(object({
+      lacework_account = string
+      aws_accounts     = list(string)
+    }))
+  }))
+  default     = []
+  description = "Mapping of AWS accounts to Lacework accounts within a Lacework organization"
+}
+
+
 output "name" {
   value = lacework_integration_aws_org_agentless_scanning.example.name
 }
+
+output "org_account_mappings" {
+  value = lacework_integration_aws_org_agentless_scanning.example.org_account_mappings
+}
+
