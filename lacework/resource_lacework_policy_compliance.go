@@ -10,6 +10,8 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
+const policyType = "Compliance"
+
 func resourceLaceworkPolicyCompliance() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceLaceworkPolicyComplianceCreate,
@@ -46,23 +48,6 @@ func resourceLaceworkPolicyCompliance() *schema.Resource {
 					return strings.TrimSpace(strings.ToLower(val.(string)))
 				},
 				ValidateDiagFunc: ValidSeverity(),
-			},
-			"type": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "The policy type must be 'Compliance'",
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					switch value.(string) {
-					case "Compliance":
-						return nil, nil
-					default:
-						return nil, []error{
-							fmt.Errorf(
-								"%s: can only be 'Compliance'", key,
-							),
-						}
-					}
-				},
 			},
 			"policy_id_suffix": {
 				Type:        schema.TypeString,
@@ -135,7 +120,7 @@ func resourceLaceworkPolicyComplianceCreate(d *schema.ResourceData, meta interfa
 	)
 
 	policy := api.NewPolicy{
-		PolicyType:   d.Get("type").(string),
+		PolicyType:   policyType,
 		QueryID:      d.Get("query_id").(string),
 		Title:        d.Get("title").(string),
 		Enabled:      d.Get("enabled").(bool),
@@ -207,7 +192,7 @@ func resourceLaceworkPolicyComplianceUpdate(d *schema.ResourceData, meta interfa
 	policyEnabled := d.Get("enabled").(bool)
 
 	policy := api.UpdatePolicy{
-		PolicyType:  d.Get("type").(string),
+		PolicyType:  policyType,
 		QueryID:     d.Get("query_id").(string),
 		Title:       d.Get("title").(string),
 		Enabled:     &policyEnabled,
@@ -255,7 +240,13 @@ func importLaceworkPolicyCompliance(d *schema.ResourceData, meta interface{}) ([
 	response, err := lacework.V2.Policy.Get(d.Id())
 	if err != nil {
 		return nil, fmt.Errorf(
-			"unable to import Lacework resource. Policy with guid '%s' was not found",
+			"Unable to import Lacework resource. Policy with guid '%s' was not found",
+			d.Id(),
+		)
+	}
+	if response.Data.PolicyType != "Compliance" {
+		return nil, fmt.Errorf(
+			"Unable to import Lacework resource. Policy with guid '%s' is not a compliance policy",
 			d.Id(),
 		)
 	}

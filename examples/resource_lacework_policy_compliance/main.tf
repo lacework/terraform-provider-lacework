@@ -10,7 +10,6 @@ resource "lacework_policy_compliance" "example" {
   title            = var.title
   query_id         = "LW_Global_AWS_Config_S3BucketLoggingNotEnabled"
   severity         = var.severity
-  type             = var.type
   description      = var.description
   remediation      = var.remediation
   enabled          = true
@@ -43,11 +42,6 @@ variable "remediation" {
   default = "Please Investigate"
 }
 
-variable "type" {
-  type    = string
-  default = "Compliance"
-}
-
 variable "evaluation" {
   type    = string
   default = "Hourly"
@@ -72,10 +66,6 @@ output "severity" {
 
 output "remediation" {
   value = lacework_policy_compliance.example.remediation
-}
-
-output "type" {
-  value = lacework_policy_compliance.example.type
 }
 
 output "description" {

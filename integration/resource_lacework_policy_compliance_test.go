@@ -23,7 +23,6 @@ func TestPolicyComplianceCreate(t *testing.T) {
 		Vars: map[string]interface{}{
 			"title":       "lql-terraform-policy",
 			"severity":    "High",
-			"type":        "Compliance",
 			"description": "Policy Created via Terraform",
 			"remediation": "Please Investigate",
 			"tags":        []string{"cloud_AWS", "resource_S3_Bucket"},
@@ -37,7 +36,6 @@ func TestPolicyComplianceCreate(t *testing.T) {
 
 	actualTitle := terraform.Output(t, terraformOptions, "title")
 	actualSeverity := terraform.Output(t, terraformOptions, "severity")
-	actualType := terraform.Output(t, terraformOptions, "type")
 	actualDescription := terraform.Output(t, terraformOptions, "description")
 	actualRemediation := terraform.Output(t, terraformOptions, "remediation")
 	actualTags := terraform.Output(t, terraformOptions, "tags")
@@ -53,7 +51,6 @@ func TestPolicyComplianceCreate(t *testing.T) {
 
 	assert.Equal(t, "lql-terraform-policy", actualTitle)
 	assert.Equal(t, "high", actualSeverity)
-	assert.Equal(t, "Compliance", actualType)
 	assert.Equal(t, "Policy Created via Terraform", actualDescription)
 	assert.Equal(t, "Please Investigate", actualRemediation)
 	assert.Equal(t, "[cloud_AWS resource_S3_Bucket]", actualTags)
@@ -72,7 +69,6 @@ func TestPolicyComplianceCreate(t *testing.T) {
 
 	actualTitle = terraform.Output(t, terraformOptions, "title")
 	actualSeverity = terraform.Output(t, terraformOptions, "severity")
-	actualType = terraform.Output(t, terraformOptions, "type")
 	actualDescription = terraform.Output(t, terraformOptions, "description")
 	actualRemediation = terraform.Output(t, terraformOptions, "remediation")
 	actualTags = terraform.Output(t, terraformOptions, "tags")
@@ -87,7 +83,6 @@ func TestPolicyComplianceCreate(t *testing.T) {
 
 	assert.Equal(t, "lql-terraform-policy-updated", actualTitle)
 	assert.Equal(t, "low", actualSeverity)
-	assert.Equal(t, "Compliance", actualType)
 	assert.Equal(t, "Policy Created via Terraform Updated", actualDescription)
 	assert.Equal(t, "Please Ignore", actualRemediation)
 }
@@ -101,7 +96,6 @@ func TestPolicyComplianceCreateWithPolicyIDSuffix(t *testing.T) {
 			"title":            "lql-terraform-policy",
 			"policy_id_suffix": suffix,
 			"severity":         "High",
-			"type":             "Compliance",
 			"description":      "Policy Created via Terraform",
 			"remediation":      "Please Investigate",
 		},
@@ -114,7 +108,6 @@ func TestPolicyComplianceCreateWithPolicyIDSuffix(t *testing.T) {
 
 	actualTitle := terraform.Output(t, terraformOptions, "title")
 	actualSeverity := terraform.Output(t, terraformOptions, "severity")
-	actualType := terraform.Output(t, terraformOptions, "type")
 	actualDescription := terraform.Output(t, terraformOptions, "description")
 	actualRemediation := terraform.Output(t, terraformOptions, "remediation")
 	actualSuffix := terraform.Output(t, terraformOptions, "policy_id_suffix")
@@ -127,7 +120,6 @@ func TestPolicyComplianceCreateWithPolicyIDSuffix(t *testing.T) {
 
 	assert.Equal(t, "lql-terraform-policy", actualTitle)
 	assert.Equal(t, "high", actualSeverity)
-	assert.Equal(t, "Compliance", actualType)
 	assert.Equal(t, "Policy Created via Terraform", actualDescription)
 	assert.Equal(t, "Please Investigate", actualRemediation)
 	assert.Contains(t, suffix, actualSuffix)
