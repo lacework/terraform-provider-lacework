@@ -15,10 +15,7 @@ resource "lacework_policy_compliance" "example" {
   enabled          = true
   policy_id_suffix = var.policy_id_suffix
   tags             = var.tags
-
-  alerting {
-    enabled = false
-  }
+  alerting_enabled = true
 }
 
 
@@ -40,11 +37,6 @@ variable "severity" {
 variable "remediation" {
   type    = string
   default = "Please Investigate"
-}
-
-variable "evaluation" {
-  type    = string
-  default = "Hourly"
 }
 
 variable "policy_id_suffix" {

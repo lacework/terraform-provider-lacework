@@ -10,8 +10,6 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-const policyType = "Compliance"
-
 func resourceLaceworkPolicyCompliance() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceLaceworkPolicyComplianceCreate,
@@ -73,21 +71,11 @@ func resourceLaceworkPolicyCompliance() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"alerting": {
-				Type:        schema.TypeList,
-				MaxItems:    1,
+			"alerting_enabled": {
+				Type:        schema.TypeBool,
 				Optional:    true,
-				Description: "Alerting",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"enabled": {
-							Type:        schema.TypeBool,
-							Optional:    true,
-							Default:     true,
-							Description: "Whether alerting is enabled or disabled",
-						},
-					},
-				},
+				Default:     true,
+				Description: "Whether alerting is enabled or disabled",
 			},
 			"id": {
 				Type:     schema.TypeString,
@@ -120,16 +108,16 @@ func resourceLaceworkPolicyComplianceCreate(d *schema.ResourceData, meta interfa
 	)
 
 	policy := api.NewPolicy{
-		PolicyType:   policyType,
+		PolicyType:   api.PolicyTypeCompliance.String(),
 		QueryID:      d.Get("query_id").(string),
 		Title:        d.Get("title").(string),
 		Enabled:      d.Get("enabled").(bool),
 		Description:  d.Get("description").(string),
 		Remediation:  d.Get("remediation").(string),
 		Severity:     d.Get("severity").(string),
-		AlertEnabled: d.Get("alerting.0.enabled").(bool),
 		PolicyID:     d.Get("policy_id_suffix").(string),
 		Tags:         castStringSlice(d.Get("tags").(*schema.Set).List()),
+		AlertEnabled: d.Get("alerting_enabled").(bool),
 	}
 
 	log.Printf("[INFO] Creating Policy with data:\n%+v\n", policy)
@@ -167,14 +155,11 @@ func resourceLaceworkPolicyComplianceRead(d *schema.ResourceData, meta interface
 	d.Set("severity", response.Data.Severity)
 	d.Set("remediation", response.Data.Remediation)
 	d.Set("type", response.Data.PolicyType)
+	d.Set("alerting_enabled", response.Data.AlertEnabled)
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
 	d.Set("computed_tags", strings.Join(response.Data.Tags, ","))
-
-	alerting := make(map[string]interface{})
-	alerting["enabled"] = response.Data.AlertEnabled
-	d.Set("alerting", alerting)
 
 	log.Printf("[INFO] Read Policy with guid %s\n", response.Data.PolicyID)
 	return nil
@@ -192,7 +177,7 @@ func resourceLaceworkPolicyComplianceUpdate(d *schema.ResourceData, meta interfa
 	policyEnabled := d.Get("enabled").(bool)
 
 	policy := api.UpdatePolicy{
-		PolicyType:  policyType,
+		PolicyType:  api.PolicyTypeCompliance.String(),
 		QueryID:     d.Get("query_id").(string),
 		Title:       d.Get("title").(string),
 		Enabled:     &policyEnabled,
@@ -244,7 +229,7 @@ func importLaceworkPolicyCompliance(d *schema.ResourceData, meta interface{}) ([
 			d.Id(),
 		)
 	}
-	if response.Data.PolicyType != "Compliance" {
+	if response.Data.PolicyType != api.PolicyTypeCompliance.String() {
 		return nil, fmt.Errorf(
 			"Unable to import Lacework resource. Policy with guid '%s' is not a compliance policy",
 			d.Id(),
