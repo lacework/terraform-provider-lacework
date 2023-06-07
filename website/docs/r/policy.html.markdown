@@ -11,7 +11,7 @@ description: |-
 Lacework provides a highly scalable platform for creating, customizing, and managing custom policies
 against any datasource that is exposed via the Lacework Query Language (LQL).
 
-For more information, see the [Policy Overview Documentation](https://docs.lacework.com/custom-policies-overview).
+For more information, see the [Policy Overview Documentation](https://docs.lacework.net/console/custom-policy-overview).
 
 ## Example Usage
 
@@ -41,7 +41,7 @@ resource "lacework_query" "AWS_CTA_AuroraPasswordChange" {
   }
 EOT
 }
- 
+
 resource "lacework_policy" "example" {
   title       = "Aurora Password Change"
   description = "Password for an Aurora RDS cluster was changed"
