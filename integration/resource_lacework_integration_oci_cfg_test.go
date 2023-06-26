@@ -43,7 +43,7 @@ func TestIntegrationOciCfg(t *testing.T) {
 		assert.Equal(t, "OciCfg_created_by_terraform", createData.Data.Name)
 		assert.Equal(t, "OciCfg_created_by_terraform", actualName)
 
-		// Update AwsCfg Integration
+		// Update OciCfg Integration
 		terraformOptions.Vars = map[string]interface{}{
 			"name":        "OciCfg_updated_by_terraform",
 			"fingerprint": ociCreds.Fingerprint,
