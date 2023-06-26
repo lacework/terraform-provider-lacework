@@ -55,7 +55,8 @@ func _TestTeamMemberStandalone(t *testing.T) { //nolint
 // applies an update with new description and destroys it
 //
 // @afiune implement new role base access control with:
-//   => https://lacework.atlassian.net/browse/GROW-1359
+//
+//	=> https://lacework.atlassian.net/browse/GROW-1359
 func _TestTeamMemberOrg(t *testing.T) { //nolint
 	if os.Getenv("CI_STANDALONE_ACCOUNT") != "" {
 		t.Skip("skipping organizational account test")
