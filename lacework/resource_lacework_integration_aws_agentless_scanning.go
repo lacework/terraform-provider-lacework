@@ -54,6 +54,18 @@ var awsAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 		Default:     false,
 		Description: "Whether to includes scanning for host vulnerabilities.",
 	},
+	"scan_multi_volume": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     false,
+		Description: "Whether to scan secondary volumes (true) or only root volumes (false)",
+	},
+	"scan_stopped_instances": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "Whether to scan stopped instances (true)",
+	},
 	"account_id": {
 		Type:        schema.TypeString,
 		Optional:    true,
@@ -132,6 +144,8 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		ScanFrequency:           d.Get("scan_frequency").(int),
 		ScanContainers:          d.Get("scan_containers").(bool),
 		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
+		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
 		AccountID:               d.Get("account_id").(string),
 		BucketArn:               d.Get("bucket_arn").(string),
 		CrossAccountCreds: api.AwsSidekickCrossAccountCredentials{
@@ -237,6 +251,8 @@ func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceDat
 		ScanFrequency:           d.Get("scan_frequency").(int),
 		ScanContainers:          d.Get("scan_containers").(bool),
 		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
+		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
 		AccountID:               d.Get("account_id").(string),
 		BucketArn:               d.Get("bucket_arn").(string),
 		CrossAccountCreds: api.AwsSidekickCrossAccountCredentials{

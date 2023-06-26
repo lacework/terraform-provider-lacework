@@ -56,6 +56,18 @@ var awsOrgAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 		Default:     false,
 		Description: "Whether to includes scanning for host vulnerabilities.",
 	},
+	"scan_multi_volume": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     false,
+		Description: "Whether to scan secondary volumes (true) or only root volumes (false)",
+	},
+	"scan_stopped_instances": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "Whether to scan stopped instances (true)",
+	},
 	"account_id": {
 		Type:        schema.TypeString,
 		Optional:    true,

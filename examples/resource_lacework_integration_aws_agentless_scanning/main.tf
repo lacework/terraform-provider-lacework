@@ -12,6 +12,8 @@ resource "lacework_integration_aws_agentless_scanning" "example" {
   scan_frequency            = 24
   scan_containers           = true
   scan_host_vulnerabilities = true
+  scan_multi_volume         = false
+  scan_stopped_instances    = true
   account_id = var.account_id
   bucket_arn = var.bucket_arn
   credentials {
