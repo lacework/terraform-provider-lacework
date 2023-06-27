@@ -108,6 +108,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_gcr":                        resourceLaceworkIntegrationGcr(),
 			"lacework_integration_ghcr":                       resourceLaceworkIntegrationGhcr(),
 			"lacework_integration_inline_scanner":             resourceLaceworkIntegrationInlineScanner(),
+			"lacework_integration_oci_cfg":                    resourceLaceworkIntegrationOciCfg(),
 			"lacework_integration_proxy_scanner":              resourceLaceworkIntegrationProxyScanner(),
 			"lacework_query":                                  resourceLaceworkQuery(),
 			"lacework_policy":                                 resourceLaceworkPolicy(),
