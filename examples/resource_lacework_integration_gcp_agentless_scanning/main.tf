@@ -82,6 +82,8 @@ resource "lacework_integration_gcp_agentless_scanning" "example" {
   scan_frequency            = 24
   scan_containers           = true
   scan_host_vulnerabilities = true
+  scan_multi_volume         = false
+  scan_stopped_instances    = true
   query_text = var.query_text
   filter_list = var.filter_list
 }
