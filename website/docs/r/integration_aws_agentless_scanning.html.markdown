@@ -37,6 +37,8 @@ The following arguments are supported:
 * `query_text` - (Optional) The lql query.
 * `scan_containers` - (Optional) Whether to includes scanning for containers.
 * `scan_host_vulnerabilities` - (Optional) Whether to includes scanning for host vulnerabilities.
+* `scan_multi_volume` - (Optional) Whether to scan secondary volumes (`true`) or only root volumes (`false`). Defaults to `false`
+* `scan_stopped_instances` - (Optional) Whether to scan stopped instances (`true`). Defaults to `true`
 * `account_id` - (Optional) The aws account id.
 * `bucket_arn` - (Optional) The bucket arn.
 * `credentials` - (Optional) The credentials needed by the integration. See [Credentials](#credentials) below for details.

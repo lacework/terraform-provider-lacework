@@ -43,6 +43,8 @@ The following arguments are supported:
 * `query_text` - (Optional) The LQL query.
 * `scan_containers` - (Optional) Whether to includes scanning for containers.
 * `scan_host_vulnerabilities` - (Optional) Whether to includes scanning for host vulnerabilities.
+* `scan_multi_volume` - (Optional) Whether to scan secondary volumes (`true`) or only root volumes (`false`). Defaults to `false`
+* `scan_stopped_instances` - (Optional) Whether to scan stopped instances (`true`). Defaults to `true`
 * `account_id` - (Optional) The AWS account ID.
 * `bucket_arn` - (Optional) The bucket ARN.
 * `scanning_account` - (Required) The scanning AWS account ID.
