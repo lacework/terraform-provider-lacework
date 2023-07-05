@@ -43,6 +43,8 @@ The following arguments are supported:
 * `scan_containers` - (Optional) Whether to includes scanning for containers. Defaults to `true`
 * `scan_host_vulnerabilities` - (Optional) Whether to include scanning for host vulnerabilities. Defaults to `true`
 * `credentials` - (Optional) The credentials needed by the integration. See [Credentials](#credentials) below for details.
+* `scan_multi_volume` - (Optional) Whether to scan secondary volumes (`true`) or only root volumes (`false`). Defaults to `false`
+* `scan_stopped_instances` - (Optional) Whether to scan stopped instances (`true`). Defaults to `true`
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
 
