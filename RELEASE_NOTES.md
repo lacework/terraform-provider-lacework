@@ -1,9 +1,10 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.8.0`.
+Another day, another release. These are the release notes for the version `v1.9.0`.
 
 ## Features
-* feat(resource): add support for compliance policies (#492) (Pengyuan Zhao)([68b5cd84](https://github.com/lacework/terraform-provider-lacework/commit/68b5cd840761a49c349d16ccee460cd7b66ac28a))
+* feat(client-agentless): add multi-volume and scan stopped instances fields to agentless integrations (Whitney Smith)([cd864e50](https://github.com/lacework/terraform-provider-lacework/commit/cd864e50061d3f12e400d3605a298cb8f76a4530))
+* feat: add OCI integration resource (Kolbeinn Karlsson)([5a361e54](https://github.com/lacework/terraform-provider-lacework/commit/5a361e54180a11a70806f41eb2b3c45881230540))
+## Documentation Updates
+* docs(website): add multivolume and stopped instance arguments (#505) (Joseph Wilder)([b800edf8](https://github.com/lacework/terraform-provider-lacework/commit/b800edf8072589c1d3f2c37e82599505851d05bb))
 ## Other Changes
-* build(deps): bump github.com/gruntwork-io/terratest (#494) (dependabot[bot])([b4bd9481](https://github.com/lacework/terraform-provider-lacework/commit/b4bd9481e77c18a3f41186b202d703bc2dbf82be))
-* build(deps): bump github.com/stretchr/testify from 1.8.3 to 1.8.4 (#495) (dependabot[bot])([b6ce6003](https://github.com/lacework/terraform-provider-lacework/commit/b6ce60032e1a113a18cdc11b710a2685ee9f666c))
-* ci: version bump to v1.7.1-dev (Lacework)([57dc1261](https://github.com/lacework/terraform-provider-lacework/commit/57dc126134488d8eefecb9fbc710f3bee838a1e1))
+* ci: version bump to v1.8.1-dev (Lacework)([b8011be1](https://github.com/lacework/terraform-provider-lacework/commit/b8011be1f3e961b692a44aca9fd4ac48367a122f))
