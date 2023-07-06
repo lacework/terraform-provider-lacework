@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_integration\_oci\_cfg
 
-Use this resource to configure an OCI Config integration to analyze OCI configuration compliance.
+Use this resource to configure an OCI Configuration integration to analyze OCI compliance.
 
 ## Example Usage
 
