@@ -3,7 +3,7 @@ subcategory: "Cloud Account Integrations"
 layout: "lacework"
 page_title: "Lacework: lacework_integration_oci_cfg"
 description: |-
-  Create and manage OCI Config integrations
+  Create and manage OCI Configuration integrations
 ---
 
 # lacework\_integration\_oci\_cfg
