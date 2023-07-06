@@ -30,7 +30,7 @@ resource "lacework_integration_oci_cfg" "account_abc" {
 
 The following arguments are supported:
 
-* `name` - (Required) The OCI Config integration name.
+* `name` - (Required) The OCI Configuration integration name.
 * `tenant_id` - (Required) The OCID of the tenant to be integrated with Lacework.
 * `tenant_name` - (Required) The name of the tenant to be integrated with Lacework.
 * `home_region` - (Required) The home region of the tenant to be integrated with Lacework.
