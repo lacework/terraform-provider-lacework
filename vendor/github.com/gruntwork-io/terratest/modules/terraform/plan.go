@@ -93,7 +93,7 @@ func InitAndPlanAndShowWithStructE(t testing.TestingT, options *Options) (*PlanS
 	if err != nil {
 		return nil, err
 	}
-	return parsePlanJson(jsonOut)
+	return ParsePlanJSON(jsonOut)
 }
 
 // InitAndPlanWithExitCode runs terraform init and plan with the given options and returns exitcode for the plan command.
