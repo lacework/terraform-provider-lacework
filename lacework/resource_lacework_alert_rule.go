@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/lacework/go-sdk/api"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -86,28 +87,43 @@ func resourceLaceworkAlertRule() *schema.Resource {
 					},
 				},
 			},
-			"event_categories": {
+			"alert_categories": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Description: "List of event categories for the alert rule. Valid categories are: " +
-					"Compliance, App, Cloud, File, Machine, User, Platform, K8sActivity",
+				Description: fmt.Sprintf("List of alert categories for the alert rule. Valid categories are: %s",
+					strings.Join(api.AlertRuleCategories, ", ")),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
 						return strings.TrimSpace(val.(string))
 					},
-					ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-						switch value.(string) {
-						case "Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity":
-							return nil, nil
-						default:
-							return nil, []error{
-								fmt.Errorf(
-									"%s: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform', 'K8sActivity'", key,
-								),
-							}
-						}
+					ValidateFunc: validation.StringInSlice(api.AlertRuleCategories, false),
+				},
+			},
+			"sources": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Description: fmt.Sprintf("List of sources for the alert rule. Valid categories are: %s",
+					strings.Join(api.AlertRuleSources, ", ")),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
 					},
+					ValidateFunc: validation.StringInSlice(api.AlertRuleSources, false),
+				},
+			},
+			"event_categories": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Description: fmt.Sprintf("List of event categories for the alert rule. Valid categories are: %s",
+				strings.Join(api.AlertRuleCategories, ", ")),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+					ValidateFunc: validation.StringInSlice(api.AlertRuleSubCategories, false),
 				},
 			},
 			"guid": {
