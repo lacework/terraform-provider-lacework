@@ -8,11 +8,11 @@ description: |-
 
 # lacework\_managed\_policies
 
-Use this resource to update the "enabled" and the "severity" property for Lacework defined policies.
+Use this resource to update the "enabled" and the "severity" properties for Lacework-defined policies.
 
 ## Example Usage
 
-Create a lacework_managed_policies resource to manage three Lacework defined policies.
+Create a lacework_managed_policies resource to manage three Lacework-defined policies.
 
 ```hcl
 resource "lacework_managed_policies" "example" {
@@ -37,7 +37,7 @@ resource "lacework_managed_policies" "example" {
 
 The following arguments are supported:
 
-* `id` - (Required) The Lacework defined policy id.
+* `id` - (Required) The Lacework-defined policy id.
 * `enabled` - (Required) Whether the policy is enabled or disabled.
 * `severity` - (Optional) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
