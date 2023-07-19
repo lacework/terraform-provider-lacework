@@ -65,8 +65,7 @@ The following arguments are supported:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
 * `event_categories` - (Optional) The list of event categories the rule will apply to. Valid categories include:
-  `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`,
-`HostVulnerability`, `ContainerVulnerability`.
+  `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`.
 * `alert_categories` - (Optional) The alert categories that will use this rule for alert routing. Valid categories include:
   `Anomaly`, `Policy`, `Composite`.
 * `sources` - (Optional) The alert sources that will use this rule for alert routing. Valid sources include:
