@@ -157,7 +157,7 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
 		eventCategories = d.Get("event_categories").(*schema.Set).List()
 		sources         = d.Get("sources").(*schema.Set).List()
-		alertCategories = d.Get("alerrt_categories").(*schema.Set).List()
+		alertCategories = d.Get("alert_categories").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
