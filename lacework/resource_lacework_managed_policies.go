@@ -78,6 +78,38 @@ func resourceLaceworkManagedPoliciesUpdate(d *schema.ResourceData, meta interfac
 }
 
 func resourceLaceworkManagedPoliciesRead(d *schema.ResourceData, meta interface{}) error {
+	lacework := meta.(*api.Client)
+
+	policieListResponse, err := lacework.V2.Policy.List()
+
+	if err != nil {
+		return err
+	}
+
+	bulkUpdatePolicies, err := getBulkUpdatePolicies(d, meta)
+
+	if err != nil {
+		// Return nil so that `destroy` can succeed
+		return nil
+	}
+
+	policyMap := make(map[string]api.Policy, len(policieListResponse.Data))
+
+	for _, policy := range policieListResponse.Data {
+		policyMap[policy.PolicyID] = policy
+	}
+
+	policySet := make([]map[string]any, len(bulkUpdatePolicies))
+
+	for i, bulkUpdatePolicy := range bulkUpdatePolicies {
+		policySet[i] = map[string]any{}
+		policySet[i]["id"] = bulkUpdatePolicy.PolicyID
+		policySet[i]["enabled"] = policyMap[bulkUpdatePolicy.PolicyID].Enabled
+		policySet[i]["severity"] = policyMap[bulkUpdatePolicy.PolicyID].Severity
+	}
+
+	d.Set("policy", policySet)
+
 	return nil
 }
 

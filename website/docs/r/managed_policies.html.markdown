@@ -41,3 +41,11 @@ For each `policy` block, the following arguments are supported:
 * `enabled` - (Required) Whether the policy is enabled or disabled.
 * `severity` - (Optional) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
+
+## Import
+
+A lacework_managed_policies resource can be imported using a UTC string as the ID, e.g.
+
+```
+$ terraform import lacework_managed_policies.example "2023-07-19 20:58:07.320676 +0000 UTC"
+```
