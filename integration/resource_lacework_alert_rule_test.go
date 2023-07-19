@@ -137,11 +137,11 @@ func TestAlertRuleCategories(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
-			"name":                name,
-			"event_categories":    []string{"Compliance", "App", "Cloud", "File", "Machine",
+			"name": name,
+			"event_categories": []string{"Compliance", "App", "Cloud", "File", "Machine",
 				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
-			"sources":	[]string{"Aws", "Agent"},
-			"alert_categories":	[]string{"Policy"},
+			"sources":             []string{"Aws", "Agent"},
+			"alert_categories":    []string{"Policy"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -159,7 +159,6 @@ func TestAlertRuleCategories(t *testing.T) {
 		"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.EventCategories)
 	assert.ElementsMatch(t, []string{"Agent", "Aws"}, createProps.Data.Filter.Sources)
 	assert.ElementsMatch(t, []string{"Policy"}, createProps.Data.Filter.AlertCategories)
-
 
 	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform Registry SystemCall User]",
 		actualCategories)
@@ -179,8 +178,8 @@ func TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User'," +
-			" 'Platform', 'K8sActivity', 'Registry', 'SystemCall', 'HostVulnerability', 'ContainerVulnerability'",
+			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User',"+
+				" 'Platform', 'K8sActivity', 'Registry', 'SystemCall', 'HostVulnerability', 'ContainerVulnerability'",
 		)
 	}
 }
