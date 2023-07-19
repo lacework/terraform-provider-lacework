@@ -12,8 +12,8 @@ resource "lacework_alert_rule" "example" {
   alert_channels   = var.channels
   severities       = var.severities
   event_categories = var.event_categories
-  alert_categories = var.event_categories
-  source           = var.event_categories
+  alert_categories = var.alert_categories
+  sources          = var.sources
   resource_groups  = [lacework_resource_group_aws.example.id]
 }
 
