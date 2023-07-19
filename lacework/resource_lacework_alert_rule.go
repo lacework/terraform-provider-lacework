@@ -117,7 +117,7 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				Type:     schema.TypeSet,
 				Optional: true,
 				Description: fmt.Sprintf("List of event categories for the alert rule. Valid categories are: %s",
-				strings.Join(api.AlertRuleCategories, ", ")),
+					strings.Join(api.AlertRuleSubCategories, ", ")),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 					StateFunc: func(val interface{}) string {
@@ -156,6 +156,8 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 		lacework        = meta.(*api.Client)
 		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
 		eventCategories = d.Get("event_categories").(*schema.Set).List()
+		sources         = d.Get("sources").(*schema.Set).List()
+		alertCategories = d.Get("alerrt_categories").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
@@ -163,6 +165,8 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
 				EventCategories: castStringSlice(eventCategories),
+				AlertCategories: castStringSlice(alertCategories),
+				Sources:         castStringSlice(sources),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
 		)
@@ -213,6 +217,8 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("severities", api.NewAlertRuleSeveritiesFromIntSlice(response.Data.Filter.Severity).ToStringSlice())
 	d.Set("resource_groups", response.Data.Filter.ResourceGroups)
 	d.Set("event_categories", response.Data.Filter.EventCategories)
+	d.Set("alert_categories", response.Data.Filter.AlertCategories)
+	d.Set("sources", response.Data.Filter.Sources)
 	d.Set("alert_channels", response.Data.Channels)
 
 	log.Printf("[INFO] Read alert rule with guid %s\n", response.Data.Guid)
@@ -229,6 +235,8 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 		lacework        = meta.(*api.Client)
 		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
 		eventCategories = d.Get("event_categories").(*schema.Set).List()
+		sources         = d.Get("slources").(*schema.Set).List()
+		alertCategories = d.Get("alert_categories").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
@@ -236,6 +244,8 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
 				EventCategories: castStringSlice(eventCategories),
+				AlertCategories: castStringSlice(alertCategories),
+				Sources:         castStringSlice(sources),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
 		)

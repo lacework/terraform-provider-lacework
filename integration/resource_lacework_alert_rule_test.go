@@ -138,7 +138,10 @@ func TestAlertRuleCategories(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
-			"event_categories":    []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity"},
+			"event_categories":    []string{"Compliance", "App", "Cloud", "File", "Machine",
+				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
+			"sources":	[]string{"Aws", "Agent"},
+			"alert_categories":	[]string{"Policy"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -149,9 +152,19 @@ func TestAlertRuleCategories(t *testing.T) {
 	createProps := GetAlertRuleProps(create)
 
 	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
+	actualAlertCategories := terraform.Output(t, terraformOptions, "alert_categories")
+	actualSources := terraform.Output(t, terraformOptions, "sources")
 
-	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine", "User", "Platform", "K8sActivity"}, createProps.Data.Filter.EventCategories)
-	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform User]", actualCategories)
+	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
+		"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.EventCategories)
+	assert.ElementsMatch(t, []string{"Agent", "Aws"}, createProps.Data.Filter.Sources)
+	assert.ElementsMatch(t, []string{"Policy"}, createProps.Data.Filter.AlertCategories)
+
+
+	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform Registry SystemCall User]",
+		actualCategories)
+	assert.Equal(t, "[Agent Aws]", actualSources)
+	assert.Equal(t, "[Policy]", actualAlertCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_alert_rule",
@@ -166,7 +179,8 @@ func TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User', 'Platform', 'K8sActivity'",
+			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User'," +
+			" 'Platform', 'K8sActivity', 'Registry', 'SystemCall', 'HostVulnerability', 'ContainerVulnerability'",
 		)
 	}
 }
