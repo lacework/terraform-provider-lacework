@@ -212,31 +212,31 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 			"org_account_mappings": {
 				Type:        schema.TypeList,
 				Optional:    true,
-				Description: "Mapping of AWS accounts to Lacework accounts within a Lacework organization.",
+				Description: "Mapping of GCP projects to Lacework accounts within a Lacework organization.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"default_lacework_account": {
 							Type:        schema.TypeString,
 							Required:    true,
-							Description: "The default Lacework account name where any non-mapped AWS account will appear",
+							Description: "The default Lacework account name where any non-mapped GCP project will appear",
 						},
 						"mapping": {
 							Type:        schema.TypeSet,
 							Required:    true,
-							Description: "A map of AWS accounts to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
+							Description: "A map of GCP projects to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"lacework_account": {
 										Type:        schema.TypeString,
 										Required:    true,
-										Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+										Description: "The Lacework account name where the Agentless activity from the selected gcp projects will appear.",
 									},
-									"aws_accounts": {
+									"gcp_projects": {
 										Type:        schema.TypeSet,
 										Elem:        &schema.Schema{Type: schema.TypeString},
 										MinItems:    1,
 										Required:    true,
-										Description: "The list of AWS account IDs to map.",
+										Description: "The list of GCP project IDs to map.",
 									},
 								},
 							},
@@ -341,27 +341,6 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		d.Set("server_token", integration.ServerToken)
 		d.Set("uri", integration.Uri)
 
-		accountMapFileBytes, err := integration.Data.DecodeAccountMappingFile()
-		if err != nil {
-			return resource.NonRetryableError(err)
-		}
-
-		accountMapFile := new(accountMappingsFile)
-		if len(accountMapFileBytes) != 0 {
-			// The integration has an account mapping file
-			// unmarshal its content into the account mapping struct
-			err := json.Unmarshal(accountMapFileBytes, accountMapFile)
-			if err != nil {
-				return resource.NonRetryableError(fmt.Errorf("Error decoding organization account mapping: %s", err))
-			}
-
-		}
-
-		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile, gcpMappingType))
-		if err != nil {
-			return resource.NonRetryableError(fmt.Errorf("Error flattening organization account mapping: %s", err))
-		}
-
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
 			api.GcpSidekickCloudAccount.String(), integration.IntgGuid)
 		return nil
@@ -410,6 +389,27 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 				trimmed_filter_list = append(trimmed_filter_list, strings.TrimSpace(elem))
 			}
 			d.Set("filter_list", trimmed_filter_list)
+		}
+
+		accountMapFileBytes, err := integration.Data.DecodeAccountMappingFile()
+		if err != nil {
+			return err
+		}
+
+		accountMapFile := new(accountMappingsFile)
+		if len(accountMapFileBytes) != 0 {
+			// The integration has an account mapping file
+			// unmarshal its content into the account mapping struct
+			err := json.Unmarshal(accountMapFileBytes, accountMapFile)
+			if err != nil {
+				return fmt.Errorf("Error decoding organization account mapping: %s", err)
+			}
+
+		}
+
+		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile, gcpMappingType))
+		if err != nil {
+			return fmt.Errorf("Error flattening organization account mapping: %s", err)
 		}
 
 		log.Printf("[INFO] Read %s integration with guid: %v\n",

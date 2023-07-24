@@ -175,7 +175,7 @@ var awsOrgAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 							"lacework_account": {
 								Type:        schema.TypeString,
 								Required:    true,
-								Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+								Description: "The Lacework account name where the Agentless activity from the selected AWS accounts will appear.",
 							},
 							"aws_accounts": {
 								Type:        schema.TypeSet,

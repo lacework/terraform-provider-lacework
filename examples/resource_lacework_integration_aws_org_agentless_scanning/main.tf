@@ -13,7 +13,7 @@ provider "lacework" {
 resource "lacework_integration_aws_org_agentless_scanning" "example" {
   name                      = var.name
   query_text                = var.query_text
-  scan_frequency            = 24
+  scan_frequency            = var.scan_frequency
   scan_containers           = true
   scan_host_vulnerabilities = true
   scan_multi_volume         = false
@@ -48,6 +48,11 @@ resource "lacework_integration_aws_org_agentless_scanning" "example" {
 variable "account_id" {
   type    = string
   default = ""
+}
+
+variable "scan_frequency" {
+  type = number 
+  default = 24
 }
 
 variable "bucket_arn" {

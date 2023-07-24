@@ -13,11 +13,6 @@ func (f *accountMappingsFile) Empty() bool {
 	return f.DefaultLaceworkAccount == ""
 }
 
-type typeStruct struct {
-	awsAccounts string
-	gcpProjects string
-}
-
 var awsMappingType string = "aws_accounts"
 var gcpMappingType string = "gcp_projects"
 
