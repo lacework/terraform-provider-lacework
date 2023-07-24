@@ -2,6 +2,7 @@ package lacework
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -208,6 +209,41 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 				Default:     nil,
 				Description: "List of Projects to specifically include/exclude.",
 			},
+			"org_account_mappings": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "Mapping of AWS accounts to Lacework accounts within a Lacework organization.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"default_lacework_account": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The default Lacework account name where any non-mapped AWS account will appear",
+						},
+						"mapping": {
+							Type:        schema.TypeSet,
+							Required:    true,
+							Description: "A map of AWS accounts to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"lacework_account": {
+										Type:        schema.TypeString,
+										Required:    true,
+										Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+									},
+									"aws_accounts": {
+										Type:        schema.TypeSet,
+										Elem:        &schema.Schema{Type: schema.TypeString},
+										MinItems:    1,
+										Required:    true,
+										Description: "The list of AWS account IDs to map.",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -226,28 +262,43 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.GcpSidekickCloudAccount.String())
 
+	gcpSidekickData := api.GcpSidekickData{
+		ID:     d.Get("resource_id").(string),
+		IDType: resourceLevel.String(),
+		Credentials: api.GcpSidekickCredentials{
+			ClientID:     d.Get("credentials.0.client_id").(string),
+			ClientEmail:  d.Get("credentials.0.client_email").(string),
+			PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+			PrivateKey:   d.Get("credentials.0.private_key").(string),
+			TokenUri:     d.Get("credentials.0.token_uri").(string),
+		},
+		SharedBucket:            d.Get("bucket_name").(string),
+		ScanningProjectId:       d.Get("scanning_project_id").(string),
+		ScanFrequency:           d.Get("scan_frequency").(int),
+		ScanContainers:          d.Get("scan_containers").(bool),
+		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
+		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
+		QueryText:               d.Get("query_text").(string),
+		FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
+	}
+
+	// verify if the user provided an account mapping
+	if d.Get("resource_level") == api.GcpOrganizationIntegration {
+		accountMapFile := getResourceOrgAccountMappings(d, gcpMappingType)
+		if !accountMapFile.Empty() {
+			accountMapFileBytes, err := json.Marshal(accountMapFile)
+			if err != nil {
+				return err
+			}
+
+			gcpSidekickData.EncodeAccountMappingFile(accountMapFileBytes)
+		}
+	}
+
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
-		api.GcpSidekickData{
-			ID:     d.Get("resource_id").(string),
-			IDType: resourceLevel.String(),
-			Credentials: api.GcpSidekickCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
-				PrivateKey:   d.Get("credentials.0.private_key").(string),
-				TokenUri:     d.Get("credentials.0.token_uri").(string),
-			},
-			SharedBucket:            d.Get("bucket_name").(string),
-			ScanningProjectId:       d.Get("scanning_project_id").(string),
-			ScanFrequency:           d.Get("scan_frequency").(int),
-			ScanContainers:          d.Get("scan_containers").(bool),
-			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
-			ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
-			ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
-			QueryText:               d.Get("query_text").(string),
-			FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
-		},
+		gcpSidekickData,
 	)
 
 	if !d.Get("enabled").(bool) {
@@ -289,6 +340,27 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		d.Set("org_level", integration.IsOrg == 1)
 		d.Set("server_token", integration.ServerToken)
 		d.Set("uri", integration.Uri)
+
+		accountMapFileBytes, err := integration.Data.DecodeAccountMappingFile()
+		if err != nil {
+			return resource.NonRetryableError(err)
+		}
+
+		accountMapFile := new(accountMappingsFile)
+		if len(accountMapFileBytes) != 0 {
+			// The integration has an account mapping file
+			// unmarshal its content into the account mapping struct
+			err := json.Unmarshal(accountMapFileBytes, accountMapFile)
+			if err != nil {
+				return resource.NonRetryableError(fmt.Errorf("Error decoding organization account mapping: %s", err))
+			}
+
+		}
+
+		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile, gcpMappingType))
+		if err != nil {
+			return resource.NonRetryableError(fmt.Errorf("Error flattening organization account mapping: %s", err))
+		}
 
 		log.Printf("[INFO] Created %s integration with guid: %v\n",
 			api.GcpSidekickCloudAccount.String(), integration.IntgGuid)
@@ -359,28 +431,41 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
+	gcpSidekickData := api.GcpSidekickData{
+		ID:     d.Get("resource_id").(string),
+		IDType: resourceLevel.String(),
+		Credentials: api.GcpSidekickCredentials{
+			ClientID:     d.Get("credentials.0.client_id").(string),
+			ClientEmail:  d.Get("credentials.0.client_email").(string),
+			PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+			PrivateKey:   d.Get("credentials.0.private_key").(string),
+			TokenUri:     d.Get("credentials.0.token_uri").(string),
+		},
+		SharedBucket:            d.Get("bucket_name").(string),
+		ScanningProjectId:       d.Get("scanning_project_id").(string),
+		ScanFrequency:           d.Get("scan_frequency").(int),
+		ScanContainers:          d.Get("scan_containers").(bool),
+		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
+		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
+		QueryText:               d.Get("query_text").(string),
+		FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
+	}
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d, gcpMappingType)
+	if !accountMapFile.Empty() {
+		accountMapFileBytes, err := json.Marshal(accountMapFile)
+		if err != nil {
+			return err
+		}
+
+		gcpSidekickData.EncodeAccountMappingFile(accountMapFileBytes)
+	}
+
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
-		api.GcpSidekickData{
-			ID:     d.Get("resource_id").(string),
-			IDType: resourceLevel.String(),
-			Credentials: api.GcpSidekickCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
-				PrivateKey:   d.Get("credentials.0.private_key").(string),
-				TokenUri:     d.Get("credentials.0.token_uri").(string),
-			},
-			SharedBucket:            d.Get("bucket_name").(string),
-			ScanningProjectId:       d.Get("scanning_project_id").(string),
-			ScanFrequency:           d.Get("scan_frequency").(int),
-			ScanContainers:          d.Get("scan_containers").(bool),
-			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
-			ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
-			ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
-			QueryText:               d.Get("query_text").(string),
-			FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
-		},
+		gcpSidekickData,
 	)
 
 	if !d.Get("enabled").(bool) {

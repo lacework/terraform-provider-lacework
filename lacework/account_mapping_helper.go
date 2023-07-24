@@ -13,7 +13,15 @@ func (f *accountMappingsFile) Empty() bool {
 	return f.DefaultLaceworkAccount == ""
 }
 
-func getResourceOrgAccountMappings(d *schema.ResourceData) *accountMappingsFile {
+type typeStruct struct {
+	awsAccounts string
+	gcpProjects string
+}
+
+var awsMappingType string = "aws_accounts"
+var gcpMappingType string = "gcp_projects"
+
+func getResourceOrgAccountMappings(d *schema.ResourceData, mappingsType string) *accountMappingsFile {
 	accountMapFile := new(accountMappingsFile)
 	accMapsInt := d.Get("org_account_mappings").([]interface{})
 	if len(accMapsInt) != 0 && accMapsInt[0] != nil {
@@ -28,7 +36,7 @@ func getResourceOrgAccountMappings(d *schema.ResourceData) *accountMappingsFile 
 		for _, m := range mappingSet.List() {
 			mapping := m.(map[string]interface{})
 			accountMapFile.Mappings[mapping["lacework_account"].(string)] = map[string]interface{}{
-				"aws_accounts": castStringSlice(mapping["aws_accounts"].(*schema.Set).List()),
+				mappingsType: castStringSlice(mapping[mappingsType].(*schema.Set).List()),
 			}
 		}
 
@@ -37,7 +45,7 @@ func getResourceOrgAccountMappings(d *schema.ResourceData) *accountMappingsFile 
 	return accountMapFile
 }
 
-func flattenOrgAccountMappings(mappingFile *accountMappingsFile) []map[string]interface{} {
+func flattenOrgAccountMappings(mappingFile *accountMappingsFile, mappingsType string) []map[string]interface{} {
 	orgAccMappings := make([]map[string]interface{}, 0, 1)
 
 	if mappingFile.Empty() {
@@ -46,26 +54,27 @@ func flattenOrgAccountMappings(mappingFile *accountMappingsFile) []map[string]in
 
 	mappings := map[string]interface{}{
 		"default_lacework_account": mappingFile.DefaultLaceworkAccount,
-		"mapping":                  flattenMappings(mappingFile.Mappings),
+		"mapping":                  flattenMappings(mappingFile.Mappings, mappingsType),
 	}
 
 	orgAccMappings = append(orgAccMappings, mappings)
 	return orgAccMappings
 }
 
-func flattenMappings(mappings map[string]interface{}) *schema.Set {
+func flattenMappings(mappings map[string]interface{}, mappingsType string) *schema.Set {
 	var (
 		orgAccountMappingsSchema = awsCloudTrailIntegrationSchema["org_account_mappings"].Elem.(*schema.Resource)
 		mappingSchema            = orgAccountMappingsSchema.Schema["mapping"].Elem.(*schema.Resource)
-		awsAccountsSchema        = mappingSchema.Schema["aws_accounts"].Elem.(*schema.Schema)
+		accountsSchema           = mappingSchema.Schema[mappingsType].Elem.(*schema.Schema)
 		res                      = schema.NewSet(schema.HashResource(mappingSchema), []interface{}{})
 	)
+
 	for laceworkAccount, m := range mappings {
 		mappingValue := m.(map[string]interface{})
 		res.Add(map[string]interface{}{
 			"lacework_account": laceworkAccount,
-			"aws_accounts": schema.NewSet(schema.HashSchema(awsAccountsSchema),
-				mappingValue["aws_accounts"].([]interface{}),
+			mappingsType: schema.NewSet(schema.HashSchema(accountsSchema),
+				mappingValue[mappingsType].([]interface{}),
 			),
 		})
 	}
