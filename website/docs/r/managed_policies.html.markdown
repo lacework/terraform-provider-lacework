@@ -28,7 +28,8 @@ resource "lacework_managed_policies" "example" {
   }
   policy {
     id       = "lacework-global-10"
-    severity  = "Low"
+    enabled  = true
+    severity = "Low"
   }
 }
 ```

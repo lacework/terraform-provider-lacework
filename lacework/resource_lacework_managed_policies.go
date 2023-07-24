@@ -139,11 +139,7 @@ func getBulkUpdatePolicies(d *schema.ResourceData) (api.BulkUpdatePolicies, erro
 		policy := api.BulkUpdatePolicy{
 			PolicyID: policyID,
 			Enabled:  &enabled,
-		}
-
-		if val["severity"] != nil && val["severity"] != "" {
-			severity := val["severity"].(string)
-			policy.Severity = severity
+			Severity: val["severity"].(string),
 		}
 
 		seen[policyID] = true
