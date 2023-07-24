@@ -30,8 +30,7 @@ func resourceLaceworkManagedPolicies() *schema.Resource {
 						"enabled": {
 							Type:        schema.TypeBool,
 							Description: "The state of the policy",
-							Optional:    true,
-							Default:     true,
+							Required:    true,
 						},
 						"severity": {
 							Type:     schema.TypeString,

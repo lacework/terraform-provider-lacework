@@ -38,6 +38,6 @@ resource "lacework_managed_policies" "example" {
 For each `policy` block, the following arguments are supported:
 
 * `id` - (Required) The Lacework-defined policy id.
-* `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
+* `enabled` - (Required) Whether the policy is enabled or disabled.
 * `severity` - (Required) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.

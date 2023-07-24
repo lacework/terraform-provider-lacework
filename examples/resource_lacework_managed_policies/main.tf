@@ -26,7 +26,6 @@ variable "id_1" {
 
 variable "enabled_1" {
   type    = bool
-  default = true
 }
 
 variable "severity_1" {
@@ -40,7 +39,6 @@ variable "id_2" {
 
 variable "enabled_2" {
   type    = bool
-  default = true
 }
 
 variable "severity_2" {
