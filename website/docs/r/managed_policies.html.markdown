@@ -23,12 +23,12 @@ resource "lacework_managed_policies" "example" {
   }
   policy {
     id       = "lacework-global-2"
-    enabled  = true
+    enabled  = false
     severity = "Critical"
   }
   policy {
     id       = "lacework-global-10"
-    enabled  = false
+    severity  = "Low"
   }
 }
 ```
@@ -38,14 +38,6 @@ resource "lacework_managed_policies" "example" {
 For each `policy` block, the following arguments are supported:
 
 * `id` - (Required) The Lacework-defined policy id.
-* `enabled` - (Required) Whether the policy is enabled or disabled.
-* `severity` - (Optional) The list of the severities. Valid severities include:
+* `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
+* `severity` - (Required) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
-
-## Import
-
-A lacework_managed_policies resource can be imported using a UTC string as the ID, e.g.
-
-```
-$ terraform import lacework_managed_policies.example "2023-07-19 20:58:07.320676 +0000 UTC"
-```

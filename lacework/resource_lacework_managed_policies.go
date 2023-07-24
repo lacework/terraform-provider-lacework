@@ -17,10 +17,6 @@ func resourceLaceworkManagedPolicies() *schema.Resource {
 		Delete: resourceLaceworkManagedPoliciesDelete,
 		Read:   resourceLaceworkManagedPoliciesRead,
 
-		Importer: &schema.ResourceImporter{
-			State: importLaceworkManagedPolicies,
-		},
-
 		Schema: map[string]*schema.Schema{
 			"policy": {
 				Type: schema.TypeSet,
@@ -33,12 +29,13 @@ func resourceLaceworkManagedPolicies() *schema.Resource {
 						},
 						"enabled": {
 							Type:        schema.TypeBool,
-							Required:    true,
 							Description: "The state of the policy",
+							Optional:    true,
+							Default:     true,
 						},
 						"severity": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Required: true,
 							Description: "The severity for the policy. Valid severities are: " +
 								"Critical, High, Medium, Low, Info",
 							StateFunc: func(val interface{}) string {
@@ -62,7 +59,7 @@ func resourceLaceworkManagedPoliciesCreate(d *schema.ResourceData, meta interfac
 
 func resourceLaceworkManagedPoliciesUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	policies, err := getBulkUpdatePolicies(d, meta)
+	policies, err := getBulkUpdatePolicies(d)
 
 	if err != nil {
 		return err
@@ -80,22 +77,22 @@ func resourceLaceworkManagedPoliciesUpdate(d *schema.ResourceData, meta interfac
 func resourceLaceworkManagedPoliciesRead(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	policieListResponse, err := lacework.V2.Policy.List()
+	policiesListResponse, err := lacework.V2.Policy.List()
 
 	if err != nil {
 		return err
 	}
 
-	bulkUpdatePolicies, err := getBulkUpdatePolicies(d, meta)
+	bulkUpdatePolicies, err := getBulkUpdatePolicies(d)
 
 	if err != nil {
 		// Return nil so that `destroy` can succeed
 		return nil
 	}
 
-	policyMap := make(map[string]api.Policy, len(policieListResponse.Data))
+	policyMap := make(map[string]api.Policy, len(policiesListResponse.Data))
 
-	for _, policy := range policieListResponse.Data {
+	for _, policy := range policiesListResponse.Data {
 		policyMap[policy.PolicyID] = policy
 	}
 
@@ -118,17 +115,7 @@ func resourceLaceworkManagedPoliciesDelete(d *schema.ResourceData, meta interfac
 	return nil
 }
 
-func importLaceworkManagedPolicies(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	log.Print("[INFO] Importing Lacework managed policies")
-	policies, err := getBulkUpdatePolicies(d, meta)
-	if err != nil {
-		return nil, err
-	}
-	log.Printf("[INFO] Found Lacework managed policies: \n%+v\n", policies)
-	return []*schema.ResourceData{d}, nil
-}
-
-func getBulkUpdatePolicies(d *schema.ResourceData, meta interface{}) (api.BulkUpdatePolicies, error) {
+func getBulkUpdatePolicies(d *schema.ResourceData) (api.BulkUpdatePolicies, error) {
 	var policies api.BulkUpdatePolicies
 	list := d.Get("policy").(*schema.Set).List()
 	seen := make(map[string]bool, 0)

@@ -31,7 +31,6 @@ variable "enabled_1" {
 
 variable "severity_1" {
   type    = string
-  default = null
 }
 
 variable "id_2" {
@@ -46,7 +45,6 @@ variable "enabled_2" {
 
 variable "severity_2" {
   type    = string
-  default = null
 }
 
 output "policy" {
