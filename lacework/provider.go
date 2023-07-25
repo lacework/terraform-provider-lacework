@@ -111,6 +111,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_oci_cfg":                    resourceLaceworkIntegrationOciCfg(),
 			"lacework_integration_proxy_scanner":              resourceLaceworkIntegrationProxyScanner(),
 			"lacework_query":                                  resourceLaceworkQuery(),
+			"lacework_managed_policies":                       resourceLaceworkManagedPolicies(),
 			"lacework_policy":                                 resourceLaceworkPolicy(),
 			"lacework_policy_compliance":                      resourceLaceworkPolicyCompliance(),
 			"lacework_policy_exception":                       resourceLaceworkPolicyException(),

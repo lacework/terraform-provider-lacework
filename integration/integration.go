@@ -438,6 +438,14 @@ func GetPolicyProps(result string) api.PolicyResponse {
 	return resp
 }
 
+func GetPolicyPropsById(id string) api.PolicyResponse {
+	resp, err := LwClient.V2.Policy.Get(id)
+	if err != nil {
+		log.Fatalf("Unable to retrieve policy with id: %s", id)
+	}
+	return resp
+}
+
 func GetPolicyExceptionProps(result string, policyID string) (resp api.PolicyExceptionResponse) {
 	id := GetSpecificIDFromTerraResults(1, result)
 	err := LwClient.V2.Policy.Exceptions.Get(policyID, id, &resp)
