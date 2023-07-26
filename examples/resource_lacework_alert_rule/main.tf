@@ -13,7 +13,6 @@ resource "lacework_alert_rule" "example" {
   severities       = var.severities
   event_categories = var.event_categories
   alert_categories = var.alert_categories
-  sources          = var.sources
   resource_groups  = [lacework_resource_group_aws.example.id]
 }
 
@@ -24,7 +23,7 @@ resource "lacework_resource_group_aws" "example" {
 
 variable "resource_group_name" {
   type    = string
-  default = "Users for Alert Rules Testing"
+  default = "Users for Alert Rules Testing example"
 }
 
 variable "name" {
@@ -52,14 +51,9 @@ variable "event_categories" {
   default = ["Compliance", "Platform", "User", "Cloud"]
 }
 
-variable "sources" {
-  type    = list(string)
-  default = []
-}
-
 variable "alert_categories" {
   type    = list(string)
-  default = []
+  default = ["Policy"]
 }
 
 output "name" {
@@ -80,10 +74,6 @@ output "severities" {
 
 output "event_categories" {
   value = lacework_alert_rule.example.event_categories
-}
-
-output "sources" {
-  value = lacework_alert_rule.example.sources
 }
 
 output "alert_categories" {
