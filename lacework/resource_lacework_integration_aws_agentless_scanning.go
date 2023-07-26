@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -18,7 +18,7 @@ func resourceLaceworkIntegrationAwsAgentlessScanning() *schema.Resource {
 		Update:   resourceLaceworkIntegrationAwsAgentlessScanningUpdate,
 		Delete:   resourceLaceworkIntegrationAwsAgentlessScanningDelete,
 		Schema:   awsAgentlessScanningIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
+		Importer: &schema.ResourceImporter{StateContext: schema.ImportStatePassthroughContext},
 	}
 }
 
@@ -167,13 +167,13 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		awsAgentlessScanning.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.AwsSidekickCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.CreateAwsSidekick(awsAgentlessScanning)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("Error creating %s cloud account integration: %s",
 						api.AwsSidekickCloudAccount.String(), err,
 					))
@@ -182,7 +182,7 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
 				api.AwsSidekickCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"Unable to create %s cloud account integration (retrying %d more time(s))",
 				api.AwsSidekickCloudAccount.String(), retries,
 			))

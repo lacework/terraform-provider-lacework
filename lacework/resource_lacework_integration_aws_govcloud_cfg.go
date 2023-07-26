@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAwsGovCloudCfg() *schema.Resource {
 		Delete: resourceLaceworkIntegrationAwsGovCloudCfgDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkCloudAccount,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -107,13 +107,13 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 		aws.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.AwsUsGovCfgCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(aws)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("error creating %s integration: %s",
 						api.AwsUsGovCfgCloudAccount.String(), err,
 					))
@@ -122,7 +122,7 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
 				api.AwsUsGovCfgCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"unable to create %s integration (retrying %d more time(s))",
 				api.AwsUsGovCfgCloudAccount.String(), retries,
 			))

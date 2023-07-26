@@ -15,7 +15,7 @@ func resourceLaceworkAlertChannelWebhook() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelWebhookDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

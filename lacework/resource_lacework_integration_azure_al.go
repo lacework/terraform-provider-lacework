@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAzureActivityLog() *schema.Resource {
 		Delete: resourceLaceworkIntegrationAzureActivityLogDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkCloudAccount,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -117,13 +117,13 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 		azure.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.AzureAlSeqCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(azure)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("error creating %s integration: %s",
 						api.AzureAlSeqCloudAccount.String(), err,
 					))
@@ -132,7 +132,7 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
 				api.AzureAlSeqCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"unable to create %s integration (retrying %d more time(s))",
 				api.AzureAlSeqCloudAccount.String(), retries,
 			))

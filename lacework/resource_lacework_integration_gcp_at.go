@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -20,7 +20,7 @@ func resourceLaceworkIntegrationGcpAt() *schema.Resource {
 		Delete: resourceLaceworkIntegrationGcpAtDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkCloudAccount,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -168,13 +168,13 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 		data.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.GcpAtSesCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(data)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("error creating %s integration: %s",
 						api.GcpAtSesCloudAccount.String(), err,
 					))
@@ -183,7 +183,7 @@ func resourceLaceworkIntegrationGcpAtCreate(d *schema.ResourceData, meta interfa
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
 				api.GcpAtSesCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"unable to create %s integration (retrying %d more time(s))",
 				api.GcpAtSesCloudAccount.String(), retries,
 			))

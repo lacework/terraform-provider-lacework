@@ -16,7 +16,7 @@ func resourceLaceworkAlertChannelDatadog() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelDatadogDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

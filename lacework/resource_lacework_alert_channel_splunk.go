@@ -16,7 +16,7 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelSplunkDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

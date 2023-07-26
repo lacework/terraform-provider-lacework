@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -19,7 +20,7 @@ func resourceLaceworkAlertProfile() *schema.Resource {
 		Delete: resourceLaceworkAlertProfileDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertProfile,
+			StateContext: importLaceworkAlertProfile,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -159,7 +160,7 @@ func resourceLaceworkAlertProfileDelete(d *schema.ResourceData, meta interface{}
 	return nil
 }
 
-func importLaceworkAlertProfile(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkAlertProfile(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	var response api.AlertProfileResponse
 	lacework := meta.(*api.Client)
 

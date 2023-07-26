@@ -17,7 +17,7 @@ func resourceLaceworkAlertChannelEmail() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelEmailDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

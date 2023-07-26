@@ -16,7 +16,7 @@ func resourceLaceworkAlertChannelServiceNow() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelServiceNowDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

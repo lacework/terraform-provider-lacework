@@ -17,7 +17,7 @@ func resourceLaceworkIntegrationProxyScanner() *schema.Resource {
 		Delete: resourceLaceworkIntegrationProxyScannerDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkContainerRegistry,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

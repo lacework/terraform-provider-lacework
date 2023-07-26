@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationAwsCloudTrail() *schema.Resource {
 		Update:   resourceLaceworkIntegrationAwsCloudTrailUpdate,
 		Delete:   resourceLaceworkIntegrationAwsCloudTrailDelete,
 		Schema:   awsCloudTrailIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
+		Importer: &schema.ResourceImporter{StateContext: schema.ImportStatePassthroughContext},
 	}
 }
 
@@ -154,13 +154,13 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 		awsCtSqs.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.AwsCtSqsCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(awsCtSqs)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("Error creating %s cloud account integration: %s",
 						api.AwsCtSqsCloudAccount.String(), err,
 					))
@@ -169,7 +169,7 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
 				api.AwsCtSqsCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"Unable to create %s cloud account integration (retrying %d more time(s))",
 				api.AwsCtSqsCloudAccount.String(), retries,
 			))

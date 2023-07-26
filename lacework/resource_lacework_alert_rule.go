@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
@@ -19,7 +20,7 @@ func resourceLaceworkAlertRule() *schema.Resource {
 		Delete: resourceLaceworkAlertRuleDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertRule,
+			StateContext: importLaceworkAlertRule,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -264,7 +265,7 @@ func resourceLaceworkAlertRuleDelete(d *schema.ResourceData, meta interface{}) e
 	return nil
 }
 
-func importLaceworkAlertRule(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkAlertRule(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	var response api.AlertRuleResponse
 	lacework := meta.(*api.Client)
 

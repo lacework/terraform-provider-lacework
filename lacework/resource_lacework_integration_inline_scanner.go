@@ -17,7 +17,7 @@ func resourceLaceworkIntegrationInlineScanner() *schema.Resource {
 		Delete: resourceLaceworkIntegrationInlineScannerDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkContainerRegistry,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

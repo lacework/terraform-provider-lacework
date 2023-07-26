@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func importLaceworkECRIntegration(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkECRIntegration(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
 	var awsAuthType string
 
@@ -71,7 +72,7 @@ func resourceLaceworkIntegrationEcr() *schema.Resource {
 		Delete: resourceLaceworkIntegrationEcrDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkECRIntegration,
+			StateContext: importLaceworkECRIntegration,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -495,12 +496,18 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 
 func castRawToAwsEcrAccessKeyData(data any) (ecrData api.AwsEcrAccessKeyData, err error) {
 	dataJson, err := json.Marshal(data)
+	if err != nil {
+		return
+	}
 	err = json.Unmarshal(dataJson, &ecrData)
 	return
 }
 
 func castRawToAwsEcrIamRoleData(data any) (ecrData api.AwsEcrIamRoleData, err error) {
 	dataJson, err := json.Marshal(data)
+	if err != nil {
+		return
+	}
 	err = json.Unmarshal(dataJson, &ecrData)
 	return
 }
@@ -599,7 +606,7 @@ func readEcrIam(d *schema.ResourceData, meta interface{}) error {
 func limitByLabelsLength(labels []map[string]string) int {
 	var keys []string
 	for _, i := range labels {
-		for k, _ := range i {
+		for k := range i {
 			keys = append(keys, k)
 		}
 	}

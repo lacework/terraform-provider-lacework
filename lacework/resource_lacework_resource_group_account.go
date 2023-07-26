@@ -16,7 +16,7 @@ func resourceLaceworkResourceGroupLwAccount() *schema.Resource {
 		Delete: resourceLaceworkResourceGroupLwAccountDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkResourceGroup,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

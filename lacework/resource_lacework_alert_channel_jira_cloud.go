@@ -19,7 +19,7 @@ func resourceLaceworkAlertChannelJiraCloud() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelJiraCloudDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
