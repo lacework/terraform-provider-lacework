@@ -26,6 +26,7 @@ resource "lacework_alert_rule" "example" {
   alert_channels   = [lacework_alert_channel_slack.ops_critical.id]
   severities       = ["Critical"]
   event_categories = ["Compliance"]
+  alert_categories = ["Policy"]
 }
 ```
 
@@ -63,7 +64,9 @@ The following arguments are supported:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
 * `event_categories` - (Optional) The list of event categories the rule will apply to. Valid categories include:
-  `Compliance`, `App`, `Cloud`,`File`, `Machine`, `User`, `Platform` and `K8sActivity`.
+  `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`.
+* `alert_categories` - (Optional) The alert categories that will use this rule for alert routing. Valid categories include:
+  `Anomaly`, `Policy`, `Composite`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
