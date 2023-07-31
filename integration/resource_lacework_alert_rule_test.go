@@ -174,8 +174,7 @@ func TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"event_categories.0: can only be 'Compliance', 'App', 'Cloud', 'File', 'Machine', 'User',"+
-				" 'Platform', 'K8sActivity', 'Registry', 'SystemCall'",
+			"expected event_categories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
 		)
 	}
 }
