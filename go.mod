@@ -1,6 +1,6 @@
 module github.com/lacework/terraform-provider-lacework
 
-go 1.18
+go 1.21
 
 require (
 	github.com/gruntwork-io/terratest v0.43.8
