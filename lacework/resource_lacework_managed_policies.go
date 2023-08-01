@@ -132,7 +132,7 @@ func getBulkUpdatePolicies(d *schema.ResourceData) (api.BulkUpdatePolicies, erro
 		if !strings.HasPrefix(policyID, "lacework-global") {
 			return nil, fmt.Errorf("Unable to update custom policy ID: %s", policyID)
 		}
-		if seen[policyID] == true {
+		if seen[policyID] {
 			return nil, fmt.Errorf("Unable to update duplicate policy ID: %s", policyID)
 		}
 
