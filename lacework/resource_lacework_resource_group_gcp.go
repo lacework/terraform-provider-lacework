@@ -17,7 +17,7 @@ func resourceLaceworkResourceGroupGcp() *schema.Resource {
 		Delete: resourceLaceworkResourceGroupGcpDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkResourceGroup,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

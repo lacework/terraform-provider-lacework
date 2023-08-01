@@ -17,7 +17,7 @@ func resourceLaceworkResourceGroupAzure() *schema.Resource {
 		Delete: resourceLaceworkResourceGroupAzureDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkResourceGroup,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

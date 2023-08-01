@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/mail"
@@ -19,7 +20,7 @@ func resourceLaceworkTeamMember() *schema.Resource {
 		Delete: resourceLaceworkTeamMemberDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkTeamMember,
+			StateContext: importLaceworkTeamMember,
 		},
 		Schema: map[string]*schema.Schema{
 			"email": {
@@ -547,7 +548,7 @@ func laceworkTeamMemberDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func importLaceworkTeamMember(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkTeamMember(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
 
 	// we have two ways to import a team member, the first one is mostly for

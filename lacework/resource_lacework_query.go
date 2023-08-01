@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -17,7 +18,7 @@ func resourceLaceworkQuery() *schema.Resource {
 		Delete: resourceLaceworkQueryDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkQuery,
+			StateContext: importLaceworkQuery,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -139,7 +140,7 @@ func resourceLaceworkQueryDelete(d *schema.ResourceData, meta interface{}) error
 	return nil
 }
 
-func importLaceworkQuery(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkQuery(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Importing Lacework Query with guid: %s\n", d.Id())

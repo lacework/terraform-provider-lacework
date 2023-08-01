@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -19,7 +20,7 @@ func resourceLaceworkPolicyException() *schema.Resource {
 		Delete: resourceLaceworkPolicyExceptionDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkPolicyException,
+			StateContext: importLaceworkPolicyException,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -189,7 +190,7 @@ func resourceLaceworkPolicyExceptionDelete(d *schema.ResourceData, meta interfac
 	return nil
 }
 
-func importLaceworkPolicyException(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkPolicyException(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	var response api.PolicyExceptionResponse
 	lacework := meta.(*api.Client)
 
@@ -249,9 +250,7 @@ func sanitizeConstraintKeys(itemMap map[string]any) map[string]any {
 		if k == "field_value_map" {
 			list := v.(*schema.Set).List()
 			if len(list) > 0 {
-				for _, item := range list {
-					constraintMapList = append(constraintMapList, item)
-				}
+				constraintMapList = append(constraintMapList, list...)
 				newMap["fieldValues"] = constraintMapList
 				continue
 			}

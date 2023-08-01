@@ -17,7 +17,7 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelGcpPubSubDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {

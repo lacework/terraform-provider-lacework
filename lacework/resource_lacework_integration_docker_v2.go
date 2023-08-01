@@ -17,7 +17,7 @@ func resourceLaceworkIntegrationDockerV2() *schema.Resource {
 		Delete: resourceLaceworkIntegrationDockerV2Delete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkContainerRegistry,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

@@ -17,7 +17,7 @@ func resourceLaceworkIntegrationGhcr() *schema.Resource {
 		Delete: resourceLaceworkIntegrationGhcrDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkContainerRegistry,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

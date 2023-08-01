@@ -16,7 +16,7 @@ func resourceLaceworkAlertChannelQRadar() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelQRadarDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

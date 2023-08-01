@@ -17,7 +17,7 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 		Delete: resourceLaceworkAlertChannelAwsCloudWatchDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAlertChannel,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{

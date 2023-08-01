@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -20,7 +20,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanning() *schema.Resource {
 		Update:   resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate,
 		Delete:   resourceLaceworkIntegrationAwsOrgAgentlessScanningDelete,
 		Schema:   awsOrgAgentlessScanningIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
+		Importer: &schema.ResourceImporter{StateContext: schema.ImportStatePassthroughContext},
 	}
 }
 
@@ -237,13 +237,13 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 		awsOrgAgentlessScanning.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.AwsSidekickOrgCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.CreateAwsSidekickOrg(awsOrgAgentlessScanning)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("Error creating %s cloud account integration: %s",
 						api.AwsSidekickOrgCloudAccount.String(), err,
 					))
@@ -252,7 +252,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
 				api.AwsSidekickOrgCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"Unable to create %s cloud account integration (retrying %d more time(s))",
 				api.AwsSidekickOrgCloudAccount.String(), retries,
 			))

@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -19,7 +20,7 @@ func resourceLaceworkPolicy() *schema.Resource {
 		Delete: resourceLaceworkPolicyDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkPolicy,
+			StateContext: importLaceworkPolicy,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -290,7 +291,7 @@ func resourceLaceworkPolicyDelete(d *schema.ResourceData, meta interface{}) erro
 	return nil
 }
 
-func importLaceworkPolicy(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkPolicy(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Importing Lacework Policy with guid: %s\n", d.Id())

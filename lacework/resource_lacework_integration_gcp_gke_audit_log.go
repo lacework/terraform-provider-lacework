@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/lacework/go-sdk/api"
@@ -19,7 +19,7 @@ func resourceLaceworkIntegrationGcpGkeAuditLog() *schema.Resource {
 		Update:   resourceLaceworkIntegrationGcpGkeAuditLogUpdate,
 		Delete:   resourceLaceworkIntegrationGcpGkeAuditLogDelete,
 		Schema:   gcpGkeAuditLogIntegrationSchema,
-		Importer: &schema.ResourceImporter{State: importLaceworkCloudAccount},
+		Importer: &schema.ResourceImporter{StateContext: schema.ImportStatePassthroughContext},
 	}
 }
 
@@ -173,13 +173,13 @@ func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, met
 		gcpGkeAuditLog.Enabled = 0
 	}
 
-	return resource.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *resource.RetryError {
+	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.GcpGkeAuditCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(gcpGkeAuditLog)
 		if err != nil {
 			if retries <= 0 {
-				return resource.NonRetryableError(
+				return retry.NonRetryableError(
 					fmt.Errorf("error creating %s cloud account integration: %s",
 						api.GcpGkeAuditCloudAccount.String(), err,
 					))
@@ -188,7 +188,7 @@ func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, met
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
 				api.GcpGkeAuditCloudAccount.String(), retries, err,
 			)
-			return resource.RetryableError(fmt.Errorf(
+			return retry.RetryableError(fmt.Errorf(
 				"unable to create %s cloud account integration (retrying %d more time(s))",
 				api.GcpGkeAuditCloudAccount.String(), retries,
 			))

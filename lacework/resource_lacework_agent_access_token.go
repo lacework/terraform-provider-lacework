@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -18,7 +19,7 @@ func resourceLaceworkAgentAccessToken() *schema.Resource {
 		Delete: resourceLaceworkAgentAccessTokenDelete,
 
 		Importer: &schema.ResourceImporter{
-			State: importLaceworkAgentAccessToken,
+			StateContext: importLaceworkAgentAccessToken,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -180,7 +181,7 @@ func resourceLaceworkAgentAccessTokenDelete(d *schema.ResourceData, meta interfa
 	return nil
 }
 
-func importLaceworkAgentAccessToken(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func importLaceworkAgentAccessToken(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Importing agent access token.")
