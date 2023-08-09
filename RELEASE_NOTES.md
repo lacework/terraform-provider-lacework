@@ -1,5 +1,5 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.11.0`.
+Another day, another release. These are the release notes for the version `v1.12.0`.
 
 ## Features
 * feat: support new properties in alert_rules (#518) (Darren)([24091a7b](https://github.com/lacework/terraform-provider-lacework/commit/24091a7be364679d7e08c00354f0fe1d19a13b35))
