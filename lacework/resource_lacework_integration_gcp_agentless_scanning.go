@@ -319,7 +319,6 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 		creds := make(map[string]string)
 		creds["client_id"] = integration.Data.Credentials.ClientID
 		creds["client_email"] = integration.Data.Credentials.ClientEmail
-		creds["private_key_id"] = integration.Data.Credentials.PrivateKeyID
 		creds["token_uri"] = integration.Data.Credentials.TokenUri
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("resource_level", integration.Data.IDType)
