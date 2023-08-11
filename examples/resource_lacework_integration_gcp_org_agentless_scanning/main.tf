@@ -7,12 +7,12 @@ terraform {
 }
 
 provider "lacework" {
-    organization = true
+  organization = true
 }
 
-variable "name" {
+variable "integration_name" {
   type    = string
-  default = "GCP Agentless Scanning org_example"
+  default = "GCP Agentless Scanning Example"
 }
 
 variable "client_id" {
@@ -47,7 +47,7 @@ variable "integration_type" {
 
 variable "project_id" {
   type    = string
-  default = "org-example-project-id"
+  default = "example-project-id"
 }
 
 variable "bucket_name" {
@@ -55,7 +55,7 @@ variable "bucket_name" {
   default = "storage bucket id"
 }
 
-variable "scanning_project_id" {
+variable "scanning-project-id" {
   type = string
   default = "scanning-project-id"
 }
@@ -68,11 +68,6 @@ variable "query_text" {
 variable "filter_list" {
   type    = list(string)
   default = ["proj1", "proj2"]
-}
-
-variable "scan_frequency" {
-  type = number 
-  default = 24
 }
 
 variable "org_account_mappings" {
@@ -88,7 +83,7 @@ variable "org_account_mappings" {
 }
 
 resource "lacework_integration_gcp_agentless_scanning" "org_example" {
-  name = var.name
+  name = var.integration_name
   credentials {
     client_id      = var.client_id
     client_email   = var.client_email
@@ -97,14 +92,14 @@ resource "lacework_integration_gcp_agentless_scanning" "org_example" {
     token_uri 	   = var.token_uri
   }
   resource_level = "ORGANIZATION"
-  resource_id    = "techally-test"
-  bucket_name = var.bucket_name
-  scanning_project_id = "gcp-lw-scanner"
-  scan_frequency            = var.scan_frequency
+  resource_id    = "294451184225"
+  scanning_project_id = "techally-test"
+  scan_frequency            = 24
   scan_containers           = true
   scan_host_vulnerabilities = true
   scan_multi_volume         = false
   scan_stopped_instances    = true
+  bucket_name = var.bucket_name
   query_text = var.query_text
   filter_list = var.filter_list
 

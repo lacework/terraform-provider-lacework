@@ -8,24 +8,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestIntegrationGcpAgentlessScanningCreate applies integration terraform:
-// => '../examples/resource_lacework_integration_gcp_agentless_scanning'
-//
-// It uses the go-sdk to verify the created integration,
-// applies an update with new integration name and destroys it
-func TestIntegrationGcpAgentlessScanningCreate(t *testing.T) {
+func TestIntegrationGcpAgentlessOrgScanningCreateAndUpdate(t *testing.T) {
 	gcreds, err := googleLoadDefaultCredentials()
-	integration_name := "GCP Agentless Scanning Example Integration Test"
+	integration_name := "GCP Org Agentless Scanning Example Integration Test"
 	update_integration_name := fmt.Sprintf("%s Updated", integration_name)
 	if assert.Nil(t, err, "this test requires you to set GOOGLE_CREDENTIALS environment variable") {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-			TerraformDir: "../examples/resource_lacework_integration_gcp_agentless_scanning",
+			TerraformDir: "../examples/resource_lacework_integration_gcp_org_agentless_scanning",
 			Vars: map[string]interface{}{
 				"integration_name": integration_name,
 				"client_id":        gcreds.ClientID,
 				"client_email":     gcreds.ClientEmail,
 				"private_key_id":   gcreds.PrivateKeyID,
 				"bucket_name":      "storage bucket id",
+				"org_account_mappings": []map[string]interface{}{
+					{
+						"default_lacework_account": "customerdemo",
+						"mapping": []map[string]interface{}{
+							{
+								"lacework_account": "tech-ally",
+								"gcp_projects":     []string{"techally-test"},
+							},
+						},
+					},
+				},
 			},
 			EnvVars: map[string]string{
 				"TF_VAR_private_key": gcreds.PrivateKey,
@@ -36,14 +42,31 @@ func TestIntegrationGcpAgentlessScanningCreate(t *testing.T) {
 
 		// Create new Google Agentless Scanning integration
 		create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
-		createData := GetGcpAgentlessScanningResponse(create)
+		createData := GetGcpAgentlessOrgScanningResponse(create)
 		assert.Equal(t, integration_name, createData.Data.Name)
 
 		// Update Gcp integration
-		terraformOptions.Vars["integration_name"] = update_integration_name
+		terraformOptions.Vars = map[string]interface{}{
+			"integration_name": update_integration_name,
+			"client_id":        gcreds.ClientID,
+			"client_email":     gcreds.ClientEmail,
+			"private_key_id":   gcreds.PrivateKeyID,
+			"bucket_name":      "storage bucket id",
+			"org_account_mappings": []map[string]interface{}{
+				{
+					"default_lacework_account": "customerdemo",
+					"mapping": []map[string]interface{}{
+						{
+							"lacework_account": "abc",
+							"gcp_projects":     []string{"techally-test"},
+						},
+					},
+				},
+			},
+		}
 
 		update := terraform.ApplyAndIdempotent(t, terraformOptions)
-		updateData := GetGcpAgentlessScanningResponse(update)
+		updateData := GetGcpAgentlessOrgScanningResponse(update)
 		assert.Equal(t, update_integration_name, updateData.Data.Name)
 	}
 }
