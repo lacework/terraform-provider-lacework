@@ -116,6 +116,7 @@ func Provider() *schema.Provider {
 			"lacework_policy_compliance":                      resourceLaceworkPolicyCompliance(),
 			"lacework_policy_exception":                       resourceLaceworkPolicyException(),
 			"lacework_report_rule":                            resourceLaceworkReportRule(),
+			"lacework_resource_group":						   resourceLaceworkResourceGroup(),
 			"lacework_resource_group_account":                 resourceLaceworkResourceGroupLwAccount(),
 			"lacework_resource_group_aws":                     resourceLaceworkResourceGroupAws(),
 			"lacework_resource_group_azure":                   resourceLaceworkResourceGroupAzure(),
