@@ -68,7 +68,7 @@ build-cross-platform: ## Compiles the Terraform-Provider-Lacework for all suppor
 .PHONY: install
 install: write-terraform-rc fmtcheck ## Updates the terraformrc to point to the BINARY_PATH. Installs the provider to the BINARY_PATH
 	mkdir -vp $(DIR)
-	go build -o $(DIR)/$(BINARY_PATH)
+	go build -gcflags="all=-N -l" -o $(DIR)/$(BINARY_PATH)
 
 .PHONY: uninstall
 uninstall: remove-terraform-rc ## Removes installed provider package from BINARY_PATH

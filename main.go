@@ -8,5 +8,8 @@ import (
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: lacework.Provider})
+		ProviderFunc: lacework.Provider,
+		ProviderAddr: "lacework/lacework",
+		Debug:        true,
+	})
 }

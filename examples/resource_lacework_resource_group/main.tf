@@ -16,14 +16,14 @@ resource "lacework_resource_group" "example" {
   group {
     operator = "AND"
     filter {
-      filterName = "filter1"
+      filter_name = "filter1"
       field     = "Region"
       operation = "EQUALS"
       value     = ["us-east-1"]
     }
 
     filter {
-      filterName = "filter2"
+      filter_name = "filter2"
       field     = "Region"
       operation = "EQUALS"
       value     = ["us-west-2"]
@@ -34,13 +34,13 @@ resource "lacework_resource_group" "example" {
       group {
         operator = "OR"
         filter {
-          filterName = "filter3"
+          filter_name = "filter3"
           field     = "Account"
           operation = "EQUALS"
           value     = ["987654321"]
         }
         filter {
-          filterName = "filter4"
+          filter_name = "filter4"
           field     = "Account"
           operation = "EQUALS"
           value     = ["123456789"]

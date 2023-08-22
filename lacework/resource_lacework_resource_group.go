@@ -2,10 +2,9 @@ package lacework
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"log"
-	"strings"
-
 	"github.com/lacework/go-sdk/api"
+	"github.com/pkg/errors"
+	"log"
 )
 
 func resourceLaceworkResourceGroup() *schema.Resource {
@@ -16,11 +15,9 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 	}
 
 	filterValue := &schema.Schema{
+		Type: schema.TypeList,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
-			StateFunc: func(val interface{}) string {
-				return strings.TrimSpace(val.(string))
-			},
 		},
 		Required:    true,
 		Description: "The values that the predicate should match.",
@@ -44,14 +41,15 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 	}
 
 	filterSchema := &schema.Schema{
-		Type: schema.TypeSet,
+		Type:     schema.TypeSet,
+		Optional: true,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
-				"filterName": filterFieldName,
-				"field":      filterField,
-				"operation":  filterOperation,
-				"value":      filterValue,
-				"key":        filterKey,
+				"filter_name": filterFieldName,
+				"field":       filterField,
+				"operation":   filterOperation,
+				"value":       filterValue,
+				"key":         filterKey,
 			},
 		},
 	}
@@ -67,19 +65,22 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 			"operator": groupOperator,
 			"filter":   filterSchema,
 			"group": {
-				Type: schema.TypeSet,
+				Type:     schema.TypeSet,
+				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"operator": groupOperator,
 						"filter":   filterSchema,
 						"group": {
-							Type: schema.TypeSet,
+							Type:     schema.TypeSet,
+							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"operator": groupOperator,
 									"filter":   filterSchema,
 									"group": {
-										Type: schema.TypeSet,
+										Type:     schema.TypeSet,
+										Optional: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"operator": groupOperator,
@@ -111,6 +112,11 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "The resource group name",
+			},
+			"type": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The type of the resource group",
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -149,11 +155,6 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 				Computed:    true,
 				Description: "The username of the lacework user who performed the last update",
 			},
-			"type": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "The type of the resource group",
-			},
 			"is_default": {
 				Type:        schema.TypeBool,
 				Computed:    true,
@@ -165,9 +166,18 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 
 func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
+	// d.Get("group").(*schema.Set).List()
+	resourceType := d.Get("type").(string)
+	groupType, isValid := api.FindResourceGroupType(resourceType)
+	if !isValid {
+		// This should never reach this. The type is controlled by us in cmd/resource_groups
+		return errors.New("internal error")
+	}
+
+	//queryInterface := d.Get("group")
 
 	data := api.NewResourceGroupWithQuery(d.Get("name").(string),
-		d.Get("type").(api.ResourceGroupType),
+		groupType,
 		d.Get("description").(string),
 		d.Get("query").(*api.RGQuery))
 
