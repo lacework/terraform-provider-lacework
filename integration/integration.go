@@ -259,6 +259,19 @@ func GetContainerRegisteryProxyScanner(result string) api.ProxyScannerIntegratio
 	return res
 }
 
+func GetResourceGroupV2Description(result string) string {
+	id := GetIDFromTerraResults(result)
+
+	var response api.ResourceGroupResponse
+	err := LwClient.V2.ResourceGroups.Get(id, &response)
+
+	if err != nil {
+		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
+	}
+
+	return response.Data.Description
+}
+
 func GetResourceGroupDescription(result string) string {
 	id := GetIDFromTerraResults(result)
 
