@@ -6,7 +6,7 @@ description: |-
   Create and manage Resource Groups V2 (Beta)
 ---
 
-# lacework\_resource\_group
+# (beta) lacework\_resource\_group
 
 Use this resource to create a V2 Resource Group in order to categorize Lacework-identifiable assets.
 For more information, see the [Resource Groups documentation](https://support.lacework.com/hc/en-us/articles/360041727354-Resource-Groups).
@@ -17,7 +17,8 @@ For more information, see the [Resource Groups documentation](https://support.la
 ```hcl
 resource "lacework_resource_group" "example" {
   name        = "My Resource Group"
-  description = "This groups a subset of AWS Accounts"
+  type        = "AWS"
+  description = "This groups a subset of AWS resources"
   group {
     operator = "AND"
     filter {
@@ -73,6 +74,7 @@ The following arguments are supported:
   part of the resource group. Groups can be nested up to 3 levels deep and can be combined by 
   individual filters. See the [api-docs](https://lwdocs-rg2.netlify.app/api/api-resource-group/#filterable-fields) for the supported fields.
   Each `group` must have at least one of `group` or `filter` defined.
+* `type` - (Required) The type of resource group being created. e.g. AWS/GCP/AZURE
 * `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
