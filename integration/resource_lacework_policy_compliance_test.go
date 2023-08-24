@@ -88,7 +88,7 @@ func TestPolicyComplianceCreate(t *testing.T) {
 }
 
 func TestPolicyComplianceCreateWithPolicyIDSuffix(t *testing.T) {
-	rand.Seed(time.Now().UnixNano())
+	rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 	suffix := fmt.Sprintf("terraform-%d", rand.Intn(1000))
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_policy_compliance",
