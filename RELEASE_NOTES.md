@@ -1,5 +1,5 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.13.0`.
+Another day, another release. These are the release notes for the version `v1.14.0`.
 
 ## Features
 * feat(CAD-125): Support RGv2 CRUD in terraform (#538) (Zeki Sherif)([f95911d2](https://github.com/lacework/terraform-provider-lacework/commit/f95911d2102fab879eafd56d1159e4dfd08411ff))
