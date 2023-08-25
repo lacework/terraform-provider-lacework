@@ -1,8 +1,9 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.12.1`.
+Another day, another release. These are the release notes for the version `v1.13.0`.
 
-## Bug Fixes
-* fix: do not update private key id on read (#531) (ammarekbote)([ff337a74](https://github.com/lacework/terraform-provider-lacework/commit/ff337a74c722e8cbefca2ec0a7c3cf44f5fceaf5))
+## Features
+* feat(CAD-125): Support RGv2 CRUD in terraform (#538) (Zeki Sherif)([f95911d2](https://github.com/lacework/terraform-provider-lacework/commit/f95911d2102fab879eafd56d1159e4dfd08411ff))
 ## Other Changes
-* chore: update go-sdk dependency (#533) (Darren)([940dd635](https://github.com/lacework/terraform-provider-lacework/commit/940dd6351003abc917c7b843ca4fbec001437664))
-* ci: version bump to v1.12.1-dev (Lacework)([bda4e0c9](https://github.com/lacework/terraform-provider-lacework/commit/bda4e0c9a8da22efc4125d1626a0cc4a31efa238))
+* chore: Update go-sdk version (#540) (Zeki Sherif)([14c0205d](https://github.com/lacework/terraform-provider-lacework/commit/14c0205d44a4558ce83f7b68323a802835323d78))
+* chore: bump go version to 1.21 (#524) (Darren)([e638ee98](https://github.com/lacework/terraform-provider-lacework/commit/e638ee981719231a8c768e72e9477cf8a1a157dd))
+* ci: version bump to v1.12.2-dev (Lacework)([4f8bb441](https://github.com/lacework/terraform-provider-lacework/commit/4f8bb44151616ff0609c04698147626d4d4cc29d))
