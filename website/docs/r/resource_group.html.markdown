@@ -9,7 +9,7 @@ description: |-
 # (beta) lacework\_resource\_group
 
 Use this resource to create a V2 Resource Group in order to categorize Lacework-identifiable assets.
-For more information, see the [Resource Groups documentation](https://support.lacework.com/hc/en-us/articles/360041727354-Resource-Groups).
+For more information, see the [Resource Groups documentation](https://lwdocs-rg2.netlify.app/console/resource-groups/).
 
 
 ## Example Usage
