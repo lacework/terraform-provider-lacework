@@ -87,6 +87,7 @@ You can import a Lacework resource group by `RESOURCE_GROUP_GUID`, for example:
 ```
 $ terraform import lacework_resource_group.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
--> **Note:** To retrieve the `RESOURCE_GROUP_GUID` from existing resource groups in your account, 
+
+**Note:** To retrieve the `RESOURCE_GROUP_GUID` from existing resource groups in your account, 
 use the Lacework CLI command `lacework resource-group list`. To install this tool follow
 [this documentation](https://docs.lacework.com/cli/).
