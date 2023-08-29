@@ -14,7 +14,7 @@ For more information, see the [Resource Groups documentation](https://lwdocs-rg2
 
 ## Example Usage
 
-This Terraform code defines a Lacework resource group that includes all AWS resources that are located in us-east-1 and us-west-2, along with those in us-central-1 with an account ID of either 987654321 or 123456789.
+The following Terraform code defines a Lacework resource group that includes all AWS resources that are located in us-east-1 or us-west-2 or those in us-central-1 with an account ID of either 987654321 or 123456789.
 
 ```hcl
 resource "lacework_resource_group" "example" {
@@ -22,7 +22,7 @@ resource "lacework_resource_group" "example" {
   type        = "AWS"
   description = "This groups a subset of AWS resources"
   group {
-    operator = "AND"
+    operator = "OR"
     filter {
       filter_name = "filter1"
       field     = "Region"
