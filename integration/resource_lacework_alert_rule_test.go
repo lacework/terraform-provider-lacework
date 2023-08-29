@@ -19,7 +19,7 @@ import (
 func TestAlertRuleCreate(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_rule",
+		TerraformDir: "../examples/resource_lacework_alert_rule/current",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
@@ -91,7 +91,7 @@ func TestAlertRuleCreate(t *testing.T) {
 func TestAlertRuleSeverities(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_rule",
+		TerraformDir: "../examples/resource_lacework_alert_rule/current",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name":                name,
@@ -134,7 +134,7 @@ func TestAlertRuleSeverities(t *testing.T) {
 func TestAlertRuleCategories(t *testing.T) {
 	name := fmt.Sprintf("Alert Rule - %s", time.Now())
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_rule",
+		TerraformDir: "../examples/resource_lacework_alert_rule/current",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name": name,
@@ -175,6 +175,54 @@ func TestAlertRuleCategories(t *testing.T) {
 		assert.Contains(t,
 			err.Error(),
 			"expected alert_subcategories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
+		)
+	}
+}
+
+func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
+	name := fmt.Sprintf("Alert Rule - %s", time.Now())
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_rule/deprecated",
+		EnvVars:      tokenEnvVar,
+		Vars: map[string]interface{}{
+			"name": name,
+			"event_categories": []string{"Compliance", "App", "Cloud", "File", "Machine",
+				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
+			"alert_categories":    []string{"Policy"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraformOptions.TimeBetweenRetries = 2 * time.Second
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	createProps := GetAlertRuleProps(create)
+
+	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
+	actualAlertCategories := terraform.Output(t, terraformOptions, "alert_categories")
+
+	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
+		"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.EventCategories)
+	assert.ElementsMatch(t, []string{"Policy"}, createProps.Data.Filter.AlertCategories)
+
+	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform Registry SystemCall User]",
+		actualCategories)
+	assert.Equal(t, "[Policy]", actualAlertCategories)
+
+	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_alert_rule",
+		Vars: map[string]interface{}{
+			"name":                name,
+			"event_categories": []string{"INVALID"},
+			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
+		},
+	})
+
+	_, err := terraform.ApplyE(t, invalidOptions)
+	if assert.Error(t, err) {
+		assert.Contains(t,
+			err.Error(),
+			"expected event_categories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
 		)
 	}
 }
