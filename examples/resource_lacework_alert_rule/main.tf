@@ -11,7 +11,7 @@ resource "lacework_alert_rule" "example" {
   description      = var.description
   alert_channels   = var.channels
   severities       = var.severities
-  event_categories = var.event_categories
+  alert_subcategories = var.alert_subcategories
   alert_categories = var.alert_categories
   resource_groups  = [lacework_resource_group_aws.example.id]
 }
@@ -46,7 +46,7 @@ variable "severities" {
   default = ["High", "Medium"]
 }
 
-variable "event_categories" {
+variable "alert_subcategories" {
   type    = list(string)
   default = ["Compliance", "Platform", "User", "Cloud"]
 }

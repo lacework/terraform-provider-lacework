@@ -102,9 +102,24 @@ func resourceLaceworkAlertRule() *schema.Resource {
 				},
 			},
 			"event_categories": {
-				Type:     schema.TypeSet,
-				Optional: true,
+				Type:       schema.TypeSet,
+				Optional:   true,
+				Deprecated: "This attribute is deprecated and has been replaced by `alert_subcategories`",
 				Description: fmt.Sprintf("List of event categories for the alert rule. Valid categories are: %s",
+					strings.Join(api.AlertRuleSubCategories, ", ")),
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+					StateFunc: func(val interface{}) string {
+						return strings.TrimSpace(val.(string))
+					},
+					ValidateFunc: validation.StringInSlice(api.AlertRuleSubCategories, false),
+				},
+			},
+			"alert_subcategories": {
+				Type:          schema.TypeSet,
+				Optional:      true,
+				ConflictsWith: []string{"event_categories"},
+				Description: fmt.Sprintf("List of alert subcategories for the alert rule. Valid categories are: %s",
 					strings.Join(api.AlertRuleSubCategories, ", ")),
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -140,10 +155,16 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 		alertChannels = d.Get("alert_channels").(*schema.Set).List()
 	}
 
+	var alertSubcategories []interface{}
+	if _, ok := d.GetOk("alert_subcategories"); ok {
+		alertSubcategories = d.Get("alert_subcategories").(*schema.Set).List()
+	} else if _, ok := d.GetOk("event_categories"); ok {
+		alertSubcategories = d.Get("event_categories").(*schema.Set).List()
+	}
+
 	var (
 		lacework        = meta.(*api.Client)
 		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
-		eventCategories = d.Get("event_categories").(*schema.Set).List()
 		alertCategories = d.Get("alert_categories").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
@@ -151,7 +172,7 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 				Description:     d.Get("description").(string),
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
-				EventCategories: castStringSlice(eventCategories),
+				EventCategories: castStringSlice(alertSubcategories),
 				AlertCategories: castStringSlice(alertCategories),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},
@@ -202,7 +223,11 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("type_name", response.Data.Type)
 	d.Set("severities", api.NewAlertRuleSeveritiesFromIntSlice(response.Data.Filter.Severity).ToStringSlice())
 	d.Set("resource_groups", response.Data.Filter.ResourceGroups)
-	d.Set("event_categories", response.Data.Filter.EventCategories)
+	if _, ok := d.GetOk("alert_subcategories"); ok {
+		d.Set("alert_subcategories", response.Data.Filter.EventCategories)
+	} else if _, ok := d.GetOk("event_categories"); ok {
+		d.Set("event_categories", response.Data.Filter.EventCategories)
+	}
 	d.Set("alert_categories", response.Data.Filter.AlertCategories)
 	d.Set("alert_channels", response.Data.Channels)
 
@@ -216,10 +241,16 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 		alertChannels = d.Get("alert_channels").(*schema.Set).List()
 	}
 
+	var alertSubcategories []interface{}
+	if _, ok := d.GetOk("alert_subcategories"); ok {
+		alertSubcategories = d.Get("alert_subcategories").(*schema.Set).List()
+	} else if _, ok := d.GetOk("event_categories"); ok {
+		alertSubcategories = d.Get("event_categories").(*schema.Set).List()
+	}
+
 	var (
 		lacework        = meta.(*api.Client)
 		resourceGroups  = d.Get("resource_groups").(*schema.Set).List()
-		eventCategories = d.Get("event_categories").(*schema.Set).List()
 		alertCategories = d.Get("alert_categories").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
@@ -227,7 +258,7 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 				Description:     d.Get("description").(string),
 				Channels:        castStringSlice(alertChannels),
 				Severities:      severities,
-				EventCategories: castStringSlice(eventCategories),
+				EventCategories: castStringSlice(alertSubcategories),
 				AlertCategories: castStringSlice(alertCategories),
 				ResourceGroups:  castStringSlice(resourceGroups),
 			},

@@ -21,12 +21,12 @@ resource "lacework_alert_channel_slack" "ops_critical" {
 }
 
 resource "lacework_alert_rule" "example" {
-  name             = "My Alert Rule"
-  description      = "This is an example alert rule"
-  alert_channels   = [lacework_alert_channel_slack.ops_critical.id]
-  severities       = ["Critical"]
-  event_categories = ["Compliance"]
-  alert_categories = ["Policy"]
+  name                = "My Alert Rule"
+  description         = "This is an example alert rule"
+  alert_channels      = [lacework_alert_channel_slack.ops_critical.id]
+  severities          = ["Critical"]
+  alert_subcategories = ["Compliance"]
+  alert_categories    = ["Policy"]
 }
 ```
 
@@ -45,12 +45,12 @@ resource "lacework_resource_group_gcp" "all_gcp_projects" {
 }
 
 resource "lacework_alert_rule" "example" {
-  name             = "My Alert Rule"
-  description      = "This is an example alert rule"
-  alert_channels   = [lacework_alert_channel_slack.ops_critical.id]
-  severities       = ["Critical"]
-  event_categories = ["Compliance"]
-  resource_groups  = [lacework_resource_group_gcp.all_gcp_projects.id]
+  name                = "My Alert Rule"
+  description         = "This is an example alert rule"
+  alert_channels      = [lacework_alert_channel_slack.ops_critical.id]
+  severities          = ["Critical"]
+  alert_subcategories = ["Compliance"]
+  resource_groups     = [lacework_resource_group_gcp.all_gcp_projects.id]
 }
 ```
 
@@ -63,12 +63,17 @@ The following arguments are supported:
 * `severities` - (Required) The list of the severities that the rule will apply. Valid severities include: 
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
-* `event_categories` - (Optional) The list of event categories the rule will apply to. Valid categories include:
+* `event_categories` - (Optional) The list of alert subcategories the rule will apply to. Valid categories include:
   `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`.
 * `alert_categories` - (Optional) The alert categories that will use this rule for alert routing. Valid categories include:
   `Anomaly`, `Policy`, `Composite`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
+* `event_categories` - (Optional, **Deprecated**) The list of event categories the rule will apply to. Valid categories include:
+    `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`. 
+This attribute is deprecated use `alert_subcategories` instead.
+
+
 
 ## Import
 

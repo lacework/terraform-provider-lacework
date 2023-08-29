@@ -26,7 +26,7 @@ func TestAlertRuleCreate(t *testing.T) {
 			"description":         "Alert Rule created by Terraform",
 			"channels":            []string{"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"},
 			"severities":          []string{"Critical"},
-			"event_categories":    []string{"Compliance"},
+			"alert_subcategories": []string{"Compliance"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -41,7 +41,7 @@ func TestAlertRuleCreate(t *testing.T) {
 	actualDescription := terraform.Output(t, terraformOptions, "description")
 	actualChannels := terraform.Output(t, terraformOptions, "channels")
 	actualSeverities := terraform.Output(t, terraformOptions, "severities")
-	actualEventCategories := terraform.Output(t, terraformOptions, "event_categories")
+	actualEventCategories := terraform.Output(t, terraformOptions, "alert_subcategories")
 	actualResourceGroupID := terraform.Output(t, terraformOptions, "resource_group_id")
 
 	assert.Equal(t, "Alert Rule created by Terraform", createProps.Data.Filter.Description)
@@ -63,7 +63,7 @@ func TestAlertRuleCreate(t *testing.T) {
 		"channels": []string{"TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527",
 			"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"},
 		"severities":          []string{"High", "Medium"},
-		"event_categories":    []string{"Compliance", "User", "Platform"},
+		"alert_subcategories": []string{"Compliance", "User", "Platform"},
 		"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 	}
 
@@ -72,7 +72,7 @@ func TestAlertRuleCreate(t *testing.T) {
 	actualDescription = terraform.Output(t, terraformOptions, "description")
 	actualChannels = terraform.Output(t, terraformOptions, "channels")
 	actualSeverities = terraform.Output(t, terraformOptions, "severities")
-	actualEventCategories = terraform.Output(t, terraformOptions, "event_categories")
+	actualEventCategories = terraform.Output(t, terraformOptions, "alert_subcategories")
 	actualResourceGroupID = terraform.Output(t, terraformOptions, "resource_group_id")
 
 	assert.Equal(t, "Updated Alert Rule created by Terraform", updateProps.Data.Filter.Description)
@@ -138,7 +138,7 @@ func TestAlertRuleCategories(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name": name,
-			"event_categories": []string{"Compliance", "App", "Cloud", "File", "Machine",
+			"alert_subcategories": []string{"Compliance", "App", "Cloud", "File", "Machine",
 				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
 			"alert_categories":    []string{"Policy"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
@@ -150,7 +150,7 @@ func TestAlertRuleCategories(t *testing.T) {
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createProps := GetAlertRuleProps(create)
 
-	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
+	actualCategories := terraform.Output(t, terraformOptions, "alert_subcategories")
 	actualAlertCategories := terraform.Output(t, terraformOptions, "alert_categories")
 
 	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
@@ -165,7 +165,7 @@ func TestAlertRuleCategories(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
 			"name":                name,
-			"event_categories":    []string{"INVALID"},
+			"alert_subcategories": []string{"INVALID"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -174,7 +174,7 @@ func TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"expected event_categories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
+			"expected alert_subcategories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
 		)
 	}
 }
