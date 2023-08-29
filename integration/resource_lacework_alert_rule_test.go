@@ -210,7 +210,7 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 	assert.Equal(t, "[Policy]", actualAlertCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_rule",
+		TerraformDir: "../examples/resource_lacework_alert_rule/deprecated",
 		Vars: map[string]interface{}{
 			"name":                name,
 			"event_categories":    []string{"INVALID"},
