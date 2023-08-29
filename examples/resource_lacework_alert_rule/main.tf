@@ -72,8 +72,8 @@ output "severities" {
   value = lacework_alert_rule.example.severities
 }
 
-output "event_categories" {
-  value = lacework_alert_rule.example.event_categories
+output "alert_subcategories" {
+  value = lacework_alert_rule.example.alert_subcategories
 }
 
 output "alert_categories" {
