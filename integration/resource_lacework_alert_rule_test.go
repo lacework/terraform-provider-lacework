@@ -213,7 +213,7 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_rule",
 		Vars: map[string]interface{}{
 			"name":                name,
-			"event_categories": []string{"INVALID"},
+			"event_categories":    []string{"INVALID"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
