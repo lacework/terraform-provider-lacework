@@ -162,7 +162,7 @@ func TestAlertRuleCategories(t *testing.T) {
 	assert.Equal(t, "[Policy]", actualAlertCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_rule",
+		TerraformDir: "../examples/resource_lacework_alert_rule/current",
 		Vars: map[string]interface{}{
 			"name":                name,
 			"alert_subcategories": []string{"INVALID"},
