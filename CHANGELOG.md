@@ -1,3 +1,10 @@
+## v1.13.3 (August 30, 2023)
+
+## Documentation Updates
+* docs: move rgv2 docs to new location (#549) (Zeki Sherif)([fbf9621b](https://github.com/lacework/terraform-provider-lacework/commit/fbf9621b75ae358acb188e2b2b5cbd8e440c8283))
+## Other Changes
+* ci: version bump to v1.13.3-dev (Lacework)([6151221b](https://github.com/lacework/terraform-provider-lacework/commit/6151221bac1b78964fb4f644cd6fb43ff52ca0ee))
+
 ## v1.13.2 (August 30, 2023)
 
 ## Bug Fixes
