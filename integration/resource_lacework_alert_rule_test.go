@@ -114,7 +114,7 @@ func TestAlertRuleSeverities(t *testing.T) {
 	assert.Equal(t, "[Critical High Medium Low]", actualSeverities)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_alert_rule",
+		TerraformDir: "../examples/resource_lacework_alert_rule/current",
 		Vars: map[string]interface{}{
 			"name":                name,
 			"severities":          []string{"INVALID"},
