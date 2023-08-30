@@ -14,13 +14,15 @@ For more information, see the [Resource Groups documentation](https://lwdocs-rg2
 
 ## Example Usage
 
+The following Terraform code defines a Lacework resource group that includes all AWS resources that are located in us-east-1 or us-west-2 or those in us-central-1 with an account ID of either 987654321 or 123456789.
+
 ```hcl
 resource "lacework_resource_group" "example" {
   name        = "My Resource Group"
   type        = "AWS"
   description = "This groups a subset of AWS resources"
   group {
-    operator = "AND"
+    operator = "OR"
     filter {
       filter_name = "filter1"
       field     = "Region"
@@ -74,17 +76,18 @@ The following arguments are supported:
   part of the resource group. Groups can be nested up to 3 levels deep and can be combined by 
   individual filters. See the [api-docs](https://lwdocs-rg2.netlify.app/api/api-resource-group/#filterable-fields) for the supported fields.
   Each `group` must have at least one of `group` or `filter` defined.
-* `type` - (Required) The type of resource group being created. e.g. AWS/GCP/AZURE
+* `type` - (Required) The type of resource group being created, AWS, GCP, or AZURE
 * `description` - (Optional) The description of the resource group.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 
 ## Import
 
-A Lacework Resource Group can be imported using a `RESOURCE_GROUP_GUID`, e.g.
+You can import a Lacework resource group by `RESOURCE_GROUP_GUID`, for example:
 
 ```
 $ terraform import lacework_resource_group.example EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
--> **Note:** To retrieve the `RESOURCE_GROUP_GUID` from existing resource groups in your account, 
+
+**Note:** To retrieve the `RESOURCE_GROUP_GUID` from existing resource groups in your account, 
 use the Lacework CLI command `lacework resource-group list`. To install this tool follow
 [this documentation](https://docs.lacework.com/cli/).
