@@ -13,6 +13,7 @@ resource "lacework_alert_rule" "example" {
   severities       = var.severities
   alert_subcategories = var.alert_subcategories
   alert_categories = var.alert_categories
+  alert_sources    = var.alert_sources
   resource_groups  = [lacework_resource_group_aws.example.id]
 }
 
@@ -56,6 +57,11 @@ variable "alert_categories" {
   default = ["Policy"]
 }
 
+variable "alert_sources" {
+  type    = list(string)
+  default = ["Aws"]
+}
+
 output "name" {
   value = lacework_alert_rule.example.name
 }
@@ -78,6 +84,10 @@ output "alert_subcategories" {
 
 output "alert_categories" {
   value = lacework_alert_rule.example.alert_categories
+}
+
+output "alert_sources" {
+  value = lacework_alert_rule.example.alert_sources
 }
 
 output "resource_group_id" {

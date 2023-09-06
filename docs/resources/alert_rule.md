@@ -27,6 +27,7 @@ resource "lacework_alert_rule" "example" {
   severities          = ["Critical"]
   alert_subcategories = ["Compliance"]
   alert_categories    = ["Policy"]
+  alert_sources       = ["Aws"]
 }
 ```
 
@@ -60,17 +61,19 @@ The following arguments are supported:
 
 * `name` - (Required) The alert rule name.
 * `alert_channels` - (Required) The list of alert channels for the rule to use.
-* `severities` - (Required) The list of the severities that the rule will apply. Valid severities include: 
+* `severities` - (Required) The list of the severities that the rule will apply. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
 * `description` - (Optional) The description of the alert rule.
 * `alert_subcategories` - (Optional) The list of alert subcategories the rule will apply to. Valid categories include:
   `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`.
 * `alert_categories` - (Optional) The alert categories that will use this rule for alert routing. Valid categories include:
   `Anomaly`, `Policy`, `Composite`.
+* `alert_sources` - (Optional) The alert sources that will use this rule for alert routing. Valid sources include:
+  `Agent`, `Aws`, `Azure`, `Gcp`, `K8s`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `event_categories` - (Optional, **Deprecated**) The list of event categories the rule will apply to. Valid categories include:
-    `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`. 
+    `Compliance`, `App`, `Cloud`, `File`, `Machine`, `User`, `Platform`, `K8sActivity`, `Registry` `SystemCall`.
 This attribute is deprecated use `alert_subcategories` instead.
 
 
