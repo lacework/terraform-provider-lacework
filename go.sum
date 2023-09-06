@@ -421,6 +421,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/lacework/go-sdk v1.30.1-0.20230825001919-42786e5c3add h1:ZWUvzhdhbiIbeqdrmHdoytibmNnv+uOMZ1vlQzoRT44=
 github.com/lacework/go-sdk v1.30.1-0.20230825001919-42786e5c3add/go.mod h1:sLl6A4jrRGxAjfvLhCgSL6Du05kdRvczfEluJ7v6MBo=
+github.com/lacework/go-sdk v1.31.0 h1:KJ+Mr6I1C5wa03rrRDPH8DaHMYRRPruwh+ov8c/k+p4=
+github.com/lacework/go-sdk v1.31.0/go.mod h1:sLl6A4jrRGxAjfvLhCgSL6Du05kdRvczfEluJ7v6MBo=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.9/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-colorable v0.1.12/go.mod h1:u5H1YNBxpqRaxsYJYSkiCWKzEfiAb1Gb520KVy5xxl4=
