@@ -59,7 +59,7 @@ variable "alert_categories" {
 
 variable "alert_sources" {
   type    = list(string)
-  default = ["Aws"]
+  default = ["AWS"]
 }
 
 output "name" {

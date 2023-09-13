@@ -141,7 +141,7 @@ func TestAlertRuleCategories(t *testing.T) {
 			"alert_subcategories": []string{"Compliance", "App", "Cloud", "File", "Machine",
 				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
 			"alert_categories":    []string{"Policy"},
-			"alert_sources":       []string{"Aws", "Agent"},
+			"alert_sources":       []string{"AWS", "Agent"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
@@ -157,12 +157,12 @@ func TestAlertRuleCategories(t *testing.T) {
 
 	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
 		"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.EventCategories)
-	assert.ElementsMatch(t, []string{"Agent", "Aws"}, createProps.Data.Filter.AlertSources)
+	assert.ElementsMatch(t, []string{"Agent", "AWS"}, createProps.Data.Filter.AlertSources)
 	assert.ElementsMatch(t, []string{"Policy"}, createProps.Data.Filter.AlertCategories)
 
 	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform Registry SystemCall User]",
 		actualCategories)
-	assert.Equal(t, "[Agent Aws]", actualAlertSources)
+	assert.Equal(t, "[Agent AWS]", actualAlertSources)
 	assert.Equal(t, "[Policy]", actualAlertCategories)
 
 	invalidOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
