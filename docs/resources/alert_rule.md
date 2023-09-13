@@ -27,7 +27,7 @@ resource "lacework_alert_rule" "example" {
   severities          = ["Critical"]
   alert_subcategories = ["Compliance"]
   alert_categories    = ["Policy"]
-  alert_sources       = ["Aws"]
+  alert_sources       = ["AWS"]
 }
 ```
 
