@@ -15,7 +15,7 @@ func TestExternalIdDataSource(t *testing.T) {
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
-	terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	terraform.InitAndApply(t, terraformOptions)
 	externalId := terraform.Output(t, terraformOptions, "external_id")
 	assert.NotEmpty(t, externalId)
 }
