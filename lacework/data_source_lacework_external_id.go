@@ -53,6 +53,7 @@ func dataSourceLaceworkExternalIDRead(d *schema.ResourceData, meta interface{}) 
 	randomString := d.Get("random_string").(string)
 	if randomString == "" {
 		randomString = randString(10)
+		d.Set("random_string", randomString)
 	}
 	// EID V2 Format
 	//
@@ -72,7 +73,6 @@ func dataSourceLaceworkExternalIDRead(d *schema.ResourceData, meta interface{}) 
 
 	d.SetId(EID)
 	d.Set("v2", EID)
-	d.Set("random_string", randomString)
 
 	return nil
 }
