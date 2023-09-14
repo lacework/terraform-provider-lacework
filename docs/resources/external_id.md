@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_external\_id
 
-Generates an External ID (EID) using Lacework format. These IDs are used to create integrations.
+This resource generates an External ID (EID) using Lacework format. These IDs are used to create integrations.
 
 The v2 format is:
 ```
@@ -18,7 +18,7 @@ lweid:<csp>:<version>:<lw_tenant_name>:<aws_acct_id>:<random_string_size_10>
 ## Example Usage
 
 ```hcl
-data "lacework_external_id" "aws_123456789012" {
+resource "lacework_external_id" "aws_123456789012" {
   csp        = "aws"
   account_id = "123456789012"
 }

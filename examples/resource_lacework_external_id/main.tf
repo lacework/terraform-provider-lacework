@@ -12,7 +12,7 @@ provider "lacework" {}
 #
 #    lweid:<csp>:<version>:<lw_tenant_name>:<aws_acct_id>:<random_string_size_10>
 #
-data "lacework_external_id" "aws_123456789012" {
+resource "lacework_external_id" "aws_123456789012" {
   csp        = "aws"
   account_id = "123456789012"
 }
@@ -22,6 +22,6 @@ data "lacework_external_id" "aws_123456789012" {
 #    lweid:aws:v2:customerdemo:123456789012:dkl31.09ip
 #
 output "external_id" {
-  value = data.lacework_external_id.aws_123456789012.v2
+  value = lacework_external_id.aws_123456789012.v2
 }
 

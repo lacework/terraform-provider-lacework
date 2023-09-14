@@ -14,47 +14,41 @@ import (
 
 var externalIDValidCsp = []string{"aws", "google", "oci", "azure"}
 
-func dataSourceLaceworkExternalID() *schema.Resource {
+func resourceLaceworkExternalID() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceLaceworkExternalIDRead,
+		Read:   schema.Noop,
+		Create: resourceLaceworkExternalIDCreate,
+		Delete: schema.Noop,
 		Schema: map[string]*schema.Schema{
 			"csp": {
 				Type:         schema.TypeString,
 				Description:  fmt.Sprintf("The Cloud Service Provider (%s)", strings.Join(externalIDValidCsp, ", ")),
 				ValidateFunc: validation.StringInSlice(externalIDValidCsp, false),
 				Required:     true,
+				ForceNew:     true,
 			},
 			"account_id": {
 				Type:        schema.TypeString,
 				Description: "The account id from the CSP to be integrated",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"v2": {
 				Type:        schema.TypeString,
 				Description: "Generated EID version 2 ('lweid:<csp>:<version>:<lw_tenant_name>:<aws_acct_id>:<random_string_size_10>')",
 				Computed:    true,
 			},
-			"random_string": {
-				Type:        schema.TypeString,
-				Description: "A random generated string (size=10)",
-				Computed:    true,
-			},
 		},
 	}
 }
 
-func dataSourceLaceworkExternalIDRead(d *schema.ResourceData, meta interface{}) error {
+func resourceLaceworkExternalIDCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 	url, err := lwdomain.New(lacework.URL())
 	if err != nil {
 		return errors.Wrap(err, "Unable to get the Lacework account")
 	}
 
-	randomString := d.Get("random_string").(string)
-	if randomString == "" {
-		randomString = randString(10)
-		d.Set("random_string", randomString)
-	}
 	// EID V2 Format
 	//
 	//     lweid:<csp>:<version>:<lw_tenant_name>:<aws_acct_id>:<random_string_size_10>
@@ -67,7 +61,7 @@ func dataSourceLaceworkExternalIDRead(d *schema.ResourceData, meta interface{}) 
 			version,
 			url.Account,
 			d.Get("account_id").(string),
-			d.Get("random_string").(string),
+			randomStringExternalID(10),
 		}, ":")
 	)
 
