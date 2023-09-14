@@ -87,6 +87,7 @@ func Provider() *schema.Provider {
 			"lacework_alert_profile":                          resourceLaceworkAlertProfile(),
 			"lacework_alert_rule":                             resourceLaceworkAlertRule(),
 			"lacework_data_export_rule":                       resourceLaceworkDataExportRule(),
+			"lacework_external_id":                            resourceLaceworkExternalID(),
 			"lacework_integration_aws_agentless_scanning":     resourceLaceworkIntegrationAwsAgentlessScanning(),
 			"lacework_integration_aws_org_agentless_scanning": resourceLaceworkIntegrationAwsOrgAgentlessScanning(),
 			"lacework_integration_aws_cfg":                    resourceLaceworkIntegrationAwsCfg(),
