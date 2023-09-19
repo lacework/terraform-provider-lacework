@@ -128,8 +128,8 @@ github.com/googleapis/gax-go/v2
 github.com/googleapis/gax-go/v2/apierror
 github.com/googleapis/gax-go/v2/apierror/internal/proto
 github.com/googleapis/gax-go/v2/internal
-# github.com/gruntwork-io/terratest v0.43.8
-## explicit; go 1.19
+# github.com/gruntwork-io/terratest v0.44.0
+## explicit; go 1.21.1
 github.com/gruntwork-io/terratest/modules/collections
 github.com/gruntwork-io/terratest/modules/files
 github.com/gruntwork-io/terratest/modules/logger
