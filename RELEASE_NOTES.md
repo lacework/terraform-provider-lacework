@@ -1,7 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.15.0`.
+Another day, another release. These are the release notes for the version `v1.15.1`.
 
-## Features
-* feat(resource): lacework_external_id (#556) (Salim Afiune)([11dc2fc1](https://github.com/lacework/terraform-provider-lacework/commit/11dc2fc1530ba406cfd24075a777d8646ccbe0e0))
+## Bug Fixes
+* fix: change alert_source Aws to AWS (#557) (Pengyuan Zhao)([ce5fe2eb](https://github.com/lacework/terraform-provider-lacework/commit/ce5fe2eb5ed4552ad14cd0f16654c4c64426e315))
 ## Other Changes
-* ci: version bump to v1.14.1-dev (Lacework)([1451649f](https://github.com/lacework/terraform-provider-lacework/commit/1451649fcd308a5ce5681eed2fa3c6fda941036c))
+* ci: version bump to v1.15.1-dev (Lacework)([efc29367](https://github.com/lacework/terraform-provider-lacework/commit/efc29367bed3248ebb0e7a9a4658742602b0e73a))
