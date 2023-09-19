@@ -27,7 +27,7 @@ resource "lacework_alert_rule" "example" {
   severities          = ["Critical"]
   alert_subcategories = ["Compliance"]
   alert_categories    = ["Policy"]
-  alert_sources       = ["Aws"]
+  alert_sources       = ["AWS"]
 }
 ```
 
@@ -69,7 +69,7 @@ The following arguments are supported:
 * `alert_categories` - (Optional) The alert categories that will use this rule for alert routing. Valid categories include:
   `Anomaly`, `Policy`, `Composite`.
 * `alert_sources` - (Optional) The alert sources that will use this rule for alert routing. Valid sources include:
-  `Agent`, `Aws`, `Azure`, `Gcp`, `K8s`.
+  `Agent`, `AWS`, `Azure`, `GCP`, `K8s`.
 * `resource_groups` - (Optional) The list of resource groups the rule will apply to.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `event_categories` - (Optional, **Deprecated**) The list of event categories the rule will apply to. Valid categories include:
