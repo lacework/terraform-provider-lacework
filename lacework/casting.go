@@ -1,18 +1,12 @@
 package lacework
 
 import (
-	"strings"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // extract an attribute from the provided ResourceData and convert it into a string slice
 func castAttributeToStringSlice(d *schema.ResourceData, attr string) []string {
 	return castAndTransformStringSlice(d.Get(attr).([]interface{}), func(s string) string { return s })
-}
-
-func castAndUpperStringSlice(iArray []interface{}) []string {
-	return castAndTransformStringSlice(iArray, func(s string) string { return strings.ToUpper(s) })
 }
 
 // turn an interface slice into a string slice

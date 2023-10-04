@@ -124,7 +124,6 @@ func Provider() *schema.Provider {
 			"lacework_resource_group_container":               resourceLaceworkResourceGroupContainer(),
 			"lacework_resource_group_gcp":                     resourceLaceworkResourceGroupGcp(),
 			"lacework_resource_group_machine":                 resourceLaceworkResourceGroupMachine(),
-			"lacework_team_member":                            resourceLaceworkTeamMember(),
 			"lacework_vulnerability_exception_container":      resourceLaceworkVulnerabilityExceptionContainer(),
 			"lacework_vulnerability_exception_host":           resourceLaceworkVulnerabilityExceptionHost(),
 		},
