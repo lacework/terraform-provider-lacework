@@ -25,7 +25,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (svc *ResourceGroupsV2Service) List() (response ResourceGroupsResponse, err error) {
+func (svc *ResourceGroupsV2Service) List() (response ResourceGroupsV2Response, err error) {
 	var rawResponse ResourceGroupsV2Response
 	err = svc.client.RequestDecoder("GET", apiV2ResourceGroups, nil, &rawResponse)
 	if err != nil {
@@ -163,7 +163,7 @@ func (group ResourceGroupDataWithQuery) GetQuery() *RGQuery {
 	return group.Query
 }
 
-func (group ResourceGroupDataWithQuery) ResourceGroupType() ResourceGroupType {
+func (group ResourceGroupDataWithQuery) ResourceGroupType() resourceGroupType {
 	t, _ := FindResourceGroupType(group.Type)
 	return t
 }

@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -36,7 +37,7 @@ func TestIbmQRadarAlertChannelCreate(t *testing.T) {
 
 	assert.Equal(t, "IbmQRadar Alert Channel Example", created.Data.Name)
 	assert.Equal(t, "https://qradar-lacework.com", data["qradarHostUrl"])
-	assert.Equal(t, float64(4000), data["qradarHostPort"])
+	assert.Equal(t, json.Number("4000"), data["qradarHostPort"])
 	assert.Equal(t, "HTTPS", data["qradarCommType"])
 
 	assert.Equal(t, "IbmQRadar Alert Channel Example", actualName)
@@ -64,7 +65,7 @@ func TestIbmQRadarAlertChannelCreate(t *testing.T) {
 
 	assert.Equal(t, "IbmQRadar Alert Channel Updated", updated.Data.Name)
 	assert.Equal(t, "https://qradar-lacework.com/updated", data["qradarHostUrl"])
-	assert.Equal(t, float64(80), data["qradarHostPort"])
+	assert.Equal(t, json.Number("80"), data["qradarHostPort"])
 	assert.Equal(t, "HTTPS Self Signed Cert", data["qradarCommType"])
 
 	assert.Equal(t, "IbmQRadar Alert Channel Updated", actualName)

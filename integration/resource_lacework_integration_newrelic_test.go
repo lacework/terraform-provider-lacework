@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -34,7 +35,7 @@ func TestNewRelicAlertChannelCreate(t *testing.T) {
 
 	assert.Equal(t, "NewRelic Insights Alert Channel Example", created.Data.Name)
 	assert.Equal(t, "x-xx-xxxxxxxxxxxxxxxxxx", data["insertKey"])
-	assert.Equal(t, float64(2.338053e+06), data["accountId"])
+	assert.Equal(t, json.Number("2338053"), data["accountId"])
 
 	assert.Equal(t, "NewRelic Insights Alert Channel Example", actualName)
 	assert.Equal(t, "x-xx-xxxxxxxxxxxxxxxxxx", actualInsertKey)
@@ -58,7 +59,7 @@ func TestNewRelicAlertChannelCreate(t *testing.T) {
 
 	assert.Equal(t, "NewRelic Insights Alert Channel Updated", updated.Data.Name)
 	assert.Equal(t, "x-xx-xxxxxxxxxxxxxxxxxy", data["insertKey"])
-	assert.Equal(t, float64(1.338053e+06), data["accountId"])
+	assert.Equal(t, json.Number("1338053"), data["accountId"])
 
 	assert.Equal(t, "NewRelic Insights Alert Channel Updated", actualName)
 	assert.Equal(t, "x-xx-xxxxxxxxxxxxxxxxxy", actualInsertKey)
