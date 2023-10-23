@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -44,7 +45,7 @@ func TestSplunkAlertChannelCreate(t *testing.T) {
 	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834816F", data["hecToken"])
 	assert.Equal(t, "Splunk Channel", data["channel"])
 	assert.Equal(t, "host", data["host"])
-	assert.Equal(t, float64(80), data["port"])
+	assert.Equal(t, json.Number("80"), data["port"])
 	assert.True(t, data["ssl"].(bool))
 
 	assert.Equal(t, "Splunk Alert Channel Example", actualName)
@@ -80,7 +81,7 @@ func TestSplunkAlertChannelCreate(t *testing.T) {
 	assert.Equal(t, "BA696D5E-CA2F-4347-97CB-3C89F834815B", data["hecToken"])
 	assert.Equal(t, "Updated Splunk Channel", data["channel"])
 	assert.Equal(t, "updated-host", data["host"])
-	assert.Equal(t, float64(8080), data["port"])
+	assert.Equal(t, json.Number("8080"), data["port"])
 	assert.False(t, data["ssl"].(bool))
 
 	assert.Equal(t, "Splunk Alert Channel Updated", actualName)
