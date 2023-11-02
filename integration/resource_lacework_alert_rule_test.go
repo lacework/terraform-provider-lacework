@@ -175,7 +175,7 @@ func TestAlertRuleCategories(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_alert_rule/current",
 		Vars: map[string]interface{}{
 			"name":                name,
-			"alert_subcategories": []string{"INVALIDDDD"},
+			"alert_subcategories": []string{"INVALID"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
 	})
