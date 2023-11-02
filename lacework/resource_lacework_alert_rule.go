@@ -183,13 +183,13 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
-				Description:     d.Get("description").(string),
-				Channels:        castStringSlice(alertChannels),
-				Severities:      severities,
-				EventCategories: castStringSlice(alertSubcategories),
-				AlertCategories: castStringSlice(alertCategories),
-				AlertSources:    castStringSlice(alertSources),
-				ResourceGroups:  castStringSlice(resourceGroups),
+				Description:        d.Get("description").(string),
+				Channels:           castStringSlice(alertChannels),
+				Severities:         severities,
+				AlertSubCategories: castStringSlice(alertSubcategories),
+				AlertCategories:    castStringSlice(alertCategories),
+				AlertSources:       castStringSlice(alertSources),
+				ResourceGroups:     castStringSlice(resourceGroups),
 			},
 		)
 	)
@@ -239,9 +239,9 @@ func resourceLaceworkAlertRuleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("severities", api.NewAlertRuleSeveritiesFromIntSlice(response.Data.Filter.Severity).ToStringSlice())
 	d.Set("resource_groups", response.Data.Filter.ResourceGroups)
 	if _, ok := d.GetOk("alert_subcategories"); ok {
-		d.Set("alert_subcategories", response.Data.Filter.EventCategories)
+		d.Set("alert_subcategories", response.Data.Filter.AlertSubCategories)
 	} else if _, ok := d.GetOk("event_categories"); ok {
-		d.Set("event_categories", response.Data.Filter.EventCategories)
+		d.Set("event_categories", convertSubCategories(response.Data.Filter.AlertSubCategories))
 	}
 	d.Set("alert_categories", response.Data.Filter.AlertCategories)
 	d.Set("alert_sources", response.Data.Filter.AlertSources)
@@ -272,13 +272,13 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
 		alertRule       = api.NewAlertRule(d.Get("name").(string),
 			api.AlertRuleConfig{
-				Description:     d.Get("description").(string),
-				Channels:        castStringSlice(alertChannels),
-				Severities:      severities,
-				EventCategories: castStringSlice(alertSubcategories),
-				AlertCategories: castStringSlice(alertCategories),
-				AlertSources:    castStringSlice(alertSources),
-				ResourceGroups:  castStringSlice(resourceGroups),
+				Description:        d.Get("description").(string),
+				Channels:           castStringSlice(alertChannels),
+				Severities:         severities,
+				AlertSubCategories: castStringSlice(alertSubcategories),
+				AlertCategories:    castStringSlice(alertCategories),
+				AlertSources:       castStringSlice(alertSources),
+				ResourceGroups:     castStringSlice(resourceGroups),
 			},
 		)
 	)
@@ -336,4 +336,22 @@ func importLaceworkAlertRule(_ context.Context, d *schema.ResourceData, meta int
 	}
 	log.Printf("[INFO] Alert Rule found with guid: %s\n", response.Data.Guid)
 	return []*schema.ResourceData{d}, nil
+}
+
+// Convert subCategory values to deprecated eventCatory values
+func convertSubCategories(categories []string) []string {
+	var res []string
+	for _, c := range categories {
+		switch c {
+		case "Application":
+			res = append(res, "App")
+		case "Cloud Activity":
+			res = append(res, "Cloud")
+		case "Kubernetes Activity":
+			res = append(res, "K8sActivity")
+		default:
+			res = append(res, c)
+		}
+	}
+	return res
 }
