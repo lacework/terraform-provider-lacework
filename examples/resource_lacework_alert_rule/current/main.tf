@@ -49,7 +49,7 @@ variable "severities" {
 
 variable "alert_subcategories" {
   type    = list(string)
-  default = ["Compliance", "Platform", "User", "Cloud"]
+  default = ["Compliance", "Platform", "User", "Cloud Activity"]
 }
 
 variable "alert_categories" {

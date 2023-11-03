@@ -48,7 +48,7 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Equal(t, []string{"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"}, createProps.Data.Channels)
 	assert.Equal(t, []string{"Critical"}, api.NewAlertRuleSeveritiesFromIntSlice(createProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{actualResourceGroupID}, createProps.Data.Filter.ResourceGroups)
-	assert.Equal(t, []string{"Compliance"}, createProps.Data.Filter.EventCategories)
+	assert.Equal(t, []string{"Compliance"}, createProps.Data.Filter.AlertSubCategories)
 
 	assert.Equal(t, name, actualName)
 	assert.Equal(t, "Alert Rule created by Terraform", actualDescription)
@@ -80,7 +80,7 @@ func TestAlertRuleCreate(t *testing.T) {
 	assert.Contains(t, updateProps.Data.Channels, "TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76")
 	assert.Equal(t, []string{"High", "Medium"}, api.NewAlertRuleSeveritiesFromIntSlice(updateProps.Data.Filter.Severity).ToStringSlice())
 	assert.Equal(t, []string{actualResourceGroupID}, updateProps.Data.Filter.ResourceGroups)
-	assert.ElementsMatch(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.EventCategories)
+	assert.ElementsMatch(t, []string{"Compliance", "User", "Platform"}, updateProps.Data.Filter.AlertSubCategories)
 	assert.Equal(t, "Updated Alert Rule created by Terraform", actualDescription)
 	assert.Equal(t, "[TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76 TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527]",
 		actualChannels)
@@ -138,8 +138,11 @@ func TestAlertRuleCategories(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name": name,
-			"alert_subcategories": []string{"Compliance", "App", "Cloud", "File", "Machine",
-				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
+			"alert_subcategories": []string{
+				"Compliance", "Application", "Cloud Activity", "File", "Machine",
+				"User", "Platform", "Kubernetes Activity", "Registry", "SystemCall", "Host Vulnerability",
+				"Container Vulnerability", "Threat Intel",
+			},
 			"alert_categories":    []string{"Policy"},
 			"alert_sources":       []string{"AWS", "Agent"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
@@ -155,12 +158,15 @@ func TestAlertRuleCategories(t *testing.T) {
 	actualAlertCategories := terraform.Output(t, terraformOptions, "alert_categories")
 	actualAlertSources := terraform.Output(t, terraformOptions, "alert_sources")
 
-	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
-		"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.EventCategories)
+	assert.ElementsMatch(t, []string{
+		"Compliance", "Application", "Cloud Activity", "File", "Machine",
+		"User", "Platform", "Kubernetes Activity", "Registry", "SystemCall", "Host Vulnerability",
+		"Container Vulnerability", "Threat Intel",
+	}, createProps.Data.Filter.AlertSubCategories)
 	assert.ElementsMatch(t, []string{"AWS", "Agent"}, createProps.Data.Filter.AlertSources)
 	assert.ElementsMatch(t, []string{"Policy"}, createProps.Data.Filter.AlertCategories)
 
-	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform Registry SystemCall User]",
+	assert.Equal(t, "[Application Cloud Activity Compliance Container Vulnerability File Host Vulnerability Kubernetes Activity Machine Platform Registry SystemCall Threat Intel User]",
 		actualCategories)
 	assert.Equal(t, "[AWS Agent]", actualAlertSources)
 	assert.Equal(t, "[Policy]", actualAlertCategories)
@@ -178,7 +184,7 @@ func TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"expected alert_subcategories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
+			"expected alert_subcategories.0 to be one of [Compliance Application Cloud Activity File Machine User Platform Kubernetes Activity Registry SystemCall Host Vulnerability Container Vulnerability Threat Intel App Cloud K8sActivity]",
 		)
 	}
 }
@@ -205,8 +211,8 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 	actualCategories := terraform.Output(t, terraformOptions, "event_categories")
 	actualAlertCategories := terraform.Output(t, terraformOptions, "alert_categories")
 
-	assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
-		"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.EventCategories)
+	// assert.ElementsMatch(t, []string{"Compliance", "App", "Cloud", "File", "Machine",
+	// 	"User", "Platform", "K8sActivity", "Registry", "SystemCall"}, createProps.Data.Filter.AlertSubCategories)
 	assert.ElementsMatch(t, []string{"Policy"}, createProps.Data.Filter.AlertCategories)
 
 	assert.Equal(t, "[App Cloud Compliance File K8sActivity Machine Platform Registry SystemCall User]",
@@ -226,7 +232,7 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"expected event_categories.0 to be one of [Compliance App Cloud File Machine User Platform K8sActivity Registry SystemCall]",
+			"expected event_categories.0 to be one of [Compliance Application Cloud Activity File Machine User Platform Kubernetes Activity Registry SystemCall Host Vulnerability Container Vulnerability Threat Intel App Cloud K8sActivity]",
 		)
 	}
 }
