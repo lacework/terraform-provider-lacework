@@ -67,7 +67,7 @@ The following arguments are supported:
 * `query_id` - (Required) The query id.
 * `severity` - (Required) The list of the severities. Valid severities include:
   `Critical`, `High`, `Medium`, `Low` and `Info`.
-* `remediation` - (Optional) The remediation message to display.
+* `remediation` - (Required) The remediation message to display.
 * `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
 * `policy_id_suffix` - (Optional) The string appended to the end of the policy id.
 * `tags` - (Optional) A list of policy tags.

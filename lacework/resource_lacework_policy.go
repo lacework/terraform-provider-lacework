@@ -98,7 +98,7 @@ func resourceLaceworkPolicy() *schema.Resource {
 			},
 			"remediation": {
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Description: "The remediation message to display",
 			},
 			"enabled": {

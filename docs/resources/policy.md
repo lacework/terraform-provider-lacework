@@ -77,7 +77,7 @@ The following arguments are supported:
 * `type` - (Required) The policy type must be `Violation`.
 * `evaluation` - (Optional) The evaluation frequency at which the policy will be evaluated. Valid values are
   `Hourly` or `Daily`. Defaults to `Hourly`.
-* `remediation` - (Optional) The remediation message to display.
+* `remediation` - (Required) The remediation message to display.
 * `limit` - (Optional) Set the maximum number of records returned by the policy.
    Maximum value is `5000`. Defaults to `1000`
 * `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
