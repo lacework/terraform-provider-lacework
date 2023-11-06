@@ -3,7 +3,7 @@ module github.com/lacework/terraform-provider-lacework
 go 1.21
 
 require (
-	github.com/gruntwork-io/terratest v0.46.0
+	github.com/gruntwork-io/terratest v0.46.5
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.27.0
 	github.com/lacework/go-sdk v1.37.0
 	github.com/pkg/errors v0.9.1
@@ -82,7 +82,7 @@ require (
 	google.golang.org/api v0.114.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
-	google.golang.org/grpc v1.56.0 // indirect
+	google.golang.org/grpc v1.56.3 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
