@@ -1,6 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.16.1`.
+Another day, another release. These are the release notes for the version `v1.16.2`.
 
+## Bug Fixes
+* fix: `remediation` is a required for policy & policy_compliance (#584) (ambrosy-eric)([478e70bc](https://github.com/lacework/terraform-provider-lacework/commit/478e70bcb993d726ccd0bf10ef4338e8f97d9f14))
 ## Other Changes
-* chore: use AlertRule subCategory values instead of eventCategory values (#580) (Pengyuan Zhao)([33a500f7](https://github.com/lacework/terraform-provider-lacework/commit/33a500f72b80253d195157e7a45932e95c987f89))
-* ci: version bump to v1.16.1-dev (Lacework)([dda92925](https://github.com/lacework/terraform-provider-lacework/commit/dda9292594032a93667212b86bdd041558cb982d))
+* ci: version bump to v1.16.2-dev (Lacework)([580f8264](https://github.com/lacework/terraform-provider-lacework/commit/580f82642660d0ae686de2e23e021b545ce261e7))
