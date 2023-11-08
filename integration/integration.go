@@ -199,6 +199,18 @@ func GetGcpAgentlessScanningResponse(result string) api.GcpSidekickIntegrationRe
 	return res
 }
 
+func GetAzureAgentlessScanningResponse(result string) api.AzureSidekickIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	res, err := LwClient.V2.CloudAccounts.GetAzureSidekick(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
 func GetContainerRegisteryGcr(result string) api.GcpGcrIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
