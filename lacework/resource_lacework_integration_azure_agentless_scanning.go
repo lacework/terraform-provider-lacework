@@ -73,9 +73,9 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 							Description: "Client secret from credentials file.",
 						},
 						"credential_type": {
-							Type:      schema.TypeString,
-							Required:  true,
-							Sensitive: true,
+							Type:        schema.TypeString,
+							Required:    true,
+							Sensitive:   true,
 							Description: "Credential type can be either shared secret or shared access.",
 						},
 					},
@@ -189,15 +189,15 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 
 func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework      = meta.(*api.Client)
-		retries       = d.Get("retries").(int)
+		lacework        = meta.(*api.Client)
+		retries         = d.Get("retries").(int)
 		integrationType = api.AzureSubscriptionIntegration
 	)
 
 	if strings.ToUpper(
 		d.Get("integration_type").(string),
 	) == api.AzureTenantIntegration.String() {
-		integrationType= api.AzureTenantIntegration
+		integrationType = api.AzureTenantIntegration
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.AzureSidekickCloudAccount.String())
 
@@ -206,13 +206,13 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 		api.AzureSidekickData{
 			IntegrationType: integrationType,
 			Credentials: api.AzureSidekickCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientSecret: d.Get("credentials.0.client_secret").(string),
-				CredentialType:   d.Get("credentials.0.credential_type").(string),
+				ClientID:       d.Get("credentials.0.client_id").(string),
+				ClientSecret:   d.Get("credentials.0.client_secret").(string),
+				CredentialType: d.Get("credentials.0.credential_type").(string),
 			},
-			BlobContainerName:            d.Get("blob_container_name").(string),
+			BlobContainerName:       d.Get("blob_container_name").(string),
 			ScanningSubscriptionId:  d.Get("scanning_subscription_id").(string),
-			TenantId:  d.Get("tenant_id").(string),
+			TenantId:                d.Get("tenant_id").(string),
 			ScanFrequency:           d.Get("scan_frequency").(int),
 			ScanContainers:          d.Get("scan_containers").(bool),
 			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
@@ -329,15 +329,15 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.AzureSidekickCloudAccount,
 		api.AzureSidekickData{
-			ScanningSubscriptionId:     d.Get("scanning_subscription_id").(string),
-			TenantId:     d.Get("tenant_id").(string),
-			IntegrationType: integrationType.String(),
+			ScanningSubscriptionId: d.Get("scanning_subscription_id").(string),
+			TenantId:               d.Get("tenant_id").(string),
+			IntegrationType:        integrationType.String(),
 			Credentials: api.AzureSidekickCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
+				ClientID:       d.Get("credentials.0.client_id").(string),
 				ClientSecret:   d.Get("credentials.0.client_secret").(string),
 				CredentialType: d.Get("credentials.0.credential_type").(string),
 			},
-			BlobContainerName:            d.Get("blob_container_name").(string),
+			BlobContainerName:       d.Get("blob_container_name").(string),
 			ScanFrequency:           d.Get("scan_frequency").(int),
 			ScanContainers:          d.Get("scan_containers").(bool),
 			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
@@ -392,4 +392,5 @@ func resourceLaceworkIntegrationAzureAgentlessScanningDelete(d *schema.ResourceD
 		api.AzureSidekickCloudAccount.String(), d.Id())
 	return nil
 }
+
 // TODO: generate the documentation
