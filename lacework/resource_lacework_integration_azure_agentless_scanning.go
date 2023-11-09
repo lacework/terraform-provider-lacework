@@ -66,7 +66,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 									"integration_level",
 									"tenant_id",
 									"scanning_subscription_id",
-									"scanning_resource_group_id",
+									"scanning_resource_group_name",
 									"storage_account_url",
 									"enabled",
 									"credentials.0.client_id",
@@ -131,7 +131,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 				Required:    true,
 				Description: "blob container containing analysis results shared with Lacework platform.",
 			},
-			"scanning_resource_group_id": {
+			"scanning_resource_group_name": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "name of the resource group where the scanner runs.",
@@ -215,18 +215,18 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 				ClientId:     d.Get("credentials.0.client_id").(string),
 				ClientSecret: d.Get("credentials.0.client_secret").(string),
 			},
-			BlobContainerName:       d.Get("blob_container_name").(string),
-			ScanningResourceGroupId: d.Get("scanning_resource_group_id").(string),
-			StorageAccountUrl:       d.Get("storage_account_url").(string),
-			ScanningSubscriptionId:  d.Get("scanning_subscription_id").(string),
-			TenantId:                d.Get("tenant_id").(string),
-			ScanFrequency:           d.Get("scan_frequency").(int),
-			ScanContainers:          d.Get("scan_containers").(bool),
-			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
-			ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
-			ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
-			QueryText:               d.Get("query_text").(string),
-			SubscriptionList:        strings.Join(castAttributeToStringSlice(d, "subscription_list"), ", "),
+			BlobContainerName:         d.Get("blob_container_name").(string),
+			ScanningResourceGroupName: d.Get("scanning_resource_group_name").(string),
+			StorageAccountUrl:         d.Get("storage_account_url").(string),
+			ScanningSubscriptionId:    d.Get("scanning_subscription_id").(string),
+			TenantId:                  d.Get("tenant_id").(string),
+			ScanFrequency:             d.Get("scan_frequency").(int),
+			ScanContainers:            d.Get("scan_containers").(bool),
+			ScanHostVulnerabilities:   d.Get("scan_host_vulnerabilities").(bool),
+			ScanMultiVolume:           d.Get("scan_multi_volume").(bool),
+			ScanStoppedInstances:      d.Get("scan_stopped_instances").(bool),
+			QueryText:                 d.Get("query_text").(string),
+			SubscriptionList:          strings.Join(castAttributeToStringSlice(d, "subscription_list"), ", "),
 		},
 	)
 
@@ -301,7 +301,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanningRead(d *schema.ResourceDat
 		d.Set("tenant_id", integration.Data.TenantId)
 		d.Set("blob_container_name", integration.Data.BlobContainerName)
 		d.Set("storage_account_url", integration.Data.StorageAccountUrl)
-		d.Set("scanning_resource_group_id", integration.Data.ScanningResourceGroupId)
+		d.Set("scanning_resource_group_name", integration.Data.ScanningResourceGroupName)
 		d.Set("scan_frequency", integration.Data.ScanFrequency)
 		d.Set("scan_containers", integration.Data.ScanContainers)
 		d.Set("scan_host_vulnerabilities", integration.Data.ScanHostVulnerabilities)
@@ -345,16 +345,16 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 				ClientId:     d.Get("credentials.0.client_id").(string),
 				ClientSecret: d.Get("credentials.0.client_secret").(string),
 			},
-			BlobContainerName:       d.Get("blob_container_name").(string),
-			ScanningResourceGroupId: d.Get("scanning_resource_group_id").(string),
-			StorageAccountUrl:       d.Get("storage_account_url").(string),
-			ScanFrequency:           d.Get("scan_frequency").(int),
-			ScanContainers:          d.Get("scan_containers").(bool),
-			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
-			ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
-			ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
-			QueryText:               d.Get("query_text").(string),
-			SubscriptionList:        strings.Join(castAttributeToStringSlice(d, "subscription_list"), ", "),
+			BlobContainerName:         d.Get("blob_container_name").(string),
+			ScanningResourceGroupName: d.Get("scanning_resource_group_name").(string),
+			StorageAccountUrl:         d.Get("storage_account_url").(string),
+			ScanFrequency:             d.Get("scan_frequency").(int),
+			ScanContainers:            d.Get("scan_containers").(bool),
+			ScanHostVulnerabilities:   d.Get("scan_host_vulnerabilities").(bool),
+			ScanMultiVolume:           d.Get("scan_multi_volume").(bool),
+			ScanStoppedInstances:      d.Get("scan_stopped_instances").(bool),
+			QueryText:                 d.Get("query_text").(string),
+			SubscriptionList:          strings.Join(castAttributeToStringSlice(d, "subscription_list"), ", "),
 		},
 	)
 

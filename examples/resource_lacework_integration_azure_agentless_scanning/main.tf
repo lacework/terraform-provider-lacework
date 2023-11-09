@@ -37,7 +37,7 @@ variable "scanning_subscription_id" {
   default = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
 
-variable "scanning_resource_group_id" {
+variable "scanning_resource_group_name" {
   type = string
   default = "abcd"
 }
@@ -72,7 +72,7 @@ resource "lacework_integration_azure_agentless_scanning" "example" {
   blob_container_name = var.blob_container_name
   scanning_subscription_id = var.scanning_subscription_id
   tenant_id = var.tenant_id
-  scanning_resource_group_id = var.scanning_resource_group_id
+  scanning_resource_group_name = var.scanning_resource_group_name
   storage_account_url = var.storage_account_url
   scan_frequency            = 24
   scan_containers           = true
