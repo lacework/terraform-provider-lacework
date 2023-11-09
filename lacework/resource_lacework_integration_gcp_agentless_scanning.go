@@ -2,6 +2,7 @@ package lacework
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -18,198 +19,233 @@ func resourceLaceworkIntegrationGcpAgentlessScanning() *schema.Resource {
 		Read:   resourceLaceworkIntegrationGcpAgentlessScanningRead,
 		Update: resourceLaceworkIntegrationGcpAgentlessScanningUpdate,
 		Delete: resourceLaceworkIntegrationGcpAgentlessScanningDelete,
-
+		Schema: gcpAgentlessScanningIntegrationSchema,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
+	}
+}
 
-		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "The integration name.",
-			},
-			"intg_guid": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"enabled": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "The state of the external integration.",
-			},
-			"retries": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Default:     5,
-				Description: "The number of attempts to create the external integration.",
-			},
-			"credentials": {
-				Type:     schema.TypeList,
-				MaxItems: 1,
-				Required: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"client_id": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Client Id from credentials file.",
-						},
-						"private_key_id": {
-							Type:     schema.TypeString,
-							Required: true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								return !d.HasChanges(
-									"name", "resource_level", "resource_id", "org_level", "enabled",
-									"credentials.0.client_id",
-									"credentials.0.client_email",
-								)
-							},
-							Description: "Private Key Id from credentials file.",
-						},
-						"client_email": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Description: "Client email from credentials file.",
-						},
-						"private_key": {
-							Type:      schema.TypeString,
-							Required:  true,
-							Sensitive: true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								// @afiune we can't compare this element since our API, for security reasons,
-								// does NOT return the private key configured in the Lacework server. So if
-								// any other element changed from the credentials then we trigger a diff
-								return !d.HasChanges(
-									"name", "resource_level", "resource_id", "org_level", "enabled",
-									"credentials.0.client_id",
-									"credentials.0.client_email",
-								)
-							},
-							Description: "Private Key from credentials file.",
-						},
-						"token_uri": {
-							Type:        schema.TypeString,
-							Optional:    true,
-							Default:     "https://oauth2.googleapis.com/token",
-							Description: "Token URI from credentials file.",
-						},
+var gcpAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
+	"name": {
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "The integration name.",
+	},
+	"intg_guid": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"enabled": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "The state of the external integration.",
+	},
+	"retries": {
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Default:     5,
+		Description: "The number of attempts to create the external integration.",
+	},
+	"credentials": {
+		Type:     schema.TypeList,
+		MaxItems: 1,
+		Required: true,
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"client_id": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "Client Id from credentials file.",
+				},
+				"private_key_id": {
+					Type:     schema.TypeString,
+					Required: true,
+					DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+						return !d.HasChanges(
+							"name", "resource_level", "resource_id", "org_level", "enabled",
+							"credentials.0.client_id",
+							"credentials.0.client_email",
+						)
 					},
+					Description: "Private Key Id from credentials file.",
 				},
-			},
-			"resource_level": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  api.GcpProjectIntegration.String(),
-				StateFunc: func(val interface{}) string {
-					return strings.ToUpper(val.(string))
+				"client_email": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "Client email from credentials file.",
 				},
-				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
-					switch strings.ToUpper(value.(string)) {
-					case api.GcpProjectIntegration.String(),
-						api.GcpOrganizationIntegration.String():
-						return nil, nil
-					default:
-						return nil, []error{
-							fmt.Errorf("%s: can only be either '%s' or '%s'",
-								key,
-								api.GcpProjectIntegration.String(),
-								api.GcpOrganizationIntegration.String()),
-						}
-					}
-				},
-				Description: "Integration level - ORGANIZATION / PROJECT.",
-			},
-			"resource_id": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Organization Id or Project Id.",
-			},
-			"created_or_updated_time": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"created_or_updated_by": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"type_name": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"org_level": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
-			"server_token": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"uri": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"bucket_name": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Bucket containing analysis results shared with Lacework platform.",
-			},
-			"scanning_project_id": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Project ID where scanner is deployed.",
-			},
-			"scan_frequency": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Default:     24,
-				Description: "How often in hours the scan will run in hours.",
-			},
-			"scan_containers": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "Whether to includes scanning for containers.",
-			},
-			"scan_host_vulnerabilities": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "Whether to includes scanning for host vulnerabilities.",
-			},
-			"scan_multi_volume": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     false,
-				Description: "Whether to scan secondary volumes (true) or only root volumes (false)",
-			},
-			"scan_stopped_instances": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Default:     true,
-				Description: "Whether to scan stopped instances (true)",
-			},
-			"query_text": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Default:     "",
-				Description: "The LQL query text.",
-			},
-			"filter_list": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-					StateFunc: func(val interface{}) string {
-						return strings.TrimSpace(val.(string))
+				"private_key": {
+					Type:      schema.TypeString,
+					Required:  true,
+					Sensitive: true,
+					DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+						// @afiune we can't compare this element since our API, for security reasons,
+						// does NOT return the private key configured in the Lacework server. So if
+						// any other element changed from the credentials then we trigger a diff
+						return !d.HasChanges(
+							"name", "resource_level", "resource_id", "org_level", "enabled",
+							"credentials.0.client_id",
+							"credentials.0.client_email",
+						)
 					},
+					Description: "Private Key from credentials file.",
 				},
-				Default:     nil,
-				Description: "List of Projects to specifically include/exclude.",
+				"token_uri": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Default:     "https://oauth2.googleapis.com/token",
+					Description: "Token URI from credentials file.",
+				},
 			},
 		},
-	}
+	},
+	"resource_level": {
+		Type:     schema.TypeString,
+		Optional: true,
+		Default:  api.GcpProjectIntegration.String(),
+		StateFunc: func(val interface{}) string {
+			return strings.ToUpper(val.(string))
+		},
+		ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+			switch strings.ToUpper(value.(string)) {
+			case api.GcpProjectIntegration.String(),
+				api.GcpOrganizationIntegration.String():
+				return nil, nil
+			default:
+				return nil, []error{
+					fmt.Errorf("%s: can only be either '%s' or '%s'",
+						key,
+						api.GcpProjectIntegration.String(),
+						api.GcpOrganizationIntegration.String()),
+				}
+			}
+		},
+		Description: "Integration level - ORGANIZATION / PROJECT.",
+	},
+	"resource_id": {
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "Organization Id or Project Id.",
+	},
+	"created_or_updated_time": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"created_or_updated_by": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"type_name": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"org_level": {
+		Type:     schema.TypeBool,
+		Computed: true,
+	},
+	"server_token": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"uri": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"bucket_name": {
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "Bucket containing analysis results shared with Lacework platform.",
+	},
+	"scanning_project_id": {
+		Type:        schema.TypeString,
+		Required:    true,
+		Description: "Project ID where scanner is deployed.",
+	},
+	"scan_frequency": {
+		Type:        schema.TypeInt,
+		Optional:    true,
+		Default:     24,
+		Description: "How often in hours the scan will run in hours.",
+	},
+	"scan_containers": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "Whether to includes scanning for containers.",
+	},
+	"scan_host_vulnerabilities": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "Whether to includes scanning for host vulnerabilities.",
+	},
+	"scan_multi_volume": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     false,
+		Description: "Whether to scan secondary volumes (true) or only root volumes (false)",
+	},
+	"scan_stopped_instances": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     true,
+		Description: "Whether to scan stopped instances (true)",
+	},
+	"query_text": {
+		Type:        schema.TypeString,
+		Optional:    true,
+		Default:     "",
+		Description: "The LQL query text.",
+	},
+	"filter_list": {
+		Type:     schema.TypeList,
+		Optional: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+			StateFunc: func(val interface{}) string {
+				return strings.TrimSpace(val.(string))
+			},
+		},
+		Default:     nil,
+		Description: "List of Projects to specifically include/exclude.",
+	},
+	"org_account_mappings": {
+		Type:        schema.TypeList,
+		Optional:    true,
+		Description: "Mapping of GCP projects to Lacework accounts within a Lacework organization.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"default_lacework_account": {
+					Type:        schema.TypeString,
+					Required:    true,
+					Description: "The default Lacework account name where any non-mapped GCP project will appear",
+				},
+				"mapping": {
+					Type:        schema.TypeSet,
+					Required:    true,
+					Description: "A map of GCP projects to Lacework account. This can be specified multiple times to map multiple Lacework accounts.",
+					Elem: &schema.Resource{
+						Schema: map[string]*schema.Schema{
+							"lacework_account": {
+								Type:        schema.TypeString,
+								Required:    true,
+								Description: "The Lacework account name where the Agentless activity from the selected gcp projects will appear.",
+							},
+							"gcp_projects": {
+								Type:        schema.TypeSet,
+								Elem:        &schema.Schema{Type: schema.TypeString},
+								MinItems:    1,
+								Required:    true,
+								Description: "The list of GCP project IDs to map.",
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 }
 
 func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceData, meta interface{}) error {
@@ -219,35 +255,47 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		resourceLevel = api.GcpProjectIntegration
 	)
 
-	if strings.ToUpper(
-		d.Get("resource_level").(string),
-	) == api.GcpOrganizationIntegration.String() {
+	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganizationIntegration.String() {
 		resourceLevel = api.GcpOrganizationIntegration
 	}
+
 	log.Printf("[INFO] Creating %s integration\n", api.GcpSidekickCloudAccount.String())
+
+	gcpSidekickData := api.GcpSidekickData{
+		ID:     d.Get("resource_id").(string),
+		IDType: resourceLevel.String(),
+		Credentials: api.GcpSidekickCredentials{
+			ClientID:     d.Get("credentials.0.client_id").(string),
+			ClientEmail:  d.Get("credentials.0.client_email").(string),
+			PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+			PrivateKey:   d.Get("credentials.0.private_key").(string),
+			TokenUri:     d.Get("credentials.0.token_uri").(string),
+		},
+		SharedBucket:            d.Get("bucket_name").(string),
+		ScanningProjectId:       d.Get("scanning_project_id").(string),
+		ScanFrequency:           d.Get("scan_frequency").(int),
+		ScanContainers:          d.Get("scan_containers").(bool),
+		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
+		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
+		QueryText:               d.Get("query_text").(string),
+		FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
+	}
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d, gcpMappingType)
+	if !accountMapFile.Empty() {
+		accountMapFileBytes, err := json.Marshal(accountMapFile)
+		if err != nil {
+			return err
+		}
+
+		gcpSidekickData.EncodeAccountMappingFile(accountMapFileBytes)
+	}
 
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
-		api.GcpSidekickData{
-			ID:     d.Get("resource_id").(string),
-			IDType: resourceLevel.String(),
-			Credentials: api.GcpSidekickCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
-				PrivateKey:   d.Get("credentials.0.private_key").(string),
-				TokenUri:     d.Get("credentials.0.token_uri").(string),
-			},
-			SharedBucket:            d.Get("bucket_name").(string),
-			ScanningProjectId:       d.Get("scanning_project_id").(string),
-			ScanFrequency:           d.Get("scan_frequency").(int),
-			ScanContainers:          d.Get("scan_containers").(bool),
-			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
-			ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
-			ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
-			QueryText:               d.Get("query_text").(string),
-			FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
-		},
+		gcpSidekickData,
 	)
 
 	if !d.Get("enabled").(bool) {
@@ -340,6 +388,27 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 			d.Set("filter_list", trimmed_filter_list)
 		}
 
+		accountMapFileBytes, err := integration.Data.DecodeAccountMappingFile()
+		if err != nil {
+			return err
+		}
+
+		accountMapFile := new(accountMappingsFile)
+		if len(accountMapFileBytes) != 0 {
+			// The integration has an account mapping file
+			// unmarshal its content into the account mapping struct
+			err := json.Unmarshal(accountMapFileBytes, accountMapFile)
+			if err != nil {
+				return fmt.Errorf("Error decoding organization account mapping: %s", err)
+			}
+
+		}
+
+		err = d.Set("org_account_mappings", flattenOrgGcpAccountMappings(accountMapFile))
+		if err != nil {
+			return fmt.Errorf("Error flattening organization account mapping: %s", err)
+		}
+
 		log.Printf("[INFO] Read %s integration with guid: %v\n",
 			api.GcpSidekickCloudAccount.String(), integration.IntgGuid)
 		return nil
@@ -359,28 +428,41 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
+	gcpSidekickData := api.GcpSidekickData{
+		ID:     d.Get("resource_id").(string),
+		IDType: resourceLevel.String(),
+		Credentials: api.GcpSidekickCredentials{
+			ClientID:     d.Get("credentials.0.client_id").(string),
+			ClientEmail:  d.Get("credentials.0.client_email").(string),
+			PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
+			PrivateKey:   d.Get("credentials.0.private_key").(string),
+			TokenUri:     d.Get("credentials.0.token_uri").(string),
+		},
+		SharedBucket:            d.Get("bucket_name").(string),
+		ScanningProjectId:       d.Get("scanning_project_id").(string),
+		ScanFrequency:           d.Get("scan_frequency").(int),
+		ScanContainers:          d.Get("scan_containers").(bool),
+		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
+		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
+		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
+		QueryText:               d.Get("query_text").(string),
+		FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
+	}
+
+	// verify if the user provided an account mapping
+	accountMapFile := getResourceOrgAccountMappings(d, gcpMappingType)
+	if !accountMapFile.Empty() {
+		accountMapFileBytes, err := json.Marshal(accountMapFile)
+		if err != nil {
+			return err
+		}
+
+		gcpSidekickData.EncodeAccountMappingFile(accountMapFileBytes)
+	}
+
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
-		api.GcpSidekickData{
-			ID:     d.Get("resource_id").(string),
-			IDType: resourceLevel.String(),
-			Credentials: api.GcpSidekickCredentials{
-				ClientID:     d.Get("credentials.0.client_id").(string),
-				ClientEmail:  d.Get("credentials.0.client_email").(string),
-				PrivateKeyID: d.Get("credentials.0.private_key_id").(string),
-				PrivateKey:   d.Get("credentials.0.private_key").(string),
-				TokenUri:     d.Get("credentials.0.token_uri").(string),
-			},
-			SharedBucket:            d.Get("bucket_name").(string),
-			ScanningProjectId:       d.Get("scanning_project_id").(string),
-			ScanFrequency:           d.Get("scan_frequency").(int),
-			ScanContainers:          d.Get("scan_containers").(bool),
-			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
-			ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
-			ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
-			QueryText:               d.Get("query_text").(string),
-			FilterList:              strings.Join(castAttributeToStringSlice(d, "filter_list"), ", "),
-		},
+		gcpSidekickData,
 	)
 
 	if !d.Get("enabled").(bool) {

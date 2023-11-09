@@ -175,7 +175,7 @@ var awsOrgAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 							"lacework_account": {
 								Type:        schema.TypeString,
 								Required:    true,
-								Description: "The Lacework account name where the CloudTrail activity from the selected AWS accounts will appear.",
+								Description: "The Lacework account name where the Agentless activity from the selected AWS accounts will appear.",
 							},
 							"aws_accounts": {
 								Type:        schema.TypeSet,
@@ -214,7 +214,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 	}
 
 	// verify if the user provided an account mapping
-	accountMapFile := getResourceOrgAccountMappings(d)
+	accountMapFile := getResourceOrgAccountMappings(d, awsMappingType)
 	if !accountMapFile.Empty() {
 		accountMapFileBytes, err := json.Marshal(accountMapFile)
 		if err != nil {
@@ -318,7 +318,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningRead(d *schema.ResourceDa
 
 		}
 
-		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile))
+		err = d.Set("org_account_mappings", flattenOrgAccountMappings(accountMapFile, awsMappingType))
 		if err != nil {
 			return fmt.Errorf("Error flattening organization account mapping: %s", err)
 		}
@@ -354,7 +354,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate(d *schema.Resource
 	}
 
 	// verify if the user provided an account mapping
-	accountMapFile := getResourceOrgAccountMappings(d)
+	accountMapFile := getResourceOrgAccountMappings(d, awsMappingType)
 	if !accountMapFile.Empty() {
 		accountMapFileBytes, err := json.Marshal(accountMapFile)
 		if err != nil {

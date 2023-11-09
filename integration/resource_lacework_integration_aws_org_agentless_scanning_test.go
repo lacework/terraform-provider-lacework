@@ -40,7 +40,6 @@ func TestIntegrationAwsOrgAgentlessScanningLog(t *testing.T) {
 	// Create new AWS Agentless Scanning Integration
 	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 	createData := GetAwsAgentlessOrgScanningResponse(create)
-	println(create)
 	actualName := terraform.Output(t, terraformOptions, "name")
 	assert.Equal(
 		t,

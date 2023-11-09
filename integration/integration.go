@@ -189,8 +189,18 @@ func GetContainerRegisteryGar(result string) api.GcpGarIntegrationResponse {
 
 func GetGcpAgentlessScanningResponse(result string) api.GcpSidekickIntegrationResponse {
 	id := GetIDFromTerraResults(result)
-
 	res, err := LwClient.V2.CloudAccounts.GetGcpSidekick(id)
+
+	if err != nil {
+		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
+	}
+
+	return res
+}
+
+func GetGcpAgentlessOrgScanningResponse(result string) api.GcpSidekickIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+	res, err := LwOrgClient.V2.CloudAccounts.GetGcpSidekick(id)
 
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
