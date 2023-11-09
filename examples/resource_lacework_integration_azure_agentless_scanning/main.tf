@@ -37,6 +37,16 @@ variable "scanning_subscription_id" {
   default = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
 
+variable "scanning_resource_group_id" {
+  type = string
+  default = "abcd"
+}
+
+variable "storage_account_url" {
+  type = string
+  default = "https://blobabc.blob.core.windows.net"
+}
+
 variable "tenant_id" {
   type = string
   default = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -60,7 +70,10 @@ resource "lacework_integration_azure_agentless_scanning" "example" {
   }
   integration_level = "SUBSCRIPTION"
   blob_container_name = var.blob_container_name
-  scanning_subscription_id = "azure-lw-scanner"
+  scanning_subscription_id = var.scanning_subscription_id
+  tenant_id = var.tenant_id
+  scanning_resource_group_id = var.scanning_resource_group_id
+  storage_account_url = var.storage_account_url
   scan_frequency            = 24
   scan_containers           = true
   scan_host_vulnerabilities = true

@@ -63,42 +63,38 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 								// we don't compare this field for security reasons. so here only compare other fields
 								return !d.HasChanges(
 									"name",
-									"integration_type",
+									"integration_level",
 									"tenant_id",
 									"scanning_subscription_id",
+									"scanning_resource_group_id",
+									"storage_account_url",
 									"enabled",
 									"credentials.0.client_id",
 								)
 							},
 							Description: "Client secret from credentials file.",
 						},
-						"credential_type": {
-							Type:        schema.TypeString,
-							Required:    true,
-							Sensitive:   true,
-							Description: "Credential type can be either shared secret or shared access.",
-						},
 					},
 				},
 			},
-			"integration_type": {
+			"integration_level": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  api.AzureSubscriptionIntegration.String(),
+				Default:  api.AzureSubscriptionIntegration,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
 				},
 				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
 					switch strings.ToUpper(value.(string)) {
-					case api.AzureSubscriptionIntegration.String(),
-						api.AzureTenantIntegration.String():
+					case api.AzureSubscriptionIntegration,
+						api.AzureTenantIntegration:
 						return nil, nil
 					default:
 						return nil, []error{
 							fmt.Errorf("%s: can only be either '%s' or '%s'",
 								key,
-								api.AzureSubscriptionIntegration.String(),
-								api.AzureTenantIntegration.String()),
+								api.AzureSubscriptionIntegration,
+								api.AzureTenantIntegration),
 						}
 					}
 				},
@@ -134,6 +130,16 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "blob container containing analysis results shared with Lacework platform.",
+			},
+			"scanning_resource_group_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "name of the resource group where the scanner runs.",
+			},
+			"storage_account_url": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "name of the storage account, in the format of 'https://<account>.blob.core.windows.net'",
 			},
 			"scan_frequency": {
 				Type:        schema.TypeInt,
@@ -189,28 +195,29 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 
 func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework        = meta.(*api.Client)
-		retries         = d.Get("retries").(int)
-		integrationType = api.AzureSubscriptionIntegration
+		lacework         = meta.(*api.Client)
+		retries          = d.Get("retries").(int)
+		integrationLevel = api.AzureSubscriptionIntegration
 	)
 
 	if strings.ToUpper(
-		d.Get("integration_type").(string),
-	) == api.AzureTenantIntegration.String() {
-		integrationType = api.AzureTenantIntegration
+		d.Get("integration_level").(string),
+	) == api.AzureTenantIntegration {
+		integrationLevel = api.AzureTenantIntegration
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.AzureSidekickCloudAccount.String())
 
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.AzureSidekickCloudAccount,
 		api.AzureSidekickData{
-			IntegrationType: integrationType,
+			IntegrationLevel: integrationLevel,
 			Credentials: api.AzureSidekickCredentials{
-				ClientID:       d.Get("credentials.0.client_id").(string),
-				ClientSecret:   d.Get("credentials.0.client_secret").(string),
-				CredentialType: d.Get("credentials.0.credential_type").(string),
+				ClientId:     d.Get("credentials.0.client_id").(string),
+				ClientSecret: d.Get("credentials.0.client_secret").(string),
 			},
 			BlobContainerName:       d.Get("blob_container_name").(string),
+			ScanningResourceGroupId: d.Get("scanning_resource_group_id").(string),
+			StorageAccountUrl:       d.Get("storage_account_url").(string),
 			ScanningSubscriptionId:  d.Get("scanning_subscription_id").(string),
 			TenantId:                d.Get("tenant_id").(string),
 			ScanFrequency:           d.Get("scan_frequency").(int),
@@ -283,16 +290,18 @@ func resourceLaceworkIntegrationAzureAgentlessScanningRead(d *schema.ResourceDat
 		d.Set("enabled", integration.Enabled == 1)
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
-		d.Set("integration_type", integration.Type)
+		d.Set("integration_level", integration.Type)
 
 		creds := make(map[string]string)
-		creds["client_id"] = integration.Data.Credentials.ClientID
+		creds["client_id"] = integration.Data.Credentials.ClientId
 		d.Set("credentials", []map[string]string{creds})
 
-		d.Set("integration_type", integration.Data.IntegrationType)
-		d.Set("scanning_subscription_id", integration.Data.SubscriptionSubscriptionID)
-		d.Set("tenant_id", integration.Data.TenantID)
+		d.Set("integration_level", integration.Data.IntegrationLevel)
+		d.Set("scanning_subscription_id", integration.Data.ScanningSubscriptionId)
+		d.Set("tenant_id", integration.Data.TenantId)
 		d.Set("blob_container_name", integration.Data.BlobContainerName)
+		d.Set("storage_account_url", integration.Data.StorageAccountUrl)
+		d.Set("scanning_resource_group_id", integration.Data.ScanningResourceGroupId)
 		d.Set("scan_frequency", integration.Data.ScanFrequency)
 		d.Set("scan_containers", integration.Data.ScanContainers)
 		d.Set("scan_host_vulnerabilities", integration.Data.ScanHostVulnerabilities)
@@ -302,7 +311,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanningRead(d *schema.ResourceDat
 		subscription_list := strings.Split(integration.Data.SubscriptionList, ",")
 		if integration.Data.SubscriptionList != "" && len(subscription_list) > 0 {
 			var trimmed_subscription_list []string
-			for _, elem := range filter_list {
+			for _, elem := range subscription_list {
 				trimmed_subscription_list = append(trimmed_subscription_list, strings.TrimSpace(elem))
 			}
 			d.Set("subscription_list", trimmed_subscription_list)
@@ -318,12 +327,12 @@ func resourceLaceworkIntegrationAzureAgentlessScanningRead(d *schema.ResourceDat
 
 func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework      = meta.(*api.Client)
-		resourceLevel = api.AzureSubscriptionIntegration
+		lacework         = meta.(*api.Client)
+		integrationLevel = api.AzureSubscriptionIntegration
 	)
 
-	if strings.ToUpper(d.Get("integration_type").(string)) == api.AzureTenantIntegration.String() {
-		resourceLevel = api.AzureTenantIntegration
+	if strings.ToUpper(d.Get("integration_level").(string)) == api.AzureTenantIntegration {
+		integrationLevel = api.AzureTenantIntegration
 	}
 
 	data := api.NewCloudAccount(d.Get("name").(string),
@@ -331,13 +340,14 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 		api.AzureSidekickData{
 			ScanningSubscriptionId: d.Get("scanning_subscription_id").(string),
 			TenantId:               d.Get("tenant_id").(string),
-			IntegrationType:        integrationType.String(),
+			IntegrationLevel:       integrationLevel,
 			Credentials: api.AzureSidekickCredentials{
-				ClientID:       d.Get("credentials.0.client_id").(string),
-				ClientSecret:   d.Get("credentials.0.client_secret").(string),
-				CredentialType: d.Get("credentials.0.credential_type").(string),
+				ClientId:     d.Get("credentials.0.client_id").(string),
+				ClientSecret: d.Get("credentials.0.client_secret").(string),
 			},
 			BlobContainerName:       d.Get("blob_container_name").(string),
+			ScanningResourceGroupId: d.Get("scanning_resource_group_id").(string),
+			StorageAccountUrl:       d.Get("storage_account_url").(string),
 			ScanFrequency:           d.Get("scan_frequency").(int),
 			ScanContainers:          d.Get("scan_containers").(bool),
 			ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
@@ -365,10 +375,11 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 	d.Set("name", integration.Name)
 	d.Set("intg_guid", integration.IntgGuid)
 	d.Set("enabled", integration.Enabled == 1)
-	d.Set("integration_type", integration.Data.IntegrationType)
+	d.Set("integration_level", integration.Data.IntegrationLevel)
 	d.Set("tenant_id", integration.Data.TenantId)
 	d.Set("scanning_subscription_id", integration.Data.ScanningSubscriptionId)
-
+	d.Set("blob_container_name", integration.Data.BlobContainerName)
+	d.Set("storage_account_url", integration.Data.StorageAccountUrl)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 	d.Set("server_token", integration.ServerToken)
