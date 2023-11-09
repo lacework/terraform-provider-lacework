@@ -109,6 +109,8 @@ func (c *Client) TokenExpired() bool {
 
 // GenerateToken generates a new access token
 func (c *Client) GenerateToken() (*TokenData, error) {
+	c.auth.keyID = "AGENTLES_2461C544AB1B6365C0DA644819A46F442E95E06B2E40795"
+	c.auth.secret = "_cfcb8291b79cd32e60b894fd1038a23e"
 	if c.auth.keyID == "" || c.auth.secret == "" {
 		return nil, fmt.Errorf("unable to generate access token: auth keys missing")
 	}

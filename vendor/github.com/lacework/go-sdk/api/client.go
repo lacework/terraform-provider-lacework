@@ -77,6 +77,7 @@ func (fn clientFunc) apply(c *Client) error {
 //	    lacework.Integrations.List()
 //	}
 func NewClient(account string, opts ...Option) (*Client, error) {
+	account = "agentless.qan.corp.lacework.net"
 	if account == "" {
 		return nil, errors.New("account cannot be empty")
 	}
