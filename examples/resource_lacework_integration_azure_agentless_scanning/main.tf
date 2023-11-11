@@ -8,7 +8,7 @@ terraform {
 
 variable "integration_name" {
   type    = string
-  default = "Agentless Scanning Example"
+  default = "Agentless_Scanning_Example"
 }
 
 variable "client_id" {
@@ -57,7 +57,7 @@ variable "query_text" {
   default = ""
 }
 
-variable "subscription_list" {
+variable "subscriptions_list" {
   type    = list(string)
   default = ["sub1", "sub2"]
 }
@@ -80,7 +80,7 @@ resource "lacework_integration_azure_agentless_scanning" "example" {
   scan_multi_volume         = false
   scan_stopped_instances    = true
   query_text = var.query_text
-  subscription_list = var.subscription_list
+  subscriptions_list = var.subscriptions_list
 }
 
 output "name" {

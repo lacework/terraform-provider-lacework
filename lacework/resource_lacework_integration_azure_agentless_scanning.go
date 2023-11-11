@@ -177,7 +177,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanning() *schema.Resource {
 				Default:     "",
 				Description: "The LQL query text.",
 			},
-			"subscription_list": {
+			"subscriptions_list": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Schema{
@@ -226,7 +226,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 			ScanMultiVolume:           d.Get("scan_multi_volume").(bool),
 			ScanStoppedInstances:      d.Get("scan_stopped_instances").(bool),
 			QueryText:                 d.Get("query_text").(string),
-			SubscriptionList:          strings.Join(castAttributeToStringSlice(d, "subscription_list"), ", "),
+			SubscriptionsList:         strings.Join(castAttributeToStringSlice(d, "subscriptions_list"), ", "),
 		},
 	)
 
@@ -308,13 +308,13 @@ func resourceLaceworkIntegrationAzureAgentlessScanningRead(d *schema.ResourceDat
 		d.Set("query_text", integration.Data.QueryText)
 		d.Set("uri", integration.Uri)
 
-		subscription_list := strings.Split(integration.Data.SubscriptionList, ",")
-		if integration.Data.SubscriptionList != "" && len(subscription_list) > 0 {
-			var trimmed_subscription_list []string
-			for _, elem := range subscription_list {
-				trimmed_subscription_list = append(trimmed_subscription_list, strings.TrimSpace(elem))
+		subscriptions_list := strings.Split(integration.Data.SubscriptionsList, ",")
+		if integration.Data.SubscriptionsList != "" && len(subscriptions_list) > 0 {
+			var trimmed_subscriptions_list []string
+			for _, elem := range subscriptions_list {
+				trimmed_subscriptions_list = append(trimmed_subscriptions_list, strings.TrimSpace(elem))
 			}
-			d.Set("subscription_list", trimmed_subscription_list)
+			d.Set("subscriptions_list", trimmed_subscriptions_list)
 		}
 
 		log.Printf("[INFO] Read %s integration with guid: %v\n",
@@ -354,7 +354,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 			ScanMultiVolume:           d.Get("scan_multi_volume").(bool),
 			ScanStoppedInstances:      d.Get("scan_stopped_instances").(bool),
 			QueryText:                 d.Get("query_text").(string),
-			SubscriptionList:          strings.Join(castAttributeToStringSlice(d, "subscription_list"), ", "),
+			SubscriptionsList:         strings.Join(castAttributeToStringSlice(d, "subscriptions_list"), ", "),
 		},
 	)
 
