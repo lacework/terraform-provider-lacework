@@ -23,7 +23,7 @@ variable "client_secret" {
 
 variable "integration_level" {
   type    = string
-  default = "SUBSCRIPTION"
+  default = "TENANT"
 }
 
 variable "blob_container_name" {
@@ -68,7 +68,7 @@ resource "lacework_integration_azure_agentless_scanning" "example" {
     client_id      = var.client_id
     client_secret = var.client_secret
   }
-  integration_level = "SUBSCRIPTION"
+  integration_level = var.integration_level
   blob_container_name = var.blob_container_name
   scanning_subscription_id = var.scanning_subscription_id
   tenant_id = var.tenant_id

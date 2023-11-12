@@ -379,6 +379,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 	d.Set("tenant_id", integration.Data.TenantId)
 	d.Set("scanning_subscription_id", integration.Data.ScanningSubscriptionId)
 	d.Set("blob_container_name", integration.Data.BlobContainerName)
+	d.Set("scanning_resource_group_name", integration.Data.ScanningResourceGroupName)
 	d.Set("storage_account_url", integration.Data.StorageAccountUrl)
 	d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 	d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)

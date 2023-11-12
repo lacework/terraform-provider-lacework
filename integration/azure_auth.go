@@ -6,8 +6,8 @@ import (
 )
 
 type azureCredentialsFile struct {
-	ClientSecret string `json:"keyId"`
-	ClientID     string `json:"secret"`
+	ClientSecret string `json:"client_secret"`
+	ClientID     string `json:"client_id"`
 }
 
 func azureLoadDefaultCredentials() (azureCredentialsFile, error) {
