@@ -11,8 +11,6 @@ require (
 	golang.org/x/text v0.13.0
 )
 
-replace	github.com/lacework/go-sdk v1.37.0 => /Users/aoz/dev/go-sdk
-
 require (
 	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/compute v1.19.1 // indirect

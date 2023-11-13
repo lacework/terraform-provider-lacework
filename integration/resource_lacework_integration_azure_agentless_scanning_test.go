@@ -21,13 +21,12 @@ func TestIntegrationAzureAgentlessScanningCreate(t *testing.T) {
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			TerraformDir: "../examples/resource_lacework_integration_azure_agentless_scanning",
 			Vars: map[string]interface{}{
-				"integration_name":    integration_name,
-				"client_id":           credential.ClientID,
-				"blob_container_name": "blob container name",
+				"integration_name": integration_name,
+				"client_id":        credential.ClientID,
+				"client_secret":    credential.ClientSecret,
 			},
 			EnvVars: map[string]string{
-				"TF_VAR_CLIENT_SECRET": credential.ClientSecret,
-				"LW_API_TOKEN":         LwApiToken,
+				"LW_API_TOKEN": LwApiToken,
 			},
 		})
 		defer terraform.Destroy(t, terraformOptions)
@@ -40,7 +39,7 @@ func TestIntegrationAzureAgentlessScanningCreate(t *testing.T) {
 		// Update Azure integration
 		terraformOptions.Vars["integration_name"] = update_integration_name
 
-		update := terraform.ApplyAndIdempotent(t, terraformOptions)
+		update := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
 		updateData := GetAzureAgentlessScanningResponse(update)
 		assert.Equal(t, update_integration_name, updateData.Data.Name)
 	}

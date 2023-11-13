@@ -13,12 +13,11 @@ variable "integration_name" {
 
 variable "client_id" {
   type    = string
-  default = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 }
 
 variable "client_secret" {
   type    = string
-  default = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  sensitive = true
 }
 
 variable "integration_level" {
@@ -28,28 +27,27 @@ variable "integration_level" {
 
 variable "blob_container_name" {
   type    = string
-  default = "blob container name"
+  default = "blob-container-name"
 }
 
-# TODO: make this fully qualified 
 variable "scanning_subscription_id" {
   type = string
-  default = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  default = "0252a545-04d4-4262-a82c-ceef83344237"
 }
 
 variable "scanning_resource_group_name" {
   type = string
-  default = "abcd"
+  default = "AWLS-kilby-test"
 }
 
 variable "storage_account_url" {
   type = string
-  default = "https://blobabc.blob.core.windows.net"
+  default = "https://aoztest.blob.core.windows.net/"
 }
 
 variable "tenant_id" {
   type = string
-  default = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  default = "a329d4bf-4557-4ccf-b132-84e7025ea22d"
 }
 
 variable "query_text" {
@@ -59,7 +57,7 @@ variable "query_text" {
 
 variable "subscriptions_list" {
   type    = list(string)
-  default = ["sub1", "sub2"]
+  default = []
 }
 
 resource "lacework_integration_azure_agentless_scanning" "example" {
@@ -89,10 +87,6 @@ output "name" {
 
 output "client_id" {
   value = lacework_integration_azure_agentless_scanning.example.credentials[0].client_id
-}
-
-output "client_secret" {
-  value = lacework_integration_azure_agentless_scanning.example.credentials[0].client_secret
 }
 
 output "blob_container_name" {
