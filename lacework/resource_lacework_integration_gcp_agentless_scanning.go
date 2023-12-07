@@ -282,7 +282,7 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		d.Set("name", integration.Name)
 		d.Set("intg_guid", integration.IntgGuid)
 		d.Set("enabled", integration.Enabled == 1)
-		d.Set("resource_id", integration.IntgGuid)
+		d.Set("resource_id", integration.ID)
 		d.Set("created_or_updated_time", integration.CreatedOrUpdatedTime)
 		d.Set("created_or_updated_by", integration.CreatedOrUpdatedBy)
 		d.Set("type_name", integration.Type)
@@ -344,8 +344,6 @@ func resourceLaceworkIntegrationGcpAgentlessScanningRead(d *schema.ResourceData,
 			api.GcpSidekickCloudAccount.String(), integration.IntgGuid)
 		return nil
 	}
-
-	d.SetId("")
 	return nil
 }
 
