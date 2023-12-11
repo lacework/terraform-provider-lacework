@@ -128,7 +128,7 @@ github.com/googleapis/gax-go/v2
 github.com/googleapis/gax-go/v2/apierror
 github.com/googleapis/gax-go/v2/apierror/internal/proto
 github.com/googleapis/gax-go/v2/internal
-# github.com/gruntwork-io/terratest v0.46.5
+# github.com/gruntwork-io/terratest v0.46.8
 ## explicit; go 1.21
 github.com/gruntwork-io/terratest/modules/collections
 github.com/gruntwork-io/terratest/modules/files
@@ -395,7 +395,7 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.7.0
+# golang.org/x/oauth2 v0.8.0
 ## explicit; go 1.17
 golang.org/x/oauth2
 golang.org/x/oauth2/authhandler
