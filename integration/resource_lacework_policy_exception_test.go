@@ -68,5 +68,5 @@ func TestPolicyExceptionInvalidConstraint(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 
 	_, err := terraform.InitAndApplyE(t, terraformOptions)
-	assert.ErrorContains(t, err, "[400] fieldKey: invalid is not applicable to policy lacework-global-39. Valid fieldKey are [accountIds, resourceNames, resourceTags]")
+	assert.ErrorContains(t, err, "[400] fieldKey: invalid is not applicable to policy lacework-global-39. Valid fieldKey are [accountIds, arns, resourceNames, resourceTags]")
 }
