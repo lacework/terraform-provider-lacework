@@ -1,10 +1,10 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.17.0`.
+Another day, another release. These are the release notes for the version `v1.17.1`.
 
-## Features
-* feat(PSP-1219): add provider for azure agentless integration (#588) (AoZhang)([2d28ae24](https://github.com/lacework/terraform-provider-lacework/commit/2d28ae2418eb6c978156af6991995ea3edd6fcf2))
 ## Bug Fixes
-* fix: missing files in vendor (#593) (Matt Cadorette)([33a690df](https://github.com/lacework/terraform-provider-lacework/commit/33a690dffa46b57fe2516ef2419a3402950fbca8))
+* fix: update error message in TestPolicyExceptionInvalidConstraint (#609) (Pengyuan Zhao)([95e6cd2a](https://github.com/lacework/terraform-provider-lacework/commit/95e6cd2a409a3984064ca57749d4dbb940d26d30))
+* fix: resource_id and empty id in agentless GCP (#599) (Ao Zhang)([3dadc383](https://github.com/lacework/terraform-provider-lacework/commit/3dadc38376f0ae136854bd5af5678510f5f85649))
+## Documentation Updates
+* docs: fixed resource groups broken link (#603) (Selvakumar T S)([813cb560](https://github.com/lacework/terraform-provider-lacework/commit/813cb5600cdbb3afa7d0632a5215eb4421745d7d))
 ## Other Changes
-* build(deps): bump github.com/gruntwork-io/terratest (#581) (dependabot[bot])([d424244f](https://github.com/lacework/terraform-provider-lacework/commit/d424244f1bf19350501dc361f2e871a249574fa2))
-* ci: version bump to v1.16.3-dev (Lacework)([75701282](https://github.com/lacework/terraform-provider-lacework/commit/7570128209542907847f54531f560db776f7a314))
+* ci: version bump to v1.17.1-dev (Lacework)([d1233031](https://github.com/lacework/terraform-provider-lacework/commit/d123303125c06c879f232658faf18b2dec2af82f))
