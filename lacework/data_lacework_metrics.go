@@ -22,6 +22,7 @@ func dataSourceLaceworkMetrics() *schema.Resource {
 			},
 			"dataset": {
 				Type:        schema.TypeString,
+				Optional:    true,
 				Description: "The name of the dataset",
 			},
 			"id": {
