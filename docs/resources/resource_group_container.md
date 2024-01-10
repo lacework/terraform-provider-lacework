@@ -9,7 +9,7 @@ description: |-
 # lacework\_resource\_group\_container
 
 Use this resource to create a Container Resource Group in order to categorize Lacework-identifiable assets.
-For more information, see the [Resource Groups documentation](https://support.lacework.com/hc/en-us/articles/360041727354-Resource-Groups).
+For more information, see the [Resource Groups documentation](https://docs.lacework.net/console/resource-groups).
 
 ## Example Usage
 
