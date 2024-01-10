@@ -1,6 +1,8 @@
 package lacework
 
 import (
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
 )
@@ -23,21 +25,10 @@ func dataSourceLaceworkMetrics() *schema.Resource {
 			"dataset": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Default:     "lacework-terraform",
 				Description: "The name of the dataset",
 			},
-			"id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"updated_time": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"updated_by": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"owner": {
+			"trace_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -47,26 +38,25 @@ func dataSourceLaceworkMetrics() *schema.Resource {
 
 func dataLaceworkMetricsCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
-		dataset  = d.Get("dataset").(string)
-		name     = d.Get("name").(string)
-		version  = d.Get("version").(string)
+		lacework       = meta.(*api.Client)
+		dataset        = d.Get("dataset").(string)
+		name           = d.Get("name").(string)
+		module_version = d.Get("version").(string)
 	)
 
-	if dataset == "" {
-		dataset = "lacework-terraform"
-	}
-
 	honeycombEvent := api.Honeyvent{
-		Version: version,
+		Version: module_version,
 		Feature: name,
 		Dataset: dataset,
 	}
 
-	_, err := lacework.V2.Metrics.Send(honeycombEvent)
+	resp, err := lacework.V2.Metrics.Send(honeycombEvent)
 	if err != nil {
 		return err
 	}
+
+	d.SetId(time.Now().UTC().String())
+	d.Set("trace_id", resp.Data[0].TraceID)
 
 	return nil
 }
