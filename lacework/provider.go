@@ -134,6 +134,7 @@ func Provider() *schema.Provider {
 			"lacework_api_token":          dataSourceLaceworkApiToken(),
 			"lacework_agent_access_token": dataSourceLaceworkAgentAccessToken(),
 			"lacework_user_profile":       dataSourceLaceworkUserProfile(),
+			"lacework_metrics":            dataSourceLaceworkMetrics(),
 		},
 
 		ConfigureContextFunc: providerConfigure,
