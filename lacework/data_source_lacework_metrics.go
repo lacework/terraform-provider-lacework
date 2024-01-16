@@ -9,7 +9,7 @@ import (
 
 func dataSourceLaceworkMetrics() *schema.Resource {
 	return &schema.Resource{
-		Create: dataLaceworkMetricsCreate,
+		Read: dataLaceworkMetricsRead,
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -36,7 +36,7 @@ func dataSourceLaceworkMetrics() *schema.Resource {
 	}
 }
 
-func dataLaceworkMetricsCreate(d *schema.ResourceData, meta interface{}) error {
+func dataLaceworkMetricsRead(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework       = meta.(*api.Client)
 		dataset        = d.Get("dataset").(string)
@@ -44,12 +44,10 @@ func dataLaceworkMetricsCreate(d *schema.ResourceData, meta interface{}) error {
 		module_version = d.Get("version").(string)
 	)
 
-	honeycombEvent := api.Honeyvent{
-		Version: module_version,
-		Feature: name,
-		Dataset: dataset,
-	}
-
+	honeycombEvent := api.NewHoneyvent(
+		module_version,
+		name,
+		dataset)
 	resp, err := lacework.V2.Metrics.Send(honeycombEvent)
 	if err != nil {
 		return err
