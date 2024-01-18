@@ -8,11 +8,7 @@ terraform {
 
 provider "lacework" {}
 
-data "lacework_metrics" "test" {
+data "lacework_metric" "test" {
   name    = "terraform-aws-cloudtrail"
   version = "1.0.0"
-}
-
-output "lacework_trace_id" {
-  value = data.lacework_metrics.test.trace_id
 }

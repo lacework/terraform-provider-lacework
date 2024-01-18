@@ -1,15 +1,13 @@
 package lacework
 
 import (
-	"time"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
 )
 
-func dataSourceLaceworkMetrics() *schema.Resource {
+func dataSourceLaceworkMetric() *schema.Resource {
 	return &schema.Resource{
-		Read: dataLaceworkMetricsRead,
+		Read: dataLaceworkMetricRead,
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -22,29 +20,24 @@ func dataSourceLaceworkMetrics() *schema.Resource {
 				Required:    true,
 				Description: "The version of the module",
 			},
-			"trace_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 		},
 	}
 }
 
-func dataLaceworkMetricsRead(d *schema.ResourceData, meta interface{}) error {
+func dataLaceworkMetricRead(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework       = meta.(*api.Client)
-		name           = d.Get("name").(string)
-		module_version = d.Get("version").(string)
+		lacework      = meta.(*api.Client)
+		name          = d.Get("name").(string)
+		moduleVersion = d.Get("version").(string)
 	)
 
-	honeycombEvent := api.NewHoneyvent(module_version, name, "lacework-terraform")
+	honeycombEvent := api.NewHoneyvent(moduleVersion, name, "lacework-terraform")
 	resp, err := lacework.V2.Metrics.Send(honeycombEvent)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(time.Now().UTC().String())
-	d.Set("trace_id", resp.Data[0].TraceID)
+	d.SetId(resp.Data[0].TraceID)
 
 	return nil
 }
