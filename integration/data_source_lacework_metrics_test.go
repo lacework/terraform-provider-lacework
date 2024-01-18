@@ -15,7 +15,7 @@ func TestMetricsDataSource(t *testing.T) {
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
-	terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	terraform.InitAndApply(t, terraformOptions)
 	id := terraform.Output(t, terraformOptions, "lacework_trace_id")
 	assert.NotEmpty(t, id)
 }
