@@ -7,10 +7,10 @@ import (
 )
 
 // TestMetricDataSource uses the Terraform plan at:
-// => '../examples/lacework_metric'
+// => '../examples/lacework_metric_module'
 func TestMetricDataSource(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/data_source_lacework_metric",
+		TerraformDir: "../examples/data_source_lacework_metric_modules",
 	})
 	defer terraform.Destroy(t, terraformOptions)
 

@@ -8,7 +8,7 @@ terraform {
 
 provider "lacework" {}
 
-data "lacework_metric" "test" {
+data "lacework_metric_module" "test" {
   name    = "terraform-aws-cloudtrail"
   version = "1.0.0"
 }

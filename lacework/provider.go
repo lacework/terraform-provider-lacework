@@ -133,7 +133,7 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"lacework_api_token":          dataSourceLaceworkApiToken(),
 			"lacework_agent_access_token": dataSourceLaceworkAgentAccessToken(),
-			"lacework_metric":             dataSourceLaceworkMetric(),
+			"lacework_metric_module":      dataSourceLaceworkMetricModule(),
 			"lacework_user_profile":       dataSourceLaceworkUserProfile(),
 		},
 

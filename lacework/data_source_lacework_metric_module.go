@@ -5,9 +5,9 @@ import (
 	"github.com/lacework/go-sdk/api"
 )
 
-func dataSourceLaceworkMetric() *schema.Resource {
+func dataSourceLaceworkMetricModule() *schema.Resource {
 	return &schema.Resource{
-		Read: dataLaceworkMetricRead,
+		Read: dataLaceworkMetricModuleRead,
 
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -24,7 +24,7 @@ func dataSourceLaceworkMetric() *schema.Resource {
 	}
 }
 
-func dataLaceworkMetricRead(d *schema.ResourceData, meta interface{}) error {
+func dataLaceworkMetricModuleRead(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework      = meta.(*api.Client)
 		name          = d.Get("name").(string)
