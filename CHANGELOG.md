@@ -1,3 +1,10 @@
+## v1.18.0 (January 19, 2024)
+
+## Features
+* feat: add lacework metrics data source (#611) (Darren)([0e0122a5](https://github.com/lacework/terraform-provider-lacework/commit/0e0122a5446cfe4d307a33e7c342fcdc867b3262))
+## Other Changes
+* ci: version bump to v1.17.2-dev (Lacework)([a1bd3bcc](https://github.com/lacework/terraform-provider-lacework/commit/a1bd3bccb03dac30305a0caf72d50f4b278d31a6))
+
 ## v1.17.1 (January 09, 2024)
 
 ## Bug Fixes
