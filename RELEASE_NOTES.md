@@ -1,7 +1,6 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.18.0`.
+Another day, another release. These are the release notes for the version `v1.18.1`.
 
-## Features
-* feat: add lacework metrics data source (#611) (Darren)([0e0122a5](https://github.com/lacework/terraform-provider-lacework/commit/0e0122a5446cfe4d307a33e7c342fcdc867b3262))
 ## Other Changes
-* ci: version bump to v1.17.2-dev (Lacework)([a1bd3bcc](https://github.com/lacework/terraform-provider-lacework/commit/a1bd3bccb03dac30305a0caf72d50f4b278d31a6))
+* chore: add provider version to lacework_metric_module (#615) (Darren)([4c3d3c8e](https://github.com/lacework/terraform-provider-lacework/commit/4c3d3c8e9fed7378b4617f8dc7cbafa727ef7d9a))
+* ci: version bump to v1.18.1-dev (Lacework)([65fa5f69](https://github.com/lacework/terraform-provider-lacework/commit/65fa5f6983b143d05cfc914dc51f4c9e4e862676))
