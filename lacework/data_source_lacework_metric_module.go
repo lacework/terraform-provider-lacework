@@ -32,6 +32,8 @@ func dataLaceworkMetricModuleRead(d *schema.ResourceData, meta interface{}) erro
 	)
 
 	honeycombEvent := api.NewHoneyvent(moduleVersion, name, "lacework-terraform")
+	honeycombEvent.AddFeatureField("lacework_provider_version", version)
+
 	resp, err := lacework.V2.Metrics.Send(honeycombEvent)
 	if err != nil {
 		return err
