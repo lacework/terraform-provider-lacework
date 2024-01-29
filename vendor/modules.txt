@@ -257,7 +257,7 @@ github.com/klauspost/compress/internal/cpuinfo
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v1.44.3-0.20240118173839-ded4e391f863
+# github.com/lacework/go-sdk v1.44.4
 ## explicit; go 1.21
 github.com/lacework/go-sdk/api
 github.com/lacework/go-sdk/internal/array
