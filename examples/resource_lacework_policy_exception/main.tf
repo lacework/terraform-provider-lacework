@@ -15,10 +15,10 @@ resource "lacework_policy_exception" "example" {
   }
 
   constraint {
-    field_key    = "resourceTags"
+    field_key = "resourceTags"
     field_value_map {
-      key = "test"
-      value = "test"
+      key   = var.resource_tags_key
+      value = var.resource_tags_values
     }
   }
 }
@@ -34,6 +34,16 @@ variable "field_key" {
 variable "field_values" {
   type    = list(string)
   default = ["*"]
+}
+
+variable "resource_tags_key" {
+  type    = string
+  default = "test"
+}
+
+variable "resource_tags_values" {
+  type    = list(string)
+  default = ["test1", "test2"]
 }
 
 variable "description" {

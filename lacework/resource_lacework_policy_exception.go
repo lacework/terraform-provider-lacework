@@ -69,9 +69,15 @@ func resourceLaceworkPolicyException() *schema.Resource {
 										Required:    true,
 									},
 									"value": {
-										Type:        schema.TypeString,
-										Description: "The values map value",
+										Type:        schema.TypeList,
+										Description: "The values map value list",
 										Required:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+											StateFunc: func(val interface{}) string {
+												return strings.TrimSpace(val.(string))
+											},
+										},
 									},
 								},
 							},
