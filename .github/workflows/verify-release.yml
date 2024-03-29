@@ -1,3 +1,5 @@
+name: Verify Release
+
 on: workflow_call
 
 jobs:
