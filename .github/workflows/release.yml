@@ -1,0 +1,52 @@
+on: workflow_call
+
+jobs:
+  tf-release:  
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TOKEN }}
+
+      - name: Prepare release
+        shell: bash
+        run: |
+          echo "$GPG_SECRET_KEY" | base64 --decode | gpg --import --no-tty --batch --yes
+          scripts/release.sh publish
+        env:
+          GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+  slack-notify:
+    name: Slack Notify if Failed Tests
+    needs: tf-release
+    runs-on: ubuntu-latest
+    if: needs.tf-release.result == 'failure'
+    steps:
+      - name: Notify Slack on Failure
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "#E92020",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "@oncall-growth-eng! There has been a failure that needs your attention. :rotating_light:\n*GitHub Workflow Failure <${{ github.server_url }}/${{ github.repository }}>*\n\n*Workflow Run*\n <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow>"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.TF_SLACK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
