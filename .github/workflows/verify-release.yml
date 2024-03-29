@@ -1,0 +1,21 @@
+name: Verify Release
+
+on: workflow_call
+
+jobs:
+  verify-release:  
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+        
+      - name: Verify release
+        shell: bash
+        run: |
+          git remote set-head origin main
+          scripts/release.sh verify
