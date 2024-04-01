@@ -77,6 +77,8 @@ jobs:
           LW_API_KEY: ${{ secrets.LW_API_KEY }}
           LW_API_SECRET: ${{ secrets.LW_API_SECRET }}
           LW_SUBACCOUNT: ${{ secrets.LW_SUBACCOUNT }}
+          OCI_PRIVATE_KEY: ${{ secrets.OCI_CREDENTIALS }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
   slack-notify:
     name: Slack Notify if Failed Tests
