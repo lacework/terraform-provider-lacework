@@ -27,9 +27,10 @@ jobs:
     name: Slack Notify if Failed Tests
     needs: tf-release
     runs-on: ubuntu-latest
-    if: needs.tf-release.result == 'failure'
+    if: always()
     steps:
       - name: Notify Slack on Failure
+        if: ${{ contains(needs.*.result, 'failure') }}
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |
