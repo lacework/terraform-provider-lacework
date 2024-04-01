@@ -43,7 +43,7 @@ jobs:
         id: build
         run: |
           make prepare
-          build-cross-platform
+          make build-cross-platform
 
   run-integration-tests:
     runs-on: ubuntu-latest
@@ -72,6 +72,11 @@ jobs:
           make prepare
           make clean-test
           make integration-test
+        env:
+          LW_ACCOUNT: ${{ secrets.LW_ACCOUNT }}.lacework.net
+          LW_API_KEY: ${{ secrets.LW_API_KEY }}
+          LW_API_SECRET: ${{ secrets.LW_API_SECRET }}
+          LW_SUBACCOUNT: ${{ secrets.LW_SUBACCOUNT }}
 
   slack-notify:
     name: Slack Notify if Failed Tests
