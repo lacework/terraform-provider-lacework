@@ -87,6 +87,7 @@ jobs:
           AWS_CREDS: ${{ secrets.AWS_CREDS }}
           AWS_S3: ${{ secrets.AWS_S3 }}
           S3_BUCKET_ARN: ${{ secrets.S3_BUCKET_ARN }}
+          LW_PUB_SUB_SUBSCRIPTION: ${{ secrets.LW_PUB_SUB_SUBSCRIPTION }}
 
   slack-notify:
     name: Slack Notify if Failed Tests
