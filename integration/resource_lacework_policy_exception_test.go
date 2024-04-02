@@ -8,13 +8,97 @@ import (
 )
 
 // TestPolicyExceptionCreate applies integration terraform:
-// => '../examples/resource_lacework_policy_exception'
+// => '../examples/resource_lacework_policy_exception/deprecated'
 //
 // It uses the go-sdk to verify the created policy exception,
 // applies an update and destroys it
 func TestPolicyExceptionCreate(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_policy_exception",
+		TerraformDir: "../examples/resource_lacework_policy_exception/current",
+		EnvVars:      tokenEnvVar,
+		Vars: map[string]interface{}{
+			"policy_id":    "lacework-global-46",
+			"description":  "Policy Exception Created via Terraform",
+			"field_key":    "accountIds",
+			"field_values": []string{"*"},
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	// Create new Policy Exception
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	actualDescription := terraform.Output(t, terraformOptions, "description")
+	actualPolicyID := terraform.Output(t, terraformOptions, "policy_id")
+	createProps := GetPolicyExceptionProps(create, actualPolicyID)
+
+	assert.Contains(t, "Policy Exception Created via Terraform", createProps.Data.Description)
+
+	assert.Equal(t, "Policy Exception Created via Terraform", actualDescription)
+
+	// Update Policy Exception
+	terraformOptions.Vars = map[string]interface{}{
+		"policy_id":    "lacework-global-46",
+		"description":  "Policy Exception Created via Terraform Updated",
+		"field_key":    "accountIds",
+		"field_values": []string{"*"},
+	}
+
+	update := terraform.ApplyAndIdempotent(t, terraformOptions)
+	updateProps := GetPolicyExceptionProps(update, actualPolicyID)
+
+	actualDescription = terraform.Output(t, terraformOptions, "description")
+
+	assert.Contains(t, "Policy Exception Created via Terraform Updated", updateProps.Data.Description)
+
+	for _, c := range updateProps.Data.Constraints {
+		if c.FieldKey == "resourceTags" {
+			for _, v := range c.FieldValues {
+				data, ok := v.(map[string]interface{})
+				assert.True(t, ok, "data in constraint should have been map[string]interface{}")
+
+				keyValue, ok := data["key"]
+				assert.True(t, ok, "test key in resourceTags should have existed")
+				assert.Equal(t, "test", keyValue)
+
+				dataValue, ok := data["value"]
+				assert.True(t, ok, "value key should have  existed")
+
+				testDataValues, ok := dataValue.([]interface{})
+				assert.True(t, ok, "data values should have been []string")
+				assert.EqualValues(t, []interface{}{"test", "test"}, testDataValues)
+			}
+		}
+	}
+
+	assert.Equal(t, "Policy Exception Created via Terraform Updated", actualDescription)
+}
+
+// TestPolicyExceptionInvalidConstraint tests an invalid constraint returns an error and lists valid constraint fields
+func TestPolicyExceptionInvalidConstraint(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_policy_exception/current",
+		EnvVars:      tokenEnvVar,
+		Vars: map[string]interface{}{
+			"policy_id":    "lacework-global-46",
+			"description":  "Policy Exception Created via Terraform",
+			"field_key":    "invalid",
+			"field_values": []string{"*"},
+		},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	_, err := terraform.InitAndApplyE(t, terraformOptions)
+	assert.ErrorContains(t, err, "[400] fieldKey: invalid is not applicable to policy lacework-global-39. Valid fieldKey are [accountIds, arns, resourceNames, resourceTags]")
+}
+
+// TestDeprecatedPolicyExceptionCreate applies integration terraform:
+// => '../examples/resource_lacework_policy_exception/deprecated'
+//
+// It uses the go-sdk to verify the created policy exception,
+// applies an update and destroys it
+func TestDeprecatedPolicyExceptionCreate(t *testing.T) {
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_policy_exception/deprecated",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"policy_id":    "lacework-global-46",
@@ -53,10 +137,10 @@ func TestPolicyExceptionCreate(t *testing.T) {
 	assert.Equal(t, "Policy Exception Created via Terraform Updated", actualDescription)
 }
 
-// TestPolicyExceptionInvalidConstraint tests an invalid constraint returns an error and lists valid constraint fields
-func TestPolicyExceptionInvalidConstraint(t *testing.T) {
+// TestDeprecatedPolicyExceptionInvalidConstraint tests an invalid constraint returns an error and lists valid constraint fields
+func TestDeprecatedPolicyExceptionInvalidConstraint(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "../examples/resource_lacework_policy_exception",
+		TerraformDir: "../examples/resource_lacework_policy_exception/deprecated",
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"policy_id":    "lacework-global-46",

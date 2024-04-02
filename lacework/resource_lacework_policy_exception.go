@@ -57,10 +57,36 @@ func resourceLaceworkPolicyException() *schema.Resource {
 								},
 							},
 						},
+						"field_values_map": {
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "A list of key values pairs to filter the policy exception",
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:        schema.TypeString,
+										Description: "The values map key",
+										Required:    true,
+									},
+									"value": {
+										Type:        schema.TypeList,
+										Description: "The values map value list",
+										Required:    true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+											StateFunc: func(val interface{}) string {
+												return strings.TrimSpace(val.(string))
+											},
+										},
+									},
+								},
+							},
+						},
 						"field_value_map": {
 							Type:        schema.TypeSet,
 							Optional:    true,
 							Description: "A list of key value pairs to filter the policy exception",
+							Deprecated:  "This attribute is deprecated and has been replaced by `field_values_map`",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": {
@@ -247,7 +273,7 @@ func sanitizeConstraintKeys(itemMap map[string]any) map[string]any {
 	var newMap = make(map[string]any)
 	var constraintMapList []any
 	for k, v := range itemMap {
-		if k == "field_value_map" {
+		if k == "field_value_map" || k == "field_values_map" {
 			list := v.(*schema.Set).List()
 			if len(list) > 0 {
 				constraintMapList = append(constraintMapList, list...)
@@ -256,7 +282,7 @@ func sanitizeConstraintKeys(itemMap map[string]any) map[string]any {
 			}
 		}
 		newKey := strings.Replace(k, "_", "", -1)
-		if newKey != "fieldvaluemap" {
+		if newKey != "fieldvaluemap" && newKey != "fieldvaluesmap" {
 			newMap[newKey] = v
 		}
 	}
