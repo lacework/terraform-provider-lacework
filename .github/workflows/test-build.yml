@@ -65,12 +65,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.21.x
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::249446771485:role/tf-role-arc-generic
-          aws-region: us-west-2
           
       - name: Run Integration Tests
         id: integration
@@ -88,12 +82,17 @@ jobs:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
           DOCKER_CREDENTIALS: ${{ secrets.DOCKER_CREDENTIALS }}
           GHCR_CREDENTIALS: ${{ secrets.GHCR_CREDENTIALS }}
+          CLOUDWATCH_EVENT_BUS_ARN: ${{ secrets.CLOUDWATCH_EVENT_BUS_ARN }}
+          AWS_ECR_IAM: ${{ secrets.AWS_ECR_IAM }}
+          AWS_CREDS: ${{ secrets.AWS_CREDS }}
+          AWS_S3: ${{ secrets.AWS_S3 }}
+          S3_BUCKET_ARN: ${{ secrets.S3_BUCKET_ARN }}
 
   slack-notify:
     name: Slack Notify if Failed Tests
     needs: [run-unit-tests, build, run-integration-tests]
     runs-on: ubuntu-latest
-    if: always()
+    if: false # always()
     steps:
       - name: Notify Slack on Failure
         if: ${{ contains(needs.*.result, 'failure') }}
