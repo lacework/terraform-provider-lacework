@@ -133,13 +133,17 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.TOKEN }}
+
+    - name: Install gox
+      shell: bash
+      run: |
+        apt install gox -y
     
     - name: Trigger release
       shell: bash
       run: |
-        make prepare
         echo "$GPG_SECRET_KEY" | base64 --decode | gpg --import --no-tty --batch --yes
-        make release
+        scripts/release.sh trigger
       env:
         GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}

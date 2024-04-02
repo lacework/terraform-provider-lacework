@@ -15,13 +15,12 @@ jobs:
           fetch-depth: 0
           ref: main
 
-
-
       - name: Prepare release
         shell: bash
         run: |
+          make prepare
           echo "$GPG_SECRET_KEY" | base64 --decode | gpg --import --no-tty --batch --yes
-          scripts/release.sh prepare
+          make release
         env:
           GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
