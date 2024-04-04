@@ -96,6 +96,7 @@ func Provider() *schema.Provider {
 			"lacework_integration_aws_govcloud_cfg":           resourceLaceworkIntegrationAwsGovCloudCfg(),
 			"lacework_integration_aws_govcloud_ct":            resourceLaceworkIntegrationAwsGovCloudCT(),
 			"lacework_integration_azure_cfg":                  resourceLaceworkIntegrationAzureCfg(),
+			"lacework_integration_azure_ad_al":                resourceLaceworkIntegrationAzureAdAl(),
 			"lacework_integration_azure_al":                   resourceLaceworkIntegrationAzureActivityLog(),
 			"lacework_integration_docker_hub":                 resourceLaceworkIntegrationDockerHub(),
 			"lacework_integration_docker_v2":                  resourceLaceworkIntegrationDockerV2(),
