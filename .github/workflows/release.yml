@@ -1,6 +1,10 @@
-name: Release 
+name: Release
 
-on: workflow_call
+on: 
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   tf-release:  
@@ -12,6 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.TOKEN }}
+          ref: ${{ github.ref }}
 
       - name: Prepare release
         shell: bash

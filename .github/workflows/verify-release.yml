@@ -1,6 +1,10 @@
 name: Verify Release
 
-on: workflow_call
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - release
 
 jobs:
   verify-release:  
