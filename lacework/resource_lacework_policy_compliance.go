@@ -33,6 +33,13 @@ func resourceLaceworkPolicyCompliance() *schema.Resource {
 				Required:    true,
 				Description: "The id of the query",
 			},
+			"query_language": {
+				Type:        schema.TypeString,
+				Required:    false,
+				Optional:    true,
+				Computed:    true,
+				Description: "The language of the query/module",
+			},
 			"description": {
 				Type:        schema.TypeString,
 				Required:    true,
