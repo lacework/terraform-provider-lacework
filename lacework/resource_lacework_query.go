@@ -51,7 +51,7 @@ func resourceLaceworkQuery() *schema.Resource {
 				Description: "The language of the query or module. Valid values are: LQL, Rego. " +
 					"If omitted, the language is defaulted to LQL.",
 				StateFunc: func(val interface{}) string {
-					return strings.TrimSpace(strings.ToLower(val.(string)))
+					return strings.TrimSpace(val.(string))
 				},
 				ValidateDiagFunc: ValidateQueryLanguage(),
 			},
