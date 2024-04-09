@@ -135,6 +135,7 @@ func resourceLaceworkPolicyComplianceCreate(d *schema.ResourceData, meta interfa
 	}
 
 	d.SetId(response.Data.PolicyID)
+	d.Set("query_language", response.Data.QueryLanguage)
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
@@ -158,6 +159,7 @@ func resourceLaceworkPolicyComplianceRead(d *schema.ResourceData, meta interface
 	d.SetId(response.Data.PolicyID)
 	d.Set("title", response.Data.Title)
 	d.Set("query_id", response.Data.QueryID)
+	d.Set("query_language", response.Data.QueryLanguage)
 	d.Set("enabled", response.Data.Enabled)
 	d.Set("description", response.Data.Description)
 	d.Set("severity", response.Data.Severity)
