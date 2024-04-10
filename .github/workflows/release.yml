@@ -18,9 +18,10 @@ jobs:
           token: ${{ secrets.TOKEN }}
           ref: ${{ github.ref }}
 
-      - name: Prepare release
+      - name: Release
         shell: bash
         run: |
+          make prepare
           echo "$GPG_SECRET_KEY" | base64 --decode | gpg --import --no-tty --batch --yes
           scripts/release.sh publish
         env:
