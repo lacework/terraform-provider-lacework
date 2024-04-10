@@ -12,6 +12,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.TOKEN }}
+          fetch-depth: 0
+          ref: main
+
 
 
       - name: Prepare release
@@ -28,9 +31,10 @@ jobs:
     name: Slack Notify if Failed Tests
     needs: prepare-release
     runs-on: ubuntu-latest
-    if: needs.prepare-release.result == 'failure'
+    if: always()
     steps:
       - name: Notify Slack on Failure
+        if: ${{ contains(needs.*.result, 'failure') }}
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |

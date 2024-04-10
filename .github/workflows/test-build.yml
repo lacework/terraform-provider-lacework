@@ -1,9 +1,13 @@
 name: Test Build
 
-on:
+on: 
   workflow_dispatch:
-  # pull_request:
-  # push:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 jobs:
   run-unit-tests:
@@ -43,7 +47,7 @@ jobs:
         id: build
         run: |
           make prepare
-          build-cross-platform
+          make build-cross-platform
 
   run-integration-tests:
     runs-on: ubuntu-latest
@@ -72,14 +76,31 @@ jobs:
           make prepare
           make clean-test
           make integration-test
+        env:
+          LW_ACCOUNT: ${{ secrets.LW_ACCOUNT }}.lacework.net
+          LW_API_KEY: ${{ secrets.LW_API_KEY }}
+          LW_API_SECRET: ${{ secrets.LW_API_SECRET }}
+          LW_SUBACCOUNT: ${{ secrets.LW_SUBACCOUNT }}
+          OCI_CREDENTIALS: ${{ secrets.OCI_CREDENTIALS }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          DOCKER_CREDENTIALS: ${{ secrets.DOCKER_CREDENTIALS }}
+          GHCR_CREDENTIALS: ${{ secrets.GHCR_CREDENTIALS }}
+          CLOUDWATCH_EVENT_BUS_ARN: ${{ secrets.CLOUDWATCH_EVENT_BUS_ARN }}
+          AWS_ECR_IAM: ${{ secrets.AWS_ECR_IAM }}
+          AWS_CREDS: ${{ secrets.AWS_CREDS }}
+          AWS_S3: ${{ secrets.AWS_S3 }}
+          S3_BUCKET_ARN: ${{ secrets.S3_BUCKET_ARN }}
+          LW_PUB_SUB_SUBSCRIPTION: ${{ secrets.LW_PUB_SUB_SUBSCRIPTION }}
 
   slack-notify:
     name: Slack Notify if Failed Tests
     needs: [run-unit-tests, build, run-integration-tests]
     runs-on: ubuntu-latest
-    if: needs.run-unit-tests.result == 'failure' || needs.build.result == 'failure' || needs.run-integration-tests.result == 'failure'
+    if: always()
     steps:
       - name: Notify Slack on Failure
+        if: ${{ contains(needs.*.result, 'failure') }}
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |
@@ -128,9 +149,10 @@ jobs:
     name: Slack Notify if Failed Tests
     needs: trigger-release
     runs-on: ubuntu-latest
-    if: needs.trigger-release.result == 'failure' 
+    if: always() 
     steps:
       - name: Notify Slack on Failure
+        if: ${{ contains(needs.*.result, 'failure') }}
         uses: slackapi/slack-github-action@v1.25.0
         with:
           payload: |
