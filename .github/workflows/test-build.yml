@@ -137,7 +137,7 @@ jobs:
     - name: Install gox
       shell: bash
       run: |
-        apt install gox -y
+        sudo apt-get -y install gox
     
     - name: Trigger release
       shell: bash
