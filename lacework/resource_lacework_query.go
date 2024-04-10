@@ -86,10 +86,13 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 	)
 
 	// TODOs get the query
-
+	var queryLanguage string
+	if queryLanguageRaw := d.Get("query_language"); queryLanguageRaw != nil {
+		queryLanguage = queryLanguageRaw.(string)
+	}
 	query := api.NewQuery{
 		QueryID:       d.Get("query_id").(string),
-		QueryLanguage: d.Get("query_language").(*string),
+		QueryLanguage: &queryLanguage,
 		QueryText:     d.Get("query").(string),
 	}
 

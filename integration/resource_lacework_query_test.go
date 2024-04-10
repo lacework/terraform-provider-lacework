@@ -125,6 +125,92 @@ func TestQueryCreate(t *testing.T) {
 	assert.Equal(t, queryStringK8, actualQuery)
 }
 
+func TestQueryCreateRego(t *testing.T) {
+	queryID := fmt.Sprintf("Rego_Terraform_Module_%d", time.Now().UnixMilli())
+	var queryLanguage = regoStr
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		TerraformDir: "../examples/resource_lacework_query",
+		Vars: map[string]interface{}{
+			"query_id":       queryID,
+			"query_language": &queryLanguage,
+			"query":          queryStringRego},
+	})
+	defer terraform.Destroy(t, terraformOptions)
+
+	// Create new Query
+	create := terraform.InitAndApplyAndIdempotent(t, terraformOptions)
+	createProps := GetQueryProps(create)
+
+	assert.Equal(t, queryID, createProps.Data.QueryID)
+	assert.Equal(t, queryStringK8, createProps.Data.QueryText)
+	assert.NotNil(t, createProps.Data.QueryLanguage)
+	if createProps.Data.QueryLanguage != nil {
+		assert.Equal(t, regoStr, *createProps.Data.QueryLanguage)
+	}
+
+	actualQueryID := terraform.Output(t, terraformOptions, "query_id")
+	actualQuery := terraform.Output(t, terraformOptions, "query")
+	var actualQueryLanguage *string
+	terraform.OutputStruct(t, terraformOptions, "query_language", &actualQueryLanguage)
+
+	assert.Equal(t, queryID, actualQueryID)
+	assert.Equal(t, queryStringK8, actualQuery)
+	assert.NotNil(t, actualQueryLanguage)
+	if actualQueryLanguage != nil {
+		assert.Equal(t, regoStr, *actualQueryLanguage)
+	}
+
+	// Update Query
+	terraformOptions.Vars = map[string]interface{}{
+		"query_id": queryID,
+		"query":    queryStringRego,
+	}
+
+	update := terraform.ApplyAndIdempotent(t, terraformOptions)
+	updateProps := GetQueryProps(update)
+
+	assert.Equal(t, queryID, updateProps.Data.QueryID)
+	assert.Equal(t, queryStringK8, updateProps.Data.QueryText)
+	assert.NotNil(t, updateProps.Data.QueryLanguage)
+	if updateProps.Data.QueryLanguage != nil {
+		assert.Equal(t, regoStr, *updateProps.Data.QueryLanguage)
+	}
+
+	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
+	actualQuery = terraform.Output(t, terraformOptions, "query")
+	terraform.OutputStruct(t, terraformOptions, "query_language", &actualQueryLanguage)
+
+	assert.Equal(t, queryID, actualQueryID)
+	assert.Equal(t, queryStringK8, actualQuery)
+	assert.NotNil(t, actualQueryLanguage)
+	if actualQueryLanguage != nil {
+		assert.Equal(t, regoStr, *actualQueryLanguage)
+	}
+
+	// Run apply again
+	thirdApply := terraform.ApplyAndIdempotent(t, terraformOptions)
+
+	thirdApplyProps := GetQueryProps(thirdApply)
+
+	assert.Equal(t, queryID, thirdApplyProps.Data.QueryID)
+	assert.Equal(t, queryStringK8, thirdApplyProps.Data.QueryText)
+	assert.NotNil(t, thirdApplyProps.Data.QueryLanguage)
+	if thirdApplyProps.Data.QueryLanguage != nil {
+		assert.Equal(t, regoStr, *thirdApplyProps.Data.QueryLanguage)
+	}
+
+	actualQueryID = terraform.Output(t, terraformOptions, "query_id")
+	actualQuery = terraform.Output(t, terraformOptions, "query")
+	terraform.OutputStruct(t, terraformOptions, "query_language", &actualQueryLanguage)
+
+	assert.Equal(t, queryID, actualQueryID)
+	assert.Equal(t, queryStringK8, actualQuery)
+	assert.NotNil(t, actualQueryLanguage)
+	if actualQueryLanguage != nil {
+		assert.Equal(t, regoStr, *actualQueryLanguage)
+	}
+}
+
 func TestQueryDeprecatedSytaxWithID(t *testing.T) {
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_query",
@@ -254,4 +340,14 @@ var (
     filter { ERROR_CODE is null }
     return distinct { EVENT }
 }`
+
+	queryStringRego = `
+package a_test
+import future.keywords
+import data.lacework
+source := lacework.spm.aws.lists_all("s3", "list-buckets"
+assess := "Compliant"
+`
+
+	regoStr = "Rego"
 )
