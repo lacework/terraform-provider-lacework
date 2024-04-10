@@ -133,11 +133,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.TOKEN }}
-
-    - name: Install gox
-      shell: bash
-      run: |
-        sudo apt-get -y install gox
     
     - name: Trigger release
       shell: bash
