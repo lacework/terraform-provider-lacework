@@ -196,7 +196,9 @@ func resourceLaceworkPolicyCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.SetId(response.Data.PolicyID)
-	d.Set("query_language", response.Data.QueryLanguage)
+	if response.Data.QueryLanguage != nil {
+		d.Set("query_language", response.Data.QueryLanguage)
+	}
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
@@ -220,7 +222,9 @@ func resourceLaceworkPolicyRead(d *schema.ResourceData, meta interface{}) error 
 	d.SetId(response.Data.PolicyID)
 	d.Set("title", response.Data.Title)
 	d.Set("query_id", response.Data.QueryID)
-	d.Set("query_language", response.Data.QueryLanguage)
+	if response.Data.QueryLanguage != nil {
+		d.Set("query_language", *response.Data.QueryLanguage)
+	}
 	d.Set("enabled", response.Data.Enabled)
 	d.Set("description", response.Data.Description)
 	d.Set("evaluation", response.Data.EvalFrequency)

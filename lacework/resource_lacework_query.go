@@ -85,14 +85,17 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 		lacework = meta.(*api.Client)
 	)
 
-	// TODOs get the query
 	var queryLanguage string
 	if queryLanguageRaw := d.Get("query_language"); queryLanguageRaw != nil {
 		queryLanguage = queryLanguageRaw.(string)
 	}
+	var queryLanguagePtr *string
+	if queryLanguage != "" {
+		queryLanguagePtr = &queryLanguage
+	}
 	query := api.NewQuery{
 		QueryID:       d.Get("query_id").(string),
-		QueryLanguage: &queryLanguage,
+		QueryLanguage: queryLanguagePtr,
 		QueryText:     d.Get("query").(string),
 	}
 
@@ -124,7 +127,9 @@ func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.Set("query", response.Data.QueryText)
-	d.Set("query_language", response.Data.QueryLanguage)
+	if response.Data.QueryLanguage != nil {
+		d.Set("query_language", *response.Data.QueryLanguage)
+	}
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
