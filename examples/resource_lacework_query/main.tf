@@ -16,6 +16,11 @@ variable "query_id" {
   default = "Lql_Terraform_Query"
 }
 
+variable "query_id" {
+  type    = string
+  default = ""
+}
+
 variable "query" {
   type    = string
   default = <<EOT
@@ -38,6 +43,10 @@ EOT
 
 output "query_id" {
   value = lacework_query.example.id
+}
+
+output "query_language" {
+  value = lacework_query.example.query_language
 }
 
 output "query" {
