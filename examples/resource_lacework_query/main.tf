@@ -16,7 +16,7 @@ variable "query_id" {
   default = "Lql_Terraform_Query"
 }
 
-variable "query_id" {
+variable "query_language" {
   type    = string
   default = ""
 }
