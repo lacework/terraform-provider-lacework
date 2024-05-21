@@ -84,6 +84,17 @@ func GetCloudOrgAccountIntegrationName(result string) string {
 	return res.Data.Name
 }
 
+func GetCloudAccountAzureAdAlIntegrationResponse(result string) api.AzureAdAlIntegrationResponse {
+	id := GetIDFromTerraResults(result)
+
+	response, err := LwClient.V2.CloudAccounts.GetAzureAdAl(id)
+	if err != nil {
+		log.Fatalf("Unable to find AzureAdAl integration with id: %s\n Response: %v", id, response)
+	}
+
+	return response
+}
+
 func GetCloudAccountEksAuditLogData(result string) api.AwsEksAuditData {
 	id := GetIDFromTerraResults(result)
 
