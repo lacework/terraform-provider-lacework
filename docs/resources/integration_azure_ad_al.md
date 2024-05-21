@@ -8,7 +8,7 @@ description: |-
 
 # lacework\_integration\_azure\_ad\_al
 
-!> **Warning:** This integration feature is not GA yet and integration is neither allowed nor recommended to be created.
+!> **Warning:** This integration is not yet generally available. Please contact your Lacework account team to request access to the Azure AD feature preview.
 
 Use this resource to configure an Azure Active Directory Activity Log integration to analyze audit logs
 for monitoring cloud account security.
