@@ -18,6 +18,11 @@ jobs:
           token: ${{ secrets.TOKEN }}
           ref: ${{ github.ref }}
 
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.x
+
       - name: Release
         shell: bash
         run: |
