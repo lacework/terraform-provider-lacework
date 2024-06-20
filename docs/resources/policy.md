@@ -81,7 +81,10 @@ The following arguments are supported:
 * `limit` - (Optional) Set the maximum number of records returned by the policy.
    Maximum value is `5000`. Defaults to `1000`
 * `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
-* `policy_id_suffix` - (Optional) The string appended to the end of the policy id.
+* `policy_id_suffix` - (Optional) The string appended to the end of the policy id. . If specified,
+  the policy id will be `<tenant name>-<policy_id_suffix>`. Supported format is `<policy identifier>`
+  all lowercase up to 16 characters, followed by optional `-<numeric identifier>` up to 8 digits.
+  For example: `abcd-1234` will make policy id `tenantname-abcd-1234`.
 * `tags` - (Optional) A list of policy tags.
 * `alerting` - (Optional) Alerting. See [Alerting](#alerting) below for details.
 
