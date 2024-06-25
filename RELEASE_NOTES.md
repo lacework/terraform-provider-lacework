@@ -1,12 +1,9 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v1.19.0`.
+Another day, another release. These are the release notes for the version `v1.19.1`.
 
-## Features
-* feat(RAIN-92781): Add provider for AzureAdAl integration (#623) (rubinder-lw)([f7da529e](https://github.com/lacework/terraform-provider-lacework/commit/f7da529e9ca74afe7df5ee8ca368b3e70d357fd0))
 ## Bug Fixes
-* fix: prepare release process failing due to missing go setup (#638) (Matt Cadorette)([9d16ac98](https://github.com/lacework/terraform-provider-lacework/commit/9d16ac9802ae76d97f7d58f690f9fe8a14dbf631))
+* fix(FIXIT24-261): update go-getter version (#644) (Matt Cadorette)([43b7f934](https://github.com/lacework/terraform-provider-lacework/commit/43b7f9349f22c751cc5d2347f992e9499da6902e))
+## Documentation Updates
+* docs(policy): Reflect API constraints in policy suffix docs (#646) (Sergey Kruk)([d09f9dad](https://github.com/lacework/terraform-provider-lacework/commit/d09f9dad082a478282be4c4d3140b91f3764c9b0))
 ## Other Changes
-* ci: add sudo to apt-get install command (#627) (Timothy MacDonald)([e33faa42](https://github.com/lacework/terraform-provider-lacework/commit/e33faa426e5b98632907949fba93c84424b566d8))
-* ci: fix release workflow with proper commands (#626) (Timothy MacDonald)([8fb0859b](https://github.com/lacework/terraform-provider-lacework/commit/8fb0859b5132a46e1337ac4e2092b24465d4c5c9))
-* ci: version bump to v1.18.3-dev (Lacework)([0653aad6](https://github.com/lacework/terraform-provider-lacework/commit/0653aad696f02f3c028dd60c462a087ce9438e70))
-* ci: migrate from codefresh to github workflows (#624) (Timothy MacDonald)([57a610c2](https://github.com/lacework/terraform-provider-lacework/commit/57a610c24abd372bb2ae595fc800359667396d8f))
+* ci: version bump to v1.19.1-dev (Lacework)([72342f0a](https://github.com/lacework/terraform-provider-lacework/commit/72342f0aef523f68e7d9db581e771150d1eee82b))
