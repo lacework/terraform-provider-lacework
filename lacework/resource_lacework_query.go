@@ -90,6 +90,7 @@ func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.Set("query", response.Data.QueryText)
+	d.Set("query_id", response.Data.QueryID)
 	d.Set("owner", response.Data.Owner)
 	d.Set("updated_time", response.Data.LastUpdateTime)
 	d.Set("updated_by", response.Data.LastUpdateUser)
