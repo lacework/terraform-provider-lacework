@@ -14,12 +14,21 @@ resource "lacework_alert_rule" "example" {
   alert_subcategories = var.alert_subcategories
   alert_categories = var.alert_categories
   alert_sources    = var.alert_sources
-  resource_groups  = [lacework_resource_group_aws.example.id]
+  resource_groups  = [lacework_resource_group.example.id]
 }
 
-resource "lacework_resource_group_aws" "example" {
+resource "lacework_resource_group" "example" {
   name     = var.resource_group_name
-  accounts = ["*"]
+  type = "AWS"
+  group {
+    operator = "OR"
+    filter {
+      filter_name = "filter1"
+      field     = "Account"
+      operation = "EQUALS"
+      value     = ["*"]
+    }
+  }
 }
 
 variable "resource_group_name" {
@@ -91,5 +100,5 @@ output "alert_sources" {
 }
 
 output "resource_group_id" {
-  value = lacework_resource_group_aws.example.id
+  value = lacework_resource_group.example.id
 }
