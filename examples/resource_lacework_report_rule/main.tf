@@ -17,26 +17,12 @@ resource "lacework_alert_channel_email" "email_alerts" {
   test_integration = false
 }
 
-resource "lacework_resource_group" "aws_group" {
-  name     = var.resource_group_name
-  type = "AWS"
-  group {
-    operator = "OR"
-    filter {
-      filter_name = "filter1"
-      field     = "Account"
-      operation = "EQUALS"
-      value     = ["*"]
-    }
-  }
-}
 
 resource "lacework_report_rule" "example" {
   name             = var.name
   description      = var.description
   enabled         = true
   severities      = var.severities
-  resource_groups = [lacework_resource_group.aws_group.id]
   email_alert_channels = [lacework_alert_channel_email.email_alerts.id]
 
   aws_compliance_reports {
