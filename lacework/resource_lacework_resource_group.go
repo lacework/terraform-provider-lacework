@@ -243,7 +243,7 @@ func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{
 
 	populateRgQuery(d.Get("group").(*schema.Set), &rgQuery, true)
 
-	data := api.NewResourceGroupWithQuery(d.Get("name").(string),
+	data := api.NewResourceGroup(d.Get("name").(string),
 		groupType,
 		d.Get("description").(string),
 		&rgQuery)
@@ -260,7 +260,7 @@ func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{
 	}
 
 	d.SetId(response.Data.ResourceGroupGuid)
-	d.Set("name", response.Data.NameV2)
+	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("query", response.Data.Query)
 	d.Set("description", response.Data.Description)
@@ -289,7 +289,7 @@ func resourceLaceworkResourceGroupRead(d *schema.ResourceData, meta interface{})
 	}
 
 	d.SetId(response.Data.ResourceGroupGuid)
-	d.Set("name", response.Data.NameV2)
+	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("query", response.Data.Query)
 	d.Set("description", response.Data.Description)
@@ -318,7 +318,7 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 
 	populateRgQuery(d.Get("group").(*schema.Set), &rgQuery, true)
 
-	data := api.NewResourceGroupWithQuery(d.Get("name").(string),
+	data := api.NewResourceGroup(d.Get("name").(string),
 		groupType,
 		d.Get("description").(string),
 		&rgQuery)
@@ -336,8 +336,8 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 		return err
 	}
 
-	d.SetId(response.Data.ResourceGuid)
-	d.Set("name", response.Data.NameV2)
+	d.SetId(response.Data.ResourceGroupGuid)
+	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("query", response.Data.Query)
 	d.Set("description", response.Data.Description)
@@ -346,7 +346,7 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 	d.Set("type", response.Data.Type)
 
 	log.Printf("[INFO] Updated %s Resource Group with guid %s\n",
-		data.Type, response.Data.ResourceGuid)
+		data.Type, response.Data.ResourceGroupGuid)
 	return nil
 }
 
