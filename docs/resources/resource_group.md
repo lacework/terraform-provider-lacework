@@ -1,7 +1,7 @@
 ---
 subcategory: "Resource Groups"
 layout: "lacework"
-page_title: "Lacework: (beta) lacework_resource_group"
+page_title: "Lacework: lacework_resource_group"
 description: |-
   Create and manage Resource Groups in Lacework
 ---
@@ -74,7 +74,7 @@ The following arguments are supported:
 * `name` - (Required) The resource group name.
 * `group` - (Required) The representation of the expression that a resource must match to be 
   part of the resource group. Groups can be nested up to 3 levels deep and can be combined by 
-  individual filters. See the [api-docs](https://lwdocs-rg2.netlify.app/api/api-resource-group/#filterable-fields) for the supported fields.
+  individual filters. See the [api-docs](https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api#filterable-fields) for the supported fields.
   Each `group` must have at least one of `group` or `filter` defined.
 * `type` - (Required) The type of resource group being created, AWS, GCP, or AZURE
 * `description` - (Optional) The description of the resource group.
