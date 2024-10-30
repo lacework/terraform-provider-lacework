@@ -295,50 +295,6 @@ func GetResourceGroupV2Description(result string) string {
 	return response.Data.Description
 }
 
-func GetResourceGroupDescription(result string) string {
-	id := GetIDFromTerraResults(result)
-
-	response, err := LwClient.V2.ResourceGroups.GetAws(id)
-	if err != nil {
-		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
-	}
-
-	return response.Data.Props.Description
-}
-
-func GetAzureResourceGroupProps(result string) api.AzureResourceGroupProps {
-	id := GetIDFromTerraResults(result)
-
-	response, err := LwClient.V2.ResourceGroups.GetAzure(id)
-	if err != nil {
-		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
-	}
-
-	return response.Data.Props
-}
-
-func GetGcpResourceGroupProps(result string) api.GcpResourceGroupProps {
-	id := GetIDFromTerraResults(result)
-
-	response, err := LwClient.V2.ResourceGroups.GetGcp(id)
-	if err != nil {
-		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
-	}
-
-	return response.Data.Props
-}
-
-func GetContainerResourceGroupProps(result string) api.ContainerResourceGroupProps {
-	id := GetIDFromTerraResults(result)
-
-	response, err := LwClient.V2.ResourceGroups.GetContainer(id)
-	if err != nil {
-		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
-	}
-
-	return response.Data.Props
-}
-
 func GetTeamMember(result string) api.TeamMember {
 	id := GetIDFromTerraResults(result)
 
@@ -361,28 +317,6 @@ func GetOrgTeamMember(result string) api.TeamMember {
 	}
 
 	return res.Data
-}
-
-func GetMachineResourceGroupProps(result string) api.MachineResourceGroupProps {
-	id := GetIDFromTerraResults(result)
-
-	response, err := LwClient.V2.ResourceGroups.GetMachine(id)
-	if err != nil {
-		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
-	}
-
-	return response.Data.Props
-}
-
-func GetLwAccountResourceGroupProps(result string) api.LwAccountResourceGroupProps {
-	id := GetIDFromTerraResults(result)
-
-	response, err := LwOrgClient.V2.ResourceGroups.GetLwAccount(id)
-	if err != nil {
-		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
-	}
-
-	return response.Data.Props
 }
 
 func GetAlertChannelProps(result string) api.AlertChannelResponse {
