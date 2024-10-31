@@ -1,93 +1,94 @@
 package lacework
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
 	"github.com/pkg/errors"
-	"log"
 )
 
-func resourceLaceworkResourceGroup() *schema.Resource {
-	filterKey := &schema.Schema{
-		Type:        schema.TypeString,
-		Optional:    true,
-		Description: "For fields that support a tag, the key on which to filter.",
-	}
+var filterKey = &schema.Schema{
+	Type:        schema.TypeString,
+	Optional:    true,
+	Description: "For fields that support a tag, the key on which to filter.",
+}
 
-	filterValue := &schema.Schema{
-		Type: schema.TypeList,
-		Elem: &schema.Schema{
-			Type: schema.TypeString,
-		},
-		Required:    true,
-		Description: "The values that the predicate should match.",
-	}
+var filterValue = &schema.Schema{
+	Type: schema.TypeList,
+	Elem: &schema.Schema{
+		Type: schema.TypeString,
+	},
+	Required:    true,
+	Description: "The values that the predicate should match.",
+}
 
-	filterOperation := &schema.Schema{
-		Type:        schema.TypeString,
-		Required:    true,
-		Description: "The operation that should be applied across filters/groups",
-	}
+var filterOperation = &schema.Schema{
+	Type:        schema.TypeString,
+	Required:    true,
+	Description: "The operation that should be applied across filters/groups",
+}
 
-	filterField := &schema.Schema{
-		Type:        schema.TypeString,
-		Required:    true,
-		Description: "The field on which to apply the predicate.",
-	}
-	filterFieldName := &schema.Schema{
-		Type:        schema.TypeString,
-		Required:    true,
-		Description: "A custom name for the filter.",
-	}
+var filterField = &schema.Schema{
+	Type:        schema.TypeString,
+	Required:    true,
+	Description: "The field on which to apply the predicate.",
+}
 
-	filterSchema := &schema.Schema{
-		Type:     schema.TypeSet,
-		Optional: true,
-		Elem: &schema.Resource{
-			Schema: map[string]*schema.Schema{
-				"filter_name": filterFieldName,
-				"field":       filterField,
-				"operation":   filterOperation,
-				"value":       filterValue,
-				"key":         filterKey,
-			},
-		},
-	}
+var filterFieldName = &schema.Schema{
+	Type:        schema.TypeString,
+	Required:    true,
+	Description: "A custom name for the filter.",
+}
 
-	groupOperator := &schema.Schema{
-		Type:        schema.TypeString,
-		Description: "The operation to apply (AND/OR)",
-		Required:    true,
-	}
-
-	groupSchema := &schema.Resource{
+var filterSchema = &schema.Schema{
+	Type:     schema.TypeSet,
+	Optional: true,
+	Elem: &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"operator": groupOperator,
-			"filter":   filterSchema,
-			"group": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"operator": groupOperator,
-						"filter":   filterSchema,
-						"group": {
-							Type:     schema.TypeSet,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"operator": groupOperator,
-									"filter":   filterSchema,
-									"group": {
-										Type:     schema.TypeSet,
-										Optional: true,
-										Elem: &schema.Resource{
-											Schema: map[string]*schema.Schema{
-												"operator": groupOperator,
-												"filter":   filterSchema,
-											},
+			"filter_name": filterFieldName,
+			"field":       filterField,
+			"operation":   filterOperation,
+			"value":       filterValue,
+			"key":         filterKey,
+		},
+	},
+}
+
+var groupOperator = &schema.Schema{
+	Type:        schema.TypeString,
+	Description: "The operation to apply (AND/OR)",
+	Required:    true,
+}
+
+// Define global variable for groupSchema
+var groupSchema = &schema.Resource{
+	Schema: map[string]*schema.Schema{
+		"operator": groupOperator,
+		"filter":   filterSchema,
+		"group": {
+			Type:     schema.TypeSet,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"operator": groupOperator,
+					"filter":   filterSchema,
+					"group": {
+						Type:     schema.TypeSet,
+						Optional: true,
+						Elem: &schema.Resource{
+							Schema: map[string]*schema.Schema{
+								"operator": groupOperator,
+								"filter":   filterSchema,
+								"group": {
+									Type:     schema.TypeSet,
+									Optional: true,
+									Elem: &schema.Resource{
+										Schema: map[string]*schema.Schema{
+											"operator": groupOperator,
+											"filter":   filterSchema,
 										},
 									},
 								},
@@ -97,8 +98,10 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 				},
 			},
 		},
-	}
+	},
+}
 
+func resourceLaceworkResourceGroup() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceLaceworkResourceGroupCreate,
 		Read:   resourceLaceworkResourceGroupRead,
@@ -106,7 +109,7 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 		Delete: resourceLaceworkResourceGroupDelete,
 
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: importLaceworkResourceGroup,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -159,6 +162,60 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 			},
 		},
 	}
+}
+
+func importLaceworkResourceGroup(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData,
+	error) {
+	lacework := meta.(*api.Client)
+
+	log.Printf("[INFO] Importing resource group.")
+
+	var response api.ResourceGroupResponse
+	err := lacework.V2.ResourceGroups.Get(d.Id(), &response)
+	if err != nil {
+		return nil, err
+	}
+
+	err = readResourceGroup(d, &response)
+
+	if err != nil {
+		return nil, err
+	}
+	return []*schema.ResourceData{d}, nil
+}
+
+func convertRgQueryToInterface(query *api.RGQuery) []interface{} {
+	set := []interface{}{}
+
+	result := map[string]interface{}{
+		"operator": query.Expression.Operator,
+		"filter":   []interface{}{},
+		"group":    []interface{}{},
+	}
+
+	for _, child := range query.Expression.Children {
+		if child.FilterName != "" {
+			filter := query.Filters[child.FilterName]
+			filterMap := map[string]interface{}{
+				"field":       filter.Field,
+				"filter_name": child.FilterName,
+				"key":         filter.Key, // Assuming key is empty as it's not provided in the context
+				"operation":   filter.Operation,
+				"value":       filter.Values,
+			}
+			result["filter"] = append(result["filter"].([]interface{}), filterMap)
+		} else {
+			nestedGroup := convertRgQueryToInterface(&api.RGQuery{
+				Filters:    query.Filters,
+				Expression: &api.RGExpression{Children: child.Children, Operator: child.Operator},
+			})
+			result["group"] = append(result["group"].([]interface{}), nestedGroup...)
+		}
+
+		set = append(set, result)
+	}
+
+	return set
 }
 
 func addFilters(filters *schema.Set, query *api.RGQuery) []string {
@@ -260,20 +317,15 @@ func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{
 		return err
 	}
 
-	queryJson, err := json.Marshal(rgQuery)
-	if err != nil {
-		return err
-	}
-
 	d.SetId(response.Data.ResourceGroupGuid)
 	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
-	d.Set("query", response.Data.Query)
-	d.Set("group", queryJson)
+	d.Set("group", convertRgQueryToInterface(response.Data.Query))
 	d.Set("description", response.Data.Description)
-	d.Set("last_updated", response.Data.UpdatedTime)
+	d.Set("last_updated", response.Data.UpdatedTime.UTC().String())
 	d.Set("updated_by", response.Data.UpdatedBy)
 	d.Set("type", response.Data.Type)
+	d.Set("is_default", response.Data.IsDefaultBoolean)
 
 	log.Printf("[INFO] Created %s Resource Group with guid %s\n",
 		response.Data.Type, response.Data.ResourceGroupGuid)
@@ -290,28 +342,27 @@ func resourceLaceworkResourceGroupRead(d *schema.ResourceData, meta interface{})
 		return resourceNotFound(d, err)
 	}
 
-	if response.Data.Query == nil {
+	return readResourceGroup(d, &response)
+}
+
+func readResourceGroup(d *schema.ResourceData, resourceGroup *api.ResourceGroupResponse) error {
+	if resourceGroup.Data.Query == nil {
 		return fmt.Errorf("[ERROR] Resource Group with guid %s not found. "+
 			"It either does not exist or is not a V2 Resource Group", d.Id())
 	}
 
-	queryJson, err := json.Marshal(response.Data.Query)
-	if err != nil {
-		return err
-	}
-
-	d.SetId(response.Data.ResourceGroupGuid)
-	d.Set("name", response.Data.Name)
-	d.Set("enabled", response.Data.Enabled == 1)
-	d.Set("query", response.Data.Query)
-	d.Set("group", queryJson)
-	d.Set("description", response.Data.Description)
-	d.Set("last_updated", response.Data.UpdatedTime)
-	d.Set("updated_by", response.Data.UpdatedBy)
-	d.Set("type", response.Data.Type)
+	d.SetId(resourceGroup.Data.ResourceGroupGuid)
+	d.Set("name", resourceGroup.Data.Name)
+	d.Set("enabled", resourceGroup.Data.Enabled == 1)
+	d.Set("group", convertRgQueryToInterface(resourceGroup.Data.Query))
+	d.Set("description", resourceGroup.Data.Description)
+	d.Set("last_updated", resourceGroup.Data.UpdatedTime.UTC().String())
+	d.Set("updated_by", resourceGroup.Data.UpdatedBy)
+	d.Set("type", resourceGroup.Data.Type)
+	d.Set("is_default", resourceGroup.Data.IsDefaultBoolean)
 
 	log.Printf("[INFO] Read %s Resource Group with guid %s\n",
-		response.Data.Type, response.Data.ResourceGroupGuid)
+		resourceGroup.Data.Type, resourceGroup.Data.ResourceGroupGuid)
 	return nil
 }
 
@@ -349,20 +400,15 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 		return err
 	}
 
-	queryJson, err := json.Marshal(data.Query)
-	if err != nil {
-		return err
-	}
-
 	d.SetId(response.Data.ResourceGroupGuid)
 	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
-	d.Set("query", response.Data.Query)
-	d.Set("group", queryJson)
+	d.Set("group", convertRgQueryToInterface(response.Data.Query))
 	d.Set("description", response.Data.Description)
-	d.Set("last_updated", response.Data.UpdatedTime)
+	d.Set("last_updated", response.Data.UpdatedTime.UTC().String())
 	d.Set("updated_by", response.Data.UpdatedBy)
 	d.Set("type", response.Data.Type)
+	d.Set("is_default", response.Data.IsDefaultBoolean)
 
 	log.Printf("[INFO] Updated %s Resource Group with guid %s\n",
 		data.Type, response.Data.ResourceGroupGuid)
