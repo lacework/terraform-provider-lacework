@@ -1,6 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.0.1`.
+Another day, another release. These are the release notes for the version `v2.0.2`.
 
+## Bug Fixes
+* fix: Correctly import Resource Group terraform when using terraform i… (#665) (Zeki Sherif)([13f221ea](https://github.com/lacework/terraform-provider-lacework/commit/13f221ea5c7d2f4ce09d6c2cefb65f85569f3924))
 ## Other Changes
-* chore: Fix the RGv2 bugs (#663) (Lei Jin)([79b6808a](https://github.com/lacework/terraform-provider-lacework/commit/79b6808a835df574d879f844913f37bdfe5f0397))
-* ci: version bump to v2.0.1-dev (Lacework)([9c7703c4](https://github.com/lacework/terraform-provider-lacework/commit/9c7703c4cce927d74e9adaa80d92d4bb00c63931))
+* ci: version bump to v2.0.2-dev (Lacework)([b3a8b75d](https://github.com/lacework/terraform-provider-lacework/commit/b3a8b75d908ece1cf12118409d79b65ac536d060))
