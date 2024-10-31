@@ -1,6 +1,7 @@
 package lacework
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/api"
@@ -243,7 +244,7 @@ func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{
 
 	populateRgQuery(d.Get("group").(*schema.Set), &rgQuery, true)
 
-	data := api.NewResourceGroupWithQuery(d.Get("name").(string),
+	data := api.NewResourceGroup(d.Get("name").(string),
 		groupType,
 		d.Get("description").(string),
 		&rgQuery)
@@ -259,10 +260,16 @@ func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{
 		return err
 	}
 
+	queryJson, err := json.Marshal(rgQuery)
+	if err != nil {
+		return err
+	}
+
 	d.SetId(response.Data.ResourceGroupGuid)
-	d.Set("name", response.Data.NameV2)
+	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("query", response.Data.Query)
+	d.Set("group", queryJson)
 	d.Set("description", response.Data.Description)
 	d.Set("last_updated", response.Data.UpdatedTime)
 	d.Set("updated_by", response.Data.UpdatedBy)
@@ -288,10 +295,16 @@ func resourceLaceworkResourceGroupRead(d *schema.ResourceData, meta interface{})
 			"It either does not exist or is not a V2 Resource Group", d.Id())
 	}
 
+	queryJson, err := json.Marshal(response.Data.Query)
+	if err != nil {
+		return err
+	}
+
 	d.SetId(response.Data.ResourceGroupGuid)
-	d.Set("name", response.Data.NameV2)
+	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("query", response.Data.Query)
+	d.Set("group", queryJson)
 	d.Set("description", response.Data.Description)
 	d.Set("last_updated", response.Data.UpdatedTime)
 	d.Set("updated_by", response.Data.UpdatedBy)
@@ -318,7 +331,7 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 
 	populateRgQuery(d.Get("group").(*schema.Set), &rgQuery, true)
 
-	data := api.NewResourceGroupWithQuery(d.Get("name").(string),
+	data := api.NewResourceGroup(d.Get("name").(string),
 		groupType,
 		d.Get("description").(string),
 		&rgQuery)
@@ -336,17 +349,23 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 		return err
 	}
 
-	d.SetId(response.Data.ResourceGuid)
-	d.Set("name", response.Data.NameV2)
+	queryJson, err := json.Marshal(data.Query)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(response.Data.ResourceGroupGuid)
+	d.Set("name", response.Data.Name)
 	d.Set("enabled", response.Data.Enabled == 1)
 	d.Set("query", response.Data.Query)
+	d.Set("group", queryJson)
 	d.Set("description", response.Data.Description)
 	d.Set("last_updated", response.Data.UpdatedTime)
 	d.Set("updated_by", response.Data.UpdatedBy)
 	d.Set("type", response.Data.Type)
 
 	log.Printf("[INFO] Updated %s Resource Group with guid %s\n",
-		data.Type, response.Data.ResourceGuid)
+		data.Type, response.Data.ResourceGroupGuid)
 	return nil
 }
 
