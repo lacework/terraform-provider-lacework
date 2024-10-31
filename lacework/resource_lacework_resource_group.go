@@ -214,7 +214,6 @@ func convertRgQueryToInterface(query *api.RGQuery) []interface{} {
 
 		set = append(set, result)
 	}
-	log.Printf("[DEBUG] Adding group to schema: %+v\n", set)
 
 	return set
 }
