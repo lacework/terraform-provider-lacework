@@ -1,6 +1,6 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.0.0`.
+Another day, another release. These are the release notes for the version `v2.0.1`.
 
 ## Other Changes
-* chore: Delete resource group v1 terraform (#659) (Lei Jin)([6341e38f](https://github.com/lacework/terraform-provider-lacework/commit/6341e38f41915066bd9e58fe2392009ea9b9c0af))
-* ci: version bump to v1.19.3-dev (Lacework)([a97134bc](https://github.com/lacework/terraform-provider-lacework/commit/a97134bcd4761155e967f7ec67a16f274b30b8ea))
+* chore: Fix the RGv2 bugs (#663) (Lei Jin)([79b6808a](https://github.com/lacework/terraform-provider-lacework/commit/79b6808a835df574d879f844913f37bdfe5f0397))
+* ci: version bump to v2.0.1-dev (Lacework)([9c7703c4](https://github.com/lacework/terraform-provider-lacework/commit/9c7703c4cce927d74e9adaa80d92d4bb00c63931))

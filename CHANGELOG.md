@@ -1,3 +1,9 @@
+## v2.0.1 (October 31, 2024)
+
+## Other Changes
+* chore: Fix the RGv2 bugs (#663) (Lei Jin)([79b6808a](https://github.com/lacework/terraform-provider-lacework/commit/79b6808a835df574d879f844913f37bdfe5f0397))
+* ci: version bump to v2.0.1-dev (Lacework)([9c7703c4](https://github.com/lacework/terraform-provider-lacework/commit/9c7703c4cce927d74e9adaa80d92d4bb00c63931))
+
 ## v2.0.0 (October 25, 2024)
 
 ## Other Changes
