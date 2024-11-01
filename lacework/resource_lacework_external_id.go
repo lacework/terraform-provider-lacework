@@ -8,8 +8,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/pkg/errors"
 
-	"github.com/lacework/go-sdk/api"
-	"github.com/lacework/go-sdk/lwdomain"
+	"github.com/lacework/go-sdk/v2/api"
+	"github.com/lacework/go-sdk/v2/lwdomain"
 )
 
 var externalIDValidCsp = []string{"aws", "google", "oci", "azure"}

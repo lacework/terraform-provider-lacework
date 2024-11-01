@@ -257,17 +257,17 @@ github.com/klauspost/compress/internal/cpuinfo
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk v1.54.1-0.20241030155210-2b0ffd411c65
+# github.com/lacework/go-sdk/v2 v2.1.2
 ## explicit; go 1.21
-github.com/lacework/go-sdk/api
-github.com/lacework/go-sdk/internal/array
-github.com/lacework/go-sdk/internal/databox
-github.com/lacework/go-sdk/internal/format
-github.com/lacework/go-sdk/lwconfig
-github.com/lacework/go-sdk/lwdomain
-github.com/lacework/go-sdk/lwlogger
-github.com/lacework/go-sdk/lwseverity
-github.com/lacework/go-sdk/lwtime
+github.com/lacework/go-sdk/v2/api
+github.com/lacework/go-sdk/v2/internal/array
+github.com/lacework/go-sdk/v2/internal/databox
+github.com/lacework/go-sdk/v2/internal/format
+github.com/lacework/go-sdk/v2/lwconfig
+github.com/lacework/go-sdk/v2/lwdomain
+github.com/lacework/go-sdk/v2/lwlogger
+github.com/lacework/go-sdk/v2/lwseverity
+github.com/lacework/go-sdk/v2/lwtime
 # github.com/mattn/go-colorable v0.1.13
 ## explicit; go 1.15
 github.com/mattn/go-colorable
