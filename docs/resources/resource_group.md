@@ -6,7 +6,7 @@ description: |-
   Create and manage Resource Groups in Lacework
 ---
 
-# (beta) lacework\_resource\_group
+# lacework\_resource\_group
 
 Use this resource to create a Resource Group in order to categorize Lacework-identifiable assets.
 For more information, see the [Resource Groups documentation](https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api).

@@ -11,10 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/lacework/go-sdk/api"
-	"github.com/lacework/go-sdk/lwconfig"
-	"github.com/lacework/go-sdk/lwdomain"
-	"github.com/lacework/go-sdk/lwlogger"
+	"github.com/lacework/go-sdk/v2/api"
+	"github.com/lacework/go-sdk/v2/lwconfig"
+	"github.com/lacework/go-sdk/v2/lwdomain"
+	"github.com/lacework/go-sdk/v2/lwlogger"
 )
 
 // Provider returns a Lacework schema.Provider
