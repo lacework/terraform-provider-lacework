@@ -27,7 +27,7 @@ variable "integration_level" {
 
 variable "blob_container_name" {
   type    = string
-  default = "blob-container-name"
+  default = "terraform-provider-test"
 }
 
 variable "scanning_subscription_id" {
@@ -37,12 +37,12 @@ variable "scanning_subscription_id" {
 
 variable "scanning_resource_group_name" {
   type = string
-  default = "AWLS-kilby-test"
+  default = "agentless-canary-scanned-group"
 }
 
 variable "storage_account_url" {
   type = string
-  default = "https://aoztest.blob.core.windows.net/"
+  default = "https://asidekicktest3954.blob.core.windows.net/"
 }
 
 variable "tenant_id" {
