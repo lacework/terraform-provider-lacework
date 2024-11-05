@@ -16,6 +16,8 @@ relationships between resources.
 Refer to [Filterable Fields section]https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api
 ) of the Lacework API documentation for supported resource group filters.
 
+**Note**: The following examples illustrate some common Resource Group types. Additional Resource Group types may apply to your environment and these examples can be used to determine the converted format for those Resource Group types. 
+
 # Lacework Account Resource Group
 
 There is no new version for Lacework account (organization-level) resource groups. No conversion is applicable.
