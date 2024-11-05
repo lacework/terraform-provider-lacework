@@ -1,32 +1,27 @@
----
-subcategory: "Resource Groups"
-layout: "lacework"
-page_title: "Lacework: convert_to_newer_resource_group"
-description: |-
-  Converts old to new resource groups
----
-
-# convert_to_newer_resource_group
+# Convert Original To Newer Resource Groups
 
 The new version of Resource Groups changes the Terraform syntax used to create resource groups. 
-The old version of Resource Groups defined specific filter fields for each of the Resource Group 
+The original version of Resource Groups defined specific filter fields for each of the Resource Group 
 types. The new version defines the `group` argument as an expression tree representing the 
 relationships between resources.
 
-Refer to [Filterable Fields section]https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api
+Refer to [Filterable Fields section](https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api
 ) of the Lacework API documentation for supported resource group filters.
 
-**Note**: The following examples illustrate some common Resource Group types. Additional Resource Group types may apply to your environment and these examples can be used to determine the converted format for those Resource Group types. 
+**Note**: The following examples illustrate some common Resource Group types and fields. Additional 
+Resource Group types and filter fields may apply to your environment and these examples along 
+with the Filterable Fields section document link above can be used to determine the converted format. 
 
-# Lacework Account Resource Group
+# Lacework Account Resource Groups
 
-There is no new version for Lacework account (organization-level) resource groups. No conversion is applicable.
+Organizational level resource groups are deprecated and not supported.
 
 # AWS Resource Groups
 
-## Old Resource Groups
+## Original Resource Groups
 
-For AWS, old Resource Groups supported the `accounts` list field, which contained the accounts to be included in the resource group. If any of the accounts in the resource group matched an entry in the list, the resource group would be applied.
+For AWS, the original Resource Groups supported the `accounts` list field, which contained the 
+accounts to be included in the resource group. If any of the accounts in the resource group matched an entry in the list, the resource group would be applied.
 
 ### Example
 
@@ -40,7 +35,7 @@ resource "lacework_resource_group_aws" "example" {
 
 ## New Resource Groups
 
-New Resource Groups supports an expression tree structure in which the `field` field in a filter object is `Account` and the `value` field contains a list of the account IDs.
+The new Resource Groups support an expression tree structure in which the `field` field in a filter object is `Account` and the `value` field contains a list of the account IDs.
 
 ### Example
 
@@ -63,9 +58,11 @@ resource "lacework_resource_group" "example" {
 
 # Azure Resource Groups
 
-## Old Resource Groups
+## Original Resource Groups
 
-For Azure, the old Resource Groups supported the `tenant` field, which contained a list of subscriptions to be included in the Resource Group.
+For Azure, the original Resource Groups supported the `tenant` field, which 
+contained a list of subscriptions using the `subscriptions` field to be included in the Resource 
+Group.
 
 ### Example
 
@@ -80,12 +77,12 @@ resource "lacework_resource_group_azure" "example" {
 
 ## New Resource Groups
 
-The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Tenant ID` or `Subscription ID` and the `value` field contains a list of the tenant or subscrption IDs.
+The new Resource Groups support an expression tree structure in which the `field` field in a filter object is defined as either `Tenant ID` or `Subscription ID` and the `value` field contains a list of the tenant or subscrption IDs.
 
 ### Example
 
 ```hcl
-resource "lacework_resource_group_azure" "example" {
+resource "lacework_resource_group" "example" {
   name        = "My Azure Resource Group"
   type        = "AZURE"
   description = "This groups a subset of Azure Subscriptions"
@@ -112,9 +109,9 @@ resource "lacework_resource_group_azure" "example" {
 
 # GCP Resource Groups
 
-## Old Resource Groups
+## Original Resource Groups
 
-For GCP, the old Resource Groups supported the `projects` field which contained a list of projects to be included in the resource group.
+For GCP, the original Resource Groups supported the `projects` field which contained a list of projects to be included in the resource group.
 
 ### Example
 
@@ -129,12 +126,12 @@ resource "lacework_resource_group_gcp" "example" {
 
 ## New Resource Groups
 
-The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Organization ID` or `Project ID` and the `value` field contains a list of the organization or project IDs.
+The new Resource Groups support an expression tree structure in which the `field` field in a filter object is defined as either `Organization ID` or `Project ID` and the `value` field contains a list of the organization or project IDs.
 
 ### Example
 
 ```hcl
-resource "lacework_resource_group_gcp" "example" {
+resource "lacework_resource_group" "example" {
   name        = "My GCP Resource Group"
   type        = "GCP"
   description = "This groups a subset of Gcp Projects"
@@ -158,9 +155,9 @@ resource "lacework_resource_group_gcp" "example" {
 
 # Container Resource Groups
 
-## Old Resource Groups
+## Original Resource Groups
 
-For containers, the old Resource Groups supported the `container_tags` and `container_label` fields.
+For containers, the original Resource Groups supported the `container_tags` and `container_label` fields.
 
 ### Example
 
@@ -178,12 +175,12 @@ resource "lacework_resource_group_container" "example" {
 
 ## New Resource Groups
 
-The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Image Tag` or `Container Label` and the `value` field contains a list of the image tags or container labels.
+The new Resource Groups support an expression tree structure in which the `field` field in a filter object is defined as either `Image Tag` or `Container Label` and the `value` field contains a list of the image tags or container labels.
 
 ### Example Representation
 
 ```hcl
-resource "lacework_resource_group_container" "example" {
+resource "lacework_resource_group" "example" {
   name        = "My Container Resource Group"
   type        = "CONTAINER"
   description = "This groups a subset of Container Tags"
@@ -200,7 +197,7 @@ resource "lacework_resource_group_container" "example" {
       field     = "Container Label"
       operation = "EQUALS"
       value     = ["my-container"]
-      key = “name”
+      key = "name"
    }
   }
 }
@@ -208,9 +205,9 @@ resource "lacework_resource_group_container" "example" {
 
 # Machine Resource Groups
 
-## Old Resource Groups
+## Original Resource Groups
 
-For machines, the old Resource Groups supported the `machine_tags` field.
+For machines, the original Resource Groups supported the `machine_tags` field.
 
 ### Example
 
@@ -226,14 +223,13 @@ resource "lacework_resource_group_machine" "example" {
 ```
 
 ## New Resource Groups
- new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Image Tag` or `Container Label` and the `value` field contains a list of the image tags or container labels.
  
-The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as `Machine Tag` and the `value` field contains a list of the machine tags.
+The new Resource Groups support an expression tree structure in which the `field` field in a filter object is defined as `Machine Tag` and the `value` field contains a list of the machine tags.
 
 ### Example
 
 ```hcl
-resource "lacework_resource_group_machine" "example" {
+resource "lacework_resource_group" "example" {
   name        = "My Machine Resource Group"
   type        = "MACHINE"
   description = "This groups a subset of Machine Tags"
@@ -244,7 +240,7 @@ resource "lacework_resource_group_machine" "example" {
       field     = "Machine Tag"
       operation = "EQUALS"
       value     = ["myMachine"]
-      key       = “name”
+      key       = "name"
     }
   }
 }

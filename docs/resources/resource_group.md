@@ -11,6 +11,10 @@ description: |-
 Use this resource to create a Resource Group in order to categorize Lacework-identifiable assets.
 For more information, see the [Resource Groups documentation](https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api).
 
+## Converting Original to Newer Resource Groups
+
+Please refer to this [documentation](convert_v1_to_v2_resource_groups.md) to understand how to
+convert the original resource groups to the newer resource groups.
 
 ## Example Usage
 
