@@ -3,48 +3,44 @@ subcategory: "Resource Groups"
 layout: "lacework"
 page_title: "Lacework: convert_to_newer_resource_group"
 description: |-
-  Converts V1 to V2 resource groups
+  Converts old to new resource groups
 ---
 
 # convert_to_newer_resource_group
 
-The new version of resource groups changes the Terraform syntax used to create the resource groups. 
-The older version of resource groups defined specific filter fields for each of the resource group 
-types. The newer version defines a group argument for an expression tree representing the 
+The new version of Resource Groups changes the Terraform syntax used to create resource groups. 
+The old version of Resource Groups defined specific filter fields for each of the Resource Group 
+types. The new version defines the `group` argument as an expression tree representing the 
 relationships between resources.
 
-Refer to Filterable Fields section [here](https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api
-) for supported resource group filters
+Refer to [Filterable Fields section]https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/690087/using-the-resource-groups-api
+) of the Lacework API documentation for supported resource group filters.
 
-# Lacework Account Resource Groups
+# Lacework Account Resource Group
 
-There is no new version for lacework account resource groups so no conversion is applicable for 
-these organizational level resource groups.
+There is no new version for Lacework account (organization-level) resource groups. No conversion is applicable.
 
 # AWS Resource Groups
 
-## Older Resource Group
+## Old Resource Groups
 
-The older AWS resource group supported the accounts list field to consist of the accounts to be
-included in the resource group. If any of the accounts in the resource group matched an entry in the
-list, the resource group would be applied.
+For AWS, old Resource Groups supported the `accounts` list field, which contained the accounts to be included in the resource group. If any of the accounts in the resource group matched an entry in the list, the resource group would be applied.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_aws" "example" {
-      name        = "My AWS Resource Group"
-      description = "This groups a subset of AWS Accounts"
-      accounts    = ["123456789", "234567891"]
+  name        = "My AWS Resource Group"
+  description = "A subset of AWS Accounts"
+  accounts    = ["123456789", "234567891"]
 }
 ```
 
-## Newer Resource Group
+## New Resource Groups
 
-The new resource group supports an expression tree structure in which the field key in the filter
-object would be called Account and the value key would be a list containing the values.
+New Resource Groups supports an expression tree structure in which the `field` field in a filter object is `Account` and the `value` field contains a list of the account IDs.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group" "example" {
@@ -65,12 +61,11 @@ resource "lacework_resource_group" "example" {
 
 # Azure Resource Groups
 
-## Older Resource Group
+## Old Resource Groups
 
-The older Azure resource group supported the tenant field and a list of subscriptions within that 
-tenant to be included in the resource group.
+For Azure, the old Resource Groups supported the `tenant` field, which contained a list of subscriptions to be included in the Resource Group.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_azure" "example" {
@@ -81,13 +76,11 @@ resource "lacework_resource_group_azure" "example" {
 }
 ```
 
-## Newer Resource Group
+## New Resource Groups
 
-The new resource group representation for the resource group above would support an expression 
-tree structure in which the field key in the filter objects would be called either Tenant ID or Subscription ID and the value key would be a list 
-containing the values.
+The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Tenant ID` or `Subscription ID` and the `value` field contains a list of the tenant or subscrption IDs.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_azure" "example" {
@@ -98,7 +91,7 @@ resource "lacework_resource_group_azure" "example" {
     operator = "AND"
     filter {
       filter_name = "filter1"
-      field     = "Tenant"
+      field     = "Tenant ID"
       operation = "EQUALS"
       value     = ["a11aa1ab-111a-11ab-a000-11aa1111a11a"]
     }
@@ -117,12 +110,11 @@ resource "lacework_resource_group_azure" "example" {
 
 # GCP Resource Groups
 
-## Older Resource Group
+## Old Resource Groups
 
-The older GCP resource group supported the organization field and a list of projects within that 
-organization to be included in the resource group.
+For GCP, the old Resource Groups supported the `projects` field which contained a list of projects to be included in the resource group.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_gcp" "example" {
@@ -133,13 +125,11 @@ resource "lacework_resource_group_gcp" "example" {
 }
 ```
 
-## Newer Resource Group
+## New Resource Groups
 
-The new resource group representation for the resource group above would support an expression
-tree structure in which the field key in the filter objects would be called either Organization 
-ID or Project ID and the value key would be a list containing the values.
+The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Organization ID` or `Project ID` and the `value` field contains a list of the organization or project IDs.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_gcp" "example" {
@@ -166,11 +156,11 @@ resource "lacework_resource_group_gcp" "example" {
 
 # Container Resource Groups
 
-## Older Resource Group
+## Old Resource Groups
 
-The older Container resource group supported the fields container tags and labels.
+For containers, the old Resource Groups supported the `container_tags` and `container_label` fields.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_container" "example" {
@@ -184,11 +174,9 @@ resource "lacework_resource_group_container" "example" {
 }
 ```
 
-## Newer Resource Group
+## New Resource Groups
 
-The new resource group representation for the resource group above would support an expression
-tree structure in which the field key in the filter objects would be called either Image Tag or 
-Container Label and the value key would be a list containing the values.
+The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Image Tag` or `Container Label` and the `value` field contains a list of the image tags or container labels.
 
 ### Example Representation
 
@@ -215,13 +203,14 @@ resource "lacework_resource_group_container" "example" {
   }
 }
 ```
+
 # Machine Resource Groups
 
-## Older Resource Group
+## Old Resource Groups
 
-The older Machine resource group supported the machine tags field.
+For machines, the old Resource Groups supported the `machine_tags` field.
 
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_machine" "example" {
@@ -234,13 +223,12 @@ resource "lacework_resource_group_machine" "example" {
 }
 ```
 
-## Newer Resource Group
+## New Resource Groups
+ new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as either `Image Tag` or `Container Label` and the `value` field contains a list of the image tags or container labels.
+ 
+The new Resource Groups supports an expression tree structure in which the `field` field in a filter object is defined as `Machine Tag` and the `value` field contains a list of the machine tags.
 
-The new resource group representation for the resource group above would support an expression
-tree structure in which the field key in the filter objects would be called Machine Tag and the 
-value key would be a list containing the values.
-
-### Example Representation
+### Example
 
 ```hcl
 resource "lacework_resource_group_machine" "example" {
