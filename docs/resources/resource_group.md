@@ -13,7 +13,7 @@ For more information, see the [Resource Groups documentation](https://docs.forti
 
 ## Converting Original to Newer Resource Groups
 
-Please refer to this [documentation](convert_v1_to_v2_resource_groups.md) to understand how to
+Please refer to this [documentation](https://docs.fortinet.com/document/lacework-forticnapp/latest/api-reference/375795/convert-original-to-newer-resource-groups-in-terraform) to understand how to
 convert the original resource groups to the newer resource groups.
 
 ## Example Usage
