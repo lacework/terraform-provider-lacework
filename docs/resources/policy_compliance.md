@@ -48,7 +48,7 @@ resource "lacework_policy_compliance" "example" {
   severity = "High"
   description = "CloudTrail log file validation creates a digitally signed digest\nfile containing a hash of each log that CloudTrail writes to S3. These digest\nfiles can be used to determine whether a log file was changed, deleted, or unchanged\nafter CloudTrail delivered the log. It is recommended that file validation be\nenabled on all CloudTrails."
   remediation = "Perform the following to enable log file validation on a given trail:\nFrom Console:\n1. Sign in to the AWS Management Console and open the IAM console at (https://console.aws.amazon.com/cloudtrail)\n2. Click on Trails on the left navigation pane\n3. Click on target trail\n4. Within the S3 section click on the edit icon (pencil)\n5. Click Advanced\n6. Click on the Yes radio button in section Enable log file validation\n7. Click Save\nFrom Command Line:\naws cloudtrail update-trail --name <trail_name> --enable-log-file-validation\nNote that periodic validation of logs using these digests can be performed by running the following command:\naws cloudtrail validate-logs --trail-arn <trail_arn> --start-time <start_time> --end-time <end_time>"
-  tags = ["security:compliance", "domain:AWS", "subdomain:Configuration"]
+  tags = ["security:compliance"]
   alerting_enabled = false
 }
 ```
