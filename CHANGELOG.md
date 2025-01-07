@@ -1,3 +1,8 @@
+## v2.0.4 (January 07, 2025)
+
+## Other Changes
+* chore: Delete old vendor files (#674) (Lei Jin)([6d544b45](https://github.com/lacework/terraform-provider-lacework/commit/6d544b456757cf5b71aa48841831375cffa55094))
+
 ## v2.0.3 (November 01, 2024)
 
 ## Other Changes
