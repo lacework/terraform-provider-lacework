@@ -3,6 +3,8 @@ package terraform
 import (
 	"fmt"
 	"os/exec"
+	"regexp"
+	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/collections"
 	"github.com/gruntwork-io/terratest/modules/retry"
@@ -37,6 +39,9 @@ const (
 
 	// TerraformDefaultPath to run terraform
 	TerraformDefaultPath = "terraform"
+
+	// TerragruntDefaultPath to run terragrunt
+	TerragruntDefaultPath = "terragrunt"
 )
 
 var DefaultExecutable = defaultTerraformExecutable()
@@ -47,8 +52,22 @@ func GetCommonOptions(options *Options, args ...string) (*Options, []string) {
 		options.TerraformBinary = DefaultExecutable
 	}
 
-	if options.TerraformBinary == "terragrunt" {
+	if options.TerraformBinary == TerragruntDefaultPath {
 		args = append(args, "--terragrunt-non-interactive")
+		// for newer Terragrunt version, setting simplified log formatting
+		if options.EnvVars == nil {
+			options.EnvVars = map[string]string{}
+		}
+		_, tgLogSet := options.EnvVars["TERRAGRUNT_LOG_FORMAT"]
+		if !tgLogSet {
+			// key-value format for terragrunt logs to avoid colors and have plain form
+			// https://terragrunt.gruntwork.io/docs/reference/cli-options/#terragrunt-log-format
+			options.EnvVars["TERRAGRUNT_LOG_FORMAT"] = "key-value"
+		}
+		_, tgLogFormat := options.EnvVars["TERRAGRUNT_LOG_CUSTOM_FORMAT"]
+		if !tgLogFormat {
+			options.EnvVars["TERRAGRUNT_LOG_CUSTOM_FORMAT"] = "%msg(color=disable)"
+		}
 	}
 
 	if options.Parallelism > 0 && len(args) > 0 && collections.ListContains(commandsWithParallelism, args[0]) {
@@ -81,9 +100,18 @@ func RunTerraformCommandE(t testing.TestingT, additionalOptions *Options, additi
 
 	cmd := generateCommand(options, args...)
 	description := fmt.Sprintf("%s %v", options.TerraformBinary, args)
+
 	return retry.DoWithRetryableErrorsE(t, description, options.RetryableTerraformErrors, options.MaxRetries, options.TimeBetweenRetries, func() (string, error) {
-		return shell.RunCommandAndGetOutputE(t, cmd)
+		s, err := shell.RunCommandAndGetOutputE(t, cmd)
+		if err != nil {
+			return s, err
+		}
+		if err := hasWarning(additionalOptions, s); err != nil {
+			return s, err
+		}
+		return s, err
 	})
+
 }
 
 // RunTerraformCommandAndGetStdoutE runs terraform with the given arguments and options and returns solely its stdout
@@ -94,7 +122,14 @@ func RunTerraformCommandAndGetStdoutE(t testing.TestingT, additionalOptions *Opt
 	cmd := generateCommand(options, args...)
 	description := fmt.Sprintf("%s %v", options.TerraformBinary, args)
 	return retry.DoWithRetryableErrorsE(t, description, options.RetryableTerraformErrors, options.MaxRetries, options.TimeBetweenRetries, func() (string, error) {
-		return shell.RunCommandAndGetStdOutE(t, cmd)
+		s, err := shell.RunCommandAndGetOutputE(t, cmd)
+		if err != nil {
+			return s, err
+		}
+		if err := hasWarning(additionalOptions, s); err != nil {
+			return s, err
+		}
+		return s, err
 	})
 }
 
@@ -136,4 +171,20 @@ func defaultTerraformExecutable() string {
 
 	// fallback to Tofu if terraform is not available
 	return TofuDefaultPath
+}
+
+func hasWarning(opts *Options, out string) error {
+	for k, v := range opts.WarningsAsErrors {
+		str := fmt.Sprintf("\nWarning: %s[^\n]*\n", k)
+		re, err := regexp.Compile(str)
+		if err != nil {
+			return fmt.Errorf("cannot compile regex for warning detection: %w", err)
+		}
+		m := re.FindAllString(out, -1)
+		if len(m) == 0 {
+			continue
+		}
+		return fmt.Errorf("warning(s) were found: %s:\n%s", v, strings.Join(m, ""))
+	}
+	return nil
 }
