@@ -160,7 +160,7 @@ github.com/klauspost/compress/internal/cpuinfo
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk/v2 v2.1.2
+# github.com/lacework/go-sdk/v2 v2.1.6
 ## explicit; go 1.21
 github.com/lacework/go-sdk/v2/api
 github.com/lacework/go-sdk/v2/internal/array
