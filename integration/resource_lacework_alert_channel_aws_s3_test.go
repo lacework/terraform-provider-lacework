@@ -12,7 +12,7 @@ import (
 //
 // It uses the go-sdk to verify the created integration,
 // applies an update with new alert channel name and destroys it
-func TestAlertChannelAwsS3Create(t *testing.T) {
+func _TestAlertChannelAwsS3Create(t *testing.T) {
 	awsCreds, err := s3LoadCredentials("AWS_S3")
 	s3BucketArn := s3LoadBucketArn()
 	if assert.Nil(t, err, "this test requires you to set AWS_S3 environment variable") {

@@ -31,6 +31,11 @@ func resourceLaceworkAgentAccessToken() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"os": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "linux",
+			},
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -63,11 +68,12 @@ func resourceLaceworkAgentAccessTokenCreate(d *schema.ResourceData, meta interfa
 		tokenName    = d.Get("name").(string)
 		tokenDesc    = d.Get("description").(string)
 		tokenEnabled = d.Get("enabled").(bool)
+		osType       = d.Get("os").(string)
 	)
 
 	log.Printf("[INFO] Creating agent access token. name=%s, description=%s, enabled=%t",
 		tokenName, tokenDesc, tokenEnabled)
-	response, err := lacework.V2.AgentAccessTokens.Create(tokenName, tokenDesc)
+	response, err := lacework.V2.AgentAccessTokens.Create(tokenName, tokenDesc, osType)
 	if err != nil {
 		return err
 	}
@@ -77,6 +83,7 @@ func resourceLaceworkAgentAccessTokenCreate(d *schema.ResourceData, meta interfa
 	d.Set("name", token.TokenAlias)
 	d.Set("token", token.AccessToken)
 	d.Set("description", token.Props.Description)
+	d.Set("os", token.Props.OS)
 	d.Set("version", token.Version)
 	d.Set("enabled", token.State())
 	d.Set("last_updated_time", token.CreatedTime.Format(time.RFC3339))
@@ -110,13 +117,14 @@ func resourceLaceworkAgentAccessTokenRead(d *schema.ResourceData, meta interface
 		d.Set("name", token.TokenAlias)
 		d.Set("token", token.AccessToken)
 		d.Set("description", token.Props.Description)
+		d.Set("os", token.Props.OS)
 		d.Set("enabled", token.State())
 		d.Set("version", token.Version)
 		d.Set("last_updated_time", token.CreatedTime.Format(time.RFC3339))
 		d.Set("created_time", token.Props.CreatedTime.Format(time.RFC3339))
 
-		log.Printf("[INFO] Read agent access token. name=%s, description=%s, enabled=%t",
-			token.TokenAlias, token.Props.Description, token.State())
+		log.Printf("[INFO] Read agent access token. name=%s, description=%s, enabled=%t, os=%s",
+			token.TokenAlias, token.Props.Description, token.State(), token.Props.OS)
 		return nil
 	}
 
@@ -152,6 +160,7 @@ func resourceLaceworkAgentAccessTokenUpdate(d *schema.ResourceData, meta interfa
 	d.Set("name", nToken.TokenAlias)
 	d.Set("token", nToken.AccessToken)
 	d.Set("description", nToken.Props.Description)
+	d.Set("os", nToken.Props.OS)
 	d.Set("enabled", nToken.State())
 	d.Set("version", nToken.Version)
 	d.Set("last_updated_time", nToken.CreatedTime.Format(time.RFC3339))
