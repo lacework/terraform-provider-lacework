@@ -1,6 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.0.5`.
+Another day, another release. These are the release notes for the version `v2.0.6`.
 
+## Bug Fixes
+* fix(LINK-3391): Update policy_compliance.md (#672) (jeffreynglw)([bc688bb5](https://github.com/lacework/terraform-provider-lacework/commit/bc688bb567d29b92e8e7bf7bf94576751d3942fb))
 ## Other Changes
-* chore: Delete old vendor files (#674) (Lei Jin)([6d544b45](https://github.com/lacework/terraform-provider-lacework/commit/6d544b456757cf5b71aa48841831375cffa55094))
-* ci: version bump to v2.0.5-dev (Lacework)([8c118049](https://github.com/lacework/terraform-provider-lacework/commit/8c118049088fa4f089da39a9acca177e4372e425))
+* ci: version bump to v2.0.6-dev (Lacework)([d39965b7](https://github.com/lacework/terraform-provider-lacework/commit/d39965b7c04807c6e1e46fcc923879ee37868e9b))
