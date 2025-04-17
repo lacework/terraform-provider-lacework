@@ -16,7 +16,7 @@ func TestAlertChannelRollback(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name":     "Test Name",
-			"webhook_url":      "https://outlook.office.com/webhook/api-token",
+			"webhook_url":      "https://test-tenant.outlook.office.com/webhook/api-token",
 			"test_integration": true,
 		},
 	})

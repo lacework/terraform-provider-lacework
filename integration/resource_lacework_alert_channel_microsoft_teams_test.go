@@ -18,7 +18,7 @@ func TestAlertChannelMicrosoftTeams(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"channel_name": "Test Name",
-			"webhook_url":  "https://outlook.office.com/webhook/api-token",
+			"webhook_url":  "https://test-tenant.outlook.office.com/webhook/api-token",
 		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
@@ -30,7 +30,7 @@ func TestAlertChannelMicrosoftTeams(t *testing.T) {
 	// Update Microsoft Teams Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "Updated Test Name",
-		"webhook_url":  "https://outlook.office.com/webhook/updated-api-token",
+		"webhook_url":  "https://test-tenant.outlook.office.com/webhook/updated-api-token",
 	}
 
 	update := terraform.Apply(t, terraformOptions)
@@ -40,12 +40,12 @@ func TestAlertChannelMicrosoftTeams(t *testing.T) {
 	if data, ok := updateProps.Data.Data.(map[string]interface{}); ok {
 		assert.True(t, ok)
 		assert.Equal(t, "Updated Test Name", updateProps.Data.Name)
-		assert.Equal(t, "https://outlook.office.com/webhook/updated-api-token", data["teamsUrl"])
+		assert.Equal(t, "https://test-tenant.outlook.office.com/webhook/updated-api-token", data["teamsUrl"])
 	}
 
 	// Verify that the terraform resource has the correct information as expected
 	actualChannelName := terraform.Output(t, terraformOptions, "channel_name")
 	actualWebhookUrl := terraform.Output(t, terraformOptions, "webhook_url")
 	assert.Equal(t, "Updated Test Name", actualChannelName)
-	assert.Equal(t, "https://outlook.office.com/webhook/updated-api-token", actualWebhookUrl)
+	assert.Equal(t, "https://test-tenant.outlook.office.com/webhook/updated-api-token", actualWebhookUrl)
 }

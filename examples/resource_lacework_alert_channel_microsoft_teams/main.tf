@@ -32,7 +32,7 @@ variable "channel_name" {
 
 variable "webhook_url" {
   type    = string
-  default = "https://outlook.office.com/webhook/api-token"
+  default = "https://test-tenant.outlook.office.com/webhook/api-token"
 }
 
 output "channel_name" {
