@@ -18,7 +18,7 @@ To find more information about the alert payload, see the [Lacework support docu
 ```hcl
 resource "lacework_alert_channel_microsoft_teams" "example" {
   name      = "Microsoft Teams Alerts"
-  webhook_url = "https://outlook.office.com/webhook/api-token"
+  webhook_url = "https://test-tenant.outlook.office.com/webhook/api-token"
 }
 ```
 
