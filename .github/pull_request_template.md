@@ -6,7 +6,7 @@
   Please read the contribution document: https://github.com/lacework/terraform-provider-lacework/blob/main/CONTRIBUTING.md
 --->
 
-***Issue***: Include link to the Jira/Github Issue
+***Issue***: Include link to the Jira/Github Issue (REQUIRED)
 
 ***Description:***
 Provide a detailed description of the changes made by this pull request.
