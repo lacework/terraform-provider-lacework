@@ -31,15 +31,15 @@ func dataLaceworkMetricModuleRead(d *schema.ResourceData, meta interface{}) erro
 		moduleVersion = d.Get("version").(string)
 	)
 
-	honeycombEvent := api.NewHoneyvent(moduleVersion, name, "lacework-terraform")
-	honeycombEvent.AddFeatureField("lacework_provider_version", version)
+	metricEvent := api.NewMetricEvent(moduleVersion, name, "lacework-terraform")
+	metricEvent.AddFeatureField("lacework_provider_version", version)
 
-	resp, err := lacework.V2.Metrics.Send(honeycombEvent)
+	err := lacework.V2.Metrics.Send(metricEvent)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(resp.Data[0].TraceID)
+	d.SetId(metricEvent.TraceID)
 
 	return nil
 }
