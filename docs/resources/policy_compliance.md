@@ -71,7 +71,7 @@ The following arguments are supported:
 * `enabled` - (Optional) Whether the policy is enabled or disabled. Defaults to `true`.
 * `policy_id_suffix` - (Optional) The string appended to the end of the policy id.
 * `tags` - (Optional) A list of policy tags.
-* `alerting_enabled` - (Optional) Whether the alerting profile is enabled or disabled. Defaults to `true`.
+* `alerting_enabled` - (Optional, **Deprecated**) Whether the alerting profile is enabled or disabled. Defaults to `true`.
 
 ## Import
 
