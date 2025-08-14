@@ -75,6 +75,7 @@ func resourceLaceworkPolicyCompliance() *schema.Resource {
 			"alerting_enabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
+				Deprecated:  "This attribute is deprecated. Alerting is always enabled for compliance policies.",
 				Default:     true,
 				Description: "Whether alerting is enabled or disabled",
 			},
@@ -118,7 +119,7 @@ func resourceLaceworkPolicyComplianceCreate(d *schema.ResourceData, meta interfa
 		Severity:     d.Get("severity").(string),
 		PolicyID:     d.Get("policy_id_suffix").(string),
 		Tags:         castStringSlice(d.Get("tags").(*schema.Set).List()),
-		AlertEnabled: d.Get("alerting_enabled").(bool),
+		AlertEnabled: true,
 	}
 
 	log.Printf("[INFO] Creating Policy with data:\n%+v\n", policy)
