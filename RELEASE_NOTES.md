@@ -1,8 +1,6 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.0.7`.
+Another day, another release. These are the release notes for the version `v2.0.8`.
 
-## Bug Fixes
-* fix: use correct webhook url in tests (#682) (Pengyuan Zhao)([33b22705](https://github.com/lacework/terraform-provider-lacework/commit/33b227059d4ab84f86188c392203e4c4b94b6fd4))
 ## Other Changes
-* chore: use new metric API (#684) (Pengyuan Zhao)([046f4511](https://github.com/lacework/terraform-provider-lacework/commit/046f45118665d7ab05a2d8376a1199f16481c304))
-* ci: version bump to v2.0.7-dev (Lacework)([9bf13a8a](https://github.com/lacework/terraform-provider-lacework/commit/9bf13a8a0d0dd1d1c5e0655672a9953f1f3208cc))
+* chore: deprecate alert_enabled for policy_compliance (#692) (Pengyuan Zhao)([5338c196](https://github.com/lacework/terraform-provider-lacework/commit/5338c1962f969e195a28876862a6264ddd203441))
+* ci: version bump to v2.0.8-dev (Lacework)([ea949d59](https://github.com/lacework/terraform-provider-lacework/commit/ea949d59c629df55df01c5a403354e2d930f2808))
