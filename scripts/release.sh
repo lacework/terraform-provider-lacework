@@ -208,7 +208,7 @@ tag_release() {
 
 verify_release() {
   log "verifying new release"
-  _changed_file=$(git whatchanged --name-only --pretty="" origin..HEAD)
+  _changed_file=$(git whatchanged --name-only --i-still-use-this --pretty="" origin..HEAD)
   _required_files_for_release=(
     RELEASE_NOTES.md
     CHANGELOG.md
