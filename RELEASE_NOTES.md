@@ -1,6 +1,6 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.0.8`.
+Another day, another release. These are the release notes for the version `v2.0.9`.
 
 ## Other Changes
-* chore: deprecate alert_enabled for policy_compliance (#692) (Pengyuan Zhao)([5338c196](https://github.com/lacework/terraform-provider-lacework/commit/5338c1962f969e195a28876862a6264ddd203441))
-* ci: version bump to v2.0.8-dev (Lacework)([ea949d59](https://github.com/lacework/terraform-provider-lacework/commit/ea949d59c629df55df01c5a403354e2d930f2808))
+* chore: change GET method in resourceLaceworkVulnerabilityExceptionContainerRead (#700) (lokeshv-fortinet)([f1b2faff](https://github.com/lacework/terraform-provider-lacework/commit/f1b2faffffd8d8b75a18594ce20c3eb6697fa684))
+* ci: version bump to v2.0.9-dev (Lacework)([37017ce4](https://github.com/lacework/terraform-provider-lacework/commit/37017ce49c7401be57f93b329e6b5c9f0bb01978))
