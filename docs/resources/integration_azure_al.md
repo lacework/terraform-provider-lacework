@@ -1,12 +1,12 @@
 ---
 subcategory: "Cloud Account Integrations"
 layout: "lacework"
-page_title: "Lacework: lacework_integration_azure_at"
+page_title: "Lacework: lacework_integration_azure_al"
 description: |-
   Create and manage Azure Cloud Activity Log integrations
 ---
 
-# lacework\_integration\_azure\_at
+# lacework\_integration\_azure\_al
 
 Use this resource to configure an Azure Activity Log integration to analyze Activity Log
 for monitoring cloud account security.
@@ -14,7 +14,7 @@ for monitoring cloud account security.
 ## Example Usage
 
 ```hcl
-resource "lacework_integration_azure_at" "account_abc" {
+resource "lacework_integration_azure_al" "account_abc" {
   name = "account ABC"
   tenant_id = "abbc1234-abc1-123a-1234-abcd1234abcd"
   queue_url = "https://account-abc.queue.core.windows.net/account-abc"
@@ -48,7 +48,7 @@ The following arguments are supported:
 A Lacework Azure Activity Log integration can be imported using a `INT_GUID`, e.g.
 
 ```
-$ terraform import lacework_integration_azure_at.account_abc EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
+$ terraform import lacework_integration_azure_al.account_abc EXAMPLE_1234BAE1E42182964D23973F44CFEA3C4AB63B99E9A1EC5
 ```
 -> **Note:** To retrieve the `INT_GUID` from existing integrations in your account, use the
 	Lacework CLI command `lacework cloud-account list`. To install this tool follow
