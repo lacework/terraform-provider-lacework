@@ -127,6 +127,7 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
+				Computed:    true,
 				Description: "The state of the resource group",
 			},
 			"description": {
