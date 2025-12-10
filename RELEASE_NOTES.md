@@ -1,8 +1,6 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.0.10`.
+Another day, another release. These are the release notes for the version `v2.0.11`.
 
-## Bug Fixes
-* fix: add Computed: True to resource_group enabled (#706) (Pengyuan Zhao)([2703ceb3](https://github.com/lacework/terraform-provider-lacework/commit/2703ceb36f0c4c8f57acebc39c53ce32920837d4))
 ## Other Changes
-* chore: typo change from at to al (#705) (lokeshv-fortinet)([d62ca64f](https://github.com/lacework/terraform-provider-lacework/commit/d62ca64f8fa55892898550a2650e4347f935cff9))
-* ci: version bump to v2.0.10-dev (Lacework)([9cad4bd2](https://github.com/lacework/terraform-provider-lacework/commit/9cad4bd299745d45ee568b35105a85616436629f))
+* chore: upgrade go-sdk version (#713) (Lokesh Vadlamudi)([1f440569](https://github.com/lacework/terraform-provider-lacework/commit/1f4405690b1edca6be2f8530f7072a66c21943b9))
+* ci: version bump to v2.0.11-dev (Lacework)([4dff541c](https://github.com/lacework/terraform-provider-lacework/commit/4dff541c2f14d81d82c1f2c0f09880b0ccd90052))
