@@ -123,6 +123,7 @@ func Provider() *schema.Provider {
 			"lacework_team_member":                            resourceLaceworkTeamMember(),
 			"lacework_vulnerability_exception_container":      resourceLaceworkVulnerabilityExceptionContainer(),
 			"lacework_vulnerability_exception_host":           resourceLaceworkVulnerabilityExceptionHost(),
+			"lacework_integration_aws_dspm":                   resourceLaceworkAwsDspm(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
