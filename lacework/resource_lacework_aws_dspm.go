@@ -60,6 +60,10 @@ func resourceLaceworkAwsDspm() *schema.Resource {
 					},
 				},
 			},
+			"server_token": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"retries": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -115,6 +119,7 @@ func resourceLaceworkAwsDspmCreate(d *schema.ResourceData, meta interface{}) err
 		d.SetId(cloudAccount.IntgGuid)
 		d.Set("intg_guid", cloudAccount.IntgGuid)
 		d.Set("name", cloudAccount.Name)
+		d.Set("server_token", cloudAccount.ServerToken)
 
 		log.Printf("[INFO] Created %s cloud account integration with guid: %v\n",
 			api.AwsDspmCloudAccount.String(), cloudAccount.IntgGuid)
