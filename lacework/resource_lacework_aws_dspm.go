@@ -81,8 +81,9 @@ func resourceLaceworkAwsDspmCreate(d *schema.ResourceData, meta interface{}) err
 	)
 
 	awsDspmData := api.AwsDspmData{
-		AccountID: d.Get("account_id").(string),
-		BucketArn: d.Get("storage_bucket_arn").(string),
+		AccountID:    d.Get("account_id").(string),
+		BucketArn:    d.Get("storage_bucket_arn").(string),
+		OutputBucket: d.Get("storage_bucket_arn").(string),
 		CrossAccountCreds: api.AwsDspmCrossAccountCredentials{
 			ExternalID: d.Get("credentials.0.external_id").(string),
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
