@@ -306,8 +306,13 @@ func resourceLaceworkResourceGroupCreate(d *schema.ResourceData, meta interface{
 		d.Get("description").(string),
 		&rgQuery)
 
-	if !d.Get("enabled").(bool) {
-		data.Enabled = 0
+	// By default, enable the resource group
+	data.Enabled = 1
+	// Override if the user has explicitly set the enabled field to false
+	if v, ok := d.GetOk("enabled"); ok {
+		if !v.(bool) {
+			data.Enabled = 0
+		}
 	}
 
 	log.Printf("[INFO] Creating %s Resource Group with data:\n%+v\n",
@@ -387,8 +392,13 @@ func resourceLaceworkResourceGroupUpdate(d *schema.ResourceData, meta interface{
 		d.Get("description").(string),
 		&rgQuery)
 
-	if !d.Get("enabled").(bool) {
-		data.Enabled = 0
+	// By default, enable the resource group
+	data.Enabled = 1
+	// Override if the user has explicitly set the enabled field to false
+	if v, ok := d.GetOk("enabled"); ok {
+		if !v.(bool) {
+			data.Enabled = 0
+		}
 	}
 
 	data.ResourceGroupGuid = d.Id()
