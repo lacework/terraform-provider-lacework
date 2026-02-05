@@ -160,7 +160,7 @@ github.com/klauspost/compress/internal/cpuinfo
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
-# github.com/lacework/go-sdk/v2 v2.9.0
+# github.com/lacework/go-sdk/v2 v2.9.0 => ../go-sdk
 ## explicit; go 1.24.0
 github.com/lacework/go-sdk/v2/api
 github.com/lacework/go-sdk/v2/internal/array
@@ -449,3 +449,4 @@ google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/lacework/go-sdk/v2 => ../go-sdk
