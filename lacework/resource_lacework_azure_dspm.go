@@ -65,6 +65,14 @@ func resourceLaceworkAzureDspm() *schema.Resource {
 					},
 				},
 			},
+			"regions": {
+				Type:        schema.TypeList,
+				Required:    true,
+				Description: "The regions where the DSPM scanner is deployed.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"server_token": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -93,6 +101,7 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 			ClientId:     d.Get("credentials.0.client_id").(string),
 			ClientSecret: d.Get("credentials.0.client_secret").(string),
 		},
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	azureDspm := api.NewCloudAccount(d.Get("name").(string),
@@ -143,24 +152,13 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		return resourceNotFound(d, err)
 	}
 
-	intgData := resp.Data
-	dspmData := intgData.Data
-
-	d.Set("intg_guid", intgData.IntgGuid)
-
-	d.Set("tenant_id", dspmData.TenantID)
-	d.Set("storage_account_url", dspmData.StorageAccountUrl)
-	d.Set("blob_container_name", dspmData.BlobContainerName)
-	creds := make(map[string]string)
-	creds["client_id"] = dspmData.Credentials.ClientId
-	creds["client_secret"] = dspmData.Credentials.ClientSecret
-	d.Set("credentials", []map[string]string{creds})
+	d.Set("regions", []string{})
 
 	cloudAccount := resp.Data
+	dspmData := cloudAccount.Data
 	if cloudAccount.IntgGuid == d.Id() {
 		d.Set("name", cloudAccount.Name)
 		d.Set("intg_guid", cloudAccount.IntgGuid)
-
 		d.Set("tenant_id", dspmData.TenantID)
 		d.Set("storage_account_url", dspmData.StorageAccountUrl)
 		d.Set("blob_container_name", dspmData.BlobContainerName)
@@ -168,7 +166,7 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		creds["client_id"] = cloudAccount.Data.Credentials.ClientId
 		creds["client_secret"] = cloudAccount.Data.Credentials.ClientSecret
 		d.Set("credentials", []map[string]string{creds})
-
+		d.Set("regions", dspmData.Regions)
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AzureDspmCloudAccount.String(), cloudAccount.IntgGuid,
 		)
@@ -192,6 +190,7 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 			ClientId:     d.Get("credentials.0.client_id").(string),
 			ClientSecret: d.Get("credentials.0.client_secret").(string),
 		},
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	azureDspm := api.NewCloudAccount(d.Get("name").(string),

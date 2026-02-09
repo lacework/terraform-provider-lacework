@@ -60,6 +60,14 @@ func resourceLaceworkAwsDspm() *schema.Resource {
 					},
 				},
 			},
+			"regions": {
+				Type:        schema.TypeList,
+				Required:    true,
+				Description: "The regions where the DSPM scanner is deployed.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"server_token": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -87,6 +95,7 @@ func resourceLaceworkAwsDspmCreate(d *schema.ResourceData, meta interface{}) err
 			ExternalID: d.Get("credentials.0.external_id").(string),
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 		},
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	awsDspm := api.NewCloudAccount(d.Get("name").(string),
@@ -137,29 +146,18 @@ func resourceLaceworkAwsDspmRead(d *schema.ResourceData, meta interface{}) error
 		return resourceNotFound(d, err)
 	}
 
-	intgData := resp.Data
-	dspmData := intgData.Data
-
-	d.Set("intg_guid", intgData.IntgGuid)
-
-	d.Set("account_id", dspmData.AccountID)
-	d.Set("storage_bucket_arn", dspmData.BucketArn)
-	creds := make(map[string]string)
-	creds["role_arn"] = dspmData.CrossAccountCreds.RoleArn
-	creds["external_id"] = dspmData.CrossAccountCreds.ExternalID
-	d.Set("credentials", []map[string]string{creds})
-
 	cloudAccount := resp.Data
+	dspmData := cloudAccount.Data
 	if cloudAccount.IntgGuid == d.Id() {
 		d.Set("name", cloudAccount.Name)
 		d.Set("intg_guid", cloudAccount.IntgGuid)
-
 		d.Set("account_id", dspmData.AccountID)
 		d.Set("storage_bucket_arn", dspmData.BucketArn)
 		creds := make(map[string]string)
-		creds["role_arn"] = cloudAccount.Data.CrossAccountCreds.RoleArn
-		creds["external_id"] = cloudAccount.Data.CrossAccountCreds.ExternalID
+		creds["role_arn"] = dspmData.CrossAccountCreds.RoleArn
+		creds["external_id"] = dspmData.CrossAccountCreds.ExternalID
 		d.Set("credentials", []map[string]string{creds})
+		d.Set("regions", dspmData.Regions)
 
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsDspmCloudAccount.String(), cloudAccount.IntgGuid,
@@ -183,6 +181,7 @@ func resourceLaceworkAwsDspmUpdate(d *schema.ResourceData, meta interface{}) err
 			ExternalID: d.Get("credentials.0.external_id").(string),
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 		},
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	awsDspm := api.NewCloudAccount(d.Get("name").(string),
