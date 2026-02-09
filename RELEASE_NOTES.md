@@ -1,7 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.1.1`.
+Another day, another release. These are the release notes for the version `v2.2.0`.
 
-## Bug Fixes
-* fix(LINK-4269): default RG enabled to true (#717) (Pengyuan Zhao)([e34649aa](https://github.com/lacework/terraform-provider-lacework/commit/e34649aa4f4da4a7ac5b94e0b9d2bad1e4b9872e))
+## Features
+* feat(dspm): add missing regions field (#719) (Timothy Nguyen)([6578654c](https://github.com/lacework/terraform-provider-lacework/commit/6578654c6a6a61ad8fc35c351c1abfb43400a000))
 ## Other Changes
-* ci: version bump to v2.1.1-dev (Lacework)([3382bf6a](https://github.com/lacework/terraform-provider-lacework/commit/3382bf6ac083789b0dfc3c84fabbb88a9b8c8bef))
+* ci: version bump to v2.1.2-dev (Lacework)([2496ff86](https://github.com/lacework/terraform-provider-lacework/commit/2496ff868f8be992334911bf2f59e1a357309248))
