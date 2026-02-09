@@ -95,7 +95,7 @@ func resourceLaceworkAwsDspmCreate(d *schema.ResourceData, meta interface{}) err
 			ExternalID: d.Get("credentials.0.external_id").(string),
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 		},
-		Regions: d.Get("regions").([]string),
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	awsDspm := api.NewCloudAccount(d.Get("name").(string),
@@ -181,7 +181,7 @@ func resourceLaceworkAwsDspmUpdate(d *schema.ResourceData, meta interface{}) err
 			ExternalID: d.Get("credentials.0.external_id").(string),
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 		},
-		Regions: d.Get("regions").([]string),
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	awsDspm := api.NewCloudAccount(d.Get("name").(string),

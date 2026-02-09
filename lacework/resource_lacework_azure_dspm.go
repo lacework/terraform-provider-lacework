@@ -101,7 +101,7 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 			ClientId:     d.Get("credentials.0.client_id").(string),
 			ClientSecret: d.Get("credentials.0.client_secret").(string),
 		},
-		Regions: d.Get("regions").([]string),
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	azureDspm := api.NewCloudAccount(d.Get("name").(string),
@@ -190,7 +190,7 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 			ClientId:     d.Get("credentials.0.client_id").(string),
 			ClientSecret: d.Get("credentials.0.client_secret").(string),
 		},
-		Regions: d.Get("regions").([]string),
+		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
 	azureDspm := api.NewCloudAccount(d.Get("name").(string),
