@@ -83,6 +83,39 @@ func resourceLaceworkAzureDspm() *schema.Resource {
 				Default:     5,
 				Description: "The number of attempts to create the external integration.",
 			},
+			"scan_frequency_hours": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "How often to scan, in hours.",
+			},
+			"max_file_size_mb": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Maximum file size to scan, in megabytes.",
+			},
+			"datastore_filters": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Description: "Filter which datastores are scanned.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"filter_mode": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Filter mode: 'include' or 'exclude'.",
+						},
+						"datastore_names": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "List of datastore names to include or exclude. Required when filter_mode is 'INCLUDE' or 'EXCLUDE', must not be set when filter_mode is 'ALL'.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -108,6 +141,14 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		api.AzureDspmCloudAccount,
 		azureDspmData,
 	)
+
+	dspmProps, err := buildDspmProps(d)
+	if err != nil {
+		return err
+	}
+	if dspmProps != nil {
+		azureDspm.Props = dspmProps
+	}
 
 	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
 		retries--
@@ -135,6 +176,10 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		d.Set("intg_guid", cloudAccount.IntgGuid)
 		d.Set("name", cloudAccount.Name)
 		d.Set("server_token", cloudAccount.ServerToken)
+
+		if err := updateDspmStatus(d, lacework, cloudAccount.ServerToken); err != nil {
+			log.Printf("[WARN] Failed to update DSPM status: %s", err)
+		}
 
 		log.Printf("[INFO] Created %s cloud account integration with guid: %v\n",
 			api.AzureDspmCloudAccount.String(), cloudAccount.IntgGuid)
@@ -167,6 +212,7 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		creds["client_secret"] = cloudAccount.Data.Credentials.ClientSecret
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("regions", dspmData.Regions)
+		readDspmProps(d, cloudAccount.Props)
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AzureDspmCloudAccount.String(), cloudAccount.IntgGuid,
 		)
@@ -198,12 +244,24 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 		azureDspmData,
 	)
 
+	dspmProps, err := buildDspmProps(d)
+	if err != nil {
+		return err
+	}
+	if dspmProps != nil {
+		azureDspm.Props = dspmProps
+	}
+
 	azureDspm.IntgGuid = d.Id()
 
 	log.Printf("[INFO] Updating %s integration with data:\n%+v\n", api.AzureDspmCloudAccount.String(), azureDspmData)
-	_, err := lacework.V2.CloudAccounts.UpdateAzureDspm(azureDspm)
+	_, err = lacework.V2.CloudAccounts.UpdateAzureDspm(azureDspm)
 	if err != nil {
 		return err
+	}
+
+	if err := updateDspmStatus(d, lacework, d.Get("server_token").(string)); err != nil {
+		log.Printf("[WARN] Failed to update DSPM status: %s", err)
 	}
 
 	log.Printf("[INFO] Updated %s cloud account integration with guid: %v\n", api.AzureDspmCloudAccount.String(), d.Id())
