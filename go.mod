@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	github.com/gruntwork-io/terratest v0.48.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.27.0
-	github.com/lacework/go-sdk/v2 v2.10.0
+	github.com/lacework/go-sdk/v2 v2.12.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/text v0.25.0
@@ -76,6 +76,3 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-// TODO: remove this once the go-sdk is released
-replace github.com/lacework/go-sdk/v2 => /home/coder/go/src/github.com/lacework/go-sdk
