@@ -111,7 +111,8 @@ func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta inte
 
 	var (
 		lacework = meta.(*api.Client)
-		datadog  = api.NewAlertChannel(d.Get("name").(string),
+		datadog  = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.DatadogAlertChannelType,
 			api.DatadogDataV2{
 				DatadogSite: site,
@@ -126,7 +127,6 @@ func resourceLaceworkAlertChannelDatadogCreate(d *schema.ResourceData, meta inte
 
 	log.Printf("[INFO] Creating %s integration with data:\n%+v\n", api.DatadogAlertChannelType, datadog)
 	response, err := lacework.V2.AlertChannels.Create(datadog)
-
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,8 @@ func resourceLaceworkAlertChannelDatadogUpdate(d *schema.ResourceData, meta inte
 
 	var (
 		lacework = meta.(*api.Client)
-		datadog  = api.NewAlertChannel(d.Get("name").(string),
+		datadog  = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.DatadogAlertChannelType,
 			api.DatadogDataV2{
 				DatadogSite: site,

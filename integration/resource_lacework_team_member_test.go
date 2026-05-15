@@ -45,7 +45,6 @@ func _TestTeamMemberStandalone(t *testing.T) { //nolint
 	assert.Equal(t, "Vatasha", tmUpdate.Props.FirstName)
 	assert.Equal(t, "White", tmUpdate.Props.LastName)
 	assert.True(t, tmUpdate.Props.AccountAdmin)
-
 }
 
 // TestTeamMemberOrg applies integration terraform:

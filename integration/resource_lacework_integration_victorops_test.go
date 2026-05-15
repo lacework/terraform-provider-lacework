@@ -28,7 +28,8 @@ func TestVictorOpsAlertChannelCreate(t *testing.T) {
 	// Update VictorOps Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
 		"channel_name": "VictorOps Alert Channel Updated",
-		"webhook_url":  "https://alert.victorops.com/integrations/generic/12331114/alert/31e945ee-5cad-44e7-afb0-97c20ea80dd8/database"}
+		"webhook_url":  "https://alert.victorops.com/integrations/generic/12331114/alert/31e945ee-5cad-44e7-afb0-97c20ea80dd8/database",
+	}
 
 	update := terraform.Apply(t, terraformOptions)
 

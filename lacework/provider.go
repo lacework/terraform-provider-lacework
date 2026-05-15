@@ -246,7 +246,8 @@ func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, 
 			Summary:  "Unable to create Lacework API client",
 			Detail: fmt.Sprintf(
 				"profile '%s' not found.\n\nTry using the Lacework CLI command 'lacework configure --profile %s'",
-				profile, profile),
+				profile, profile,
+			),
 		})
 		return nil, diags
 	}

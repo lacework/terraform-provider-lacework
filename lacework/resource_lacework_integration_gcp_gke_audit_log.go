@@ -164,7 +164,8 @@ func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, met
 			"organization_id MUST be set when integration_type is ORGANIZATION, ")
 	}
 
-	gcpGkeAuditLog := api.NewCloudAccount(d.Get("name").(string),
+	gcpGkeAuditLog := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.GcpGkeAuditCloudAccount,
 		gcpGkeAuditLogData,
 	)
@@ -180,9 +181,11 @@ func resourceLaceworkIntegrationGcpGkeAuditLogCreate(d *schema.ResourceData, met
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("error creating %s cloud account integration: %s",
+					fmt.Errorf(
+						"error creating %s cloud account integration: %s",
 						api.GcpGkeAuditCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
@@ -240,7 +243,8 @@ func resourceLaceworkIntegrationGcpGkeAuditLogRead(d *schema.ResourceData, meta 
 		d.Set("project_id", cloudAccount.Data.ProjectId)
 		d.Set("subscription", cloudAccount.Data.SubscriptionName)
 
-		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
+		log.Printf(
+			"[INFO] Read %s cloud account integration with guid: %v\n",
 			api.GcpGkeAuditCloudAccount.String(), cloudAccount.IntgGuid,
 		)
 		return nil
@@ -267,7 +271,8 @@ func resourceLaceworkIntegrationGcpGkeAuditLogUpdate(d *schema.ResourceData, met
 		}
 	)
 
-	gcpGkeAuditLog := api.NewCloudAccount(d.Get("name").(string),
+	gcpGkeAuditLog := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.GcpGkeAuditCloudAccount,
 		gcpGkeAuditLogData,
 	)

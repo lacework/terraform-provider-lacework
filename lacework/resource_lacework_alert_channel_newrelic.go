@@ -73,7 +73,8 @@ func resourceLaceworkAlertChannelNewRelic() *schema.Resource {
 func resourceLaceworkAlertChannelNewRelicCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		relic    = api.NewAlertChannel(d.Get("name").(string),
+		relic    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.NewRelicInsightsAlertChannelType,
 			api.NewRelicInsightsDataV2{
 				AccountID: d.Get("account_id").(int),
@@ -142,7 +143,8 @@ func resourceLaceworkAlertChannelNewRelicRead(d *schema.ResourceData, meta inter
 func resourceLaceworkAlertChannelNewRelicUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		relic    = api.NewAlertChannel(d.Get("name").(string),
+		relic    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.NewRelicInsightsAlertChannelType,
 			api.NewRelicInsightsDataV2{
 				AccountID: d.Get("account_id").(int),

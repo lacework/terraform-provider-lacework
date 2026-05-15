@@ -32,7 +32,8 @@ func TestAlertChannelCloudWatchCreate(t *testing.T) {
 
 	// Update CloudwatchEb Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"name": "AWS Cloudwatch Alert Channel Updated"}
+		"name": "AWS Cloudwatch Alert Channel Updated",
+	}
 
 	update := terraform.Apply(t, terraformOptions)
 	assert.Equal(t, "AWS Cloudwatch Alert Channel Updated", GetAlertChannelName(update))

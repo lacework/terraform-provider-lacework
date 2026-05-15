@@ -104,7 +104,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogCreate(d *schema.ResourceData, met
 		}
 	)
 
-	awsEksAuditLog := api.NewCloudAccount(d.Get("name").(string),
+	awsEksAuditLog := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsEksAuditCloudAccount,
 		awsEksAuditLogData,
 	)
@@ -120,9 +121,11 @@ func resourceLaceworkIntegrationAwsEksAuditLogCreate(d *schema.ResourceData, met
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("error creating %s cloud account integration: %s",
+					fmt.Errorf(
+						"error creating %s cloud account integration: %s",
 						api.AwsEksAuditCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
@@ -180,7 +183,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogRead(d *schema.ResourceData, meta 
 			d.Set("s3_bucket_arn", cloudAccount.Data.S3BucketArn)
 		}
 
-		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
+		log.Printf(
+			"[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsEksAuditCloudAccount.String(), cloudAccount.IntgGuid,
 		)
 		return nil
@@ -203,7 +207,8 @@ func resourceLaceworkIntegrationAwsEksAuditLogUpdate(d *schema.ResourceData, met
 		}
 	)
 
-	awsEksAuditLog := api.NewCloudAccount(d.Get("name").(string),
+	awsEksAuditLog := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsEksAuditCloudAccount,
 		awsEksAuditLogData,
 	)

@@ -104,9 +104,11 @@ func resourceLaceworkIntegrationAwsCfgCreate(d *schema.ResourceData, meta interf
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
+					fmt.Errorf(
+						"Error creating %s integration: %s",
 						api.AwsCfgCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",

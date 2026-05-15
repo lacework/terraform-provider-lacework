@@ -145,7 +145,8 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewCloudAccount(d.Get("name").(string),
+	data := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.GcpCfgCloudAccount,
 		api.GcpCfgData{
 			ID:     d.Get("resource_id").(string),
@@ -167,13 +168,14 @@ func resourceLaceworkIntegrationGcpCfgCreate(d *schema.ResourceData, meta interf
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.GcpCfgCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(data)
-
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
+					fmt.Errorf(
+						"Error creating %s integration: %s",
 						api.GcpCfgCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -248,7 +250,8 @@ func resourceLaceworkIntegrationGcpCfgUpdate(d *schema.ResourceData, meta interf
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewCloudAccount(d.Get("name").(string),
+	data := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.GcpCfgCloudAccount,
 		api.GcpCfgData{
 			ID:     d.Get("resource_id").(string),

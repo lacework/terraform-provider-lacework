@@ -89,7 +89,8 @@ func resourceLaceworkAlertChannelAwsCloudWatch() *schema.Resource {
 func resourceLaceworkAlertChannelAwsCloudWatchCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAlertChannel(d.Get("name").(string),
+		alert    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.CloudwatchEbAlertChannelType,
 			api.CloudwatchEbDataV2{
 				EventBusArn:   d.Get("event_bus_arn").(string),
@@ -157,7 +158,8 @@ func resourceLaceworkAlertChannelAwsCloudWatchRead(d *schema.ResourceData, meta 
 func resourceLaceworkAlertChannelAwsCloudWatchUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAlertChannel(d.Get("name").(string),
+		alert    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.CloudwatchEbAlertChannelType,
 			api.CloudwatchEbDataV2{
 				EventBusArn:   d.Get("event_bus_arn").(string),

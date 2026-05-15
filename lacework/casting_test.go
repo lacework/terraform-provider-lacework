@@ -18,7 +18,8 @@ func TestCastStringSlice(t *testing.T) {
 		actual   = castStringSlice(i)
 	)
 
-	assert.ElementsMatchf(t, expected, actual,
+	assert.ElementsMatchf(
+		t, expected, actual,
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
@@ -32,7 +33,8 @@ func TestCastAndTransformStringSlice(t *testing.T) {
 	expected := []string{"ABC", "XYZ", "BUBULUBU"}
 	actual := castAndTransformStringSlice(i, strings.ToUpper)
 
-	assert.ElementsMatchf(t, expected, actual,
+	assert.ElementsMatchf(
+		t, expected, actual,
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
@@ -46,7 +48,8 @@ func TestCastStringSliceToInterface(t *testing.T) {
 	subject := []string{"abc", "xyz", "bubulubu"}
 	actual := castStringSliceToInterface(subject)
 
-	assert.ElementsMatchf(t, expected, actual,
+	assert.ElementsMatchf(
+		t, expected, actual,
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
@@ -61,7 +64,8 @@ func TestCastAttributeToStringSlice(t *testing.T) {
 	testResource.Set("limit_by_tags", expected)
 	actual := castAttributeToStringSlice(testResource, "limit_by_tags")
 
-	assert.ElementsMatchf(t, expected, actual,
+	assert.ElementsMatchf(
+		t, expected, actual,
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
@@ -76,7 +80,8 @@ func TestCastAttributeToStringSliceEmpty(t *testing.T) {
 	testResource.Set("limit_by_tags", expected)
 	actual := castAttributeToStringSlice(testResource, "limit_by_tags")
 
-	assert.Equal(t, expected, actual,
+	assert.Equal(
+		t, expected, actual,
 		"%s did not match expected value: %s", actual, expected,
 	)
 }
@@ -105,7 +110,8 @@ func TestCastAttributeToArrayOfStringKeyMapOfStrings(t *testing.T) {
 	testResource.Set("limit_by_label", mockLabels)
 	subject := castAttributeToArrayOfKeyValueMap(testResource, "limit_by_label")
 
-	assert.ElementsMatch(t, expected, subject,
+	assert.ElementsMatch(
+		t, expected, subject,
 		"%s did not match expected value: %s", subject, expected,
 	)
 }
@@ -124,7 +130,8 @@ func TestCastArrayOfStringKeyMapOfStringsToLimitByLabelSet(t *testing.T) {
 
 	subject := castArrayOfStringKeyMapOfStringsToLimitByLabelSet(mockLabels)
 
-	assert.Equal(t, expected, subject,
+	assert.Equal(
+		t, expected, subject,
 		"%s did not match expected value: %s", subject, expected,
 	)
 }

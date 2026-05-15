@@ -181,7 +181,8 @@ func resourceLaceworkAlertRuleCreate(d *schema.ResourceData, meta interface{}) e
 		alertCategories = d.Get("alert_categories").(*schema.Set).List()
 		alertSources    = d.Get("alert_sources").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
-		alertRule       = api.NewAlertRule(d.Get("name").(string),
+		alertRule       = api.NewAlertRule(
+			d.Get("name").(string),
 			api.AlertRuleConfig{
 				Description:        d.Get("description").(string),
 				Channels:           castStringSlice(alertChannels),
@@ -270,7 +271,8 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 		alertCategories = d.Get("alert_categories").(*schema.Set).List()
 		alertSources    = d.Get("alert_sources").(*schema.Set).List()
 		severities      = api.NewAlertRuleSeverities(castAttributeToStringSlice(d, "severities"))
-		alertRule       = api.NewAlertRule(d.Get("name").(string),
+		alertRule       = api.NewAlertRule(
+			d.Get("name").(string),
 			api.AlertRuleConfig{
 				Description:        d.Get("description").(string),
 				Channels:           castStringSlice(alertChannels),
@@ -291,7 +293,6 @@ func resourceLaceworkAlertRuleUpdate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] Updating alert rule with data:\n%+v\n", alertRule)
 	response, err := lacework.V2.AlertRules.Update(alertRule)
-
 	if err != nil {
 		return err
 	}

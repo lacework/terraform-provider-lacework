@@ -203,7 +203,8 @@ func resourceLaceworkIntegrationGar() *schema.Resource {
 func resourceLaceworkIntegrationGarCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.GcpGarContainerRegistry,
 		api.GcpGarData{
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
@@ -285,7 +286,8 @@ func resourceLaceworkIntegrationGarRead(d *schema.ResourceData, meta interface{}
 func resourceLaceworkIntegrationGarUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.GcpGarContainerRegistry,
 		api.GcpGarData{
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),

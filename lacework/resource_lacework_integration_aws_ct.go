@@ -145,7 +145,8 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 		awsCtSqsData.EncodeAccountMappingFile(accountMapFileBytes)
 	}
 
-	awsCtSqs := api.NewCloudAccount(d.Get("name").(string),
+	awsCtSqs := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsCtSqsCloudAccount,
 		awsCtSqsData,
 	)
@@ -161,9 +162,11 @@ func resourceLaceworkIntegrationAwsCloudTrailCreate(d *schema.ResourceData, meta
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s cloud account integration: %s",
+					fmt.Errorf(
+						"Error creating %s cloud account integration: %s",
 						api.AwsCtSqsCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
@@ -239,7 +242,8 @@ func resourceLaceworkIntegrationAwsCloudTrailRead(d *schema.ResourceData, meta i
 			return fmt.Errorf("Error flattening organization account mapping: %s", err)
 		}
 
-		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
+		log.Printf(
+			"[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsCtSqsCloudAccount.String(), cloudAccount.IntgGuid,
 		)
 		return nil
@@ -272,7 +276,8 @@ func resourceLaceworkIntegrationAwsCloudTrailUpdate(d *schema.ResourceData, meta
 		awsCtSqsData.EncodeAccountMappingFile(accountMapFileBytes)
 	}
 
-	awsCtSqs := api.NewCloudAccount(d.Get("name").(string),
+	awsCtSqs := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsCtSqsCloudAccount,
 		awsCtSqsData,
 	)

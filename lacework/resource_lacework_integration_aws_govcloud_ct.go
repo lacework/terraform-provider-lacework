@@ -96,7 +96,8 @@ func resourceLaceworkIntegrationAwsGovCloudCTCreate(d *schema.ResourceData, meta
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		aws      = api.NewCloudAccount(d.Get("name").(string),
+		aws      = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AwsUsGovCtSqsCloudAccount,
 			api.AwsUsGovCtSqsData{
 				QueueUrl: d.Get("queue_url").(string),
@@ -120,9 +121,11 @@ func resourceLaceworkIntegrationAwsGovCloudCTCreate(d *schema.ResourceData, meta
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
+					fmt.Errorf(
+						"Error creating %s integration: %s",
 						api.AwsUsGovCtSqsCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -191,7 +194,8 @@ func resourceLaceworkIntegrationAwsGovCloudCTRead(d *schema.ResourceData, meta i
 func resourceLaceworkIntegrationAwsGovCloudCTUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		aws      = api.NewCloudAccount(d.Get("name").(string),
+		aws      = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AwsUsGovCtSqsCloudAccount,
 			api.AwsUsGovCtSqsData{
 				QueueUrl: d.Get("queue_url").(string),

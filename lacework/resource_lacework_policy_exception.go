@@ -234,9 +234,7 @@ func importLaceworkPolicyException(_ context.Context, d *schema.ResourceData, me
 }
 
 func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string) (constraints []api.PolicyExceptionConstraint, err error) {
-	var (
-		list []any
-	)
+	var list []any
 
 	if d.Get(attr) == nil {
 		return nil, errors.Errorf("attribute %s not found", attr)
@@ -270,7 +268,7 @@ func castSchemaSetToConstraintArray(d *schema.ResourceData, attr string) (constr
 }
 
 func sanitizeConstraintKeys(itemMap map[string]any) map[string]any {
-	var newMap = make(map[string]any)
+	newMap := make(map[string]any)
 	var constraintMapList []any
 	for k, v := range itemMap {
 		if k == "field_value_map" || k == "field_values_map" {

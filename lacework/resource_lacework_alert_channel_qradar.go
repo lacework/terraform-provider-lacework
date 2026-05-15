@@ -102,7 +102,8 @@ func resourceLaceworkAlertChannelQRadarCreate(d *schema.ResourceData, meta inter
 
 	var (
 		lacework = meta.(*api.Client)
-		qradar   = api.NewAlertChannel(d.Get("name").(string),
+		qradar   = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.IbmQRadarAlertChannelType,
 			api.IbmQRadarDataV2{
 				HostURL:        d.Get("host_url").(string),
@@ -175,7 +176,8 @@ func resourceLaceworkAlertChannelQRadarUpdate(d *schema.ResourceData, meta inter
 
 	var (
 		lacework = meta.(*api.Client)
-		qradar   = api.NewAlertChannel(d.Get("name").(string),
+		qradar   = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.IbmQRadarAlertChannelType,
 			api.IbmQRadarDataV2{
 				HostURL:        d.Get("host_url").(string),

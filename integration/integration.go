@@ -34,12 +34,12 @@ func generateUniqueApiToken() string {
 }
 
 func lwTestCLient() (lw *api.Client) {
-	lw, err := api.NewClient(os.Getenv("LW_ACCOUNT"),
+	lw, err := api.NewClient(
+		os.Getenv("LW_ACCOUNT"),
 		api.WithApiKeys(os.Getenv("LW_API_KEY"), os.Getenv("LW_API_SECRET")),
 		api.WithSubaccount(os.Getenv("LW_SUBACCOUNT")),
 		api.WithApiV2(),
 	)
-
 	if err != nil {
 		log.Fatalf("Failed to create new go-sdk client, %v", err)
 	}
@@ -47,13 +47,13 @@ func lwTestCLient() (lw *api.Client) {
 }
 
 func lwOrgTestClient() (lw *api.Client) {
-	lw, err := api.NewClient(os.Getenv("LW_ACCOUNT"),
+	lw, err := api.NewClient(
+		os.Getenv("LW_ACCOUNT"),
 		api.WithApiKeys(os.Getenv("LW_API_KEY"), os.Getenv("LW_API_SECRET")),
 		api.WithSubaccount(os.Getenv("LW_SUBACCOUNT")),
 		api.WithApiV2(),
 		api.WithOrgAccess(),
 	)
-
 	if err != nil {
 		log.Fatalf("Failed to create new go-sdk client, %v", err)
 	}
@@ -178,7 +178,6 @@ func GetGcpCfgIntegration(result string) api.GcpCfgIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.CloudAccounts.GetGcpCfg(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -190,7 +189,6 @@ func GetContainerRegisteryGar(result string) api.GcpGarIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetGcpGar(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -202,7 +200,6 @@ func GetGcpAgentlessScanningResponse(result string) api.GcpSidekickIntegrationRe
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.CloudAccounts.GetGcpSidekick(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -214,7 +211,6 @@ func GetAzureAgentlessScanningResponse(result string) api.AzureSidekickIntegrati
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.CloudAccounts.GetAzureSidekick(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -226,7 +222,6 @@ func GetContainerRegisteryGcr(result string) api.GcpGcrIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetGcpGcr(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -238,7 +233,6 @@ func GetContainerRegisteryDockerhub(result string) api.DockerhubIntegrationRespo
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetDockerhub(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -250,7 +244,6 @@ func GetContainerRegisteryGhcr(result string) api.GhcrIntegrationResponse {
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetGhcr(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -262,7 +255,6 @@ func GetContainerRegisteryInlineScanner(result string) api.InlineScannerIntegrat
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetInlineScanner(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -274,7 +266,6 @@ func GetContainerRegisteryProxyScanner(result string) api.ProxyScannerIntegratio
 	id := GetIDFromTerraResults(result)
 
 	res, err := LwClient.V2.ContainerRegistries.GetProxyScanner(id)
-
 	if err != nil {
 		log.Fatalf("Unable to find integration id: %s\n Response: %v", id, res)
 	}
@@ -287,7 +278,6 @@ func GetResourceGroupV2Description(result string) string {
 
 	var response api.ResourceGroupResponse
 	err := LwClient.V2.ResourceGroups.Get(id, &response)
-
 	if err != nil {
 		log.Fatalf("Unable to find resource group id: %s\n Response: %v", id, response)
 	}

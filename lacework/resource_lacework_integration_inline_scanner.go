@@ -164,7 +164,8 @@ func resourceLaceworkIntegrationInlineScannerRead(d *schema.ResourceData, meta i
 func resourceLaceworkIntegrationInlineScannerUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.InlineScannerContainerRegistry,
 		api.InlineScannerData{
 			IdentifierTag: castAttributeToArrayOfKeyValueMap(d, "identifier_tag"),

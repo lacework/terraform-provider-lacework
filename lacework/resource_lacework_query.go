@@ -53,9 +53,7 @@ func resourceLaceworkQuery() *schema.Resource {
 }
 
 func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	query := api.NewQuery{
 		QueryID:   d.Get("query_id").(string),
@@ -79,9 +77,7 @@ func resourceLaceworkQueryCreate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading Query with guid %s\n", d.Id())
 	response, err := lacework.V2.Query.Get(d.Id())
@@ -101,9 +97,7 @@ func resourceLaceworkQueryRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceLaceworkQueryUpdate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	if d.HasChange("query_id") {
 		return errors.New("unable to change ID of an existing query")

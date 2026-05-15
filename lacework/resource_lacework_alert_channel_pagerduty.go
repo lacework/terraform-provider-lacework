@@ -70,7 +70,8 @@ func resourceLaceworkAlertChannelPagerDuty() *schema.Resource {
 func resourceLaceworkAlertChannelPagerDutyCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAlertChannel(d.Get("name").(string),
+		alert    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.PagerDutyApiAlertChannelType,
 			api.PagerDutyApiDataV2{
 				IntegrationKey: d.Get("integration_key").(string),
@@ -136,7 +137,8 @@ func resourceLaceworkAlertChannelPagerDutyRead(d *schema.ResourceData, meta inte
 func resourceLaceworkAlertChannelPagerDutyUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		alert    = api.NewAlertChannel(d.Get("name").(string),
+		alert    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.PagerDutyApiAlertChannelType,
 			api.PagerDutyApiDataV2{
 				IntegrationKey: d.Get("integration_key").(string),

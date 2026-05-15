@@ -33,7 +33,8 @@ func TestDatadogAlertChannelCreate(t *testing.T) {
 		"channel_name":    "Datadog Alert Channel Updated",
 		"datadog_site":    "com",
 		"datadog_service": "Logs Detail",
-		"api_key":         apiKey}
+		"api_key":         apiKey,
+	}
 
 	update := terraform.Apply(t, terraformOptions)
 

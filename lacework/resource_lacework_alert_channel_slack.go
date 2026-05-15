@@ -69,7 +69,8 @@ func resourceLaceworkAlertChannelSlack() *schema.Resource {
 func resourceLaceworkAlertChannelSlackCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		slack    = api.NewAlertChannel(d.Get("name").(string),
+		slack    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.SlackChannelAlertChannelType,
 			api.SlackChannelDataV2{
 				SlackUrl: d.Get("slack_url").(string),
@@ -134,7 +135,8 @@ func resourceLaceworkAlertChannelSlackRead(d *schema.ResourceData, meta interfac
 func resourceLaceworkAlertChannelSlackUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		slack    = api.NewAlertChannel(d.Get("name").(string),
+		slack    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.SlackChannelAlertChannelType,
 			api.SlackChannelDataV2{
 				SlackUrl: d.Get("slack_url").(string),

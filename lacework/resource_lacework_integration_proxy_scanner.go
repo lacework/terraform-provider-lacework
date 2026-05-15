@@ -192,7 +192,8 @@ func resourceLaceworkIntegrationProxyScannerRead(d *schema.ResourceData, meta in
 func resourceLaceworkIntegrationProxyScannerUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.ProxyScannerContainerRegistry,
 		api.ProxyScannerData{
 			LimitByTag:   castAttributeToStringSlice(d, "limit_by_tags"),

@@ -1,13 +1,13 @@
 package integration
 
 import (
-	"testing"
-
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/lacework/go-sdk/v2/api"
 	"github.com/stretchr/testify/assert"
-	"time"
 )
 
 // TestAlertRuleCreate applies integration terraform:
@@ -59,8 +59,10 @@ func TestAlertRuleCreate(t *testing.T) {
 	terraformOptions.Vars = map[string]interface{}{
 		"name":        name,
 		"description": "Updated Alert Rule created by Terraform",
-		"channels": []string{"TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527",
-			"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76"},
+		"channels": []string{
+			"TECHALLY_01BA9DCAF34B654254D6BF92E5C24023951C3F812B07527",
+			"TECHALLY_013F08F1B3FA97E7D54463DECAEEACF9AEA3AEACF863F76",
+		},
 		"severities":          []string{"High", "Medium"},
 		"alert_subcategories": []string{"Compliance", "User", "Platform"},
 		"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
@@ -106,7 +108,8 @@ func TestAlertRuleSeverities(t *testing.T) {
 
 	actualSeverities := terraform.Output(t, terraformOptions, "severities")
 
-	assert.Equal(t,
+	assert.Equal(
+		t,
 		[]string{"Critical", "High", "Medium", "Low"},
 		api.NewAlertRuleSeveritiesFromIntSlice(createProps.Data.Filter.Severity).ToStringSlice(),
 	)
@@ -123,7 +126,8 @@ func TestAlertRuleSeverities(t *testing.T) {
 
 	_, err := terraform.ApplyE(t, invalidOptions)
 	if assert.Error(t, err) {
-		assert.Contains(t,
+		assert.Contains(
+			t,
 			err.Error(),
 			"severities.0: can only be 'Critical', 'High', 'Medium', 'Low', 'Info'",
 		)
@@ -181,7 +185,8 @@ func TestAlertRuleCategories(t *testing.T) {
 
 	_, err := terraform.ApplyE(t, invalidOptions)
 	if assert.Error(t, err) {
-		assert.Contains(t,
+		assert.Contains(
+			t,
 			err.Error(),
 			"expected alert_subcategories.0 to be one of [Compliance Application Cloud Activity File Machine User Platform Kubernetes Activity Registry SystemCall Host Vulnerability Container Vulnerability Threat Intel App Cloud K8sActivity]",
 		)
@@ -195,8 +200,10 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"name": name,
-			"event_categories": []string{"Compliance", "App", "Cloud", "File", "Machine",
-				"User", "Platform", "K8sActivity", "Registry", "SystemCall"},
+			"event_categories": []string{
+				"Compliance", "App", "Cloud", "File", "Machine",
+				"User", "Platform", "K8sActivity", "Registry", "SystemCall",
+			},
 			"alert_categories":    []string{"Policy"},
 			"resource_group_name": fmt.Sprintf("Used for Alert Rule Test - %s", time.Now()),
 		},
@@ -229,7 +236,8 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 
 	_, err := terraform.ApplyE(t, invalidOptions)
 	if assert.Error(t, err) {
-		assert.Contains(t,
+		assert.Contains(
+			t,
 			err.Error(),
 			"expected event_categories.0 to be one of [Compliance Application Cloud Activity File Machine User Platform Kubernetes Activity Registry SystemCall Host Vulnerability Container Vulnerability Threat Intel App Cloud K8sActivity]",
 		)

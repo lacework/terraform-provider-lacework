@@ -226,7 +226,8 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.GcpSidekickCloudAccount.String())
 
-	data := api.NewCloudAccount(d.Get("name").(string),
+	data := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
 		api.GcpSidekickData{
 			ID:     d.Get("resource_id").(string),
@@ -259,13 +260,14 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 		log.Printf("[INFO] Creating %s integration\n", api.GcpSidekickCloudAccount.String())
 		log.Printf("[INFO] Creating %v integration\n", data)
 		response, err := lacework.V2.CloudAccounts.CreateGcpSidekick(data)
-
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
+					fmt.Errorf(
+						"Error creating %s integration: %s",
 						api.GcpSidekickCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -357,7 +359,8 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 		resourceLevel = api.GcpOrganizationIntegration
 	}
 
-	data := api.NewCloudAccount(d.Get("name").(string),
+	data := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
 		api.GcpSidekickData{
 			ID:     d.Get("resource_id").(string),

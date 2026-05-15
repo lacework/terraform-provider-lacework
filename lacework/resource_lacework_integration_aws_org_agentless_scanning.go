@@ -228,7 +228,8 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 		awsOrgAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
-	awsOrgAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
+	awsOrgAgentlessScanning := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsSidekickOrgCloudAccount,
 		awsOrgAgentlessScanningData,
 	)
@@ -244,9 +245,11 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s cloud account integration: %s",
+					fmt.Errorf(
+						"Error creating %s cloud account integration: %s",
 						api.AwsSidekickOrgCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
@@ -323,7 +326,8 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningRead(d *schema.ResourceDa
 			return fmt.Errorf("Error flattening organization account mapping: %s", err)
 		}
 
-		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
+		log.Printf(
+			"[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsSidekickOrgCloudAccount.String(), cloudAccount.IntgGuid,
 		)
 		return nil
@@ -334,9 +338,7 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningRead(d *schema.ResourceDa
 }
 
 func resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	awsOrgAgentlessScanningData := api.AwsSidekickOrgData{
 		ScanFrequency:           d.Get("scan_frequency").(int),
@@ -368,7 +370,8 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate(d *schema.Resource
 		awsOrgAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
-	awsOrgAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
+	awsOrgAgentlessScanning := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsSidekickOrgCloudAccount,
 		awsOrgAgentlessScanningData,
 	)

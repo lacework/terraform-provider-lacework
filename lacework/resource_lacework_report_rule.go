@@ -317,7 +317,8 @@ func resourceLaceworkReportRuleCreate(d *schema.ResourceData, meta interface{}) 
 		channels       = d.Get("email_alert_channels").(*schema.Set).List()
 	)
 
-	reportRule, err := api.NewReportRule(d.Get("name").(string),
+	reportRule, err := api.NewReportRule(
+		d.Get("name").(string),
 		api.ReportRuleConfig{
 			Description:        d.Get("description").(string),
 			Severities:         severities,
@@ -326,7 +327,6 @@ func resourceLaceworkReportRuleCreate(d *schema.ResourceData, meta interface{}) 
 			NotificationTypes:  getReportRuleNotifications(d),
 		},
 	)
-
 	if err != nil {
 		return err
 	}
@@ -390,7 +390,8 @@ func resourceLaceworkReportRuleUpdate(d *schema.ResourceData, meta interface{}) 
 		channels       = d.Get("email_alert_channels").(*schema.Set).List()
 	)
 
-	reportRule, err := api.NewReportRule(d.Get("name").(string),
+	reportRule, err := api.NewReportRule(
+		d.Get("name").(string),
 		api.ReportRuleConfig{
 			Description:        d.Get("description").(string),
 			Severities:         severities,
@@ -399,7 +400,6 @@ func resourceLaceworkReportRuleUpdate(d *schema.ResourceData, meta interface{}) 
 			NotificationTypes:  getReportRuleNotifications(d),
 		},
 	)
-
 	if err != nil {
 		return err
 	}

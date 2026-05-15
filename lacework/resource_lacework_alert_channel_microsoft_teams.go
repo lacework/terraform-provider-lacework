@@ -69,7 +69,8 @@ func resourceLaceworkAlertChannelMicrosoftTeams() *schema.Resource {
 func resourceLaceworkAlertChannelMicrosoftTeamsCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework       = meta.(*api.Client)
-		microsoftTeams = api.NewAlertChannel(d.Get("name").(string),
+		microsoftTeams = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.MicrosoftTeamsAlertChannelType,
 			api.MicrosoftTeamsData{
 				TeamsURL: d.Get("webhook_url").(string),
@@ -134,7 +135,8 @@ func resourceLaceworkAlertChannelMicrosoftTeamsRead(d *schema.ResourceData, meta
 func resourceLaceworkAlertChannelMicrosoftTeamsUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework       = meta.(*api.Client)
-		microsoftTeams = api.NewAlertChannel(d.Get("name").(string),
+		microsoftTeams = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.MicrosoftTeamsAlertChannelType,
 			api.MicrosoftTeamsData{
 				TeamsURL: d.Get("webhook_url").(string),
