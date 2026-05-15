@@ -57,11 +57,9 @@ func getAuthTypeFromRaw(raw api.ContainerRegistryRaw) (string, error) {
 				}
 			}
 		}
-
 	}
 
 	return "", errors.New("field AwsAuthType not found in response.")
-
 }
 
 func resourceLaceworkIntegrationEcr() *schema.Resource {
@@ -306,7 +304,8 @@ func resourceLaceworkIntegrationEcrUpdate(d *schema.ResourceData, meta interface
 }
 
 func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lacework *api.Client) error {
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.AwsEcrContainerRegistry,
 		api.AwsEcrIamRoleData{
 			CrossAccountCredentials: api.AwsEcrCrossAccountCredentials{
@@ -351,7 +350,8 @@ func resourceLaceworkIntegrationEcrUpdateWithIAMRole(d *schema.ResourceData, lac
 }
 
 func resourceLaceworkIntegrationEcrUpdateWithAccessKey(d *schema.ResourceData, lacework *api.Client) error {
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.AwsEcrContainerRegistry,
 		api.AwsEcrAccessKeyData{
 			AccessKeyCredentials: api.AwsEcrAccessKeyCredentials{
@@ -458,7 +458,8 @@ func resourceLaceworkIntegrationEcrCreateWithAccessKey(d *schema.ResourceData, l
 		NonOSPackageEval: d.Get("non_os_package_support").(bool),
 	}
 
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.AwsEcrContainerRegistry,
 		iamRoleData,
 	)
@@ -526,7 +527,8 @@ func resourceLaceworkIntegrationEcrCreateWithIAMRole(d *schema.ResourceData, lac
 		NonOSPackageEval: d.Get("non_os_package_support").(bool),
 	}
 
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.AwsEcrContainerRegistry,
 		iamRoleData,
 	)

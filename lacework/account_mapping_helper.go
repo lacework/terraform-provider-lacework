@@ -64,7 +64,8 @@ func flattenMappings(mappings map[string]interface{}) *schema.Set {
 		mappingValue := m.(map[string]interface{})
 		res.Add(map[string]interface{}{
 			"lacework_account": laceworkAccount,
-			"aws_accounts": schema.NewSet(schema.HashSchema(awsAccountsSchema),
+			"aws_accounts": schema.NewSet(
+				schema.HashSchema(awsAccountsSchema),
 				mappingValue["aws_accounts"].([]interface{}),
 			),
 		})

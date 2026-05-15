@@ -35,7 +35,8 @@ func TestAgentAccessTokenCreate(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"token_name": tokenName,
-		}})
+		},
+	})
 	defer terraform.Destroy(t, dataTerraformOptions)
 
 	terraform.InitAndApplyAndIdempotent(t, dataTerraformOptions)

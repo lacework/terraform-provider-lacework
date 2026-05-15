@@ -91,7 +91,8 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		aws      = api.NewCloudAccount(d.Get("name").(string),
+		aws      = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AwsUsGovCfgCloudAccount,
 			api.AwsUsGovCfgData{
 				Credentials: api.AwsUsGovCfgCredentials{
@@ -114,9 +115,11 @@ func resourceLaceworkIntegrationAwsGovCloudCfgCreate(d *schema.ResourceData, met
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("error creating %s integration: %s",
+					fmt.Errorf(
+						"error creating %s integration: %s",
 						api.AwsUsGovCfgCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -184,7 +187,8 @@ func resourceLaceworkIntegrationAwsGovCloudCfgRead(d *schema.ResourceData, meta 
 func resourceLaceworkIntegrationAwsGovCloudCfgUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		aws      = api.NewCloudAccount(d.Get("name").(string),
+		aws      = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AwsCfgCloudAccount,
 			api.AwsUsGovCfgData{
 				Credentials: api.AwsUsGovCfgCredentials{

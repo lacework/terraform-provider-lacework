@@ -22,7 +22,8 @@ func TestQueryCreateCloudtrail(t *testing.T) {
 		EnvVars:      tokenEnvVar,
 		Vars: map[string]interface{}{
 			"query_id": queryID,
-			"query":    queryString},
+			"query":    queryString,
+		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -75,7 +76,8 @@ func TestQueryCreate(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
 			"query_id": queryID,
-			"query":    queryStringK8},
+			"query":    queryStringK8,
+		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -130,7 +132,8 @@ func TestQueryDeprecatedSytaxWithID(t *testing.T) {
 		TerraformDir: "../examples/resource_lacework_query",
 		Vars: map[string]interface{}{
 			"query_id": "Lql_Terraform_Query",
-			"query":    queryDeprecatedSyntaxWithID},
+			"query":    queryDeprecatedSyntaxWithID,
+		},
 	})
 	defer terraform.Destroy(t, terraformOptions)
 

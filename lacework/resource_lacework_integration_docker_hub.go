@@ -121,7 +121,8 @@ func resourceLaceworkIntegrationDockerHub() *schema.Resource {
 
 func resourceLaceworkIntegrationDockerHubCreate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.DockerhubContainerRegistry,
 		api.DockerhubData{
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),
@@ -165,7 +166,6 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 
 	log.Printf("[INFO] Reading %s registry type with guid: %v\n", api.DockerhubContainerRegistry.String(), d.Id())
 	response, err := lacework.V2.ContainerRegistries.GetDockerhub(d.Id())
-
 	if err != nil {
 		return resourceNotFound(d, err)
 	}
@@ -199,7 +199,8 @@ func resourceLaceworkIntegrationDockerHubRead(d *schema.ResourceData, meta inter
 
 func resourceLaceworkIntegrationDockerHubUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
-	data := api.NewContainerRegistry(d.Get("name").(string),
+	data := api.NewContainerRegistry(
+		d.Get("name").(string),
 		api.DockerhubContainerRegistry,
 		api.DockerhubData{
 			LimitByTag:       castAttributeToStringSlice(d, "limit_by_tags"),

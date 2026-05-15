@@ -116,7 +116,8 @@ func resourceLaceworkAlertChannelSplunk() *schema.Resource {
 func resourceLaceworkAlertChannelSplunkCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		splunk   = api.NewAlertChannel(d.Get("name").(string),
+		splunk   = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.SplunkHecAlertChannelType,
 			api.SplunkHecDataV2{
 				Channel:  d.Get("channel").(string),
@@ -200,7 +201,8 @@ func resourceLaceworkAlertChannelSplunkRead(d *schema.ResourceData, meta interfa
 func resourceLaceworkAlertChannelSplunkUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		splunk   = api.NewAlertChannel(d.Get("name").(string),
+		splunk   = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.SplunkHecAlertChannelType,
 			api.SplunkHecDataV2{
 				Channel:  d.Get("channel").(string),

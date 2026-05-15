@@ -77,7 +77,8 @@ func resourceLaceworkAlertChannelEmail() *schema.Resource {
 func resourceLaceworkAlertChannelEmailCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework       = meta.(*api.Client)
-		emailAlertChan = api.NewAlertChannel(d.Get("name").(string),
+		emailAlertChan = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.EmailUserAlertChannelType,
 			api.EmailUserData{
 				ChannelProps: api.EmailUserChannelProps{
@@ -144,7 +145,8 @@ func resourceLaceworkAlertChannelEmailRead(d *schema.ResourceData, meta interfac
 func resourceLaceworkAlertChannelEmailUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework       = meta.(*api.Client)
-		emailAlertChan = api.NewAlertChannel(d.Get("name").(string),
+		emailAlertChan = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.EmailUserAlertChannelType,
 			api.EmailUserData{
 				ChannelProps: api.EmailUserChannelProps{

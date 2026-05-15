@@ -208,7 +208,7 @@ func castSchemaSetToArrayOfAlertTemplate(d *schema.ResourceData, attr string, te
 }
 
 func sanitizeAlertTemplateKeys(itemMap map[string]interface{}) map[string]interface{} {
-	var newMap = make(map[string]interface{})
+	newMap := make(map[string]interface{})
 	for k, v := range itemMap {
 		newKey := strings.Replace(k, "_", "", -1)
 		newMap[newKey] = v

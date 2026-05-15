@@ -25,7 +25,8 @@ func TestAlertChannelSlackCreate(t *testing.T) {
 
 	// Update Slack Alert Channel
 	terraformOptions.Vars = map[string]interface{}{
-		"channel_name": "Slack Alert Channel Updated"}
+		"channel_name": "Slack Alert Channel Updated",
+	}
 
 	update := terraform.Apply(t, terraformOptions)
 	assert.Equal(t, "Slack Alert Channel Updated", GetAlertChannelName(update))

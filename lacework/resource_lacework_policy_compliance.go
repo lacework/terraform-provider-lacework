@@ -105,9 +105,7 @@ func resourceLaceworkPolicyCompliance() *schema.Resource {
 }
 
 func resourceLaceworkPolicyComplianceCreate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	policy := api.NewPolicy{
 		PolicyType:   api.PolicyTypeCompliance.String(),
@@ -139,9 +137,7 @@ func resourceLaceworkPolicyComplianceCreate(d *schema.ResourceData, meta interfa
 }
 
 func resourceLaceworkPolicyComplianceRead(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading Policy with guid %s\n", d.Id())
 	response, err := lacework.V2.Policy.Get(d.Id())
@@ -168,9 +164,7 @@ func resourceLaceworkPolicyComplianceRead(d *schema.ResourceData, meta interface
 }
 
 func resourceLaceworkPolicyComplianceUpdate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	if d.HasChange("policy_id_suffix") {
 		return errors.New("unable to change ID of an existing policy")

@@ -68,7 +68,8 @@ func resourceLaceworkAlertChannelVictorOps() *schema.Resource {
 func resourceLaceworkAlertChannelVictorOpsCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		victor   = api.NewAlertChannel(d.Get("name").(string),
+		victor   = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.VictorOpsAlertChannelType,
 			api.VictorOpsDataV2{
 				Url: d.Get("webhook_url").(string),
@@ -140,7 +141,8 @@ func resourceLaceworkAlertChannelVictorOpsRead(d *schema.ResourceData, meta inte
 func resourceLaceworkAlertChannelVictorOpsUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		victor   = api.NewAlertChannel(d.Get("name").(string),
+		victor   = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.VictorOpsAlertChannelType,
 			api.VictorOpsDataV2{
 				Url: d.Get("webhook_url").(string),

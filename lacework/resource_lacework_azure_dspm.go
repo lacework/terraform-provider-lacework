@@ -137,7 +137,8 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
-	azureDspm := api.NewCloudAccount(d.Get("name").(string),
+	azureDspm := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AzureDspmCloudAccount,
 		azureDspmData,
 	)
@@ -157,9 +158,11 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s cloud account integration: %s",
+					fmt.Errorf(
+						"Error creating %s cloud account integration: %s",
 						api.AzureDspmCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
@@ -213,7 +216,8 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("regions", dspmData.Regions)
 		readDspmProps(d, cloudAccount.Props)
-		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
+		log.Printf(
+			"[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AzureDspmCloudAccount.String(), cloudAccount.IntgGuid,
 		)
 		return nil
@@ -224,9 +228,7 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 }
 
 func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	azureDspmData := api.AzureDspmData{
 		TenantID:          d.Get("tenant_id").(string),
@@ -239,7 +241,8 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 		Regions: castAttributeToStringSlice(d, "regions"),
 	}
 
-	azureDspm := api.NewCloudAccount(d.Get("name").(string),
+	azureDspm := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AzureDspmCloudAccount,
 		azureDspmData,
 	)

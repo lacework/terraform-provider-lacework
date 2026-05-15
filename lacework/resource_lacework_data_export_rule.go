@@ -106,7 +106,7 @@ func resourceLaceworkDataExportRuleCreate(d *schema.ResourceData, meta interface
 }
 
 func resourceLaceworkDataExportRuleRead(d *schema.ResourceData, meta interface{}) error {
-	var lacework = meta.(*api.Client)
+	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Reading data export rule with guid %s\n", d.Id())
 	response, err := lacework.V2.DataExportRules.Get(d.Id())

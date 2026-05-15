@@ -214,7 +214,6 @@ func resourceLaceworkIntegrationGcrRead(d *schema.ResourceData, meta interface{}
 
 	log.Printf("[INFO] Reading %s registry type with guid: %v\n", api.GcpGcrContainerRegistry.String(), d.Id())
 	response, err := lacework.V2.ContainerRegistries.GetGcpGcr(d.Id())
-
 	if err != nil {
 		return resourceNotFound(d, err)
 	}

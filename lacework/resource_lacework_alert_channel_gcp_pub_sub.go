@@ -143,7 +143,8 @@ func resourceLaceworkAlertChannelGcpPubSub() *schema.Resource {
 func resourceLaceworkAlertChannelGcpPubSubCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework  = meta.(*api.Client)
-		gcpPubSub = api.NewAlertChannel(d.Get("name").(string),
+		gcpPubSub = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.GcpPubSubAlertChannelType,
 			api.GcpPubSubDataV2{
 				ProjectID:     d.Get("project_id").(string),
@@ -224,7 +225,8 @@ func resourceLaceworkAlertChannelGcpPubSubRead(d *schema.ResourceData, meta inte
 func resourceLaceworkAlertChannelGcpPubSubUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework  = meta.(*api.Client)
-		gcpPubSub = api.NewAlertChannel(d.Get("name").(string),
+		gcpPubSub = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.GcpPubSubAlertChannelType,
 			api.GcpPubSubDataV2{
 				ProjectID:     d.Get("project_id").(string),

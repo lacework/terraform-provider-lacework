@@ -158,7 +158,8 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		awsAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
-	awsAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
+	awsAgentlessScanning := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsSidekickCloudAccount,
 		awsAgentlessScanningData,
 	)
@@ -174,9 +175,11 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s cloud account integration: %s",
+					fmt.Errorf(
+						"Error creating %s cloud account integration: %s",
 						api.AwsSidekickCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s cloud account integration. (retrying %d more time(s))\n%s\n",
@@ -232,7 +235,8 @@ func resourceLaceworkIntegrationAwsAgentlessScanningRead(d *schema.ResourceData,
 
 		d.Set("credentials", []map[string]string{creds})
 
-		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
+		log.Printf(
+			"[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AwsSidekickCloudAccount.String(), cloudAccount.IntgGuid,
 		)
 		return nil
@@ -243,9 +247,7 @@ func resourceLaceworkIntegrationAwsAgentlessScanningRead(d *schema.ResourceData,
 }
 
 func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceData, meta interface{}) error {
-	var (
-		lacework = meta.(*api.Client)
-	)
+	lacework := meta.(*api.Client)
 
 	awsAgentlessScanningData := api.AwsSidekickData{
 		ScanFrequency:           d.Get("scan_frequency").(int),
@@ -265,7 +267,8 @@ func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceDat
 		awsAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
-	awsAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
+	awsAgentlessScanning := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AwsSidekickCloudAccount,
 		awsAgentlessScanningData,
 	)

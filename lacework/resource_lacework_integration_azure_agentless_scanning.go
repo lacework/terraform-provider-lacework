@@ -207,7 +207,8 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.AzureSidekickCloudAccount.String())
 
-	data := api.NewCloudAccount(d.Get("name").(string),
+	data := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AzureSidekickCloudAccount,
 		api.AzureSidekickData{
 			IntegrationLevel: integrationLevel,
@@ -239,13 +240,14 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 		log.Printf("[INFO] Creating %s integration\n", api.AzureSidekickCloudAccount.String())
 		log.Printf("[INFO] Creating %v integration\n", data)
 		response, err := lacework.V2.CloudAccounts.CreateAzureSidekick(data)
-
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("Error creating %s integration: %s",
+					fmt.Errorf(
+						"Error creating %s integration: %s",
 						api.AzureSidekickCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -335,7 +337,8 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 		integrationLevel = api.AzureTenantIntegration
 	}
 
-	data := api.NewCloudAccount(d.Get("name").(string),
+	data := api.NewCloudAccount(
+		d.Get("name").(string),
 		api.AzureSidekickCloudAccount,
 		api.AzureSidekickData{
 			ScanningSubscriptionId: d.Get("scanning_subscription_id").(string),

@@ -101,7 +101,8 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		azure    = api.NewCloudAccount(d.Get("name").(string),
+		azure    = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AzureAlSeqCloudAccount,
 			api.AzureAlSeqData{
 				TenantID: d.Get("tenant_id").(string),
@@ -124,9 +125,11 @@ func resourceLaceworkIntegrationAzureActivityLogCreate(d *schema.ResourceData, m
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("error creating %s integration: %s",
+					fmt.Errorf(
+						"error creating %s integration: %s",
 						api.AzureAlSeqCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -190,7 +193,8 @@ func resourceLaceworkIntegrationAzureActivityLogRead(d *schema.ResourceData, met
 func resourceLaceworkIntegrationAzureActivityLogUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		azure    = api.NewCloudAccount(d.Get("name").(string),
+		azure    = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AzureAlSeqCloudAccount,
 			api.AzureAlSeqData{
 				TenantID: d.Get("tenant_id").(string),

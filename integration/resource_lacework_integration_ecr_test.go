@@ -81,7 +81,8 @@ func TestIntegrationECRNumImagesValidation(t *testing.T) {
 			_, err := terraform.PlanE(t, terraformOptions)
 			if !tests.valid {
 				if assert.Error(t, err) {
-					assert.Contains(t,
+					assert.Contains(
+						t,
 						err.Error(),
 						"expected limit_num_imgs to be one of [5 10 15]",
 					)
@@ -92,7 +93,7 @@ func TestIntegrationECRNumImagesValidation(t *testing.T) {
 		})
 	}
 
-	//Test omit num images
+	// Test omit num images
 	terraformOptions = terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples/resource_lacework_integration_ecr/iam_role",
 		EnvVars:      tokenEnvVar,

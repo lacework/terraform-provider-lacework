@@ -59,7 +59,6 @@ func resourceLaceworkManagedPoliciesCreate(d *schema.ResourceData, meta interfac
 func resourceLaceworkManagedPoliciesUpdate(d *schema.ResourceData, meta interface{}) error {
 	lacework := meta.(*api.Client)
 	policies, err := getBulkUpdatePolicies(d)
-
 	if err != nil {
 		return err
 	}
@@ -77,13 +76,11 @@ func resourceLaceworkManagedPoliciesRead(d *schema.ResourceData, meta interface{
 	lacework := meta.(*api.Client)
 
 	policiesListResponse, err := lacework.V2.Policy.List()
-
 	if err != nil {
 		return err
 	}
 
 	bulkUpdatePolicies, err := getBulkUpdatePolicies(d)
-
 	if err != nil {
 		// Return nil so that `destroy` can succeed
 		return nil

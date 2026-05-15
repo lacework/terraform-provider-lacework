@@ -105,7 +105,8 @@ func resourceLaceworkIntegrationAzureAdAlCreate(d *schema.ResourceData, meta int
 	var (
 		lacework = meta.(*api.Client)
 		retries  = d.Get("retries").(int)
-		azure    = api.NewCloudAccount(d.Get("name").(string),
+		azure    = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AzureAdAlCloudAccount,
 			api.AzureAdAlData{
 				TenantID:          d.Get("tenant_id").(string),
@@ -129,9 +130,11 @@ func resourceLaceworkIntegrationAzureAdAlCreate(d *schema.ResourceData, meta int
 		if err != nil {
 			if retries <= 0 {
 				return retry.NonRetryableError(
-					fmt.Errorf("error creating %s integration: %s",
+					fmt.Errorf(
+						"error creating %s integration: %s",
 						api.AzureAdAlCloudAccount.String(), err,
-					))
+					),
+				)
 			}
 			log.Printf(
 				"[INFO] Unable to create %s integration. (retrying %d more time(s))\n%s\n",
@@ -196,7 +199,8 @@ func resourceLaceworkIntegrationAzureAdAlRead(d *schema.ResourceData, meta inter
 func resourceLaceworkIntegrationAzureAdAlUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		azure    = api.NewCloudAccount(d.Get("name").(string),
+		azure    = api.NewCloudAccount(
+			d.Get("name").(string),
 			api.AzureAdAlCloudAccount,
 			api.AzureAdAlData{
 				TenantID:          d.Get("tenant_id").(string),

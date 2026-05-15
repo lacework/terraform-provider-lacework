@@ -165,7 +165,8 @@ func resourceLaceworkResourceGroup() *schema.Resource {
 }
 
 func importLaceworkResourceGroup(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData,
-	error) {
+	error,
+) {
 	lacework := meta.(*api.Client)
 
 	log.Printf("[INFO] Importing resource group.")
@@ -177,7 +178,6 @@ func importLaceworkResourceGroup(_ context.Context, d *schema.ResourceData, meta
 	}
 
 	err = readResourceGroup(d, &response)
-
 	if err != nil {
 		return nil, err
 	}

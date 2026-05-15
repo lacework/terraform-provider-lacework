@@ -88,7 +88,8 @@ func resourceLaceworkAlertChannelAwsS3() *schema.Resource {
 func resourceLaceworkAlertChannelAwsS3Create(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		s3       = api.NewAlertChannel(d.Get("name").(string),
+		s3       = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.AwsS3AlertChannelType,
 			api.AwsS3DataV2{
 				Credentials: api.AwsS3Credentials{
@@ -163,7 +164,8 @@ func resourceLaceworkAlertChannelAwsS3Read(d *schema.ResourceData, meta interfac
 func resourceLaceworkAlertChannelAwsS3Update(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		s3       = api.NewAlertChannel(d.Get("name").(string),
+		s3       = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.AwsS3AlertChannelType,
 			api.AwsS3DataV2{
 				Credentials: api.AwsS3Credentials{

@@ -69,7 +69,8 @@ func resourceLaceworkAlertChannelCiscoWebex() *schema.Resource {
 func resourceLaceworkAlertChannelCiscoWebexCreate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		webex    = api.NewAlertChannel(d.Get("name").(string),
+		webex    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.CiscoSparkWebhookAlertChannelType,
 			api.CiscoSparkWebhookDataV2{
 				Webhook: d.Get("webhook_url").(string),
@@ -134,7 +135,8 @@ func resourceLaceworkAlertChannelCiscoWebexRead(d *schema.ResourceData, meta int
 func resourceLaceworkAlertChannelCiscoWebexUpdate(d *schema.ResourceData, meta interface{}) error {
 	var (
 		lacework = meta.(*api.Client)
-		webex    = api.NewAlertChannel(d.Get("name").(string),
+		webex    = api.NewAlertChannel(
+			d.Get("name").(string),
 			api.CiscoSparkWebhookAlertChannelType,
 			api.CiscoSparkWebhookDataV2{
 				Webhook: d.Get("webhook_url").(string),
