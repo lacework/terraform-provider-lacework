@@ -61,9 +61,10 @@ func buildDspmProps(d *schema.ResourceData) (*api.DspmProps, error) {
 			if len(ids) == 0 {
 				return nil, fmt.Errorf("subscription_ids is required when subscription_filters.filter_mode is '%s'", filterMode)
 			}
-			cfg.SubscriptionFilters = &api.DspmSubscriptionFilters{
-				FilterMode:      filterMode,
-				SubscriptionIds: ids,
+			// Azure-facing HCL (subscription_*) maps to the cloud-agnostic account filter prop.
+			cfg.AccountFilters = &api.DspmAccountFilters{
+				FilterMode: filterMode,
+				AccountIds: ids,
 			}
 			hasProps = true
 		}
@@ -119,12 +120,12 @@ func readDspmProps(d *schema.ResourceData, props *api.DspmProps) {
 		d.Set("datastore_filters", []map[string]interface{}{filter})
 	}
 
-	if cfg.SubscriptionFilters != nil {
+	if cfg.AccountFilters != nil {
 		filter := map[string]interface{}{
-			"filter_mode": cfg.SubscriptionFilters.FilterMode,
+			"filter_mode": cfg.AccountFilters.FilterMode,
 		}
-		if cfg.SubscriptionFilters.SubscriptionIds != nil {
-			filter["subscription_ids"] = cfg.SubscriptionFilters.SubscriptionIds
+		if cfg.AccountFilters.AccountIds != nil {
+			filter["subscription_ids"] = cfg.AccountFilters.AccountIds
 		}
 		d.Set("subscription_filters", []map[string]interface{}{filter})
 	}
