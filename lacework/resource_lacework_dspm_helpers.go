@@ -52,6 +52,23 @@ func buildDspmProps(d *schema.ResourceData) (*api.DspmProps, error) {
 		}
 	}
 
+	if v, ok := d.GetOk("subscription_filters"); ok {
+		filters := v.([]interface{})
+		if len(filters) > 0 && filters[0] != nil {
+			filterMap := filters[0].(map[string]interface{})
+			filterMode := filterMap["filter_mode"].(string)
+			ids := castAndTransformStringSlice(filterMap["subscription_ids"].([]interface{}), func(s string) string { return s })
+			if len(ids) == 0 {
+				return nil, fmt.Errorf("subscription_ids is required when subscription_filters.filter_mode is '%s'", filterMode)
+			}
+			cfg.SubscriptionFilters = &api.DspmSubscriptionFilters{
+				FilterMode:      filterMode,
+				SubscriptionIds: ids,
+			}
+			hasProps = true
+		}
+	}
+
 	if !hasProps {
 		return nil, nil
 	}
@@ -100,5 +117,15 @@ func readDspmProps(d *schema.ResourceData, props *api.DspmProps) {
 			filter["datastore_names"] = cfg.DatastoreFilters.DatastoreNames
 		}
 		d.Set("datastore_filters", []map[string]interface{}{filter})
+	}
+
+	if cfg.SubscriptionFilters != nil {
+		filter := map[string]interface{}{
+			"filter_mode": cfg.SubscriptionFilters.FilterMode,
+		}
+		if cfg.SubscriptionFilters.SubscriptionIds != nil {
+			filter["subscription_ids"] = cfg.SubscriptionFilters.SubscriptionIds
+		}
+		d.Set("subscription_filters", []map[string]interface{}{filter})
 	}
 }
