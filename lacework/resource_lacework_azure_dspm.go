@@ -195,7 +195,7 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		azureDspmData,
 	)
 
-	dspmProps, err := buildDspmProps(d)
+	dspmProps, err := buildDspmProps(d, "subscription_filters", "subscription_ids")
 	if err != nil {
 		return err
 	}
@@ -266,7 +266,7 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		creds["client_secret"] = cloudAccount.Data.Credentials.ClientSecret
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("regions", dspmData.Regions)
-		readDspmProps(d, cloudAccount.Props)
+		readDspmProps(d, cloudAccount.Props, "subscription_filters", "subscription_ids")
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AzureDspmCloudAccount.String(), cloudAccount.IntgGuid,
 		)
@@ -304,7 +304,7 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 		azureDspmData,
 	)
 
-	dspmProps, err := buildDspmProps(d)
+	dspmProps, err := buildDspmProps(d, "subscription_filters", "subscription_ids")
 	if err != nil {
 		return err
 	}

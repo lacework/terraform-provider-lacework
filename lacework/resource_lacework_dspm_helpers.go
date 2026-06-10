@@ -9,7 +9,12 @@ import (
 
 // buildDspmProps extracts DSPM config fields from the Terraform schema and
 // builds an api.DspmProps. Returns nil if none of the optional fields are set.
-func buildDspmProps(d *schema.ResourceData) (*api.DspmProps, error) {
+//
+// accountFilterKey/accountIdsKey name the account-filter block + its id list in
+// the resource's schema: Azure exposes it as subscription_filters/subscription_ids,
+// AWS as account_filters/account_ids. Both map to the cloud-agnostic
+// ACCOUNT_FILTERS prop.
+func buildDspmProps(d *schema.ResourceData, accountFilterKey, accountIdsKey string) (*api.DspmProps, error) {
 	var cfg api.DspmPropsConfig
 	hasProps := false
 
@@ -52,16 +57,17 @@ func buildDspmProps(d *schema.ResourceData) (*api.DspmProps, error) {
 		}
 	}
 
-	if v, ok := d.GetOk("subscription_filters"); ok {
+	if v, ok := d.GetOk(accountFilterKey); ok {
 		filters := v.([]interface{})
 		if len(filters) > 0 && filters[0] != nil {
 			filterMap := filters[0].(map[string]interface{})
 			filterMode := filterMap["filter_mode"].(string)
-			ids := castAndTransformStringSlice(filterMap["subscription_ids"].([]interface{}), func(s string) string { return s })
+			ids := castAndTransformStringSlice(filterMap[accountIdsKey].([]interface{}), func(s string) string { return s })
 			if len(ids) == 0 {
-				return nil, fmt.Errorf("subscription_ids is required when subscription_filters.filter_mode is '%s'", filterMode)
+				return nil, fmt.Errorf("%s is required when %s.filter_mode is '%s'", accountIdsKey, accountFilterKey, filterMode)
 			}
-			// Azure-facing HCL (subscription_*) maps to the cloud-agnostic account filter prop.
+			// Cloud-facing HCL (subscription_* / account_*) maps to the cloud-agnostic
+			// account filter prop.
 			cfg.AccountFilters = &api.DspmAccountFilters{
 				FilterMode: filterMode,
 				AccountIds: ids,
@@ -94,8 +100,9 @@ func updateDspmStatus(d *schema.ResourceData, client *api.Client, serverToken st
 }
 
 // readDspmProps reads DSPM props from an API response and sets them on the
-// Terraform schema.
-func readDspmProps(d *schema.ResourceData, props *api.DspmProps) {
+// Terraform schema. accountFilterKey/accountIdsKey name the account-filter block
+// in the resource's schema (see buildDspmProps).
+func readDspmProps(d *schema.ResourceData, props *api.DspmProps, accountFilterKey, accountIdsKey string) {
 	if props == nil || props.Dspm == nil {
 		return
 	}
@@ -125,8 +132,8 @@ func readDspmProps(d *schema.ResourceData, props *api.DspmProps) {
 			"filter_mode": cfg.AccountFilters.FilterMode,
 		}
 		if cfg.AccountFilters.AccountIds != nil {
-			filter["subscription_ids"] = cfg.AccountFilters.AccountIds
+			filter[accountIdsKey] = cfg.AccountFilters.AccountIds
 		}
-		d.Set("subscription_filters", []map[string]interface{}{filter})
+		d.Set(accountFilterKey, []map[string]interface{}{filter})
 	}
 }
