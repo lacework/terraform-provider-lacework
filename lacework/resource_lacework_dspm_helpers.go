@@ -63,7 +63,7 @@ func buildDspmProps(d *schema.ResourceData, accountFilterKey, accountIdsKey stri
 			filterMap := filters[0].(map[string]interface{})
 			filterMode := filterMap["filter_mode"].(string)
 			ids := castAndTransformStringSlice(filterMap[accountIdsKey].([]interface{}), func(s string) string { return s })
-			if len(ids) == 0 {
+			if filterMode != "ALL" && len(ids) == 0 {
 				return nil, fmt.Errorf("%s is required when %s.filter_mode is '%s'", accountIdsKey, accountFilterKey, filterMode)
 			}
 			// Cloud-facing HCL (subscription_* / account_*) maps to the cloud-agnostic

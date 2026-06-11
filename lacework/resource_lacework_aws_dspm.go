@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -69,9 +70,27 @@ func resourceLaceworkAwsDspm() *schema.Resource {
 				},
 			},
 			"integration_level": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Deployment scope: 'ACCOUNT' (single account) or 'ORG' (whole organization). Defaults to ACCOUNT.",
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  api.AwsAccountIntegration,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch strings.ToUpper(value.(string)) {
+					case api.AwsAccountIntegration,
+						api.AwsOrgIntegration:
+						return nil, nil
+					default:
+						return nil, []error{
+							fmt.Errorf("%s: can only be either '%s' or '%s'",
+								key,
+								api.AwsAccountIntegration,
+								api.AwsOrgIntegration),
+						}
+					}
+				},
+				Description: "Integration level - ACCOUNT / ORG.",
 			},
 			"management_account": {
 				Type:        schema.TypeString,
@@ -154,6 +173,11 @@ func resourceLaceworkAwsDspmCreate(d *schema.ResourceData, meta interface{}) err
 		retries  = d.Get("retries").(int)
 	)
 
+	integrationLevel := api.AwsAccountIntegration
+	if strings.ToUpper(d.Get("integration_level").(string)) == api.AwsOrgIntegration {
+		integrationLevel = api.AwsOrgIntegration
+	}
+
 	awsDspmData := api.AwsDspmData{
 		AccountID: d.Get("account_id").(string),
 		BucketArn: d.Get("storage_bucket_arn").(string),
@@ -162,7 +186,7 @@ func resourceLaceworkAwsDspmCreate(d *schema.ResourceData, meta interface{}) err
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 		},
 		Regions:           castAttributeToStringSlice(d, "regions"),
-		IntegrationLevel:  d.Get("integration_level").(string),
+		IntegrationLevel:  integrationLevel,
 		ManagementAccount: d.Get("management_account").(string),
 	}
 
@@ -257,6 +281,11 @@ func resourceLaceworkAwsDspmUpdate(d *schema.ResourceData, meta interface{}) err
 		lacework = meta.(*api.Client)
 	)
 
+	integrationLevel := api.AwsAccountIntegration
+	if strings.ToUpper(d.Get("integration_level").(string)) == api.AwsOrgIntegration {
+		integrationLevel = api.AwsOrgIntegration
+	}
+
 	awsDspmData := api.AwsDspmData{
 		AccountID: d.Get("account_id").(string),
 		BucketArn: d.Get("storage_bucket_arn").(string),
@@ -265,7 +294,7 @@ func resourceLaceworkAwsDspmUpdate(d *schema.ResourceData, meta interface{}) err
 			RoleArn:    d.Get("credentials.0.role_arn").(string),
 		},
 		Regions:           castAttributeToStringSlice(d, "regions"),
-		IntegrationLevel:  d.Get("integration_level").(string),
+		IntegrationLevel:  integrationLevel,
 		ManagementAccount: d.Get("management_account").(string),
 	}
 
