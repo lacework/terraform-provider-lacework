@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -34,6 +35,52 @@ func resourceLaceworkAzureDspm() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "The ID of the Azure tenant where the DSPM scanner is deployed.",
+			},
+			"integration_level": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  api.AzureSubscriptionIntegration,
+				StateFunc: func(val interface{}) string {
+					return strings.ToUpper(val.(string))
+				},
+				ValidateFunc: func(value interface{}, key string) ([]string, []error) {
+					switch strings.ToUpper(value.(string)) {
+					case api.AzureSubscriptionIntegration,
+						api.AzureTenantIntegration:
+						return nil, nil
+					default:
+						return nil, []error{
+							fmt.Errorf("%s: can only be either '%s' or '%s'",
+								key,
+								api.AzureSubscriptionIntegration,
+								api.AzureTenantIntegration),
+						}
+					}
+				},
+				Description: "Integration level - TENANT / SUBSCRIPTION.",
+			},
+			"subscription_filters": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				MaxItems:    1,
+				Description: "For TENANT integrations, narrow which subscriptions are scanned. Stored on the integration props, mirroring datastore_filters.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"filter_mode": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "Filter mode: 'INCLUDE' or 'EXCLUDE'.",
+						},
+						"subscription_ids": {
+							Type:        schema.TypeList,
+							Optional:    true,
+							Description: "List of subscription IDs to include or exclude.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
 			},
 			"storage_account_url": {
 				Type:        schema.TypeString,
@@ -126,8 +173,14 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		retries  = d.Get("retries").(int)
 	)
 
+	integrationLevel := api.AzureSubscriptionIntegration
+	if strings.ToUpper(d.Get("integration_level").(string)) == api.AzureTenantIntegration {
+		integrationLevel = api.AzureTenantIntegration
+	}
+
 	azureDspmData := api.AzureDspmData{
 		TenantID:          d.Get("tenant_id").(string),
+		IntegrationLevel:  integrationLevel,
 		StorageAccountUrl: d.Get("storage_account_url").(string),
 		BlobContainerName: d.Get("blob_container_name").(string),
 		Credentials: api.AzureDspmCredentials{
@@ -142,7 +195,7 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		azureDspmData,
 	)
 
-	dspmProps, err := buildDspmProps(d)
+	dspmProps, err := buildDspmProps(d, "subscription_filters", "subscription_ids")
 	if err != nil {
 		return err
 	}
@@ -205,6 +258,7 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		d.Set("name", cloudAccount.Name)
 		d.Set("intg_guid", cloudAccount.IntgGuid)
 		d.Set("tenant_id", dspmData.TenantID)
+		d.Set("integration_level", dspmData.IntegrationLevel)
 		d.Set("storage_account_url", dspmData.StorageAccountUrl)
 		d.Set("blob_container_name", dspmData.BlobContainerName)
 		creds := make(map[string]string)
@@ -212,7 +266,7 @@ func resourceLaceworkAzureDspmRead(d *schema.ResourceData, meta interface{}) err
 		creds["client_secret"] = cloudAccount.Data.Credentials.ClientSecret
 		d.Set("credentials", []map[string]string{creds})
 		d.Set("regions", dspmData.Regions)
-		readDspmProps(d, cloudAccount.Props)
+		readDspmProps(d, cloudAccount.Props, "subscription_filters", "subscription_ids")
 		log.Printf("[INFO] Read %s cloud account integration with guid: %v\n",
 			api.AzureDspmCloudAccount.String(), cloudAccount.IntgGuid,
 		)
@@ -228,8 +282,14 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 		lacework = meta.(*api.Client)
 	)
 
+	integrationLevel := api.AzureSubscriptionIntegration
+	if strings.ToUpper(d.Get("integration_level").(string)) == api.AzureTenantIntegration {
+		integrationLevel = api.AzureTenantIntegration
+	}
+
 	azureDspmData := api.AzureDspmData{
 		TenantID:          d.Get("tenant_id").(string),
+		IntegrationLevel:  integrationLevel,
 		StorageAccountUrl: d.Get("storage_account_url").(string),
 		BlobContainerName: d.Get("blob_container_name").(string),
 		Credentials: api.AzureDspmCredentials{
@@ -244,7 +304,7 @@ func resourceLaceworkAzureDspmUpdate(d *schema.ResourceData, meta interface{}) e
 		azureDspmData,
 	)
 
-	dspmProps, err := buildDspmProps(d)
+	dspmProps, err := buildDspmProps(d, "subscription_filters", "subscription_ids")
 	if err != nil {
 		return err
 	}
