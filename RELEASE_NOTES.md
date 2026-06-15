@@ -1,7 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.3.0`.
+Another day, another release. These are the release notes for the version `v2.4.0`.
 
 ## Features
-* feat(dspm): expose additional fields for configuring DSPM scan behavior (#721) (Timothy Nguyen)([e32a20b5](https://github.com/lacework/terraform-provider-lacework/commit/e32a20b547ebc00c7111ebb308ef8ae90dfc655f))
+* feat(AWLS2-1027): org/tenant level support for DSPM integrations (#726) (Joseph Wilder)([cd74c422](https://github.com/lacework/terraform-provider-lacework/commit/cd74c42214a2046e3405dc67a6f050a9647ff53d))
 ## Other Changes
-* ci: version bump to v2.2.1-dev (Lacework)([96eb7184](https://github.com/lacework/terraform-provider-lacework/commit/96eb718446c41a7fcad35c05942a8475a11d27ad))
+* ci: version bump to v2.3.1-dev (Lacework)([60105ca9](https://github.com/lacework/terraform-provider-lacework/commit/60105ca96398628ec845216bfe990e0c15b57c74))
