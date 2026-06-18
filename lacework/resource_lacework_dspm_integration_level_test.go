@@ -10,12 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Regression for the v2.4.0 phantom-PATCH: the DSPM integration_level attribute must be
-// Optional+Computed with NO schema Default. A schema Default is applied to any config that
-// omits the field, which forced an in-place update (PATCH) on every DSPM integration created
-// before this attribute existed (their state has an empty integration_level) — breaking
-// existing deployments on provider upgrade. Computed lets an omitted value track the backend
-// with no diff; the Create/Update code still defaults the value actually sent to the API.
 func TestDspmIntegrationLevel_SchemaHasNoDefault(t *testing.T) {
 	for _, tc := range []struct {
 		name string
@@ -34,10 +28,6 @@ func TestDspmIntegrationLevel_SchemaHasNoDefault(t *testing.T) {
 	}
 }
 
-// TestDspmIntegrationLevel_OmittedProducesNoDiff exercises the behavior the schema guards:
-// an existing integration (integration_level already empty in state) whose config omits
-// integration_level must plan NO change for that attribute — i.e. Terraform won't PATCH it
-// on upgrade.
 func TestDspmIntegrationLevel_OmittedProducesNoDiff(t *testing.T) {
 	for _, tc := range []struct {
 		name   string

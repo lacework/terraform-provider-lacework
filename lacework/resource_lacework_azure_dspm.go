@@ -39,10 +39,6 @@ func resourceLaceworkAzureDspm() *schema.Resource {
 			"integration_level": {
 				Type:     schema.TypeString,
 				Optional: true,
-				// Computed (not Default): a schema Default is applied to any config
-				// that omits the field, which would force an in-place update (PATCH)
-				// on integrations created before this attribute existed. The actual
-				// value is defaulted to SUBSCRIPTION in Create/Update when unset.
 				Computed: true,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
