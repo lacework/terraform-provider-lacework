@@ -39,7 +39,7 @@ func resourceLaceworkAzureDspm() *schema.Resource {
 			"integration_level": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  api.AzureSubscriptionIntegration,
+				Computed: true,
 				StateFunc: func(val interface{}) string {
 					return strings.ToUpper(val.(string))
 				},
