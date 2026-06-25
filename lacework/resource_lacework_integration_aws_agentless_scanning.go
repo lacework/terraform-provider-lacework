@@ -66,6 +66,12 @@ var awsAgentlessScanningIntegrationSchema = map[string]*schema.Schema{
 		Default:     true,
 		Description: "Whether to scan stopped instances (true)",
 	},
+	"scan_short_lived_instances": {
+		Type:        schema.TypeBool,
+		Optional:    true,
+		Default:     false,
+		Description: "Whether to scan short-lived (ephemeral) instances",
+	},
 	"account_id": {
 		Type:        schema.TypeString,
 		Optional:    true,
@@ -146,6 +152,7 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
 		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
 		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
+		ScanShortLivedInstances: d.Get("scan_short_lived_instances").(bool),
 		AccountID:               d.Get("account_id").(string),
 		BucketArn:               d.Get("bucket_arn").(string),
 		CrossAccountCreds: api.AwsSidekickCrossAccountCredentials{
@@ -253,6 +260,7 @@ func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceDat
 		ScanHostVulnerabilities: d.Get("scan_host_vulnerabilities").(bool),
 		ScanMultiVolume:         d.Get("scan_multi_volume").(bool),
 		ScanStoppedInstances:    d.Get("scan_stopped_instances").(bool),
+		ScanShortLivedInstances: d.Get("scan_short_lived_instances").(bool),
 		AccountID:               d.Get("account_id").(string),
 		BucketArn:               d.Get("bucket_arn").(string),
 		CrossAccountCreds: api.AwsSidekickCrossAccountCredentials{
