@@ -1,12 +1,20 @@
 package main
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+	"flag"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 	"github.com/lacework/terraform-provider-lacework/lacework"
 )
 
 func main() {
+	var debug bool
+
+	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
+	flag.Parse()
+
 	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: lacework.Provider})
+		Debug:        debug,
+		ProviderFunc: lacework.Provider,
+	})
 }
