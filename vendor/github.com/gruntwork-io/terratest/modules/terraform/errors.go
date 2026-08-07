@@ -5,14 +5,6 @@ import (
 	"reflect"
 )
 
-// TgInvalidBinary occurs when a terragrunt function is called and the TerraformBinary is
-// set to a value other than terragrunt
-type TgInvalidBinary string
-
-func (err TgInvalidBinary) Error() string {
-	return fmt.Sprintf("terragrunt must be set as TerraformBinary to use this function. [ TerraformBinary : %s ]", string(err))
-}
-
 // OutputKeyNotFound occurs when terraform output does not contain a value for the key
 // specified in the function call
 type OutputKeyNotFound string
@@ -21,9 +13,9 @@ func (err OutputKeyNotFound) Error() string {
 	return fmt.Sprintf("output doesn't contain a value for the key %q", string(err))
 }
 
-// OutputValueNotMap occures when casting a found output value to a map fails
+// OutputValueNotMap occurs when casting a found output value to a map fails
 type OutputValueNotMap struct {
-	Value interface{}
+	Value any
 }
 
 func (err OutputValueNotMap) Error() string {
@@ -33,7 +25,7 @@ func (err OutputValueNotMap) Error() string {
 // OutputValueNotList occurs when casting a found output value to a
 // list of interfaces fails
 type OutputValueNotList struct {
-	Value interface{}
+	Value any
 }
 
 func (err OutputValueNotList) Error() string {
@@ -80,8 +72,8 @@ func (err InputFileKeyNotFound) Error() string {
 
 // PanicWhileParsingVarFile is returned when the HCL parsing routine panics due to errors.
 type PanicWhileParsingVarFile struct {
+	RecoveredValue any
 	ConfigFile     string
-	RecoveredValue interface{}
 }
 
 func (err PanicWhileParsingVarFile) Error() string {

@@ -20,20 +20,22 @@ type ResourceCount struct {
 const (
 	applyRegexp             = `Apply complete! Resources: (\d+) added, (\d+) changed, (\d+) destroyed\.`
 	destroyRegexp           = `Destroy complete! Resources: (\d+) destroyed\.`
-	planWithChangesRegexp   = `(\033\[1m)?Plan:(\033\[0m)? (\d+) to add, (\d+) to change, (\d+) to destroy\.`
+	planWithChangesRegexp   = `(\033\[1m)?Plan:(\033\[0m)? (\d+) to add, (\d+) to change, (\d+) to destroy`
 	planWithNoChangesRegexp = `No changes\. (Infrastructure is up-to-date)|(Your infrastructure matches the configuration)\.`
 
 	// '.' doesn't match newline by default in go. We must instruct the regex to match it with the 's' flag.
 	planWithNoInfraChangesRegexp = `(?s)You can apply this plan.+without changing any real infrastructure`
 )
 
-const getResourceCountErrMessage = "Can't parse Terraform output"
+// GetResourceCountErrMessage is the error message returned when terraform output cannot be parsed.
+const GetResourceCountErrMessage = "can't parse Terraform output"
 
 // GetResourceCount parses stdout/stderr of apply/plan/destroy commands and returns number of affected resources.
 // This will fail the test if given stdout/stderr isn't a valid output of apply/plan/destroy.
 func GetResourceCount(t testing.TestingT, cmdout string) *ResourceCount {
 	cnt, err := GetResourceCountE(t, cmdout)
 	require.NoError(t, err)
+
 	return cnt
 }
 
@@ -87,5 +89,5 @@ func GetResourceCountE(t testing.TestingT, cmdout string) (*ResourceCount, error
 		}
 	}
 
-	return nil, errors.New(getResourceCountErrMessage)
+	return nil, errors.New(GetResourceCountErrMessage)
 }

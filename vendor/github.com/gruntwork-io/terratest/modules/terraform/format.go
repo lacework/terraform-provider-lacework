@@ -3,23 +3,19 @@ package terraform
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 
-	"github.com/gruntwork-io/terratest/modules/collections"
+	"github.com/gruntwork-io/terratest/internal/lib/formatting"
 )
-
-const runAllCmd = "run-all"
 
 // TerraformCommandsWithLockSupport is a list of all the Terraform commands that
 // can obtain locks on Terraform state
 var TerraformCommandsWithLockSupport = []string{
 	"plan",
-	"plan-all",
 	"apply",
-	"apply-all",
 	"destroy",
-	"destroy-all",
 	"init",
 	"refresh",
 	"taint",
@@ -40,22 +36,21 @@ var TerraformCommandsWithPlanFileSupport = []string{
 // format the Terraform CLI expects (-var key=value).
 func FormatArgs(options *Options, args ...string) []string {
 	var terraformArgs []string
+
 	commandType := args[0]
-	// If the user is trying to run with run-all, then we need to make sure the command based args are based on the
-	// actual terraform command. E.g., we want to base the logic on `plan` when `run-all plan` is passed in, not
-	// `run-all`.
-	if commandType == runAllCmd {
-		commandType = args[1]
-	}
-	lockSupported := collections.ListContains(TerraformCommandsWithLockSupport, commandType)
-	planFileSupported := collections.ListContains(TerraformCommandsWithPlanFileSupport, commandType)
+	lockSupported := slices.Contains(TerraformCommandsWithLockSupport, commandType)
+	planFileSupported := slices.Contains(TerraformCommandsWithPlanFileSupport, commandType)
 
 	// Include -var and -var-file flags unless we're running 'apply' with a plan file
-	includeVars := !(commandType == "apply" && len(options.PlanFilePath) > 0)
+	includeVars := commandType != "apply" || options.PlanFilePath == ""
 
 	terraformArgs = append(terraformArgs, args...)
 
 	if includeVars {
+		for _, v := range options.MixedVars {
+			terraformArgs = append(terraformArgs, v.Args()...)
+		}
+
 		if options.SetVarsAfterVarFiles {
 			terraformArgs = append(terraformArgs, FormatTerraformArgs("-var-file", options.VarFiles)...)
 			terraformArgs = append(terraformArgs, FormatTerraformVarsAsArgs(options.Vars)...)
@@ -91,16 +86,18 @@ func FormatTerraformPlanFileAsArg(commandType string, outPath string) []string {
 	if outPath == "" {
 		return nil
 	}
+
 	if commandType == "plan" {
 		return []string{fmt.Sprintf("%s=%s", "-out", outPath)}
 	}
+
 	return []string{outPath}
 }
 
 // FormatTerraformVarsAsArgs formats the given variables as command-line args for Terraform (e.g. of the format
 // -var key=value).
-func FormatTerraformVarsAsArgs(vars map[string]interface{}) []string {
-	return formatTerraformArgs(vars, "-var", true)
+func FormatTerraformVarsAsArgs(vars map[string]any) []string {
+	return formatTerraformArgs(vars, "-var", true, false)
 }
 
 // FormatTerraformLockAsArgs formats the lock and lock-timeout variables
@@ -111,44 +108,51 @@ func FormatTerraformLockAsArgs(lockCheck bool, lockTimeout string) []string {
 		lockTimeoutValue := fmt.Sprintf("%s=%s", "-lock-timeout", lockTimeout)
 		lockArgs = append(lockArgs, lockTimeoutValue)
 	}
+
 	return lockArgs
 }
 
 // FormatTerraformPluginDirAsArgs formats the plugin-dir variable
 // -plugin-dir
 func FormatTerraformPluginDirAsArgs(pluginDir string) []string {
-	pluginArgs := []string{fmt.Sprintf("-plugin-dir=%v", pluginDir)}
-	if pluginDir == "" {
-		return nil
-	}
-	return pluginArgs
+	return formatting.FormatPluginDirAsArgs(pluginDir)
 }
 
 // FormatTerraformArgs will format multiple args with the arg name (e.g. "-var-file", []string{"foo.tfvars", "bar.tfvars", "baz.tfvars.json"})
 // returns "-var-file foo.tfvars -var-file bar.tfvars -var-file baz.tfvars.json"
 func FormatTerraformArgs(argName string, args []string) []string {
-	argsList := []string{}
+	argsList := make([]string, 0, 2*len(args)) //nolint:mnd // each arg produces a name-value pair
+
 	for _, argValue := range args {
 		argsList = append(argsList, argName, argValue)
 	}
+
 	return argsList
 }
 
 // FormatTerraformBackendConfigAsArgs formats the given variables as backend config args for Terraform (e.g. of the
 // format -backend-config=key=value).
-func FormatTerraformBackendConfigAsArgs(vars map[string]interface{}) []string {
-	return formatTerraformArgs(vars, "-backend-config", false)
+func FormatTerraformBackendConfigAsArgs(vars map[string]any) []string {
+	return formatting.FormatBackendConfigAsArgs(vars)
 }
 
 // Format the given vars into 'Terraform' format, with each var being prefixed with the given prefix. If
 // useSpaceAsSeparator is true, a space will separate the prefix and each var (e.g., -var foo=bar). If
-// useSpaceAsSeparator is false, an equals will separate the prefix and each var (e.g., -backend-config=foo=bar).
-func formatTerraformArgs(vars map[string]interface{}, prefix string, useSpaceAsSeparator bool) []string {
+// useSpaceAsSeparator is false, an equals will separate the prefix and each var (e.g., -backend-config=foo=bar). If
+// omitNil is false, then nil values will be included, (e.g. -backend-config=foo=null). If
+// omitNil is true, then nil values will not be included, (e.g. -backend-config=foo). If
+func formatTerraformArgs(vars map[string]any, prefix string, useSpaceAsSeparator bool, omitNil bool) []string {
 	var args []string
 
 	for key, value := range vars {
-		hclString := toHclString(value, false)
-		argValue := fmt.Sprintf("%s=%s", key, hclString)
+		var argValue string
+		if omitNil && value == nil {
+			argValue = key
+		} else {
+			hclString := toHclString(value, false)
+			argValue = fmt.Sprintf("%s=%s", key, hclString)
+		}
+
 		if useSpaceAsSeparator {
 			args = append(args, prefix, argValue)
 		} else {
@@ -164,12 +168,11 @@ func formatTerraformArgs(vars map[string]interface{}, prefix string, useSpaceAsS
 // arbitrary Go types to an HCL string. Therefore, this method is a simple implementation that correctly handles
 // ints, booleans, lists, and maps. Everything else is forced into a string using Sprintf. Hopefully, this approach is
 // good enough for the type of variables we deal with in Terratest.
-func toHclString(value interface{}, isNested bool) string {
+func toHclString(value any, isNested bool) string {
 	// Ideally, we'd use a type switch here to identify slices and maps, but we can't do that, because Go doesn't
-	// support generics, and the type switch only matches concrete types. So we could match []interface{}, but if
+	// support generics, and the type switch only matches concrete types. So we could match []any, but if
 	// a user passes in []string{}, that would NOT match (the same logic applies to maps). Therefore, we have to
-	// use reflection and manually convert into []interface{} and map[string]interface{}.
-
+	// use reflection and manually convert into []any and map[string]any.
 	if slice, isSlice := tryToConvertToGenericSlice(value); isSlice {
 		return sliceToHclString(slice)
 	} else if m, isMap := tryToConvertToGenericMap(value); isMap {
@@ -182,13 +185,13 @@ func toHclString(value interface{}, isNested bool) string {
 // Try to convert the given value to a generic slice. Return the slice and true if the underlying value itself was a
 // slice and an empty slice and false if it wasn't. This is necessary because Go is a shitty language that doesn't
 // have generics, nor useful utility methods built-in. For more info, see: http://stackoverflow.com/a/12754757/483528
-func tryToConvertToGenericSlice(value interface{}) ([]interface{}, bool) {
+func tryToConvertToGenericSlice(value any) ([]any, bool) {
 	reflectValue := reflect.ValueOf(value)
 	if reflectValue.Kind() != reflect.Slice {
-		return []interface{}{}, false
+		return []any{}, false
 	}
 
-	genericSlice := make([]interface{}, reflectValue.Len())
+	genericSlice := make([]any, reflectValue.Len())
 
 	for i := 0; i < reflectValue.Len(); i++ {
 		genericSlice[i] = reflectValue.Index(i).Interface()
@@ -200,18 +203,18 @@ func tryToConvertToGenericSlice(value interface{}) ([]interface{}, bool) {
 // Try to convert the given value to a generic map. Return the map and true if the underlying value itself was a
 // map and an empty map and false if it wasn't. This is necessary because Go is a shitty language that doesn't
 // have generics, nor useful utility methods built-in. For more info, see: http://stackoverflow.com/a/12754757/483528
-func tryToConvertToGenericMap(value interface{}) (map[string]interface{}, bool) {
+func tryToConvertToGenericMap(value any) (map[string]any, bool) {
 	reflectValue := reflect.ValueOf(value)
 	if reflectValue.Kind() != reflect.Map {
-		return map[string]interface{}{}, false
+		return map[string]any{}, false
 	}
 
 	reflectType := reflect.TypeOf(value)
 	if reflectType.Key().Kind() != reflect.String {
-		return map[string]interface{}{}, false
+		return map[string]any{}, false
 	}
 
-	genericMap := make(map[string]interface{}, reflectValue.Len())
+	genericMap := make(map[string]any, reflectValue.Len())
 
 	mapKeys := reflectValue.MapKeys()
 	for _, key := range mapKeys {
@@ -222,8 +225,8 @@ func tryToConvertToGenericMap(value interface{}) (map[string]interface{}, bool) 
 }
 
 // Convert a slice to an HCL string. See ToHclString for details.
-func sliceToHclString(slice []interface{}) string {
-	hclValues := []string{}
+func sliceToHclString(slice []any) string {
+	hclValues := make([]string, 0, len(slice))
 
 	for _, value := range slice {
 		hclValue := toHclString(value, true)
@@ -234,8 +237,8 @@ func sliceToHclString(slice []interface{}) string {
 }
 
 // Convert a map to an HCL string. See ToHclString for details.
-func mapToHclString(m map[string]interface{}) string {
-	keyValuePairs := []string{}
+func mapToHclString(m map[string]any) string {
+	keyValuePairs := make([]string, 0, len(m))
 
 	for key, value := range m {
 		keyValuePair := fmt.Sprintf(`"%s" = %s`, key, toHclString(value, true))
@@ -247,13 +250,12 @@ func mapToHclString(m map[string]interface{}) string {
 
 // Convert a primitive, such as a bool, int, or string, to an HCL string. If this isn't a primitive, force its value
 // using Sprintf. See ToHclString for details.
-func primitiveToHclString(value interface{}, isNested bool) string {
+func primitiveToHclString(value any, isNested bool) string {
 	if value == nil {
 		return "null"
 	}
 
 	switch v := value.(type) {
-
 	case bool:
 		return strconv.FormatBool(v)
 
@@ -263,7 +265,7 @@ func primitiveToHclString(value interface{}, isNested bool) string {
 			return fmt.Sprintf("\"%v\"", v)
 		}
 
-		return fmt.Sprintf("%v", v)
+		return v
 
 	default:
 		return fmt.Sprintf("%v", v)

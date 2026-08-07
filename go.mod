@@ -1,9 +1,9 @@
 module github.com/lacework/terraform-provider-lacework
 
-go 1.25.8
+go 1.26.0
 
 require (
-	github.com/gruntwork-io/terratest v0.48.1
+	github.com/gruntwork-io/terratest v1.0.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1
 	github.com/lacework/go-sdk/v2 v2.15.1
 	github.com/pkg/errors v0.9.1
@@ -71,6 +71,6 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/grpc v1.83.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
