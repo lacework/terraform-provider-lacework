@@ -15,7 +15,11 @@ func main() {
 	flag.Parse()
 
 	plugin.Serve(&plugin.ServeOpts{
-		Debug:        debug,
+		Debug: debug,
+		// Required for -debug: this is the key Terraform matches against the
+		// provider source address in TF_REATTACH_PROVIDERS. Without it the SDK
+		// falls back to the literal "provider" and reattach never matches.
+		ProviderAddr: "registry.terraform.io/lacework/lacework",
 		ProviderFunc: lacework.Provider,
 	})
 }
