@@ -183,7 +183,7 @@ func TestAlertRuleCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"expected alert_subcategories.0 to be one of [Compliance Application Cloud Activity File Machine User Platform Kubernetes Activity Registry SystemCall Host Vulnerability Container Vulnerability Threat Intel App Cloud K8sActivity]",
+			`expected alert_subcategories.0 to be one of ["Compliance" "Application" "Cloud Activity" "File" "Machine" "User" "Platform" "Kubernetes Activity" "Registry" "SystemCall" "Host Vulnerability" "Container Vulnerability" "Threat Intel" "App" "Cloud" "K8sActivity"]`,
 		)
 	}
 }
@@ -231,7 +231,7 @@ func TestAlertRuleDeprecatedEventCategories(t *testing.T) {
 	if assert.Error(t, err) {
 		assert.Contains(t,
 			err.Error(),
-			"expected event_categories.0 to be one of [Compliance Application Cloud Activity File Machine User Platform Kubernetes Activity Registry SystemCall Host Vulnerability Container Vulnerability Threat Intel App Cloud K8sActivity]",
+			`expected event_categories.0 to be one of ["Compliance" "Application" "Cloud Activity" "File" "Machine" "User" "Platform" "Kubernetes Activity" "Registry" "SystemCall" "Host Vulnerability" "Container Vulnerability" "Threat Intel" "App" "Cloud" "K8sActivity"]`,
 		)
 	}
 }
