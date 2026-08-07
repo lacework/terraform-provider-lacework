@@ -19,7 +19,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
 
@@ -39,7 +39,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
 
@@ -66,7 +66,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
       - name: Install Terraform
