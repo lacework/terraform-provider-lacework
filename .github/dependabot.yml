@@ -5,3 +5,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      # These modules share a release train and move together, so ungrouped
+      # updates arrive as several PRs that all touch the same module graph and
+      # invalidate each other on merge.
+      golang-x:
+        patterns:
+          - "golang.org/x/*"
+      hashicorp-terraform:
+        patterns:
+          - "github.com/hashicorp/terraform-*"
