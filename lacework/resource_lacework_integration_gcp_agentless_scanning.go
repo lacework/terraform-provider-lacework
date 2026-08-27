@@ -226,6 +226,10 @@ func resourceLaceworkIntegrationGcpAgentlessScanningCreate(d *schema.ResourceDat
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.GcpSidekickCloudAccount.String())
 
+	if err := validateAgentlessScanningQueryText(lacework, d.Get("query_text").(string)); err != nil {
+		return err
+	}
+
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.GcpSidekickCloudAccount,
 		api.GcpSidekickData{
@@ -355,6 +359,10 @@ func resourceLaceworkIntegrationGcpAgentlessScanningUpdate(d *schema.ResourceDat
 
 	if strings.ToUpper(d.Get("resource_level").(string)) == api.GcpOrganizationIntegration.String() {
 		resourceLevel = api.GcpOrganizationIntegration
+	}
+
+	if err := validateAgentlessScanningQueryText(lacework, d.Get("query_text").(string)); err != nil {
+		return err
 	}
 
 	data := api.NewCloudAccount(d.Get("name").(string),

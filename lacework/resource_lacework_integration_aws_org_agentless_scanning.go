@@ -228,6 +228,10 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningCreate(d *schema.Resource
 		awsOrgAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
+	if err := validateAgentlessScanningQueryText(lacework, awsOrgAgentlessScanningData.QueryText); err != nil {
+		return err
+	}
+
 	awsOrgAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
 		api.AwsSidekickOrgCloudAccount,
 		awsOrgAgentlessScanningData,
@@ -366,6 +370,10 @@ func resourceLaceworkIntegrationAwsOrgAgentlessScanningUpdate(d *schema.Resource
 
 	if d.Get("query_text") != nil {
 		awsOrgAgentlessScanningData.QueryText = d.Get("query_text").(string)
+	}
+
+	if err := validateAgentlessScanningQueryText(lacework, awsOrgAgentlessScanningData.QueryText); err != nil {
+		return err
 	}
 
 	awsOrgAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),

@@ -207,6 +207,10 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.AzureSidekickCloudAccount.String())
 
+	if err := validateAgentlessScanningQueryText(lacework, d.Get("query_text").(string)); err != nil {
+		return err
+	}
+
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.AzureSidekickCloudAccount,
 		api.AzureSidekickData{
@@ -333,6 +337,10 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 
 	if strings.ToUpper(d.Get("integration_level").(string)) == api.AzureTenantIntegration {
 		integrationLevel = api.AzureTenantIntegration
+	}
+
+	if err := validateAgentlessScanningQueryText(lacework, d.Get("query_text").(string)); err != nil {
+		return err
 	}
 
 	data := api.NewCloudAccount(d.Get("name").(string),
