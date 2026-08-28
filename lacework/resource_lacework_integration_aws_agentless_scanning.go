@@ -158,6 +158,10 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		awsAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
+	// Validated once, up front, and not retried: a genuinely invalid query
+	// fails identically on every attempt, so retrying would only add latency
+	// without any chance of succeeding. If this fails due to a transient
+	// network issue rather than the query itself, simply re-run apply.
 	if err := validateAgentlessScanningQueryText(lacework, awsAgentlessScanningData.QueryText); err != nil {
 		return err
 	}

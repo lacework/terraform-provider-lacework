@@ -12,8 +12,8 @@ import (
 //
 // The integration API itself does not validate query_text, so without this
 // check a syntactically invalid query (e.g. unbalanced braces, or a
-// nonexistent LQL function like is_null()) is silently persisted, and the
-// scanner falls back to scanning everything with no error surfaced anywhere.
+// nonexistent LQL function like is_null()) is silently persisted at
+// integration create/update time.
 //
 // An empty query_text means "scan everything" and is intentionally not
 // validated.
@@ -23,7 +23,7 @@ func validateAgentlessScanningQueryText(lacework *api.Client, queryText string) 
 	}
 
 	if _, err := lacework.V2.Query.Validate(api.ValidateQuery{QueryText: queryText}); err != nil {
-		return fmt.Errorf("invalid query_text: %s", err)
+		return fmt.Errorf("failed to validate query_text: %s", err)
 	}
 	return nil
 }
