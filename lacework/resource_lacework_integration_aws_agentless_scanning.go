@@ -269,8 +269,13 @@ func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceDat
 		awsAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
-	if err := validateAgentlessScanningQueryText(lacework, awsAgentlessScanningData.QueryText); err != nil {
-		return err
+	// Only re-validate when query_text actually changed, so an unrelated update
+	// (e.g. scan_frequency, enabled) doesn't get blocked by a pre-existing query
+	// that was accepted before this validation was added.
+	if d.HasChange("query_text") {
+		if err := validateAgentlessScanningQueryText(lacework, awsAgentlessScanningData.QueryText); err != nil {
+			return err
+		}
 	}
 
 	awsAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
