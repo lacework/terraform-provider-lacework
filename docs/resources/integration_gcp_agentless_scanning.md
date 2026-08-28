@@ -48,6 +48,11 @@ The following arguments are supported:
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
 * `retries` - (Optional) The number of attempts to create the external integration. Defaults to `5`.
 
+-> **Note:** Setting `query_text` validates the query against the Lacework API, which requires the
+	`Policies:read` permission in addition to `CloudAccounts:write`. A custom RBAC role scoped only to
+	`CloudAccounts` (e.g. `{"CloudAccounts": ["read", "write"]}`) will get a `403` error on apply if
+	`query_text` is set.
+
 ### Credentials
 These are the credentials of the service account that has read only access to the storage bucket.
 
