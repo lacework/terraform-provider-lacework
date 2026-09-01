@@ -207,6 +207,16 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 	}
 	log.Printf("[INFO] Creating %s integration\n", api.AzureSidekickCloudAccount.String())
 
+	queryText := d.Get("query_text").(string)
+
+	// Validated once, up front, and not retried: a genuinely invalid query
+	// fails identically on every attempt, so retrying would only add latency
+	// without any chance of succeeding. If this fails due to a transient
+	// network issue rather than the query itself, simply re-run apply.
+	if err := validateAgentlessScanningQueryText(lacework, queryText); err != nil {
+		return err
+	}
+
 	data := api.NewCloudAccount(d.Get("name").(string),
 		api.AzureSidekickCloudAccount,
 		api.AzureSidekickData{
@@ -225,7 +235,7 @@ func resourceLaceworkIntegrationAzureAgentlessScanningCreate(d *schema.ResourceD
 			ScanHostVulnerabilities:   d.Get("scan_host_vulnerabilities").(bool),
 			ScanMultiVolume:           d.Get("scan_multi_volume").(bool),
 			ScanStoppedInstances:      d.Get("scan_stopped_instances").(bool),
-			QueryText:                 d.Get("query_text").(string),
+			QueryText:                 queryText,
 			SubscriptionsList:         strings.Join(castAttributeToStringSlice(d, "subscriptions_list"), ", "),
 		},
 	)
@@ -333,6 +343,15 @@ func resourceLaceworkIntegrationAzureAgentlessScanningUpdate(d *schema.ResourceD
 
 	if strings.ToUpper(d.Get("integration_level").(string)) == api.AzureTenantIntegration {
 		integrationLevel = api.AzureTenantIntegration
+	}
+
+	// Only re-validate when query_text actually changed, so an unrelated update
+	// (e.g. scan_frequency, enabled) doesn't get blocked by a pre-existing query
+	// that was accepted before this validation was added.
+	if d.HasChange("query_text") {
+		if err := validateAgentlessScanningQueryText(lacework, d.Get("query_text").(string)); err != nil {
+			return err
+		}
 	}
 
 	data := api.NewCloudAccount(d.Get("name").(string),

@@ -158,6 +158,14 @@ func resourceLaceworkIntegrationAwsAgentlessScanningCreate(d *schema.ResourceDat
 		awsAgentlessScanningData.QueryText = d.Get("query_text").(string)
 	}
 
+	// Validated once, up front, and not retried: a genuinely invalid query
+	// fails identically on every attempt, so retrying would only add latency
+	// without any chance of succeeding. If this fails due to a transient
+	// network issue rather than the query itself, simply re-run apply.
+	if err := validateAgentlessScanningQueryText(lacework, awsAgentlessScanningData.QueryText); err != nil {
+		return err
+	}
+
 	awsAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
 		api.AwsSidekickCloudAccount,
 		awsAgentlessScanningData,
@@ -263,6 +271,15 @@ func resourceLaceworkIntegrationAwsAgentlessScanningUpdate(d *schema.ResourceDat
 
 	if d.Get("query_text") != nil {
 		awsAgentlessScanningData.QueryText = d.Get("query_text").(string)
+	}
+
+	// Only re-validate when query_text actually changed, so an unrelated update
+	// (e.g. scan_frequency, enabled) doesn't get blocked by a pre-existing query
+	// that was accepted before this validation was added.
+	if d.HasChange("query_text") {
+		if err := validateAgentlessScanningQueryText(lacework, awsAgentlessScanningData.QueryText); err != nil {
+			return err
+		}
 	}
 
 	awsAgentlessScanning := api.NewCloudAccount(d.Get("name").(string),
