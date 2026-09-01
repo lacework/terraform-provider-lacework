@@ -1,3 +1,8 @@
+## v2.5.1 (September 01, 2026)
+
+## Other Changes
+* ci: version bump to v2.5.1-dev (Lacework)([d4be6798](https://github.com/lacework/terraform-provider-lacework/commit/d4be679884d03bf12819511c0958f5c7693bb049))
+
 ## v2.5.0 (August 10, 2026)
 
 ## Features
