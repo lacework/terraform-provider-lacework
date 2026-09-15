@@ -124,6 +124,9 @@ func Provider() *schema.Provider {
 			"lacework_vulnerability_exception_host":           resourceLaceworkVulnerabilityExceptionHost(),
 			"lacework_integration_aws_dspm":                   resourceLaceworkAwsDspm(),
 			"lacework_integration_azure_dspm":                 resourceLaceworkAzureDspm(),
+			"lacework_integration_aws_fortidspm":              resourceLaceworkIntegrationAwsFortiDspm(),
+			"lacework_integration_azure_fortidspm":            resourceLaceworkIntegrationAzureFortiDspm(),
+			"lacework_fortidspm_deployment_status":            resourceLaceworkFortiDspmDeploymentStatus(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
