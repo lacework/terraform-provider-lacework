@@ -122,8 +122,9 @@ func resourceLaceworkFortiDspmDeploymentStatusCreate(d *schema.ResourceData, met
 			IdentityPrincipalID: r["identity_principal_id"].(string),
 		})
 	}
-	if msg := d.Get("error_message").(string); msg != "" {
-		report.Error = &api.FortiDspmDeploymentError{Phase: d.Get("error_phase").(string), Message: msg}
+	phase, msg := d.Get("error_phase").(string), d.Get("error_message").(string)
+	if phase != "" || msg != "" {
+		report.Error = &api.FortiDspmDeploymentError{Phase: phase, Message: msg}
 	}
 
 	log.Printf("[INFO] Reporting FortiDSPM deployment status %s for %s (%s)\n",
