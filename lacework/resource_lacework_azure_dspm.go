@@ -127,8 +127,10 @@ func resourceLaceworkAzureDspm() *schema.Resource {
 			"retries": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     5,
+				Default:     30,
 				Description: "The number of attempts to create the external integration.",
+				// only read at create time; once in state, suppress the diff so a default change never triggers an update
+				DiffSuppressFunc: func(_, old, _ string, _ *schema.ResourceData) bool { return old != "" },
 			},
 			"scan_frequency_hours": {
 				Type:        schema.TypeInt,
@@ -203,7 +205,7 @@ func resourceLaceworkAzureDspmCreate(d *schema.ResourceData, meta interface{}) e
 		azureDspm.Props = dspmProps
 	}
 
-	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
+	return retryWithInterval(context.Background(), d.Timeout(schema.TimeoutCreate), azureCreateRetryInterval, func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s cloud account integration\n", api.AzureDspmCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.CreateAzureDspm(azureDspm)

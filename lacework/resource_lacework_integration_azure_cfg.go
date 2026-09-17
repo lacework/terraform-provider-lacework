@@ -39,8 +39,10 @@ func resourceLaceworkIntegrationAzureCfg() *schema.Resource {
 			"retries": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     5,
+				Default:     30,
 				Description: "The number of attempts to create the external integration.",
+				// only read at create time; once in state, suppress the diff so a default change never triggers an update
+				DiffSuppressFunc: func(_, old, _ string, _ *schema.ResourceData) bool { return old != "" },
 			},
 			"tenant_id": {
 				Type:     schema.TypeString,
@@ -113,7 +115,7 @@ func resourceLaceworkIntegrationAzureCfgCreate(d *schema.ResourceData, meta inte
 		azure.Enabled = 0
 	}
 
-	return retry.RetryContext(context.Background(), d.Timeout(schema.TimeoutCreate), func() *retry.RetryError {
+	return retryWithInterval(context.Background(), d.Timeout(schema.TimeoutCreate), azureCreateRetryInterval, func() *retry.RetryError {
 		retries--
 		log.Printf("[INFO] Creating %s integration\n", api.AzureCfgCloudAccount.String())
 		response, err := lacework.V2.CloudAccounts.Create(azure)
