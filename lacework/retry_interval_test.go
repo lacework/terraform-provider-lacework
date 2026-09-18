@@ -25,6 +25,8 @@ func TestRetryWithIntervalRetriesThenSucceeds(t *testing.T) {
 	assert.Equal(t, 3, attempts)
 	// two waits between three attempts
 	assert.GreaterOrEqual(t, time.Since(start), 40*time.Millisecond)
+	// the SDK backoff would take at least 1.5s here; the fixed interval must not
+	assert.Less(t, time.Since(start), 500*time.Millisecond)
 }
 
 func TestRetryWithIntervalReturnsLastNonRetryableError(t *testing.T) {

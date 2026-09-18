@@ -20,5 +20,4 @@ resource "lacework_integration_azure_ad_al" "example" {
     client_id     = "1234567890-abcd-client-id"
     client_secret = "SUPER_SECURE_SECRET"
   }
-  retries = 10
 }

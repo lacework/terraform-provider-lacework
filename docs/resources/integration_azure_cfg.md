@@ -31,7 +31,7 @@ The following arguments are supported:
 * `tenant_id` - (Required) The directory tenant ID.
 * `credentials` - (Required) The credentials needed by the integration. See [Credentials](#credentials) below for details.
 * `enabled` - (Optional) The state of the external integration. Defaults to `true`.
-* `retries` - (Optional) The number of attempts to create the external integration. Defaults to `30`.
+* `retries` - (Optional) The number of attempts to create the external integration, 20 seconds apart. Only used when the integration is created; changing it on an existing integration has no effect. Defaults to `30`.
 
 ### Credentials
 
