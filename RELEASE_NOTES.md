@@ -1,8 +1,7 @@
 # Release Notes
-Another day, another release. These are the release notes for the version `v2.6.0`.
+Another day, another release. These are the release notes for the version `v2.6.1`.
 
-## Features
-* feat: add lacework_integration_{aws,azure}_fortidspm resources (#757) (cstrace-ftnt)([2130e920](https://github.com/lacework/terraform-provider-lacework/commit/2130e9208704ef9d8ab260bde20ba04e42d673e0))
+## Bug Fixes
+* fix: retry Azure integration creation at a fixed interval for RBAC propagation (#760) (Lokesh Vadlamudi)([c6f040f1](https://github.com/lacework/terraform-provider-lacework/commit/c6f040f10a63b90d7b5c3ffa66135e8dabc62ddd))
 ## Other Changes
-* chore: change code owner (#758) (Pengyuan Zhao)([a9e45a8a](https://github.com/lacework/terraform-provider-lacework/commit/a9e45a8a833ccc9dd5f3a90f3bca7366e9d893fa))
-* ci: version bump to v2.5.2-dev (Lacework)([868151ef](https://github.com/lacework/terraform-provider-lacework/commit/868151ef328a84c18cfa1eb8e8c02e412a99d9c2))
+* ci: version bump to v2.6.1-dev (Lacework)([0089441c](https://github.com/lacework/terraform-provider-lacework/commit/0089441cd8daff27ab67191e5bad817b27684540))
