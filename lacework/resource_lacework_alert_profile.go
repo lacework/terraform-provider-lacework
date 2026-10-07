@@ -103,8 +103,10 @@ func resourceLaceworkAlertProfileCreate(d *schema.ResourceData, meta interface{}
 
 func resourceLaceworkAlertProfileRead(d *schema.ResourceData, meta interface{}) error {
 	var (
-		lacework = meta.(*api.Client)
-		response api.AlertProfileResponse
+		lacework    = meta.(*api.Client)
+		response    api.AlertProfileResponse
+		parent      api.AlertProfileResponse
+		stateAlerts []api.AlertTemplate
 	)
 
 	log.Printf("[INFO] Reading alert profile with id: %s\n", d.Id())
@@ -113,11 +115,28 @@ func resourceLaceworkAlertProfileRead(d *schema.ResourceData, meta interface{}) 
 		return resourceNotFound(d, err)
 	}
 
+	// The API returns this profile's alerts merged with the ones it inherits,
+	// so read the parent to tell them apart.
+	if err := lacework.V2.Alert.Profiles.Get(response.Data.Extends, &parent); err != nil {
+		return errors.Wrapf(err, "unable to read parent alert profile %s", response.Data.Extends)
+	}
+	if err := castSchemaSetToArrayOfAlertTemplate(d, "alert", &stateAlerts); err != nil {
+		return err
+	}
+
 	d.SetId(response.Data.Guid)
-	d.Set("id", response.Data.Guid)
-	d.Set("extends", response.Data.Extends)
-	d.Set("alerts", response.Data.Alerts)
-	d.Set("fields", setAlertProfileFields(response.Data.Fields))
+	if err := d.Set("name", response.Data.Guid); err != nil {
+		return err
+	}
+	if err := d.Set("extends", response.Data.Extends); err != nil {
+		return err
+	}
+	if err := d.Set("alert", ownAlertTemplates(response.Data.Alerts, parent.Data.Alerts, stateAlerts)); err != nil {
+		return err
+	}
+	if err := d.Set("fields", setAlertProfileFields(response.Data.Fields)); err != nil {
+		return err
+	}
 
 	log.Printf("[INFO] Read alert profile with id: %s\n", response.Data.Guid)
 	return nil
@@ -214,6 +233,33 @@ func sanitizeAlertTemplateKeys(itemMap map[string]interface{}) map[string]interf
 		newMap[newKey] = v
 	}
 	return newMap
+}
+
+// ownAlertTemplates drops alerts inherited unchanged from the parent profile,
+// unless they are already in state (the user declared an identical alert),
+// and returns the rest in the schema's snake_case shape.
+func ownAlertTemplates(alerts, parentAlerts, stateAlerts []api.AlertTemplate) []map[string]interface{} {
+	inherited := make(map[api.AlertTemplate]bool, len(parentAlerts))
+	for _, t := range parentAlerts {
+		inherited[t] = true
+	}
+	for _, t := range stateAlerts {
+		delete(inherited, t)
+	}
+
+	var own []map[string]interface{}
+	for _, t := range alerts {
+		if inherited[t] {
+			continue
+		}
+		own = append(own, map[string]interface{}{
+			"name":        t.Name,
+			"event_name":  t.EventName,
+			"description": t.Description,
+			"subject":     t.Subject,
+		})
+	}
+	return own
 }
 
 func setAlertProfileFields(alertFields []api.AlertProfileField) []string {
