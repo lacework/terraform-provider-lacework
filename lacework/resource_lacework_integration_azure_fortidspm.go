@@ -111,11 +111,23 @@ func resourceLaceworkIntegrationAzureFortiDspm() *schema.Resource {
 }
 
 func azureFortiDspmData(d *schema.ResourceData) api.AzureFortiDspmData {
-	return api.AzureFortiDspmData{
+	data := api.AzureFortiDspmData{
 		TenantID:       d.Get("tenant_id").(string),
 		SubscriptionID: d.Get("subscription_id").(string),
 		Regions:        castAttributeToStringSlice(d, "regions"),
 	}
+	data.IntegrationLevel = azureFortiDspmIntegrationLevel(data.SubscriptionID)
+	return data
+}
+
+// azureFortiDspmIntegrationLevel is TENANT when no subscription is given (a
+// tenant-level integration scans every subscription in the tenant), else
+// SUBSCRIPTION.
+func azureFortiDspmIntegrationLevel(subscriptionID string) string {
+	if subscriptionID == "" {
+		return api.AzureTenantIntegration
+	}
+	return api.AzureSubscriptionIntegration
 }
 
 func resourceLaceworkIntegrationAzureFortiDspmCreate(d *schema.ResourceData, meta interface{}) error {
