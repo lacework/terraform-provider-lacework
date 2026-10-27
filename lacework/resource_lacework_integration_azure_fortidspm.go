@@ -40,7 +40,14 @@ func resourceLaceworkIntegrationAzureFortiDspm() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				ForceNew:    true,
-				Description: "The Azure subscription where the scan engines are deployed. Empty for a tenant-level integration.",
+				Description: "The Azure subscription where the scan engines are deployed.",
+			},
+			"tenant_level": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
+				Description: "Whether the integration scans every subscription in the tenant (TENANT integration level) instead of only subscription_id (SUBSCRIPTION).",
 			},
 			"regions": {
 				Type:        schema.TypeList,
@@ -116,15 +123,16 @@ func azureFortiDspmData(d *schema.ResourceData) api.AzureFortiDspmData {
 		SubscriptionID: d.Get("subscription_id").(string),
 		Regions:        castAttributeToStringSlice(d, "regions"),
 	}
-	data.IntegrationLevel = azureFortiDspmIntegrationLevel(data.SubscriptionID)
+	data.IntegrationLevel = azureFortiDspmIntegrationLevel(d.Get("tenant_level").(bool), data.SubscriptionID)
 	return data
 }
 
-// azureFortiDspmIntegrationLevel is TENANT when no subscription is given (a
+// azureFortiDspmIntegrationLevel is TENANT when tenant_level is set (a
 // tenant-level integration scans every subscription in the tenant), else
-// SUBSCRIPTION.
-func azureFortiDspmIntegrationLevel(subscriptionID string) string {
-	if subscriptionID == "" {
+// SUBSCRIPTION. Configurations that leave tenant_level unset and
+// subscription_id empty are tenant level too.
+func azureFortiDspmIntegrationLevel(tenantLevel bool, subscriptionID string) string {
+	if tenantLevel || subscriptionID == "" {
 		return api.AzureTenantIntegration
 	}
 	return api.AzureSubscriptionIntegration
@@ -207,6 +215,7 @@ func resourceLaceworkIntegrationAzureFortiDspmRead(d *schema.ResourceData, meta 
 	d.Set("name", cloudAccount.Name)
 	d.Set("tenant_id", cloudAccount.Data.TenantID)
 	d.Set("subscription_id", cloudAccount.Data.SubscriptionID)
+	d.Set("tenant_level", cloudAccount.Data.IntegrationLevel == api.AzureTenantIntegration)
 	d.Set("regions", cloudAccount.Data.Regions)
 	return nil
 }

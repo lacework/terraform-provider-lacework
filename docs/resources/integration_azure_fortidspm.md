@@ -19,7 +19,7 @@ the [terraform-azure-fortidspm](https://github.com/lacework/terraform-azure-fort
 module can copy the image into the subscription and boot the scan engines.
 
 The deployment attributes are issued once on create and are not refreshed on
-read. Changing `tenant_id`, `subscription_id` or `regions` recreates the
+read. Changing `tenant_id`, `subscription_id`, `tenant_level` or `regions` recreates the
 integration and the deployment.
 
 ## Example Usage
@@ -66,7 +66,8 @@ output "image_url_westus2" {
 
 * `name` - (Required) The integration name.
 * `tenant_id` - (Required) The Azure tenant where the scan engines are deployed. Changing this forces a new resource.
-* `subscription_id` - (Optional) The Azure subscription where the scan engines are deployed. Leave empty for a tenant-level integration. Changing this forces a new resource.
+* `subscription_id` - (Optional) The Azure subscription where the scan engines are deployed. Changing this forces a new resource.
+* `tenant_level` - (Optional) Set to `true` for a tenant-level integration, which scans every subscription in the tenant; otherwise only `subscription_id` is scanned. Changing this forces a new resource.
 * `regions` - (Required) The Azure locations where a scan engine is deployed. Changing this forces a new resource.
 * `retries` - (Optional) The number of attempts to create the integration. Defaults to `5`.
 
