@@ -1,6 +1,8 @@
 package lacework
 
 import (
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/lacework/go-sdk/v2/api"
 )
@@ -34,9 +36,9 @@ func dataLaceworkMetricModuleRead(d *schema.ResourceData, meta interface{}) erro
 	metricEvent := api.NewMetricEvent(moduleVersion, name, "lacework-terraform")
 	metricEvent.AddFeatureField("lacework_provider_version", version)
 
-	err := lacework.V2.Metrics.Send(metricEvent)
-	if err != nil {
-		return err
+	// Telemetry is optional, so a failed send must not stop a plan, apply or destroy.
+	if err := lacework.V2.Metrics.Send(metricEvent); err != nil {
+		log.Printf("[WARN] lacework_metric_module: telemetry send failed, continuing: %s\n", err)
 	}
 
 	d.SetId(metricEvent.TraceID)
