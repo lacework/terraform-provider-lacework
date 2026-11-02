@@ -27,6 +27,8 @@ func TestResourceLaceworkIntegrationAzureFortiDspmSchema(t *testing.T) {
 	assert.True(t, r.Schema["image_urls"].Sensitive)
 	assert.True(t, r.Schema["tenant_id"].ForceNew)
 	assert.False(t, r.Schema["subscription_id"].Required)
+	assert.True(t, r.Schema["tenant_level"].Computed)
+	assert.True(t, r.Schema["tenant_level"].ForceNew)
 	for _, computed := range []string{"intg_guid", "deployment_id", "image_url_expires_in",
 		"activation_tokens", "image_urls", "hyperv_generations"} {
 		assert.True(t, r.Schema[computed].Computed, computed)
@@ -58,37 +60,39 @@ func TestAzureFortiDspmIntegrationLevel(t *testing.T) {
 	}
 }
 
+func azureFortiDspmDataFrom(t *testing.T, raw map[string]interface{}) api.AzureFortiDspmData {
+	raw["name"] = "dspm"
+	raw["tenant_id"] = "tenant-1"
+	raw["regions"] = []interface{}{"westus2", "eastus"}
+	return azureFortiDspmData(schema.TestResourceDataRaw(t, resourceLaceworkIntegrationAzureFortiDspm().Schema, raw))
+}
+
 func TestAzureFortiDspmData(t *testing.T) {
-	r := resourceLaceworkIntegrationAzureFortiDspm()
-
-	d := schema.TestResourceDataRaw(t, r.Schema, map[string]interface{}{
-		"name":            "dspm",
-		"tenant_id":       "tenant-1",
-		"subscription_id": "sub-1",
-		"regions":         []interface{}{"westus2", "eastus"},
-	})
-	assert.Equal(t, api.AzureFortiDspmData{
-		TenantID:         "tenant-1",
-		SubscriptionID:   "sub-1",
-		Regions:          []string{"westus2", "eastus"},
-		IntegrationLevel: api.AzureSubscriptionIntegration,
-	}, azureFortiDspmData(d))
-
-	d = schema.TestResourceDataRaw(t, r.Schema, map[string]interface{}{
-		"name":            "dspm",
-		"tenant_id":       "tenant-1",
-		"subscription_id": "sub-1",
-		"tenant_level":    true,
-		"regions":         []interface{}{"westus2"},
-	})
-	assert.Equal(t, api.AzureTenantIntegration, azureFortiDspmData(d).IntegrationLevel)
-
-	d = schema.TestResourceDataRaw(t, r.Schema, map[string]interface{}{
-		"name":      "dspm",
-		"tenant_id": "tenant-1",
-		"regions":   []interface{}{"westus2"},
-	})
-	data := azureFortiDspmData(d)
-	assert.Equal(t, "", data.SubscriptionID)
-	assert.Equal(t, api.AzureTenantIntegration, data.IntegrationLevel)
+	cases := []struct {
+		name string
+		raw  map[string]interface{}
+		want api.AzureFortiDspmData
+	}{
+		{
+			"subscription given",
+			map[string]interface{}{"subscription_id": "sub-1"},
+			api.AzureFortiDspmData{TenantID: "tenant-1", SubscriptionID: "sub-1", Regions: []string{"westus2", "eastus"},
+				IntegrationLevel: api.AzureSubscriptionIntegration},
+		},
+		{
+			"tenant_level set keeps the subscription",
+			map[string]interface{}{"subscription_id": "sub-1", "tenant_level": true},
+			api.AzureFortiDspmData{TenantID: "tenant-1", SubscriptionID: "sub-1", Regions: []string{"westus2", "eastus"},
+				IntegrationLevel: api.AzureTenantIntegration},
+		},
+		{
+			"no subscription",
+			map[string]interface{}{},
+			api.AzureFortiDspmData{TenantID: "tenant-1", Regions: []string{"westus2", "eastus"},
+				IntegrationLevel: api.AzureTenantIntegration},
+		},
+	}
+	for _, c := range cases {
+		assert.Equal(t, c.want, azureFortiDspmDataFrom(t, c.raw), c.name)
+	}
 }
