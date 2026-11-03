@@ -25,33 +25,27 @@ deployment.
 ## Example Usage
 
 The scan engine module creates this resource itself when `global = true`, so
-the usual way to use it is one module per region:
+the usual way to use it is one module per region. The module needs
+`hashicorp/aws` 6.x. Set `region` on every instance: an instance without it is
+deployed into the provider's region.
 
 ```hcl
 provider "aws" {
-  alias  = "us_west_2"
   region = "us-west-2"
 }
 
-provider "aws" {
-  alias  = "us_east_1"
-  region = "us-east-1"
-}
-
 module "lacework_aws_fortidspm_us_west_2" {
-  source                    = "git::https://github.com/lacework/terraform-aws-fortidspm.git?ref=v0.2.0"
+  source                    = "git::https://github.com/lacework/terraform-aws-fortidspm.git?ref=v0.5.0"
+  region                    = "us-west-2"
   global                    = true
   lacework_integration_name = "aws-dspm-123456789012"
   regions                   = ["us-west-2", "us-east-1"]
-
-  providers = { aws = aws.us_west_2 }
 }
 
 module "lacework_aws_fortidspm_us_east_1" {
-  source                  = "git::https://github.com/lacework/terraform-aws-fortidspm.git?ref=v0.2.0"
+  source                  = "git::https://github.com/lacework/terraform-aws-fortidspm.git?ref=v0.5.0"
+  region                  = "us-east-1"
   global_module_reference = module.lacework_aws_fortidspm_us_west_2
-
-  providers = { aws = aws.us_east_1 }
 }
 ```
 
