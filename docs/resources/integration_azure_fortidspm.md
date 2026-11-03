@@ -29,7 +29,7 @@ the usual way to use it is one module per region:
 
 ```hcl
 module "lacework_azure_fortidspm_westus2" {
-  source                    = "git::https://github.com/lacework/terraform-azure-fortidspm.git?ref=v0.2.0"
+  source                    = "git::https://github.com/lacework/terraform-azure-fortidspm.git?ref=v0.5.1"
   global                    = true
   lacework_integration_name = "azure-dspm-production"
   tenant_id                 = "00000000-0000-0000-0000-000000000000"
@@ -39,7 +39,7 @@ module "lacework_azure_fortidspm_westus2" {
 }
 
 module "lacework_azure_fortidspm_eastus" {
-  source                  = "git::https://github.com/lacework/terraform-azure-fortidspm.git?ref=v0.2.0"
+  source                  = "git::https://github.com/lacework/terraform-azure-fortidspm.git?ref=v0.5.1"
   global_module_reference = module.lacework_azure_fortidspm_westus2
   location                = "eastus"
 }
@@ -67,7 +67,7 @@ output "image_url_westus2" {
 * `name` - (Required) The integration name.
 * `tenant_id` - (Required) The Azure tenant where the scan engines are deployed. Changing this forces a new resource.
 * `subscription_id` - (Optional) The Azure subscription where the scan engines are deployed. Changing this forces a new resource.
-* `tenant_level` - (Optional) Set to `true` for a tenant-level integration, which scans every subscription in the tenant; otherwise only `subscription_id` is scanned. Changing this forces a new resource.
+* `tenant_level` - (Optional) Set to `true` for a tenant-level integration, which scans every subscription in the tenant; otherwise only `subscription_id` is scanned. An integration without `subscription_id` is tenant-level whatever this is set to. Changing this forces a new resource.
 * `regions` - (Required) The Azure locations where a scan engine is deployed. Changing this forces a new resource.
 * `retries` - (Optional) The number of attempts to create the integration. Defaults to `5`.
 
