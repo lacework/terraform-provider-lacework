@@ -47,7 +47,7 @@ func resourceLaceworkIntegrationAzureFortiDspm() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				ForceNew:    true,
-				Description: "Whether the integration scans every subscription in the tenant (TENANT integration level) instead of only subscription_id (SUBSCRIPTION).",
+				Description: "Whether the integration scans every subscription in the tenant (TENANT integration level) instead of only subscription_id (SUBSCRIPTION). Without subscription_id the integration is always TENANT.",
 			},
 			"regions": {
 				Type:        schema.TypeList,

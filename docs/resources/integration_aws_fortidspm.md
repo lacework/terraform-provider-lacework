@@ -25,7 +25,9 @@ deployment.
 ## Example Usage
 
 The scan engine module creates this resource itself when `global = true`, so
-the usual way to use it is one module per region:
+the usual way to use it is one module per region. The module needs
+`hashicorp/aws` 6.x. Set `region` on every instance: an instance without it is
+deployed into the provider's region.
 
 ```hcl
 provider "aws" {
