@@ -11,7 +11,11 @@ description: |-
 Lacework provides a highly scalable platform for creating, customizing, and managing custom policies
 against any datasource that is exposed via the Lacework Query Language (LQL).
 
-For more information, see the [Policy Overview Documentation](https://docs.lacework.net/console/custom-policy-overview).
+This resource creates **violation** policies, which appear under the **Threat** tab of the Policies page.
+To create a compliance policy, use `lacework_policy_compliance`.
+
+For more information, see [Manage custom policies with Terraform](https://docs.fortinet.com/document/forticnapp/latest/administration-guide/400463/manage-custom-policies-with-terraform)
+and [Creating a custom violation policy](https://docs.fortinet.com/document/forticnapp/latest/administration-guide/802466/creating-a-custom-violation-policy).
 
 ## Example Usage
 
@@ -105,4 +109,4 @@ $ terraform import lacework_policy.example YourLQLPolicyID
 
 -> **Note:** To retrieve the `POLICY_ID` from existing policies in your account, use the
 Lacework CLI command `lacework policy list`. To install this tool follow
-[this documentation](https://docs.lacework.com/cli/).
+[this documentation](https://docs.fortinet.com/document/forticnapp/latest/cli-reference).
