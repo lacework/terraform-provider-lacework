@@ -49,3 +49,6 @@ A Lacework Alert Profile can be imported using it's `name`, e.g.
 ```
 $ terraform import lacework_alert_profile.example CUSTOM_PROFILE_TERRAFORM_TEST
 ```
+
+An alert that is the same as an alert of the profile in `extends` is not imported. If the
+configuration declares such an alert, the first plan after the import shows it as an addition.
